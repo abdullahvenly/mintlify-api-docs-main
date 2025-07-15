@@ -1,0 +1,501 @@
+---
+title: "Read Smart Contract Functions"
+description: "Learn how to read data from smart contracts on EVM-based blockchains without executing transactions."
+icon: "book-open"
+---
+
+<Info>
+Contract reading allows you to query smart contract state and call view functions without spending gas or executing transactions on the blockchain.
+</Info>
+
+## Overview
+
+Reading smart contracts is essential for:
+- **Data retrieval**: Getting current contract state and stored values
+- **NFT metadata**: Fetching token information, balances, and properties
+- **DeFi protocols**: Checking pool balances, exchange rates, and user positions
+- **Game mechanics**: Reading player stats, item properties, and game state
+
+<Warning>
+This functionality is only available for EVM-based blockchains (Ethereum, Polygon, BSC, Arbitrum, etc.). Non-EVM chains are not supported.
+</Warning>
+
+## Prerequisites
+
+Before reading smart contracts, ensure you have:
+- The contract address you want to interact with
+- Knowledge of the function name you want to call
+- Understanding of the function's input parameters and expected outputs
+- The contract's ABI (Application Binary Interface) or function signature
+
+## Contract Reading Process
+
+<Steps>
+<Step title="Identify Contract Function">
+Determine which contract function you want to call and its parameters.
+</Step>
+
+<Step title="Prepare Input Parameters">
+Format the input parameters according to their Solidity types.
+</Step>
+
+<Step title="Define Expected Outputs">
+Specify the expected return types from the function call.
+</Step>
+
+<Step title="Execute Read Call">
+Send the read request and process the returned data.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/contracts/read
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Body | The blockchain network | ✅ | `"MATIC"` |
+| `contractAddress` | Body | The smart contract address | ✅ | `"0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd"` |
+| `functionName` | Body | The contract function to call | ✅ | `"balanceOf"` |
+| `inputs` | Body | Array of input parameters | ✅ | See examples below |
+| `inputs.type` | Body | Solidity type of the parameter | ✅ | `"address"`, `"uint256"`, `"string"` |
+| `inputs.value` | Body | Value of the parameter (as string) | ✅ | `"0x427d0addaa77d8bb871dbea3458dea4b5198730c"` |
+| `outputs` | Body | Array of expected output types | ✅ | See examples below |
+| `outputs.type` | Body | Solidity type of the return value | ✅ | `"uint256"`, `"string"`, `"bool"` |
+
+<Tip>
+All input values must be provided as strings, regardless of their actual Solidity type. The API will handle the proper type conversion.
+</Tip>
+
+## Code Examples
+
+### Example 1: Check NFT Balance
+
+Get the balance of a specific NFT for a wallet address.
+
+<CodeGroup>
+
+```json ERC-1155 Balance Check
+{
+  "secretType": "MATIC",
+  "contractAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+  "functionName": "balanceOf",
+  "inputs": [
+    {
+      "type": "address",
+      "value": "0x427d0addaa77d8bb871dbea3458dea4b5198730c"
+    },
+    {
+      "type": "uint256",
+      "value": "202"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "uint256"
+    }
+  ]
+}
+```
+
+```json ERC-721 Owner Check
+{
+  "secretType": "ETHEREUM",
+  "contractAddress": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+  "functionName": "ownerOf",
+  "inputs": [
+    {
+      "type": "uint256",
+      "value": "1234"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "address"
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Example 2: Get Token Metadata
+
+Retrieve metadata and properties from NFT contracts.
+
+<CodeGroup>
+
+```json Get Token URI
+{
+  "secretType": "ETHEREUM",
+  "contractAddress": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+  "functionName": "tokenURI",
+  "inputs": [
+    {
+      "type": "uint256",
+      "value": "5678"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "string"
+    }
+  ]
+}
+```
+
+```json Get Contract URI
+{
+  "secretType": "MATIC",
+  "contractAddress": "0x8c53de6a889cf0a3151168c3e84263c982d09a2f",
+  "functionName": "contractURI",
+  "inputs": [],
+  "outputs": [
+    {
+      "type": "string"
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+### Example 3: DeFi Protocol Queries
+
+Read data from DeFi smart contracts.
+
+<CodeGroup>
+
+```json Get ERC-20 Balance
+{
+  "secretType": "ETHEREUM",
+  "contractAddress": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9",
+  "functionName": "balanceOf",
+  "inputs": [
+    {
+      "type": "address",
+      "value": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "uint256"
+    }
+  ]
+}
+```
+
+```json Get Token Allowance
+{
+  "secretType": "ETHEREUM",
+  "contractAddress": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9",
+  "functionName": "allowance",
+  "inputs": [
+    {
+      "type": "address",
+      "value": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9"
+    },
+    {
+      "type": "address",
+      "value": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "uint256"
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Contract Read Response
+{
+  "success": true,
+  "result": [
+    {
+      "type": "uint256",
+      "value": "1"
+    }
+  ]
+}
+```
+
+### Multiple Return Values
+
+```json Multiple Outputs Response
+{
+  "success": true,
+  "result": [
+    {
+      "type": "string",
+      "value": "My Token Name"
+    },
+    {
+      "type": "string",
+      "value": "MTN"
+    },
+    {
+      "type": "uint8",
+      "value": "18"
+    }
+  ]
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result` | Array of return values from the contract function |
+| `result[].type` | Solidity type of the returned value |
+| `result[].value` | The actual returned value (as string) |
+
+## Common Solidity Types
+
+<Accordion title="Supported Parameter Types">
+
+**Numeric Types:**
+- `uint256`, `uint128`, `uint64`, `uint32`, `uint16`, `uint8` - Unsigned integers
+- `int256`, `int128`, `int64`, `int32`, `int16`, `int8` - Signed integers
+- `bytes32`, `bytes16`, `bytes8`, `bytes4` - Fixed-size byte arrays
+
+**Other Types:**
+- `address` - Ethereum addresses (20 bytes)
+- `bool` - Boolean values (true/false)
+- `string` - Dynamic strings
+- `bytes` - Dynamic byte arrays
+
+**Array Types:**
+- `uint256[]` - Dynamic arrays
+- `address[5]` - Fixed-size arrays
+- `string[]` - Arrays of strings
+
+**Example Values:**
+- `address`: `"0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9"`
+- `uint256`: `"1000000000000000000"` (1 ETH in wei)
+- `bool`: `"true"` or `"false"`
+- `string`: `"Hello World"`
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Contract Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "CONTRACT_NOT_FOUND",
+  "message": "Contract at the specified address does not exist"
+}
+```
+
+**Function Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "FUNCTION_NOT_FOUND",
+  "message": "The specified function does not exist in the contract"
+}
+```
+
+**Invalid Parameters**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PARAMETERS",
+  "message": "The provided parameters do not match the function signature"
+}
+```
+
+**Execution Reverted**
+```json
+{
+  "success": false,
+  "errorCode": "EXECUTION_REVERTED",
+  "message": "Contract function execution reverted"
+}
+```
+
+**Unsupported Chain**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_CHAIN",
+  "message": "Contract reading is only supported on EVM-based chains"
+}
+```
+
+</Accordion>
+
+## Use Cases and Examples
+
+### NFT Marketplace Integration
+
+```javascript
+// Check if user owns a specific NFT
+async function checkNFTOwnership(contractAddress, tokenId, userAddress) {
+  const response = await fetch('/api/contracts/read', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      secretType: 'ETHEREUM',
+      contractAddress,
+      functionName: 'ownerOf',
+      inputs: [
+        { type: 'uint256', value: tokenId.toString() }
+      ],
+      outputs: [
+        { type: 'address' }
+      ]
+    })
+  });
+  
+  const data = await response.json();
+  
+  if (data.success) {
+    const owner = data.result[0].value.toLowerCase();
+    return owner === userAddress.toLowerCase();
+  }
+  
+  return false;
+}
+```
+
+### Token Balance Checker
+
+```javascript
+// Get ERC-20 token balance
+async function getTokenBalance(tokenContract, walletAddress) {
+  const response = await fetch('/api/contracts/read', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      secretType: 'ETHEREUM',
+      contractAddress: tokenContract,
+      functionName: 'balanceOf',
+      inputs: [
+        { type: 'address', value: walletAddress }
+      ],
+      outputs: [
+        { type: 'uint256' }
+      ]
+    })
+  });
+  
+  const data = await response.json();
+  
+  if (data.success) {
+    return BigInt(data.result[0].value);
+  }
+  
+  throw new Error('Failed to get token balance');
+}
+```
+
+### Contract Metadata Reader
+
+```javascript
+// Get comprehensive token information
+async function getTokenInfo(contractAddress) {
+  const calls = [
+    { functionName: 'name', outputs: [{ type: 'string' }] },
+    { functionName: 'symbol', outputs: [{ type: 'string' }] },
+    { functionName: 'decimals', outputs: [{ type: 'uint8' }] },
+    { functionName: 'totalSupply', outputs: [{ type: 'uint256' }] }
+  ];
+  
+  const results = await Promise.all(
+    calls.map(call => 
+      fetch('/api/contracts/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          secretType: 'ETHEREUM',
+          contractAddress,
+          functionName: call.functionName,
+          inputs: [],
+          outputs: call.outputs
+        })
+      }).then(res => res.json())
+    )
+  );
+  
+  return {
+    name: results[0].result[0].value,
+    symbol: results[1].result[0].value,
+    decimals: parseInt(results[2].result[0].value),
+    totalSupply: results[3].result[0].value
+  };
+}
+```
+
+## Best Practices
+
+1. **Validate contract addresses** before making calls
+2. **Handle type conversions** properly for numeric values
+3. **Cache frequently accessed data** to reduce API calls
+4. **Use batch requests** when reading multiple values
+5. **Implement error handling** for contract execution failures
+6. **Verify function signatures** match the contract ABI
+7. **Consider gas costs** for complex view functions
+
+## Supported Blockchains
+
+<Accordion title="EVM-Compatible Networks">
+
+**Mainnet Networks:**
+- Ethereum (ETHEREUM)
+- Polygon (MATIC)
+- Binance Smart Chain (BSC)
+- Arbitrum (ARBITRUM)
+- Avalanche (AVAX)
+- Optimism (OPTIMISM)
+
+**Testnet Networks:**
+- Ethereum Goerli
+- Polygon Mumbai
+- BSC Testnet
+- Arbitrum Goerli
+
+**Note:** Non-EVM chains like Bitcoin, Solana, and Cardano are not supported for contract reading.
+
+</Accordion>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Execute Contract Calls" icon="play" href="/Wallet-API-Basic-Guides/execute-contract-call">
+  Learn how to execute state-changing contract functions
+</Card>
+<Card title="Retrieve NFTs" icon="image" href="/Wallet-API-Basic-Guides/retrieve-non-fungible-tokens-1">
+  Get NFT collections and metadata
+</Card>
+<Card title="Check Token Balances" icon="coins" href="/Wallet-API-Basic-Guides/retrieve-erc20-token-balance">
+  View ERC-20 token holdings
+</Card>
+<Card title="Contract Deployment" icon="rocket" href="/Wallet-API-Basic-Guides/deploy-contract">
+  Deploy your own smart contracts
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Smart Contracts](https://docs.venly.io/docs/smart-contracts)
+- Understand [ABI Encoding](https://docs.venly.io/docs/abi-encoding)
+- View [Supported Chains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/readcontract)
+</Note>

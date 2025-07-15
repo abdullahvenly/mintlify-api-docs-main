@@ -1,0 +1,317 @@
+---
+title: "Delete a User"
+description: "Learn how to safely delete user accounts and understand the implications for associated wallets and data."
+icon: "user-minus"
+---
+
+<Warning>
+**Critical Warning**: Deleting a user will soft delete all their linked wallets. The wallets will no longer appear in any endpoints but can potentially be recovered. This action should be performed with extreme caution.
+</Warning>
+
+## Overview
+
+User deletion is necessary for:
+- **Account closure**: Removing users who no longer need access
+- **Data compliance**: Meeting GDPR and other privacy regulations
+- **Security incidents**: Immediately disabling compromised accounts
+- **Business requirements**: Cleaning up inactive or test accounts
+
+<Info>
+User deletion is a soft delete operation, meaning the data is marked as deleted but not immediately purged from the system. This allows for potential recovery in emergency situations.
+</Info>
+
+## Prerequisites
+
+Before deleting a user, ensure you have:
+- A valid user ID for the account to be deleted
+- A valid signing method from the user being deleted (for authentication)
+- Confirmation that the user wants their account deleted
+- Understanding of the impact on associated wallets and data
+
+## Deletion Impact Assessment
+
+<Steps>
+<Step title="User Account">
+The user account will be marked as deleted and become inaccessible.
+</Step>
+
+<Step title="Associated Wallets">
+All wallets linked to the user will be soft deleted and hidden from endpoints.
+</Step>
+
+<Step title="Signing Methods">
+All authentication methods for the user will be deactivated.
+</Step>
+
+<Step title="Transaction History">
+Historical transaction data remains for audit purposes but becomes inaccessible.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+DELETE /api/users/{userId}
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using user's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The signing method must belong to the user being deleted. This ensures that only the user themselves (or authorized parties with their credentials) can delete the account.
+</Warning>
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Path | The unique ID of the user to delete | ✅ | `"5f23aff6-6786-4160-b5cb-8f65c79eec17"` |
+
+## Code Examples
+
+<CodeGroup>
+
+```http Delete User Account
+DELETE /api/users/5f23aff6-6786-4160-b5cb-8f65c79eec17
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+```
+
+```http Delete Another User
+DELETE /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4
+Signing-Method: f3371883-2024-469b-a122-ca22f58ba6b9:789012
+```
+
+```http Delete Test User
+DELETE /api/users/9b4414c7-d033-4cba-9635-a535d31d7030
+Signing-Method: 3355c892-31af-4260-87a3-a68175bcfea5:456789
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json User Deletion Success
+{
+  "success": true
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `success` | Boolean indicating successful deletion |
+
+<Tip>
+A successful response confirms that the user and all associated data have been marked for deletion. The process is immediate and irreversible through normal API operations.
+</Tip>
+
+## Pre-Deletion Checklist
+
+Before proceeding with user deletion, consider these important steps:
+
+<Accordion title="Pre-Deletion Verification Steps">
+
+**1. Confirm User Intent**
+- Verify the user actually wants their account deleted
+- Ensure they understand the consequences
+- Document the deletion request for compliance
+
+**2. Backup Critical Data**
+- Export any important wallet information if needed
+- Save transaction history for records
+- Document any business-critical information
+
+**3. Check Wallet Balances**
+- Ensure all wallets have zero or acceptable balances
+- Transfer any remaining assets to other wallets
+- Verify no pending transactions exist
+
+**4. Notify Stakeholders**
+- Inform relevant team members
+- Update any external systems that reference the user
+- Log the deletion for audit purposes
+
+**5. Compliance Considerations**
+- Ensure deletion meets regulatory requirements
+- Document the reason for deletion
+- Follow company data retention policies
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**User Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Invalid Signing Method**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_SIGNING_METHOD",
+  "message": "The provided signing method is invalid or does not belong to this user"
+}
+```
+
+**Authentication Failed**
+```json
+{
+  "success": false,
+  "errorCode": "AUTHENTICATION_FAILED",
+  "message": "Authentication failed. Please check your signing method credentials"
+}
+```
+
+**User Already Deleted**
+```json
+{
+  "success": false,
+  "errorCode": "USER_ALREADY_DELETED",
+  "message": "This user account has already been deleted"
+}
+```
+
+**Deletion Not Allowed**
+```json
+{
+  "success": false,
+  "errorCode": "DELETION_NOT_ALLOWED",
+  "message": "User deletion is not permitted due to active constraints"
+}
+```
+
+</Accordion>
+
+## Security Considerations
+
+<Warning>
+**Security Best Practices:**
+
+1. **Verify Identity**: Always confirm the user's identity before deletion
+2. **Use Proper Authentication**: Ensure the signing method belongs to the user
+3. **Log All Deletions**: Maintain audit trails for compliance
+4. **Implement Approval Workflows**: Consider requiring multiple approvals
+5. **Monitor for Abuse**: Watch for unusual deletion patterns
+6. **Secure Communication**: Use encrypted channels for deletion requests
+</Warning>
+
+## Data Recovery Options
+
+### Soft Delete Nature
+- User data is marked as deleted, not physically removed
+- Recovery may be possible through support channels
+- Time-limited recovery window (typically 30-90 days)
+
+### Recovery Process
+1. Contact Venly support immediately
+2. Provide user ID and deletion timestamp
+3. Justify the recovery request
+4. Follow verification procedures
+
+### Prevention Strategies
+- Implement confirmation dialogs in your application
+- Provide account deactivation as an alternative
+- Offer data export before deletion
+- Use staged deletion with grace periods
+
+## Alternative to Deletion
+
+Consider these alternatives before permanent deletion:
+
+### Account Deactivation
+- Temporarily disable the account
+- Preserve data for potential reactivation
+- Maintain compliance with data retention
+
+### Data Archival
+- Move user data to long-term storage
+- Keep minimal information for legal requirements
+- Implement automated purging after retention periods
+
+## Best Practices
+
+1. **Implement Confirmation Flows**: Require multiple confirmations
+2. **Provide Clear Warnings**: Explain consequences to users
+3. **Offer Alternatives**: Suggest account deactivation when appropriate
+4. **Maintain Audit Logs**: Record all deletion activities
+5. **Follow Compliance Rules**: Adhere to data protection regulations
+6. **Test Deletion Flows**: Regularly verify the deletion process works correctly
+
+## Integration Example
+
+```javascript
+async function deleteUserWithConfirmation(userId, signingMethodId, signingMethodValue) {
+  // Step 1: Get user information for confirmation
+  const userInfo = await fetch(`/api/users/${userId}`);
+  const userData = await userInfo.json();
+  
+  if (!userData.success) {
+    throw new Error('User not found');
+  }
+  
+  // Step 2: Show confirmation to user
+  const confirmed = await showDeletionConfirmation(userData.result);
+  
+  if (!confirmed) {
+    return { cancelled: true };
+  }
+  
+  // Step 3: Perform deletion
+  const response = await fetch(`/api/users/${userId}`, {
+    method: 'DELETE',
+    headers: {
+      'Signing-Method': `${signingMethodId}:${signingMethodValue}`,
+      'Content-Type': 'application/json'
+    }
+  });
+  
+  const result = await response.json();
+  
+  if (result.success) {
+    // Log the deletion for audit purposes
+    console.log(`User ${userId} deleted successfully at ${new Date().toISOString()}`);
+  }
+  
+  return result;
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Create New User" icon="user-plus" href="/Wallet-API-Basic-Guides/create-a-user">
+  Create replacement user accounts when needed
+</Card>
+<Card title="User Management" icon="users" href="/Wallet-API-Basic-Guides/retrieve-a-user">
+  Learn about comprehensive user management
+</Card>
+<Card title="Data Export" icon="download" href="/Wallet-API-Basic-Guides/export-user-data">
+  Export user data before deletion
+</Card>
+<Card title="Compliance Guide" icon="shield-check" href="/Wallet-API-Basic-Guides/data-compliance">
+  Understand data protection requirements
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Data Protection](https://docs.venly.io/docs/data-protection)
+- Understand [User Lifecycle](https://docs.venly.io/docs/user-lifecycle)
+- Review [Compliance Guidelines](https://docs.venly.io/docs/compliance)
+- Complete [API Reference](https://docs.venly.io/reference/deleteuser)
+</Note>

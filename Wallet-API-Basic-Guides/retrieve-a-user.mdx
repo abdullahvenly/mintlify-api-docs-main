@@ -1,0 +1,307 @@
+---
+title: "Retrieve User Information"
+description: "Learn how to fetch detailed user information including signing methods and account status."
+icon: "user"
+---
+
+<Info>
+User retrieval provides comprehensive information about user accounts, including their signing methods, creation details, and current status.
+</Info>
+
+## Overview
+
+Retrieving user information is essential for:
+- **Account management**: Accessing user details and configurations
+- **Authentication status**: Checking available signing methods
+- **Security monitoring**: Reviewing authentication attempts and lockouts
+- **User support**: Troubleshooting account-related issues
+
+<Tip>
+User information includes all signing methods associated with the account, making it easy to understand the user's authentication options.
+</Tip>
+
+## Prerequisites
+
+To retrieve user information, you need:
+- A valid user ID from a previously created user
+- Appropriate permissions to access the user data
+- No authentication required for basic user information
+
+## User Information Components
+
+<Steps>
+<Step title="Basic User Data">
+Core information including ID, reference, and creation timestamp.
+</Step>
+
+<Step title="Signing Methods">
+Complete list of authentication methods with their current status.
+</Step>
+
+<Step title="Security Status">
+Authentication attempt counts and remaining tries for each method.
+</Step>
+
+<Step title="Usage Statistics">
+Last successful authentication times and activity patterns.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+GET /api/users/{userId}
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Path | The unique ID of the user to retrieve | ✅ | `"9b4414c7-d033-4cba-9635-a535d31d7030"` |
+
+## Code Examples
+
+<CodeGroup>
+
+```http Get User Information
+GET /api/users/9b4414c7-d033-4cba-9635-a535d31d7030
+```
+
+```http Get Another User
+GET /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4
+```
+
+```http Get User with Complex ID
+GET /api/users/c7d70857-61a2-4466-86bd-0f7eb70b7497
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json User Information Response
+{
+  "success": true,
+  "result": {
+    "id": "9b4414c7-d033-4cba-9635-a535d31d7030",
+    "reference": "customer_john_doe_001",
+    "createdAt": "2023-08-03T14:23:16.037191",
+    "signingMethods": [
+      {
+        "id": "3355c892-31af-4260-87a3-a68175bcfea5",
+        "type": "PIN",
+        "incorrectAttempts": 0,
+        "remainingAttempts": 10,
+        "lastUsedSuccess": "2023-08-04T12:34:36.752094",
+        "hasMasterSecret": true
+      },
+      {
+        "id": "38ee7ad2-043d-4c38-9b5b-b962d23e7c8e",
+        "type": "EMERGENCY_CODE",
+        "incorrectAttempts": 0,
+        "remainingAttempts": 10,
+        "hasMasterSecret": true
+      },
+      {
+        "id": "7f9e8d3c-2b1a-4e5f-9c8d-1a2b3c4d5e6f",
+        "type": "BIOMETRIC",
+        "incorrectAttempts": 1,
+        "remainingAttempts": 9,
+        "lastUsedSuccess": "2023-08-03T16:45:22.123456",
+        "hasMasterSecret": false
+      }
+    ]
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | Unique user identifier |
+| `result.reference` | Custom reference assigned during creation |
+| `result.createdAt` | User account creation timestamp |
+| `result.signingMethods` | Array of all signing methods for this user |
+
+### Signing Method Fields
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique signing method identifier |
+| `type` | Method type (PIN, EMERGENCY_CODE, BIOMETRIC, PASSWORD) |
+| `incorrectAttempts` | Current count of failed authentication attempts |
+| `remainingAttempts` | Attempts left before method is locked |
+| `lastUsedSuccess` | Timestamp of last successful authentication |
+| `hasMasterSecret` | Whether method has access to master secrets |
+
+## Signing Method Status Analysis
+
+<Accordion title="Understanding Signing Method Status">
+
+**Attempt Tracking:**
+- `incorrectAttempts`: Increments with each failed authentication
+- `remainingAttempts`: Decreases with each failed attempt
+- When `remainingAttempts` reaches 0, the method is temporarily locked
+
+**Master Secret Access:**
+- `hasMasterSecret: true`: Method can access wallet private keys
+- `hasMasterSecret: false`: Method has limited access (e.g., view-only)
+
+**Usage Patterns:**
+- `lastUsedSuccess`: Helps identify active vs. inactive methods
+- Missing `lastUsedSuccess`: Method has never been used successfully
+
+**Security Implications:**
+- High `incorrectAttempts`: Possible brute force attempts
+- Low `remainingAttempts`: Method approaching lockout
+- No recent `lastUsedSuccess`: Potentially compromised or forgotten method
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**User Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Invalid User ID Format**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_USER_ID",
+  "message": "The user ID format is invalid"
+}
+```
+
+**Access Denied**
+```json
+{
+  "success": false,
+  "errorCode": "ACCESS_DENIED",
+  "message": "You do not have permission to access this user's information"
+}
+```
+
+**Service Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "SERVICE_UNAVAILABLE",
+  "message": "User service is temporarily unavailable"
+}
+```
+
+</Accordion>
+
+## Security Monitoring
+
+Use the retrieved information to monitor user security:
+
+### Authentication Health Check
+```javascript
+function assessUserSecurity(userData) {
+  const issues = [];
+  
+  userData.signingMethods.forEach(method => {
+    // Check for high failed attempts
+    if (method.incorrectAttempts >= 5) {
+      issues.push(`${method.type} has ${method.incorrectAttempts} failed attempts`);
+    }
+    
+    // Check for low remaining attempts
+    if (method.remainingAttempts <= 2) {
+      issues.push(`${method.type} is close to lockout (${method.remainingAttempts} attempts left)`);
+    }
+    
+    // Check for inactive methods
+    const lastUsed = new Date(method.lastUsedSuccess);
+    const daysSinceUse = (Date.now() - lastUsed.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceUse > 90) {
+      issues.push(`${method.type} hasn't been used in ${Math.floor(daysSinceUse)} days`);
+    }
+  });
+  
+  return issues;
+}
+```
+
+## User Management Insights
+
+### Signing Method Analysis
+- **PIN**: Primary authentication method, should always be present
+- **EMERGENCY_CODE**: Backup method for account recovery
+- **BIOMETRIC**: Convenience method for mobile applications
+- **PASSWORD**: Additional security layer for sensitive operations
+
+### Best Practices for User Data
+1. **Regular monitoring**: Check authentication patterns for anomalies
+2. **Proactive support**: Contact users with locked methods
+3. **Security alerts**: Notify users of suspicious activity
+4. **Method diversity**: Encourage multiple signing methods
+5. **Usage tracking**: Monitor method effectiveness and adoption
+
+## Integration Examples
+
+### User Dashboard Data
+```javascript
+async function getUserDashboardData(userId) {
+  const response = await fetch(`/api/users/${userId}`);
+  const userData = await response.json();
+  
+  if (!userData.success) {
+    throw new Error('Failed to fetch user data');
+  }
+  
+  const user = userData.result;
+  
+  return {
+    userId: user.id,
+    reference: user.reference,
+    accountAge: calculateAccountAge(user.createdAt),
+    signingMethods: user.signingMethods.map(method => ({
+      type: method.type,
+      status: method.remainingAttempts > 0 ? 'active' : 'locked',
+      lastUsed: method.lastUsedSuccess,
+      security: method.hasMasterSecret ? 'full' : 'limited'
+    })),
+    securityScore: calculateSecurityScore(user.signingMethods)
+  };
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Update User Reference" icon="pen" href="/Wallet-API-Basic-Guides/update-users-reference">
+  Modify user reference information
+</Card>
+<Card title="Manage Signing Methods" icon="key" href="/Wallet-API-Basic-Guides/create-users-signing-method">
+  Add or update user authentication methods
+</Card>
+<Card title="View User Wallets" icon="wallet" href="/Wallet-API-Basic-Guides/retrieve-a-wallet">
+  Get all wallets belonging to this user
+</Card>
+<Card title="Delete User" icon="trash" href="/Wallet-API-Basic-Guides/delete-a-user">
+  Remove user account when no longer needed
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [User Management](https://docs.venly.io/docs/user-management)
+- Understand [Signing Methods](https://docs.venly.io/docs/signing-methods)
+- View [Security Best Practices](https://docs.venly.io/docs/security-best-practices)
+- Complete [API Reference](https://docs.venly.io/reference/getuser)
+</Note>

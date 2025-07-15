@@ -1,0 +1,417 @@
+---
+title: "Delete User Signing Methods"
+description: "Learn how to safely remove authentication methods from user accounts while maintaining security and access."
+icon: "key-skeleton"
+---
+
+<Warning>
+**Critical Restriction**: The PIN signing method cannot be deleted. Only EMERGENCY_CODE, BIOMETRIC, and PASSWORD signing methods can be removed, and only if a PIN method exists for the user.
+</Warning>
+
+## Overview
+
+Deleting signing methods is necessary for:
+- **Security management**: Removing compromised authentication methods
+- **Device changes**: Cleaning up biometric methods from old devices
+- **Access control**: Reducing authentication options for simplified workflows
+- **Account maintenance**: Removing unused or outdated authentication methods
+
+<Info>
+Signing method deletion helps maintain clean user authentication while ensuring users always retain their primary PIN access method for security.
+</Info>
+
+## Prerequisites
+
+Before deleting a signing method, ensure you have:
+- A valid user ID for the account
+- The signing method ID you want to delete
+- Authentication using a different signing method (not the one being deleted)
+- Confirmation that the user wants this method removed
+
+## Deletion Restrictions and Rules
+
+<Steps>
+<Step title="PIN Protection">
+The PIN signing method cannot be deleted and must always remain as the primary authentication method.
+</Step>
+
+<Step title="Authentication Required">
+You must authenticate using a different signing method than the one being deleted.
+</Step>
+
+<Step title="Method Verification">
+Confirm the signing method ID belongs to the specified user before deletion.
+</Step>
+
+<Step title="Immediate Effect">
+Deletion is immediate and cannot be undone through the API.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+DELETE /api/users/{userId}/signing-methods/{signingMethodId}
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using a different signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The signing method used for authentication must be different from the one being deleted. You cannot use a signing method to delete itself.
+</Warning>
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Path | The unique ID of the user | ✅ | `"5f23aff6-6786-4160-b5cb-8f65c79eec17"` |
+| `signingMethodId` | Path | The ID of the signing method to delete | ✅ | `"43f93a7c-1d24-429a-876e-791eccbd5214"` |
+
+## Code Examples
+
+### Example 1: Delete Emergency Code
+
+Remove an emergency code signing method using PIN authentication.
+
+<CodeGroup>
+
+```http Delete Emergency Code
+DELETE /api/users/5f23aff6-6786-4160-b5cb-8f65c79eec17/signing-methods/43f93a7c-1d24-429a-876e-791eccbd5214
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+```
+
+```http Delete Another Emergency Code
+DELETE /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4/signing-methods/f3371883-2024-469b-a122-ca22f58ba6b9
+Signing-Method: 3355c892-31af-4260-87a3-a68175bcfea5:789012
+```
+
+</CodeGroup>
+
+### Example 2: Delete Biometric Methods
+
+Remove biometric authentication methods from user accounts.
+
+<CodeGroup>
+
+```http Delete Biometric Method
+DELETE /api/users/9b4414c7-d033-4cba-9635-a535d31d7030/signing-methods/7f9e8d3c-2b1a-4e5f-9c8d-1a2b3c4d5e6f
+Signing-Method: 3355c892-31af-4260-87a3-a68175bcfea5:456789
+```
+
+```http Delete Old Device Biometric
+DELETE /api/users/07cc0aa5-0f98-4a4e-9c55-686124e0f0e4/signing-methods/8a1b2c3d-4e5f-6789-abcd-ef0123456789
+Signing-Method: 2244d781-20af-3150-76a2-a57064bceda4:654321
+```
+
+</CodeGroup>
+
+### Example 3: Delete Password Methods
+
+Remove password-based authentication methods.
+
+<CodeGroup>
+
+```http Delete Password Method
+DELETE /api/users/c7d70857-61a2-4466-86bd-0f7eb70b7497/signing-methods/9f8e7d6c-5b4a-3928-1706-fedcba987654
+Signing-Method: 1133e670-09de-2039-65b1-a46053abcde3:987654
+```
+
+```http Delete Backup Password
+DELETE /api/users/b186fe02-14ab-449b-8618-bce1d7e1537a/signing-methods/a1b2c3d4-e5f6-7890-abcd-ef1234567890
+Signing-Method: 4466f892-31bf-4370-98c4-b79286cfedb6:135792
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Deletion Success Response
+{
+  "success": true
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `success` | Boolean indicating successful deletion |
+
+<Tip>
+A successful response confirms that the signing method has been permanently removed from the user's account.
+</Tip>
+
+## Deletable Signing Method Types
+
+<Accordion title="Which Methods Can Be Deleted">
+
+**✅ Deletable Methods:**
+- **EMERGENCY_CODE**: Backup recovery codes
+- **BIOMETRIC**: Fingerprint, Face ID, and other biometric authentication
+- **PASSWORD**: Text-based password authentication
+
+**❌ Non-Deletable Methods:**
+- **PIN**: Primary authentication method (cannot be deleted)
+
+**Deletion Requirements:**
+- User must have a PIN signing method
+- Must authenticate with a different signing method
+- Cannot delete the last remaining signing method
+- Cannot delete the method being used for authentication
+
+**Use Cases for Deletion:**
+- **Device Changes**: Remove biometric methods from old devices
+- **Security Incidents**: Remove potentially compromised methods
+- **Simplification**: Reduce authentication complexity
+- **Policy Changes**: Align with new security policies
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Cannot Delete PIN**
+```json
+{
+  "success": false,
+  "errorCode": "PIN_CANNOT_BE_DELETED",
+  "message": "PIN signing methods cannot be deleted"
+}
+```
+
+**Signing Method Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "SIGNING_METHOD_NOT_FOUND",
+  "message": "The specified signing method does not exist"
+}
+```
+
+**User Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Authentication Failed**
+```json
+{
+  "success": false,
+  "errorCode": "AUTHENTICATION_FAILED",
+  "message": "Invalid signing method credentials for authentication"
+}
+```
+
+**Cannot Delete Self**
+```json
+{
+  "success": false,
+  "errorCode": "CANNOT_DELETE_SELF",
+  "message": "Cannot delete the signing method being used for authentication"
+}
+```
+
+**Last Method Protection**
+```json
+{
+  "success": false,
+  "errorCode": "CANNOT_DELETE_LAST_METHOD",
+  "message": "Cannot delete the last remaining signing method"
+}
+```
+
+</Accordion>
+
+## Security Considerations
+
+<Warning>
+**Security Best Practices:**
+
+1. **Verify Intent**: Always confirm the user wants the method deleted
+2. **Use Different Authentication**: Never use the method being deleted for authentication
+3. **Document Deletions**: Log all signing method deletions for audit purposes
+4. **Immediate Effect**: Understand that deletion is immediate and irreversible
+5. **Backup Methods**: Ensure users have alternative authentication methods
+6. **Monitor Usage**: Track which methods are being deleted and why
+</Warning>
+
+## Pre-Deletion Checklist
+
+Before deleting a signing method, consider:
+
+### Verification Steps
+1. **Confirm User Intent**: Verify the user actually wants this method removed
+2. **Check Dependencies**: Ensure no critical processes depend on this method
+3. **Alternative Access**: Confirm user has other ways to authenticate
+4. **Document Reason**: Record why the method is being deleted
+
+### Security Assessment
+1. **Compromise Check**: Is this deletion due to a security incident?
+2. **Access Impact**: How will this affect the user's access patterns?
+3. **Recovery Options**: Does the user have sufficient recovery methods?
+4. **Notification**: Should the user be notified of the deletion?
+
+## Integration Examples
+
+### Secure Deletion Workflow
+
+```javascript
+async function deleteSigningMethod(userId, signingMethodIdToDelete, authSigningMethodId, authSigningMethodValue) {
+  try {
+    // Step 1: Verify the signing method exists and belongs to the user
+    const userInfo = await fetch(`/api/users/${userId}`);
+    const userData = await userInfo.json();
+    
+    if (!userData.success) {
+      throw new Error('User not found');
+    }
+    
+    const methodToDelete = userData.result.signingMethods.find(
+      method => method.id === signingMethodIdToDelete
+    );
+    
+    if (!methodToDelete) {
+      throw new Error('Signing method not found for this user');
+    }
+    
+    // Step 2: Check if it's a PIN (cannot be deleted)
+    if (methodToDelete.type === 'PIN') {
+      throw new Error('PIN signing methods cannot be deleted');
+    }
+    
+    // Step 3: Ensure we're not deleting the method used for authentication
+    if (signingMethodIdToDelete === authSigningMethodId) {
+      throw new Error('Cannot delete the signing method being used for authentication');
+    }
+    
+    // Step 4: Perform the deletion
+    const response = await fetch(
+      `/api/users/${userId}/signing-methods/${signingMethodIdToDelete}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Signing-Method': `${authSigningMethodId}:${authSigningMethodValue}`
+        }
+      }
+    );
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log(`Signing method ${signingMethodIdToDelete} deleted successfully`);
+      return result;
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('Signing method deletion failed:', error);
+    throw error;
+  }
+}
+```
+
+### Batch Cleanup Function
+
+```javascript
+async function cleanupUnusedSigningMethods(userId, authMethod) {
+  try {
+    // Get user's current signing methods
+    const userResponse = await fetch(`/api/users/${userId}`);
+    const userData = await userResponse.json();
+    
+    if (!userData.success) {
+      throw new Error('Failed to fetch user data');
+    }
+    
+    const signingMethods = userData.result.signingMethods;
+    const results = [];
+    
+    // Find methods that haven't been used in 90+ days
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    
+    for (const method of signingMethods) {
+      // Skip PIN methods (cannot be deleted)
+      if (method.type === 'PIN') continue;
+      
+      // Skip the method being used for authentication
+      if (method.id === authMethod.id) continue;
+      
+      // Check if method hasn't been used recently
+      const lastUsed = method.lastUsedSuccess ? new Date(method.lastUsedSuccess) : null;
+      
+      if (!lastUsed || lastUsed < ninetyDaysAgo) {
+        try {
+          await deleteSigningMethod(userId, method.id, authMethod.id, authMethod.value);
+          results.push({
+            methodId: method.id,
+            type: method.type,
+            deleted: true,
+            reason: 'Unused for 90+ days'
+          });
+        } catch (error) {
+          results.push({
+            methodId: method.id,
+            type: method.type,
+            deleted: false,
+            error: error.message
+          });
+        }
+      }
+    }
+    
+    return results;
+  } catch (error) {
+    console.error('Cleanup failed:', error);
+    throw error;
+  }
+}
+```
+
+## Best Practices
+
+1. **Always verify user intent** before deleting signing methods
+2. **Use proper authentication** with a different signing method
+3. **Document all deletions** for security and compliance
+4. **Implement confirmation flows** in your user interface
+5. **Monitor deletion patterns** for unusual activity
+6. **Provide clear feedback** to users about the deletion
+7. **Consider temporary disabling** before permanent deletion
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Create Signing Methods" icon="key" href="/Wallet-API-Basic-Guides/create-users-signing-method">
+  Add new authentication methods for users
+</Card>
+<Card title="Update Signing Methods" icon="pen" href="/Wallet-API-Basic-Guides/update-users-signing-method">
+  Modify existing authentication methods
+</Card>
+<Card title="Retrieve User Info" icon="user" href="/Wallet-API-Basic-Guides/retrieve-a-user">
+  View all signing methods for a user
+</Card>
+<Card title="User Management" icon="users" href="/Wallet-API-Basic-Guides/create-a-user">
+  Learn about comprehensive user management
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Signing Methods](https://docs.venly.io/docs/signing-methods)
+- Understand [Authentication Security](https://docs.venly.io/docs/authentication-security)
+- View [User Management](https://docs.venly.io/docs/user-management)
+- Complete [API Reference](https://docs.venly.io/reference/deletesigningmethod)
+</Note>

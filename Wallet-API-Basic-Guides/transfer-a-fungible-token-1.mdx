@@ -1,0 +1,441 @@
+---
+title: "Transfer Fungible Tokens"
+description: "Learn how to transfer fungible tokens (ERC-1155) between wallets with proper authentication and error handling."
+icon: "arrow-right-arrow-left"
+---
+
+<Info>
+Fungible token transfers allow you to send ERC-1155 tokens that can have multiple copies, such as in-game currencies, utility tokens, or semi-fungible assets.
+</Info>
+
+## Overview
+
+Fungible token transfers are essential for:
+- **Gaming economies**: Transferring in-game currencies and resources
+- **Utility tokens**: Moving platform tokens between users
+- **Reward systems**: Distributing fungible rewards and points
+- **Multi-token contracts**: Managing tokens within ERC-1155 collections
+
+<Tip>
+ERC-1155 tokens can be both fungible (multiple copies) and non-fungible (unique items) within the same contract. Use this endpoint for transferring fungible tokens with quantities greater than 1.
+</Tip>
+
+## Prerequisites
+
+Before transferring fungible tokens, ensure you have:
+- A wallet containing the fungible tokens you want to transfer
+- The recipient's wallet address or email
+- Sufficient native tokens for gas fees
+- The wallet owner's signing method credentials for authentication
+
+## Token Transfer Process
+
+<Steps>
+<Step title="Verify Token Balance">
+Check that the sender wallet has sufficient tokens to transfer.
+</Step>
+
+<Step title="Prepare Transfer Details">
+Gather the token contract address, token ID, and transfer amount.
+</Step>
+
+<Step title="Set Recipient Address">
+Specify the destination wallet address or email address.
+</Step>
+
+<Step title="Execute Transfer">
+Submit the transaction with proper authentication and monitor for confirmation.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/execute
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `transactionRequest` | Body | Container for all transaction details | ✅ | See examples below |
+| `transactionRequest.type` | Body | Must be `"NFT_TRANSFER"` | ✅ | `"NFT_TRANSFER"` |
+| `transactionRequest.walletId` | Body | ID of the wallet sending the tokens | ✅ | `"c4c97f87-8e00-4f3a-8647-2f24ac9b73cb"` |
+| `transactionRequest.to` | Body | Recipient wallet address or email | ✅ | `"0x2D24b9DE4F963d1Cfac1a65b6F1a85945d3e92F5"` |
+| `transactionRequest.secretType` | Body | Blockchain network | ✅ | `"MATIC"` |
+| `transactionRequest.tokenAddress` | Body | Contract address of the token | ✅ | `"0xd687ed37ed8ed56ab91387755432a3c8f197455d"` |
+| `transactionRequest.tokenId` | Body | ID of the specific token within the contract | ✅ | `34` |
+| `transactionRequest.value` | Body | Number of tokens to transfer | ✅ | `2` |
+
+<Warning>
+The deprecated `pincode` parameter should not be used. Always use the `Signing-Method` header for authentication.
+</Warning>
+
+## Code Examples
+
+### Example 1: Basic Fungible Token Transfer
+
+Transfer multiple copies of a fungible token between wallets.
+
+<CodeGroup>
+
+```json Gaming Currency Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+    "to": "0x2D24b9DE4F963d1Cfac1a65b6F1a85945d3e92F5",
+    "value": 100,
+    "secretType": "MATIC",
+    "tokenAddress": "0xd687ed37ed8ed56ab91387755432a3c8f197455d",
+    "tokenId": 1
+  }
+}
+```
+
+```json Utility Token Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "a186ee03-15bc-550c-9729-cdf2d8f2648a",
+    "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+    "value": 50,
+    "secretType": "ETHEREUM",
+    "tokenAddress": "0x86b16217e6df213aa9de167a11b009c4740a8c8c",
+    "tokenId": 5
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 2: Cross-Chain Transfers
+
+Transfer fungible tokens on different blockchain networks.
+
+<CodeGroup>
+
+```json Polygon Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "b297ff04-26cd-661d-0840-def3e9f3759b",
+    "to": "0x8ba1f109551bD432803012645Hac136c22C501e",
+    "value": 25,
+    "secretType": "MATIC",
+    "tokenAddress": "0x2953399124F0cBB46d2CbACD8A89cF0599974963",
+    "tokenId": 12
+  }
+}
+```
+
+```json BSC Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "355351bd-41ae-41fa-8f36-12675f056759",
+    "to": "0x548372d982F478683FC1fc59b2e3224b4899fFBE",
+    "value": 10,
+    "secretType": "BSC",
+    "tokenAddress": "0x8c53de6a889cf0a3151168c3e84263c982d09a2f",
+    "tokenId": 7
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 3: Email-Based Transfers
+
+Send tokens to recipients using their email addresses.
+
+<CodeGroup>
+
+```json Email Recipient Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "f21dc1e5-4253-487e-8927-3b5247437f99",
+    "to": "recipient@example.com",
+    "value": 15,
+    "secretType": "MATIC",
+    "tokenAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+    "tokenId": 202
+  }
+}
+```
+
+```json Reward Distribution
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f",
+    "to": "player@gameplatform.com",
+    "value": 500,
+    "secretType": "MATIC",
+    "tokenAddress": "0xb48d8c9e8783465a548f562cb83e8b84d0525a96",
+    "tokenId": 3
+  }
+}
+```
+
+</CodeGroup>
+
+### Full Request Example
+
+```http
+POST /api/transactions/execute
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+Content-Type: application/json
+
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+    "to": "0x2D24b9DE4F963d1Cfac1a65b6F1a85945d3e92F5",
+    "value": 2,
+    "secretType": "MATIC",
+    "tokenAddress": "0xd687ed37ed8ed56ab91387755432a3c8f197455d",
+    "tokenId": 34
+  }
+}
+```
+
+## Response Format
+
+### Success Response
+
+```json Transfer Success Response
+{
+  "success": true,
+  "result": {
+    "id": "e0487e86-a1e7-4aaf-b79a-ad31f18d57b7",
+    "transactionHash": "0x79ad8e02249edde79735b35289a394129d4105ce02acaca61f12b15134f28832"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | Internal transaction ID for tracking |
+| `result.transactionHash` | Blockchain transaction hash |
+
+<Tip>
+Save both the internal ID and transaction hash for comprehensive transaction tracking and status monitoring.
+</Tip>
+
+## Token Standards and Types
+
+<Accordion title="Understanding ERC-1155 Tokens">
+
+**Fungible vs Non-Fungible:**
+- **Fungible tokens**: Multiple identical copies can exist (value > 1)
+- **Non-fungible tokens**: Unique items with only one copy (value = 1)
+- **Semi-fungible**: Can start as fungible and become non-fungible
+
+**Common Use Cases:**
+- **Gaming**: In-game currencies, resources, consumables
+- **Collectibles**: Trading cards with multiple editions
+- **Utilities**: Platform tokens, access passes, vouchers
+- **Rewards**: Points, badges, achievement tokens
+
+**Token ID Structure:**
+- Each token type has a unique ID within the contract
+- Multiple copies of the same token ID can exist
+- Balance represents how many copies a wallet owns
+
+**Contract Examples:**
+- Gaming platforms: Different token IDs for gold, gems, potions
+- Trading cards: Token IDs for different card types
+- Event tickets: Token IDs for different seating categories
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Insufficient Token Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_BALANCE",
+  "message": "Wallet does not have enough tokens to complete the transfer"
+}
+```
+
+**Invalid Token Contract**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_CONTRACT",
+  "message": "Token contract address is invalid or does not exist"
+}
+```
+
+**Token Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "TOKEN_NOT_FOUND",
+  "message": "Token ID does not exist in the specified contract"
+}
+```
+
+**Invalid Recipient**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_RECIPIENT",
+  "message": "Recipient address is invalid or malformed"
+}
+```
+
+**Transfer Not Allowed**
+```json
+{
+  "success": false,
+  "errorCode": "TRANSFER_NOT_ALLOWED",
+  "message": "Token transfers are not permitted by the contract"
+}
+```
+
+**Insufficient Gas**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_GAS",
+  "message": "Wallet does not have enough native tokens for gas fees"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+<Warning>
+**Transfer Guidelines:**
+
+1. **Verify Balances**: Always check token balance before attempting transfers
+2. **Validate Recipients**: Ensure recipient addresses are correct and valid
+3. **Test Transfers**: Use small amounts for initial testing
+4. **Monitor Gas Fees**: Check network conditions for optimal transaction timing
+5. **Handle Errors**: Implement proper error handling for failed transfers
+6. **Track Transactions**: Monitor transaction status after submission
+</Warning>
+
+## Integration Examples
+
+### Gaming Platform Integration
+
+```javascript
+async function transferGameCurrency(fromWalletId, toAddress, currencyTokenId, amount) {
+  // First check if wallet has sufficient balance
+  const balance = await checkTokenBalance(fromWalletId, currencyTokenId);
+  
+  if (balance < amount) {
+    throw new Error('Insufficient currency balance');
+  }
+  
+  const transferData = {
+    transactionRequest: {
+      type: 'NFT_TRANSFER',
+      walletId: fromWalletId,
+      to: toAddress,
+      value: amount,
+      secretType: 'MATIC',
+      tokenAddress: process.env.GAME_TOKEN_CONTRACT,
+      tokenId: currencyTokenId
+    }
+  };
+  
+  const response = await fetch('/api/transactions/execute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Signing-Method': `${signingMethodId}:${signingMethodValue}`
+    },
+    body: JSON.stringify(transferData)
+  });
+  
+  const result = await response.json();
+  
+  if (result.success) {
+    console.log(`Transfer initiated: ${result.result.transactionHash}`);
+    return result.result;
+  } else {
+    throw new Error(`Transfer failed: ${result.message}`);
+  }
+}
+```
+
+### Batch Transfer System
+
+```javascript
+async function batchTransferTokens(transfers) {
+  const results = [];
+  
+  for (const transfer of transfers) {
+    try {
+      const result = await transferFungibleToken(
+        transfer.walletId,
+        transfer.recipient,
+        transfer.tokenId,
+        transfer.amount
+      );
+      
+      results.push({
+        recipient: transfer.recipient,
+        success: true,
+        transactionHash: result.transactionHash
+      });
+    } catch (error) {
+      results.push({
+        recipient: transfer.recipient,
+        success: false,
+        error: error.message
+      });
+    }
+    
+    // Add delay between transfers to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  
+  return results;
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transfer NFTs" icon="image" href="/Wallet-API-Basic-Guides/transfer-a-non-fungible-token-1">
+  Learn how to transfer unique non-fungible tokens
+</Card>
+<Card title="Monitor Transaction" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track the status of your token transfer
+</Card>
+<Card title="Check Token Balance" icon="coins" href="/Wallet-API-Basic-Guides/retrieve-erc20-token-balance">
+  Verify token balances before transfers
+</Card>
+<Card title="Retrieve NFTs" icon="grid-2" href="/Wallet-API-Basic-Guides/retrieve-non-fungible-tokens-1">
+  View all tokens in a wallet
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [ERC-1155 Standard](https://docs.venly.io/docs/erc1155-tokens)
+- Understand [Token Standards](https://docs.venly.io/docs/token-standards)
+- View [Gas Optimization](https://docs.venly.io/docs/gas-optimization)
+- Complete [API Reference](https://docs.venly.io/reference/executetransaction_1)
+</Note>

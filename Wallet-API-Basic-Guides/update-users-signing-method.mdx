@@ -1,0 +1,497 @@
+---
+title: "Update User Signing Methods"
+description: "Learn how to update and modify existing authentication methods for enhanced security and user management."
+icon: "key"
+---
+
+<Info>
+Updating signing methods allows you to modify existing authentication credentials, reset compromised methods, or enhance security by changing PIN codes and emergency codes.
+</Info>
+
+## Overview
+
+Updating signing methods is essential for:
+- **Security maintenance**: Changing compromised or weak authentication credentials
+- **Password rotation**: Implementing regular security updates for PIN codes
+- **Emergency recovery**: Regenerating emergency codes when needed
+- **User preferences**: Allowing users to customize their authentication methods
+
+<Tip>
+You can update PIN codes, emergency codes, and password methods. Biometric methods typically don't require updates as they're tied to physical characteristics.
+</Tip>
+
+## Prerequisites
+
+Before updating a signing method, ensure you have:
+- A valid user ID for the account
+- The signing method ID you want to update
+- Authentication using any valid signing method for the user
+- The new value for the signing method (if applicable)
+
+## Updatable Signing Method Types
+
+<Steps>
+<Step title="PIN Updates">
+Change 6-digit PIN codes for enhanced security or user preference.
+</Step>
+
+<Step title="Emergency Code Updates">
+Regenerate 25-character emergency codes for account recovery.
+</Step>
+
+<Step title="Password Updates">
+Modify text-based password authentication methods.
+</Step>
+
+<Step title="Automatic Generation">
+Leave value empty for emergency codes to auto-generate secure codes.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+PUT /api/users/{userId}/signing-methods/{signingMethodId}
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using any valid signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Path | The unique ID of the user | ✅ | `"5f23aff6-6786-4160-b5cb-8f65c79eec17"` |
+| `signingMethodId` | Path | The ID of the signing method to update | ✅ | `"f3371883-2024-469b-a122-ca22f58ba6b9"` |
+| `value` | Body | The new value for the signing method | ❌ | `"987654"` |
+
+<Warning>
+For PIN methods, the value must be exactly 6 digits. For emergency codes, use 25 characters or leave empty for auto-generation.
+</Warning>
+
+## Code Examples
+
+### Example 1: Update PIN Codes
+
+Change PIN authentication methods with new 6-digit codes.
+
+<CodeGroup>
+
+```json Update PIN to New Code
+{
+  "value": "987654"
+}
+```
+
+```json Update PIN with Strong Code
+{
+  "value": "428391"
+}
+```
+
+```json Update PIN for Security
+{
+  "value": "751639"
+}
+```
+
+</CodeGroup>
+
+### Example 2: Update Emergency Codes
+
+Regenerate emergency codes for account recovery.
+
+<CodeGroup>
+
+```json Auto-Generate Emergency Code
+{
+  "value": ""
+}
+```
+
+```json Custom Emergency Code
+{
+  "value": "ABCD-EFGH-IJKL-MNOP-QRSTU"
+}
+```
+
+```json Replace Emergency Code
+{
+  "value": "XYZA-BCDE-FGHI-JKLM-NOPQR"
+}
+```
+
+</CodeGroup>
+
+### Example 3: Update Password Methods
+
+Modify password-based authentication methods.
+
+<CodeGroup>
+
+```json Update Password
+{
+  "value": "NewSecurePassword123!"
+}
+```
+
+```json Change Password
+{
+  "value": "MyUpdatedPassword456@"
+}
+```
+
+```json Reset Password
+{
+  "value": "FreshPassword789#"
+}
+```
+
+</CodeGroup>
+
+### Full Request Examples
+
+<CodeGroup>
+
+```http Update PIN Method
+PUT /api/users/5f23aff6-6786-4160-b5cb-8f65c79eec17/signing-methods/f3371883-2024-469b-a122-ca22f58ba6b9
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+Content-Type: application/json
+
+{
+  "value": "987654"
+}
+```
+
+```http Auto-Generate Emergency Code
+PUT /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4/signing-methods/38ee7ad2-043d-4c38-9b5b-b962d23e7c8e
+Signing-Method: 3355c892-31af-4260-87a3-a68175bcfea5:789012
+Content-Type: application/json
+
+{
+  "value": ""
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Update Success Response
+{
+  "success": true,
+  "result": {
+    "id": "f3371883-2024-469b-a122-ca22f58ba6b9",
+    "type": "PIN",
+    "incorrectAttempts": 0,
+    "remainingAttempts": 10,
+    "lastUsedSuccess": "2023-12-06T12:45:32.018063",
+    "hasMasterSecret": true
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | The unique signing method identifier |
+| `result.type` | Type of signing method updated |
+| `result.incorrectAttempts` | Current failed attempt count (reset to 0) |
+| `result.remainingAttempts` | Available attempts before lockout |
+| `result.lastUsedSuccess` | Timestamp of last successful use |
+| `result.hasMasterSecret` | Whether method has master secret access |
+
+<Tip>
+After updating a signing method, the incorrect attempts counter is reset to 0, giving the user a fresh start with the new credentials.
+</Tip>
+
+## Signing Method Update Rules
+
+<Accordion title="Update Requirements and Restrictions">
+
+**PIN Updates:**
+- Must be exactly 6 digits
+- Cannot contain letters or special characters
+- Should avoid predictable patterns (123456, 000000)
+- Immediately replaces the old PIN
+
+**Emergency Code Updates:**
+- Can be 25 characters (custom) or auto-generated (recommended)
+- Auto-generation provides cryptographically secure codes
+- Custom codes should have high entropy
+- Used for account recovery when PIN is lost
+
+**Password Updates:**
+- Can be any length and complexity
+- Should follow strong password guidelines
+- Immediately replaces the old password
+- Consider implementing password strength validation
+
+**Biometric Updates:**
+- Biometric methods typically don't need value updates
+- Physical device ID changes would require deletion and recreation
+- Biometric data is stored on the device, not in the API
+
+**General Rules:**
+- Updates are immediate and irreversible
+- Old values become invalid immediately
+- Authentication attempts counter resets to 0
+- User must use new value for future authentication
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Invalid PIN Format**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PIN_FORMAT",
+  "message": "PIN must be exactly 6 digits"
+}
+```
+
+**Signing Method Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "SIGNING_METHOD_NOT_FOUND",
+  "message": "The specified signing method does not exist"
+}
+```
+
+**User Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Authentication Failed**
+```json
+{
+  "success": false,
+  "errorCode": "AUTHENTICATION_FAILED",
+  "message": "Invalid signing method credentials for authentication"
+}
+```
+
+**Invalid Emergency Code**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_EMERGENCY_CODE",
+  "message": "Emergency code must be exactly 25 characters or empty for auto-generation"
+}
+```
+
+**Method Type Not Updatable**
+```json
+{
+  "success": false,
+  "errorCode": "METHOD_NOT_UPDATABLE",
+  "message": "This type of signing method cannot be updated"
+}
+```
+
+</Accordion>
+
+## Security Best Practices
+
+<Warning>
+**Security Guidelines:**
+
+1. **Strong Credentials**: Use random, unpredictable values for PINs and passwords
+2. **Regular Updates**: Implement periodic credential rotation policies
+3. **Secure Communication**: Always use HTTPS for update requests
+4. **Audit Logging**: Log all signing method updates for security monitoring
+5. **User Verification**: Confirm user identity before allowing updates
+6. **Emergency Codes**: Prefer auto-generated emergency codes for better security
+</Warning>
+
+## Integration Examples
+
+### Secure PIN Update Workflow
+
+```javascript
+async function updateUserPIN(userId, signingMethodId, newPIN, authSigningMethodId, authSigningMethodValue) {
+  try {
+    // Validate PIN format
+    if (!/^\d{6}$/.test(newPIN)) {
+      throw new Error('PIN must be exactly 6 digits');
+    }
+    
+    // Check for weak PINs
+    const weakPINs = ['123456', '000000', '111111', '654321', '123123'];
+    if (weakPINs.includes(newPIN)) {
+      throw new Error('PIN is too weak. Please choose a more secure combination');
+    }
+    
+    const response = await fetch(
+      `/api/users/${userId}/signing-methods/${signingMethodId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Signing-Method': `${authSigningMethodId}:${authSigningMethodValue}`
+        },
+        body: JSON.stringify({ value: newPIN })
+      }
+    );
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log(`PIN updated successfully for user ${userId}`);
+      return result;
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('PIN update failed:', error);
+    throw error;
+  }
+}
+```
+
+### Emergency Code Regeneration
+
+```javascript
+async function regenerateEmergencyCode(userId, emergencyCodeMethodId, authMethod) {
+  try {
+    const response = await fetch(
+      `/api/users/${userId}/signing-methods/${emergencyCodeMethodId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Signing-Method': `${authMethod.id}:${authMethod.value}`
+        },
+        body: JSON.stringify({ value: "" }) // Empty for auto-generation
+      }
+    );
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log('Emergency code regenerated successfully');
+      // Note: The actual emergency code is not returned in the response for security
+      return result;
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('Emergency code regeneration failed:', error);
+    throw error;
+  }
+}
+```
+
+### Batch Signing Method Updates
+
+```javascript
+async function updateMultipleSigningMethods(userId, updates, authMethod) {
+  const results = [];
+  
+  for (const update of updates) {
+    try {
+      const response = await fetch(
+        `/api/users/${userId}/signing-methods/${update.signingMethodId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Signing-Method': `${authMethod.id}:${authMethod.value}`
+          },
+          body: JSON.stringify({ value: update.newValue })
+        }
+      );
+      
+      const result = await response.json();
+      
+      results.push({
+        signingMethodId: update.signingMethodId,
+        type: update.type,
+        success: result.success,
+        error: result.success ? null : result.message
+      });
+    } catch (error) {
+      results.push({
+        signingMethodId: update.signingMethodId,
+        type: update.type,
+        success: false,
+        error: error.message
+      });
+    }
+    
+    // Add delay between updates to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+  
+  return results;
+}
+```
+
+## Use Cases and Scenarios
+
+### Security Incident Response
+- **Compromised PIN**: Immediately update to a new, secure PIN
+- **Lost Device**: Regenerate biometric-related emergency codes
+- **Suspected Breach**: Update all authentication methods as precaution
+
+### Regular Maintenance
+- **Scheduled Rotation**: Update PINs and passwords on a regular schedule
+- **Policy Compliance**: Ensure methods meet current security standards
+- **User Requests**: Allow users to change their preferred authentication
+
+### Recovery Scenarios
+- **Forgotten PIN**: Use emergency code to authenticate and set new PIN
+- **Emergency Code Used**: Regenerate new emergency code after recovery
+- **Multiple Failed Attempts**: Reset and update after lockout resolution
+
+## Best Practices
+
+1. **Validate Input**: Always validate new values before sending updates
+2. **Use Strong Values**: Implement strength checking for PINs and passwords
+3. **Auto-Generate When Possible**: Use auto-generation for emergency codes
+4. **Log Updates**: Maintain audit trails for all signing method changes
+5. **User Confirmation**: Require user confirmation for sensitive updates
+6. **Immediate Effect**: Inform users that changes take effect immediately
+7. **Backup Methods**: Ensure users have alternative authentication methods
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Create Signing Methods" icon="key" href="/Wallet-API-Basic-Guides/create-users-signing-method">
+  Add new authentication methods for users
+</Card>
+<Card title="Delete Signing Methods" icon="key-skeleton" href="/Wallet-API-Basic-Guides/delete-users-signing-method">
+  Remove unwanted authentication methods
+</Card>
+<Card title="Retrieve User Info" icon="user" href="/Wallet-API-Basic-Guides/retrieve-a-user">
+  View all signing methods for a user
+</Card>
+<Card title="User Management" icon="users" href="/Wallet-API-Basic-Guides/create-a-user">
+  Learn about comprehensive user management
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Signing Methods](https://docs.venly.io/docs/signing-methods)
+- Understand [Authentication Security](https://docs.venly.io/docs/authentication-security)
+- View [Password Security](https://docs.venly.io/docs/password-security)
+- Complete [API Reference](https://docs.venly.io/reference/updatesigningmethod)
+</Note>

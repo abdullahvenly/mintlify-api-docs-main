@@ -1,0 +1,319 @@
+---
+title: "Digital Signatures"
+description: "Learn how to sign messages and structured data using your wallet for authentication and verification."
+icon: "signature"
+---
+
+<Info>
+Digital signatures allow you to cryptographically prove ownership of a wallet and authenticate messages without revealing your private key.
+</Info>
+
+## Overview
+
+Wallet signatures are essential for:
+- **Authentication**: Proving you own a wallet address
+- **Message verification**: Confirming message integrity
+- **dApp interactions**: Authorizing off-chain actions
+- **Smart contract interactions**: Providing structured data signatures
+
+<Tip>
+Signatures are performed off-chain and don't require gas fees, making them perfect for authentication and verification use cases.
+</Tip>
+
+## Prerequisites
+
+Before creating signatures, ensure you have:
+- A wallet with signing capabilities
+- The wallet owner's signing method credentials
+- The message or data structure you want to sign
+- Understanding of the signature type needed (simple message vs. EIP-712)
+
+## Signature Types
+
+<Steps>
+<Step title="Simple Message Signatures">
+Sign arbitrary text messages for basic authentication and verification purposes.
+</Step>
+
+<Step title="EIP-712 Structured Data">
+Sign typed, structured data following the Ethereum standard for improved security and user experience.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/signatures
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The signing method must belong to the user who owns the wallet. Unauthorized signature attempts will be rejected.
+</Warning>
+
+## 1. Simple Message Signatures
+
+Perfect for basic authentication and message verification.
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `signatureRequest` | Object | Container for signature details | ✅ | See below |
+| `signatureRequest.type` | String | Must be `"MESSAGE"` for text signatures | ✅ | `"MESSAGE"` |
+| `signatureRequest.secretType` | String | Blockchain network for the signature | ✅ | `"ETHEREUM"` |
+| `signatureRequest.walletId` | String | ID of the wallet to sign with | ✅ | `"1def2753-a428-4fd2-9993-fc06917897c6"` |
+| `signatureRequest.data` | String | The message text to sign | ✅ | `"Welcome to MyApp! Please sign to authenticate."` |
+
+### Code Examples
+
+<CodeGroup>
+
+```json Authentication Message
+{
+  "signatureRequest": {
+    "type": "MESSAGE",
+    "secretType": "ETHEREUM",
+    "walletId": "1def2753-a428-4fd2-9993-fc06917897c6",
+    "data": "Welcome to MyApp! Please sign this message to authenticate your wallet. Nonce: 12345"
+  }
+}
+```
+
+```json Terms Agreement
+{
+  "signatureRequest": {
+    "type": "MESSAGE",
+    "secretType": "MATIC",
+    "walletId": "2abc4567-b539-5fe3-a004-gd07928908d7",
+    "data": "I agree to the Terms of Service and Privacy Policy. Timestamp: 2024-06-12T14:30:00Z"
+  }
+}
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Message Signature Response
+{
+  "success": true,
+  "result": {
+    "type": "HEX_SIGNATURE",
+    "r": "0xb91467e570a6466aa9e9876cbcd013baba02900b8979d43fe208a4a4f339f5fd",
+    "s": "0x6007e74cd82e037b800186422fc2da167c747ef045e5d18a5f5d4300f8e1a029",
+    "v": "0x1c",
+    "signature": "0xb91467e570a6466aa9e9876cbcd013baba02900b8979d43fe208a4a4f339f5fd6007e74cd82e037b800186422fc2da167c747ef045e5d18a5f5d4300f8e1a0291c"
+  }
+}
+```
+
+## 2. EIP-712 Structured Data Signatures
+
+<Info>
+EIP-712 provides a standard for signing typed, structured data that's more secure and user-friendly than simple message signatures.
+</Info>
+
+### When to Use EIP-712
+
+- **Smart contract interactions**: Authorizing contract calls
+- **Trading platforms**: Signing order data
+- **Gaming applications**: Authorizing in-game actions
+- **DeFi protocols**: Permit transactions and approvals
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `signatureRequest` | Object | Container for signature details | ✅ | See below |
+| `signatureRequest.type` | String | Must be `"EIP712"` for structured data | ✅ | `"EIP712"` |
+| `signatureRequest.secretType` | String | Blockchain network for the signature | ✅ | `"ETHEREUM"` |
+| `signatureRequest.walletId` | String | ID of the wallet to sign with | ✅ | `"d6c73e54-dce3-4ec4-974f-93942e177d5b"` |
+| `signatureRequest.data` | Object | EIP-712 structured data object | ✅ | See examples below |
+
+### Code Examples
+
+<CodeGroup>
+
+```json Simple Permit Signature
+{
+  "signatureRequest": {
+    "type": "EIP712",
+    "secretType": "ETHEREUM",
+    "walletId": "d6c73e54-dce3-4ec4-974f-93942e177d5b",
+    "data": {
+      "types": {
+        "EIP712Domain": [
+          {"name": "name", "type": "string"},
+          {"name": "version", "type": "string"},
+          {"name": "chainId", "type": "uint256"},
+          {"name": "verifyingContract", "type": "address"}
+        ],
+        "Permit": [
+          {"name": "owner", "type": "address"},
+          {"name": "spender", "type": "address"},
+          {"name": "value", "type": "uint256"},
+          {"name": "nonce", "type": "uint256"},
+          {"name": "deadline", "type": "uint256"}
+        ]
+      },
+      "domain": {
+        "name": "MyToken",
+        "version": "1",
+        "chainId": 1,
+        "verifyingContract": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9"
+      },
+      "primaryType": "Permit",
+      "message": {
+        "owner": "0x8ba1f109551bD432803012645Hac136c22C501e",
+        "spender": "0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed",
+        "value": 1000000000000000000,
+        "nonce": 0,
+        "deadline": 1735689600
+      }
+    }
+  }
+}
+```
+
+```json Trading Order Signature
+{
+  "signatureRequest": {
+    "type": "EIP712",
+    "secretType": "ETHEREUM",
+    "walletId": "d6c73e54-dce3-4ec4-974f-93942e177d5b",
+    "data": {
+      "types": {
+        "EIP712Domain": [
+          {"name": "name", "type": "string"},
+          {"name": "version", "type": "string"},
+          {"name": "chainId", "type": "uint256"},
+          {"name": "verifyingContract", "type": "address"}
+        ],
+        "Order": [
+          {"name": "trader", "type": "address"},
+          {"name": "tokenA", "type": "address"},
+          {"name": "tokenB", "type": "address"},
+          {"name": "amountA", "type": "uint256"},
+          {"name": "amountB", "type": "uint256"},
+          {"name": "deadline", "type": "uint256"}
+        ]
+      },
+      "domain": {
+        "name": "DEX Protocol",
+        "version": "1",
+        "chainId": 1,
+        "verifyingContract": "0x1C56346CD2A2Bf3202F771f50d3D14a367B48070"
+      },
+      "primaryType": "Order",
+      "message": {
+        "trader": "0x8ba1f109551bD432803012645Hac136c22C501e",
+        "tokenA": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9",
+        "tokenB": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+        "amountA": 1000000000000000000,
+        "amountB": 1000000000,
+        "deadline": 1735689600
+      }
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json EIP712 Signature Response
+{
+  "success": true,
+  "result": {
+    "type": "HEX_SIGNATURE",
+    "r": "0xc3708e09824e67af571b0c4d2d9a98c4ec5eb2831946674da7db5d6bc1a35635",
+    "s": "0x53174e2c71cdac33b447974f54cddcf63bd2644106edad6ee53665c032f370b1",
+    "v": "0x1b",
+    "signature": "0xc3708e09824e67af571b0c4d2d9a98c4ec5eb2831946674da7db5d6bc1a3563553174e2c71cdac33b447974f54cddcf63bd2644106edad6ee53665c032f370b11b"
+  }
+}
+```
+
+## Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.signature` | Complete signature string (use this for verification) |
+| `result.r` | R component of the ECDSA signature |
+| `result.s` | S component of the ECDSA signature |
+| `result.v` | Recovery ID for the signature |
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Invalid Wallet ID**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Malformed EIP-712 Data**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_EIP712_DATA",
+  "message": "The EIP-712 data structure is invalid or incomplete"
+}
+```
+
+**Unauthorized Signing Method**
+```json
+{
+  "success": false,
+  "errorCode": "UNAUTHORIZED_SIGNING_METHOD",
+  "message": "The signing method does not belong to the wallet owner"
+}
+```
+
+</Accordion>
+
+## Signature Verification
+
+After obtaining a signature, you can verify it:
+
+1. **On-chain verification**: Use smart contracts to verify signatures
+2. **Off-chain verification**: Use libraries like ethers.js or web3.js
+3. **Backend verification**: Implement server-side signature validation
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Verify Signatures" icon="shield-check" href="/Wallet-API-Basic-Guides/verify-signed-signature">
+  Learn how to verify signatures for authentication
+</Card>
+<Card title="Smart Contract Calls" icon="code" href="/Wallet-API-Basic-Guides/execute-contract-call">
+  Execute smart contract functions with signatures
+</Card>
+<Card title="Build Signature Requests" icon="hammer" href="/Wallet-API-Basic-Guides/build-signature-request">
+  Create reusable signature request templates
+</Card>
+<Card title="Prepare Signatures" icon="pen-nib" href="/Wallet-API-Basic-Guides/prepare-signature">
+  Set up signatures for later execution
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [EIP-712 Standard](https://eips.ethereum.org/EIPS/eip-712)
+- Understand [Digital Signatures](https://docs.venly.io/docs/digital-signatures)
+- Complete [API Reference](https://docs.venly.io/reference/signtransaction)
+- Explore [Signature Verification](https://docs.venly.io/docs/signature-verification)
+</Note>

@@ -1,0 +1,454 @@
+---
+title: "Retrieve Non-Fungible Tokens (NFTs)"
+description: "Learn how to fetch NFT collections and individual tokens using multiple query methods including wallet ID, address, and contract details."
+icon: "image"
+---
+
+<Info>
+NFT retrieval allows you to access detailed information about non-fungible tokens including metadata, images, attributes, and ownership details across multiple blockchains.
+</Info>
+
+## Overview
+
+NFT retrieval is essential for:
+- **Portfolio management**: Viewing complete NFT collections across wallets
+- **Marketplace integration**: Displaying NFTs for trading and showcasing
+- **Game development**: Accessing in-game assets and collectibles
+- **Art galleries**: Showcasing digital art collections and exhibitions
+
+<Tip>
+Use filtering options like `includePossibleSpam` and `includeNsfw` to customize the NFT results based on your application's requirements.
+</Tip>
+
+## Prerequisites
+
+To retrieve NFTs, you need:
+- Valid wallet IDs, addresses, or contract information
+- Understanding of NFT standards (ERC-721, ERC-1155)
+- Knowledge of supported blockchain networks
+- No authentication required for basic NFT queries
+
+## NFT Query Methods
+
+<Steps>
+<Step title="By Wallet ID">
+Get all NFTs owned by a specific Venly-managed wallet.
+</Step>
+
+<Step title="By Address and Blockchain">
+Get all NFTs for any wallet address on a specific blockchain.
+</Step>
+
+<Step title="By Blockchain">
+Get all NFTs across all wallets on a specific blockchain.
+</Step>
+
+<Step title="By Contract and Token ID">
+Get detailed information about a specific NFT.
+</Step>
+</Steps>
+
+## Method 1: Get NFTs by Wallet ID
+
+Retrieve all NFTs owned by a specific Venly-managed wallet.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{walletId}/nonfungibles
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet | ✅ | `"da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f"` |
+| `includePossibleSpam` | Query | Include potential spam NFTs | ❌ | `false` |
+| `includeNsfw` | Query | Include NSFW (adult) content | ❌ | `false` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get All NFTs (Clean Results)
+GET /api/wallets/da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f/nonfungibles?includePossibleSpam=false&includeNsfw=false
+```
+
+```http Get All NFTs (Include Everything)
+GET /api/wallets/da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f/nonfungibles
+```
+
+```http Get NFTs with Spam Filter
+GET /api/wallets/f21dc1e5-4253-487e-8927-3b5247437f99/nonfungibles?includePossibleSpam=false
+```
+
+</CodeGroup>
+
+## Method 2: Get NFTs by Address and Blockchain
+
+Retrieve NFTs for any wallet address on a specific blockchain.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{secretType}/{walletAddress}/nonfungibles
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `walletAddress` | Path | The wallet's blockchain address | ✅ | `"0x548372d982F478683FC1fc59b2e3224b4899fFBE"` |
+| `includePossibleSpam` | Query | Include potential spam NFTs | ❌ | `false` |
+| `includeNsfw` | Query | Include NSFW content | ❌ | `false` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get Ethereum NFTs
+GET /api/wallets/ETHEREUM/0x548372d982F478683FC1fc59b2e3224b4899fFBE/nonfungibles
+```
+
+```http Get Polygon NFTs (No Spam)
+GET /api/wallets/MATIC/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9/nonfungibles?includePossibleSpam=false
+```
+
+```http Get BSC NFTs (Family Friendly)
+GET /api/wallets/BSC/0x8ba1f109551bD432803012645Hac136c22C501e/nonfungibles?includeNsfw=false
+```
+
+</CodeGroup>
+
+## Method 3: Get NFTs by Blockchain
+
+Retrieve all NFTs across all accessible wallets on a specific blockchain.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/nonfungibles
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Query | The blockchain network to filter by | ✅ | `"ETHEREUM"` |
+| `includePossibleSpam` | Query | Include potential spam NFTs | ❌ | `false` |
+| `includeNsfw` | Query | Include NSFW content | ❌ | `false` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get All Ethereum NFTs
+GET /api/wallets/nonfungibles?secretType=ETHEREUM
+```
+
+```http Get Polygon NFTs (Clean)
+GET /api/wallets/nonfungibles?secretType=MATIC&includePossibleSpam=false&includeNsfw=false
+```
+
+```http Get Arbitrum NFTs
+GET /api/wallets/nonfungibles?secretType=ARBITRUM
+```
+
+</CodeGroup>
+
+## Method 4: Get Specific NFT by Contract and Token ID
+
+Retrieve detailed information about a specific NFT.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/nonfungibles/{secretType}/{contractAddress}/{tokenId}
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `contractAddress` | Path | The NFT contract address | ✅ | `"0x86b16217e6df213aa9de167a11b009c4740a8c8c"` |
+| `tokenId` | Path | The specific token ID | ✅ | `"36"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get Specific Ethereum NFT
+GET /api/nonfungibles/ETHEREUM/0x86b16217e6df213aa9de167a11b009c4740a8c8c/36
+```
+
+```http Get Polygon NFT
+GET /api/nonfungibles/MATIC/0x2953399124F0cBB46d2CbACD8A89cF0599974963/1234
+```
+
+```http Get BSC NFT
+GET /api/nonfungibles/BSC/0x8ba1f109551bD432803012645Hac136c22C501e/789
+```
+
+</CodeGroup>
+
+## Response Format
+
+### NFT Collection Response
+
+```json NFT Collection Response
+{
+  "success": true,
+  "result": [
+    {
+      "id": "36",
+      "name": "My first NFT",
+      "description": "Venly",
+      "imageUrl": "https://cdn.simplehash.com/assets/bd615a8b9794af04d85d1e8b670efa1d8693c5db44fceb0c08635026d8391c50.png",
+      "imagePreviewUrl": "https://lh3.googleusercontent.com/bmoIbpwC61Fzti43tCrO2I8ylJB67ly7JOwER5U8qxQBUyFfvJdesnQUwdSPULkwEp2uocvcU1XSJGHroy6q74M27WybaGRqx20",
+      "imageThumbnailUrl": "https://lh3.googleusercontent.com/bmoIbpwC61Fzti43tCrO2I8ylJB67ly7JOwER5U8qxQBUyFfvJdesnQUwdSPULkwEp2uocvcU1XSJGHroy6q74M27WybaGRqx20=s250",
+      "animationUrls": [],
+      "fungible": false,
+      "contract": {
+        "name": "Burn NFT Collection",
+        "description": "Sample description",
+        "address": "0x86b16217e6df213aa9de167a11b009c4740a8c8c",
+        "symbol": "BUNFCO",
+        "media": [
+          {
+            "type": "image",
+            "value": "https://lh3.googleusercontent.com/WH-UcOGJ_6bTQJNPHQY3tMU2DieftTDVuomxWT12grRECKimext1PAIgVMqRogtezktTXD75CdU5xdsxo18s671m-iumkLD_VVw"
+          }
+        ],
+        "type": "ERC_1155",
+        "verified": false,
+        "premium": false,
+        "categories": [],
+        "imageUrl": "https://lh3.googleusercontent.com/WH-UcOGJ_6bTQJNPHQY3tMU2DieftTDVuomxWT12grRECKimext1PAIgVMqRogtezktTXD75CdU5xdsxo18s671m-iumkLD_VVw"
+      },
+      "attributes": [
+        {
+          "type": "property",
+          "name": "Token Type ID",
+          "value": "34"
+        }
+      ],
+      "balance": 1,
+      "finalBalance": 1,
+      "transferFees": false
+    }
+  ]
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `id` | Token ID within the contract |
+| `name` | NFT name from metadata |
+| `description` | NFT description from metadata |
+| `imageUrl` | Full-resolution image URL |
+| `imagePreviewUrl` | Medium-resolution preview image |
+| `imageThumbnailUrl` | Small thumbnail image |
+| `animationUrls` | Array of animation/video URLs |
+| `fungible` | Whether token is fungible (always false for NFTs) |
+| `contract` | Contract information and metadata |
+| `attributes` | Array of NFT traits and properties |
+| `balance` | Number of tokens owned (for ERC-1155) |
+| `transferFees` | Whether transfers incur fees |
+
+## Method 5: Get Wallets Containing Specific NFTs
+
+Find all wallets that own a specific NFT.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/nonfungibles/{secretType}/{contractAddress}/{tokenId}/wallets
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `contractAddress` | Path | The NFT contract address | ✅ | `"0x86b16217e6df213aa9de167a11b009c4740a8c8c"` |
+| `tokenId` | Path | The specific token ID | ✅ | `"36"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Find NFT Holders
+GET /api/nonfungibles/ETHEREUM/0x86b16217e6df213aa9de167a11b009c4740a8c8c/36/wallets
+```
+
+```http Find Polygon NFT Holders
+GET /api/nonfungibles/MATIC/0x2953399124F0cBB46d2CbACD8A89cF0599974963/1234/wallets
+```
+
+</CodeGroup>
+
+## Content Filtering Options
+
+<Accordion title="Understanding Content Filters">
+
+**Spam Filtering (`includePossibleSpam`)**
+- `false` (recommended): Excludes suspected spam NFTs
+- `true`: Includes all NFTs, including potential spam
+- Default: `true` (includes everything)
+
+**NSFW Filtering (`includeNsfw`)**
+- `false`: Excludes adult/NSFW content
+- `true`: Includes all content regardless of rating
+- Default: `true` (includes everything)
+
+**Best Practices:**
+- Use `includePossibleSpam=false` for cleaner user experiences
+- Use `includeNsfw=false` for family-friendly applications
+- Combine both filters for the cleanest results
+
+</Accordion>
+
+## NFT Standards Support
+
+<Accordion title="Supported NFT Standards">
+
+**ERC-721 (Ethereum)**
+- Unique, non-fungible tokens
+- Each token has a unique ID
+- One owner per token
+
+**ERC-1155 (Multi-Token)**
+- Semi-fungible tokens
+- Multiple copies of the same token possible
+- Batch operations supported
+- `balance` field indicates quantity owned
+
+**Cross-Chain Support:**
+- Ethereum mainnet
+- Polygon (MATIC)
+- Binance Smart Chain (BSC)
+- Arbitrum
+- Avalanche (AVAX)
+- And more supported networks
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Invalid Contract Address**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_CONTRACT_ADDRESS",
+  "message": "The contract address format is invalid"
+}
+```
+
+**Token Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "TOKEN_NOT_FOUND",
+  "message": "Token with the specified ID does not exist in this contract"
+}
+```
+
+**Unsupported Blockchain**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_SECRET_TYPE",
+  "message": "The specified blockchain is not supported for NFT queries"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+1. **Use content filters** appropriately for your audience
+2. **Cache NFT metadata** to improve performance
+3. **Handle missing images** gracefully with fallbacks
+4. **Implement pagination** for large collections
+5. **Verify contract addresses** from trusted sources
+6. **Display loading states** while fetching NFT data
+
+## Integration Examples
+
+### NFT Gallery Component
+```javascript
+async function loadNFTGallery(walletId, options = {}) {
+  const params = new URLSearchParams();
+  
+  if (options.excludeSpam) {
+    params.append('includePossibleSpam', 'false');
+  }
+  
+  if (options.familyFriendly) {
+    params.append('includeNsfw', 'false');
+  }
+  
+  const response = await fetch(
+    `/api/wallets/${walletId}/nonfungibles?${params}`
+  );
+  const data = await response.json();
+  
+  if (data.success) {
+    return data.result.map(nft => ({
+      id: nft.id,
+      name: nft.name,
+      image: nft.imageThumbnailUrl || nft.imageUrl,
+      contract: nft.contract.address,
+      attributes: nft.attributes
+    }));
+  }
+  
+  throw new Error('Failed to load NFTs');
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transfer NFTs" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-a-non-fungible-token-1">
+  Learn how to transfer NFTs between wallets
+</Card>
+<Card title="Check Token Balances" icon="coins" href="/Wallet-API-Basic-Guides/retrieve-erc20-token-balance">
+  View ERC-20 token holdings alongside NFTs
+</Card>
+<Card title="Wallet Management" icon="wallet" href="/Wallet-API-Basic-Guides/retrieve-a-wallet">
+  Manage wallets containing NFT collections
+</Card>
+<Card title="Contract Interaction" icon="file-contract" href="/Wallet-API-Basic-Guides/read-contract">
+  Read NFT contract data and metadata
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [NFT Standards](https://docs.venly.io/docs/nft-standards)
+- Understand [Metadata Standards](https://docs.venly.io/docs/nft-metadata)
+- View [Supported Blockchains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/listnonfungibles)
+</Note>

@@ -1,0 +1,214 @@
+---
+title: "Create a Wallet"
+description: "Learn how to create a blockchain wallet and link it to a user with proper authentication."
+icon: "wallet"
+---
+
+<Info>
+Wallets are blockchain-specific accounts that belong to a user. Each wallet can hold native tokens, ERC-20 tokens, and NFTs for its respective blockchain.
+</Info>
+
+## Overview
+
+After creating a user, the next step is to create one or more wallets for them. Each wallet is tied to a specific blockchain and can only hold assets from that network. Users can have multiple wallets across different blockchains.
+
+<Tip>
+Use the `identifier` parameter to assign custom labels to wallets, making it easier to organize and search for specific wallets in your application.
+</Tip>
+
+## Prerequisites
+
+Before creating a wallet, ensure you have:
+- A valid user ID from a previously created user
+- The user's signing method ID and value (PIN, biometric, etc.)
+- Decided on the target blockchain for the wallet
+
+## Step-by-Step Process
+
+<Steps>
+<Step title="Gather User Information">
+You'll need:
+- The `userId` from when you created the user
+- A valid signing method (ID and value) for authentication
+- The blockchain type (`secretType`) for the wallet
+</Step>
+
+<Step title="Choose Blockchain Network">
+Select the appropriate blockchain:
+- **ETHEREUM** - Ethereum mainnet
+- **MATIC** - Polygon network
+- **BSC** - Binance Smart Chain
+- **AVAX** - Avalanche network
+- And many more supported chains
+</Step>
+
+<Step title="Set Optional Parameters">
+Consider adding:
+- `identifier` - Custom label for easy identification
+- `description` - Human-readable description of the wallet's purpose
+</Step>
+
+<Step title="Make the API Request">
+Send the POST request with proper authentication headers.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/wallets
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using user's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The signing method must belong to the user specified in the request body. Mismatched user IDs and signing methods will result in authentication errors.
+</Warning>
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | String | Target blockchain for the wallet | ✅ | `"ETHEREUM"` |
+| `userId` | String | ID of the user who will own this wallet | ✅ | `"aee7260f-9348-4b73-b06b-f62c0f9751e4"` |
+| `identifier` | String | Custom identifier for wallet organization | ❌ | `"main-trading-wallet"` |
+| `description` | String | Human-readable description | ❌ | `"Primary Ethereum wallet for DeFi"` |
+
+## Code Examples
+
+<CodeGroup>
+
+```json Basic Wallet Creation
+{
+  "secretType": "ETHEREUM",
+  "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4"
+}
+```
+
+```json Wallet with Custom Identifier
+{
+  "secretType": "MATIC",
+  "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4",
+  "identifier": "polygon-gaming-wallet",
+  "description": "Dedicated wallet for gaming transactions"
+}
+```
+
+```json Company Treasury Wallet
+{
+  "secretType": "ETHEREUM",
+  "userId": "company-treasury-user-id",
+  "identifier": "eth-treasury-main",
+  "description": "Primary Ethereum treasury wallet"
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Successful Wallet Creation
+{
+  "success": true,
+  "result": {
+    "id": "a076dd02-04ab-439b-8618-626a4b44f99f",
+    "address": "0x10BFeBA6BEaB453c79b33Bfa1abDbD93BB8252ac",
+    "walletType": "API_WALLET",
+    "secretType": "ETHEREUM",
+    "createdAt": "2024-06-12T14:34:26.762565775",
+    "archived": false,
+    "description": "Primary Ethereum wallet for DeFi",
+    "primary": false,
+    "hasCustomPin": false,
+    "identifier": "main-trading-wallet",
+    "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4",
+    "custodial": false,
+    "balance": {
+      "available": true,
+      "secretType": "ETHEREUM",
+      "balance": 0,
+      "gasBalance": 0,
+      "symbol": "ETH",
+      "gasSymbol": "ETH",
+      "rawBalance": "0",
+      "rawGasBalance": "0",
+      "decimals": 18
+    }
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | Unique wallet ID (use for transactions) |
+| `result.address` | Blockchain address of the wallet |
+| `result.secretType` | The blockchain network |
+| `result.balance` | Current balance information |
+| `result.userId` | ID of the wallet owner |
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Invalid User ID**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Invalid Signing Method**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_SIGNING_METHOD",
+  "message": "Signing method does not belong to the specified user"
+}
+```
+
+**Unsupported Blockchain**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_SECRET_TYPE",
+  "message": "The specified blockchain is not supported"
+}
+```
+
+</Accordion>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transfer Tokens" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-a-native-token-1">
+  Send native tokens from your newly created wallet
+</Card>
+<Card title="Check Balance" icon="scale-balanced" href="/Wallet-API-Basic-Guides/retrieve-native-wallet-balance">
+  View the current balance of your wallet
+</Card>
+<Card title="Import Existing Wallet" icon="download" href="/Wallet-API-Basic-Guides/import-a-wallet">
+  Import an existing wallet using private key or seed phrase
+</Card>
+<Card title="Get Wallet Details" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/retrieve-a-wallet">
+  Retrieve detailed information about your wallet
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- View supported blockchains in the [Chain Reference](https://docs.venly.io/reference/getsupportedchains)
+- Learn about [Wallet Management](https://docs.venly.io/docs/wallet-management)
+- Complete [API Reference](https://docs.venly.io/reference/createwallet)
+</Note>

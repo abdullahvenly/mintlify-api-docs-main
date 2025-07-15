@@ -1,0 +1,547 @@
+---
+title: "Archive and Unarchive Wallets"
+description: "Learn how to archive wallets for safe storage and unarchive them when needed, with proper wallet lifecycle management."
+icon: "box-archive"
+---
+
+<Info>
+Archiving a wallet disables transactions and message signing while keeping assets safe. Think of it as a soft delete that can be reversed at any time by unarchiving.
+</Info>
+
+## Overview
+
+Wallet archiving is essential for:
+- **Temporary deactivation**: Safely disabling wallets without losing access
+- **Security management**: Reducing active wallet exposure during inactivity
+- **Lifecycle management**: Managing wallet states throughout their usage
+- **Asset protection**: Keeping funds secure while preventing unauthorized use
+
+<Warning>
+**Critical**: Store the wallet ID safely when archiving. You need the exact wallet ID to unarchive the wallet later. Archived wallets are hidden from most API endpoints.
+</Warning>
+
+## Archive vs Unarchive
+
+<Steps>
+<Step title="Archive Process">
+Disables all wallet operations while preserving assets and metadata.
+</Step>
+
+<Step title="Hidden State">
+Archived wallets are excluded from wallet listings and most operations.
+</Step>
+
+<Step title="Asset Safety">
+All assets remain secure and untouched during archival.
+</Step>
+
+<Step title="Unarchive Process">
+Restores full wallet functionality and visibility.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+PATCH /api/wallets/{walletId}
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet | ✅ | `"9e8af613-e8da-4fa6-8bcc-7e589d2c7d74"` |
+| `archived` | Body | Archive status (true to archive, false to unarchive) | ✅ | `true` |
+
+## Code Examples
+
+### Example 1: Archive Wallets
+
+Disable wallets by setting archived status to true.
+
+<CodeGroup>
+
+```http Archive Wallet
+PATCH /api/wallets/9e8af613-e8da-4fa6-8bcc-7e589d2c7d74
+Content-Type: application/json
+
+{
+  "archived": true
+}
+```
+
+```http Archive Another Wallet
+PATCH /api/wallets/c4c97f87-8e00-4f3a-8647-2f24ac9b73cb
+Content-Type: application/json
+
+{
+  "archived": true
+}
+```
+
+```http Archive Production Wallet
+PATCH /api/wallets/f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0
+Content-Type: application/json
+
+{
+  "archived": true
+}
+```
+
+</CodeGroup>
+
+### Example 2: Unarchive Wallets
+
+Restore wallet functionality by setting archived status to false.
+
+<CodeGroup>
+
+```http Unarchive Wallet
+PATCH /api/wallets/9e8af613-e8da-4fa6-8bcc-7e589d2c7d74
+Content-Type: application/json
+
+{
+  "archived": false
+}
+```
+
+```http Unarchive Development Wallet
+PATCH /api/wallets/2b358962-4467-4f41-ab93-2b6395d8ae16
+Content-Type: application/json
+
+{
+  "archived": false
+}
+```
+
+```http Unarchive User Wallet
+PATCH /api/wallets/da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f
+Content-Type: application/json
+
+{
+  "archived": false
+}
+```
+
+</CodeGroup>
+
+### Example 3: Batch Operations
+
+Handle multiple wallets with proper error handling.
+
+<CodeGroup>
+
+```json Archive Multiple Wallets
+[
+  {
+    "walletId": "9e8af613-e8da-4fa6-8bcc-7e589d2c7d74",
+    "archived": true
+  },
+  {
+    "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+    "archived": true
+  },
+  {
+    "walletId": "f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0",
+    "archived": true
+  }
+]
+```
+
+```json Unarchive Multiple Wallets
+[
+  {
+    "walletId": "9e8af613-e8da-4fa6-8bcc-7e589d2c7d74",
+    "archived": false
+  },
+  {
+    "walletId": "2b358962-4467-4f41-ab93-2b6395d8ae16",
+    "archived": false
+  },
+  {
+    "walletId": "da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f",
+    "archived": false
+  }
+]
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Archive/Unarchive Success Response
+{
+  "success": true,
+  "result": {
+    "id": "9e8af613-e8da-4fa6-8bcc-7e589d2c7d74",
+    "address": "0xf51Be4152f8E3ad3557E44Db1F803bA3e4c5DeB5",
+    "walletType": "THREEWAY_SHARED",
+    "secretType": "ETHEREUM",
+    "createdAt": "2022-04-05T08:29:44.026438",
+    "archived": true,
+    "description": "Likable Hedgehog",
+    "primary": false,
+    "hasCustomPin": false
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | The unique wallet identifier |
+| `result.address` | Blockchain address of the wallet |
+| `result.walletType` | Type of wallet (THREEWAY_SHARED, etc.) |
+| `result.secretType` | Blockchain network |
+| `result.archived` | Current archive status |
+| `result.description` | Human-readable wallet description |
+| `result.primary` | Whether this is the user's primary wallet |
+| `result.hasCustomPin` | Whether wallet has custom PIN |
+
+<Tip>
+The `archived` field in the response confirms the current status. Use this to verify the operation was successful.
+</Tip>
+
+## Archive Effects and Limitations
+
+<Accordion title="What Happens When a Wallet is Archived">
+
+**Disabled Operations:**
+- All transaction operations (transfers, contract calls)
+- Message signing and authentication
+- Wallet appears in most API endpoints
+- New transaction requests will be rejected
+
+**Preserved Elements:**
+- All assets remain in the wallet
+- Wallet address and private keys unchanged
+- Transaction history and events maintained
+- Wallet metadata and settings preserved
+
+**API Behavior:**
+- Archived wallets excluded from `/api/wallets` listings
+- Direct wallet retrieval by ID still works
+- Wallet events history remains accessible
+- Balance queries may still function
+
+**Unarchive Restoration:**
+- All functionality immediately restored
+- Wallet appears in listings again
+- No data loss or asset impact
+- Previous settings and configurations maintained
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Invalid Archive Status**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PARAMETER",
+  "message": "Archive status must be a boolean value"
+}
+```
+
+**Access Denied**
+```json
+{
+  "success": false,
+  "errorCode": "ACCESS_DENIED",
+  "message": "You do not have permission to modify this wallet"
+}
+```
+
+**Wallet Already Archived**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_ALREADY_ARCHIVED",
+  "message": "Wallet is already in the requested archive state"
+}
+```
+
+**Service Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "SERVICE_UNAVAILABLE",
+  "message": "Wallet service is temporarily unavailable"
+}
+```
+
+</Accordion>
+
+## Integration Examples
+
+### Safe Archive with ID Storage
+
+```javascript
+async function archiveWalletSafely(walletId, reason = '') {
+  try {
+    // First, get wallet details for backup
+    const walletResponse = await fetch(`/api/wallets/${walletId}`);
+    const walletData = await walletResponse.json();
+    
+    if (!walletData.success) {
+      throw new Error('Failed to retrieve wallet details');
+    }
+    
+    // Store wallet information for recovery
+    const walletBackup = {
+      id: walletId,
+      address: walletData.result.address,
+      secretType: walletData.result.secretType,
+      description: walletData.result.description,
+      archivedAt: new Date().toISOString(),
+      reason: reason
+    };
+    
+    // Store in secure location (database, encrypted storage, etc.)
+    await storeArchivedWalletInfo(walletBackup);
+    
+    // Perform the archive operation
+    const archiveResponse = await fetch(`/api/wallets/${walletId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ archived: true })
+    });
+    
+    const result = await archiveResponse.json();
+    
+    if (result.success) {
+      console.log(`Wallet ${walletId} archived successfully`);
+      return {
+        success: true,
+        walletId: walletId,
+        backup: walletBackup
+      };
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('Archive operation failed:', error);
+    throw error;
+  }
+}
+```
+
+### Batch Archive/Unarchive Operations
+
+```javascript
+async function batchArchiveOperation(walletOperations) {
+  const results = [];
+  
+  for (const operation of walletOperations) {
+    try {
+      const response = await fetch(`/api/wallets/${operation.walletId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ archived: operation.archived })
+      });
+      
+      const result = await response.json();
+      
+      results.push({
+        walletId: operation.walletId,
+        operation: operation.archived ? 'archive' : 'unarchive',
+        success: result.success,
+        error: result.success ? null : result.message
+      });
+    } catch (error) {
+      results.push({
+        walletId: operation.walletId,
+        operation: operation.archived ? 'archive' : 'unarchive',
+        success: false,
+        error: error.message
+      });
+    }
+    
+    // Add delay to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 500));
+  }
+  
+  return results;
+}
+```
+
+### Archive Recovery System
+
+```javascript
+class WalletArchiveManager {
+  constructor() {
+    this.archivedWallets = new Map();
+  }
+  
+  async archiveWallet(walletId, reason) {
+    try {
+      // Get current wallet state
+      const walletInfo = await this.getWalletInfo(walletId);
+      
+      // Store archive record
+      const archiveRecord = {
+        walletId,
+        originalState: walletInfo,
+        archivedAt: new Date(),
+        reason,
+        canUnarchive: true
+      };
+      
+      this.archivedWallets.set(walletId, archiveRecord);
+      
+      // Perform archive
+      const response = await fetch(`/api/wallets/${walletId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ archived: true })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log(`Wallet ${walletId} archived: ${reason}`);
+        return archiveRecord;
+      } else {
+        this.archivedWallets.delete(walletId);
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Archive failed:', error);
+      throw error;
+    }
+  }
+  
+  async unarchiveWallet(walletId) {
+    try {
+      const archiveRecord = this.archivedWallets.get(walletId);
+      
+      if (!archiveRecord) {
+        throw new Error('No archive record found for this wallet');
+      }
+      
+      if (!archiveRecord.canUnarchive) {
+        throw new Error('This wallet cannot be unarchived');
+      }
+      
+      const response = await fetch(`/api/wallets/${walletId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ archived: false })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update archive record
+        archiveRecord.unarchivedAt = new Date();
+        console.log(`Wallet ${walletId} unarchived successfully`);
+        return result;
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Unarchive failed:', error);
+      throw error;
+    }
+  }
+  
+  getArchivedWallets() {
+    return Array.from(this.archivedWallets.values())
+      .filter(record => !record.unarchivedAt);
+  }
+  
+  async getWalletInfo(walletId) {
+    const response = await fetch(`/api/wallets/${walletId}`);
+    const data = await response.json();
+    return data.success ? data.result : null;
+  }
+}
+```
+
+## Best Practices
+
+<Warning>
+**Archive Management Guidelines:**
+
+1. **Store Wallet IDs**: Always securely store wallet IDs before archiving
+2. **Document Reasons**: Record why wallets are being archived
+3. **Verify Assets**: Check wallet balances before archiving
+4. **Test Unarchive**: Verify you can unarchive before permanent storage
+5. **Monitor Status**: Regularly check archived wallet status
+6. **Secure Storage**: Use encrypted storage for archived wallet information
+7. **Access Control**: Limit who can archive/unarchive wallets
+</Warning>
+
+## Use Cases
+
+### Temporary Deactivation
+- User requests to temporarily disable wallet
+- Seasonal business operations
+- Security precautions during investigations
+- Maintenance periods
+
+### Lifecycle Management
+- Employee departure (archive work wallets)
+- Project completion (archive project-specific wallets)
+- Account suspension (temporary access removal)
+- Compliance requirements
+
+### Security Scenarios
+- Suspected compromise (immediate archival)
+- Regulatory holds (temporary deactivation)
+- Audit periods (prevent modifications)
+- Risk management (reduce exposure)
+
+## Recovery Procedures
+
+1. **Locate Wallet ID**: Retrieve from secure storage
+2. **Verify Ownership**: Confirm authorization to unarchive
+3. **Check Asset Status**: Verify assets are still secure
+4. **Unarchive Wallet**: Use the API to restore functionality
+5. **Test Operations**: Verify wallet works correctly
+6. **Update Records**: Document the unarchive operation
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Retrieve Wallet" icon="wallet" href="/Wallet-API-Basic-Guides/retrieve-a-wallet">
+  Get detailed wallet information and status
+</Card>
+<Card title="Wallet Events" icon="clock-rotate-left" href="/Wallet-API-Basic-Guides/get-wallet-events-by-walletid">
+  Monitor wallet activity and archive events
+</Card>
+<Card title="Create Wallet" icon="plus" href="/Wallet-API-Basic-Guides/create-a-wallet">
+  Create new wallets when needed
+</Card>
+<Card title="Export Wallet" icon="download" href="/Wallet-API-Basic-Guides/export-a-wallet">
+  Export wallet data before archiving
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Wallet Lifecycle](https://docs.venly.io/docs/wallet-lifecycle)
+- Understand [Security Best Practices](https://docs.venly.io/docs/security-practices)
+- View [Asset Management](https://docs.venly.io/docs/asset-management)
+- Complete [API Reference](https://docs.venly.io/reference/updatemetadata_1)
+</Note>

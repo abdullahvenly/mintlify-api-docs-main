@@ -1,0 +1,225 @@
+---
+title: "Transfer Native Tokens"
+description: "Learn how to send native blockchain tokens (ETH, MATIC, BNB, etc.) from one wallet to another."
+icon: "arrow-right-arrow-left"
+---
+
+<Info>
+Native token transfers move the primary currency of a blockchain (like ETH on Ethereum or MATIC on Polygon) from your wallet to another address.
+</Info>
+
+## Overview
+
+Native token transfers are the most common type of blockchain transaction. Whether you're sending ETH, MATIC, BNB, or any other native token, the process is straightforward and requires minimal gas fees compared to smart contract interactions.
+
+<Tip>
+Always check the wallet balance before initiating a transfer to ensure sufficient funds for both the transfer amount and gas fees.
+</Tip>
+
+## Prerequisites
+
+Before transferring native tokens, ensure you have:
+- A wallet with sufficient native token balance
+- The recipient's valid blockchain address
+- The wallet owner's signing method credentials
+- Enough tokens to cover both transfer amount and gas fees
+
+## Step-by-Step Process
+
+<Steps>
+<Step title="Verify Wallet Balance">
+Check that your wallet has enough tokens for:
+- The amount you want to send
+- Gas fees for the transaction
+</Step>
+
+<Step title="Prepare Transfer Details">
+Gather the required information:
+- Source wallet ID
+- Destination address (or email for Venly users)
+- Transfer amount in the token's smallest unit
+- Blockchain network type
+</Step>
+
+<Step title="Authenticate with Signing Method">
+Use the wallet owner's signing method for transaction authorization.
+</Step>
+
+<Step title="Execute the Transfer">
+Submit the transaction and receive the transaction hash for tracking.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/execute
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The signing method must belong to the user who owns the source wallet. Unauthorized access attempts will be rejected.
+</Warning>
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `transactionRequest` | Object | Container for all transaction details | ✅ | See below |
+| `transactionRequest.type` | String | Must be `"TRANSFER"` for native token transfers | ✅ | `"TRANSFER"` |
+| `transactionRequest.walletId` | String | ID of the source wallet | ✅ | `"a076dd02-04ab-439b-8618-626a4b44f99f"` |
+| `transactionRequest.to` | String | Destination address or email | ✅ | `"0xf56799d7C95C6DEb708A9f55b2e75A685A94F980"` |
+| `transactionRequest.secretType` | String | Blockchain network for the transaction | ✅ | `"ETHEREUM"` |
+| `transactionRequest.value` | Number | Amount in smallest token unit (wei for ETH) | ✅ | `1000000000000000000` |
+
+<Tip>
+**Value Conversion**: For ETH, 1 ETH = 1,000,000,000,000,000,000 wei (18 decimals). Use online converters or libraries to convert human-readable amounts.
+</Tip>
+
+## Code Examples
+
+<CodeGroup>
+
+```json Send 0.1 ETH
+{
+  "transactionRequest": {
+    "type": "TRANSFER",
+    "walletId": "a076dd02-04ab-439b-8618-626a4b44f99f",
+    "to": "0xf56799d7C95C6DEb708A9f55b2e75A685A94F980",
+    "secretType": "ETHEREUM",
+    "value": 100000000000000000
+  }
+}
+```
+
+```json Send 5 MATIC
+{
+  "transactionRequest": {
+    "type": "TRANSFER",
+    "walletId": "b186ee03-15bc-550c-9729-cdf2d8f2648a",
+    "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+    "secretType": "MATIC",
+    "value": 5000000000000000000
+  }
+}
+```
+
+```json Send to Email Address
+{
+  "transactionRequest": {
+    "type": "TRANSFER",
+    "walletId": "c297ff04-26cd-661d-0840-def3e9f3759b",
+    "to": "recipient@example.com",
+    "secretType": "ETHEREUM",
+    "value": 50000000000000000
+  }
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Transaction Submitted
+{
+  "success": true,
+  "result": {
+    "transactionHash": "0x8c953e09d8cede9f4eb0d1ee96de4f5a99e31dba7e64312bb252a465de12d10d"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.transactionHash` | Unique transaction identifier on the blockchain |
+
+<Info>
+Use the transaction hash to track your transfer on blockchain explorers like Etherscan (Ethereum) or PolygonScan (Polygon).
+</Info>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Insufficient Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_FUNDS",
+  "message": "Wallet balance is insufficient for this transaction"
+}
+```
+
+**Invalid Destination Address**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_ADDRESS",
+  "message": "The destination address is not valid for this blockchain"
+}
+```
+
+**Gas Fee Too Low**
+```json
+{
+  "success": false,
+  "errorCode": "GAS_PRICE_TOO_LOW",
+  "message": "Current gas price is higher than the maximum specified"
+}
+```
+
+**Network Congestion**
+```json
+{
+  "success": false,
+  "errorCode": "NETWORK_CONGESTED",
+  "message": "Network is congested, try again with higher gas fees"
+}
+```
+
+</Accordion>
+
+## Transaction Monitoring
+
+After submitting a transfer:
+
+1. **Save the transaction hash** for future reference
+2. **Monitor transaction status** using the transaction status endpoint
+3. **Check blockchain explorer** for real-time updates
+4. **Verify recipient balance** once confirmed
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Check Transaction Status" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Monitor your transaction progress and confirmation status
+</Card>
+<Card title="Transfer ERC-20 Tokens" icon="coins" href="/Wallet-API-Basic-Guides/transfer-an-erc20-token">
+  Learn how to send custom tokens and stablecoins
+</Card>
+<Card title="Get Gas Fees" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Estimate transaction costs before sending
+</Card>
+<Card title="View Wallet Balance" icon="scale-balanced" href="/Wallet-API-Basic-Guides/retrieve-native-wallet-balance">
+  Check your wallet balance after the transfer
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Transaction Types](https://docs.venly.io/docs/transaction-types)
+- View [Supported Blockchains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/executetransaction_1)
+- Understand [Gas Fees](https://docs.venly.io/docs/gas-fees)
+</Note>

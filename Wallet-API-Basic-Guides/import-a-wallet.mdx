@@ -1,0 +1,377 @@
+---
+title: "Import a Wallet"
+description: "Learn how to import existing wallets using private keys, keystores, WIF, or migrate between blockchains."
+icon: "download"
+---
+
+<Info>
+Wallet import allows you to bring existing wallets into the Venly platform, giving you unified management across multiple blockchain networks.
+</Info>
+
+## Overview
+
+Wallet import is essential for:
+- **Existing wallet integration**: Bringing wallets from other platforms
+- **Multi-chain management**: Using the same wallet across compatible blockchains
+- **Backup recovery**: Restoring wallets from private keys or keystores
+- **Platform migration**: Moving wallets from other services to Venly
+
+<Tip>
+Always verify wallet addresses after import to ensure the correct wallet was imported successfully.
+</Tip>
+
+## Prerequisites
+
+Before importing a wallet, ensure you have:
+- The wallet's private key, keystore file, or WIF format
+- A valid user ID to link the wallet to
+- The user's signing method credentials for authentication
+- Knowledge of the source blockchain network
+
+## Import Methods
+
+<Steps>
+<Step title="Private Key Import">
+Import using the wallet's private key (most common method).
+</Step>
+
+<Step title="Keystore Import">
+Import using an encrypted keystore file with password.
+</Step>
+
+<Step title="WIF Import">
+Import Bitcoin/Litecoin wallets using Wallet Import Format.
+</Step>
+
+<Step title="Cross-Chain Migration">
+Migrate existing Venly wallets to compatible blockchains.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/wallets/import
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using user's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The signing method must belong to the user specified in the request body. Ensure proper authentication before importing wallets.
+</Warning>
+
+## Method 1: Import with Private Key
+
+The most common import method for Ethereum-compatible blockchains.
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `importWalletType` | String | Import type for the blockchain | ✅ | `"ETHEREUM_PRIVATE_KEY"` |
+| `privateKey` | String | The wallet's private key | ✅ | `"0x4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318"` |
+| `userId` | String | ID of the user to link wallet to | ❌ | `"aee7260f-9348-4b73-b06b-f62c0f9751e4"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```json Import Ethereum Wallet
+{
+  "importWalletType": "ETHEREUM_PRIVATE_KEY",
+  "privateKey": "0x4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318",
+  "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4"
+}
+```
+
+```json Import Polygon Wallet
+{
+  "importWalletType": "MATIC_PRIVATE_KEY",
+  "privateKey": "0x7d8a90c8f2b3e4d5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9",
+  "userId": "b297ff04-26cd-661d-0840-def3e9f3759b"
+}
+```
+
+```json Import BSC Wallet
+{
+  "importWalletType": "BSC_PRIVATE_KEY",
+  "privateKey": "0xa1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+  "userId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb"
+}
+```
+
+</CodeGroup>
+
+## Method 2: Import with Keystore
+
+Import encrypted keystore files with password protection.
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `importWalletType` | String | Import type for the blockchain | ✅ | `"ETHEREUM_KEYSTORE"` |
+| `keystore` | String | JSON keystore as escaped string | ✅ | See example below |
+| `password` | String | Keystore password | ✅ | `"mySecurePassword123"` |
+| `userId` | String | ID of the user to link wallet to | ❌ | `"aee7260f-9348-4b73-b06b-f62c0f9751e4"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```json Import Ethereum Keystore
+{
+  "importWalletType": "ETHEREUM_KEYSTORE",
+  "keystore": "{\"version\":3,\"id\":\"04e9bcbb-96fa-497b-94d1-14df4cd20af6\",\"address\":\"2c7536e3605d9c16a7a3d7b1898e529396a65c23\",\"crypto\":{\"ciphertext\":\"a1458b...\",\"cipherparams\":{\"iv\":\"53741d...\"},\"cipher\":\"aes-128-ctr\",\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"salt\":\"421c...\",\"n\":8192,\"r\":8,\"p\":1},\"mac\":\"2308bdc8085c...\"}}",
+  "password": "mySecurePassword123",
+  "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4"
+}
+```
+
+```json Import Polygon Keystore
+{
+  "importWalletType": "MATIC_KEYSTORE",
+  "keystore": "{\"version\":3,\"id\":\"15fa9ccc-a7gb-598c-a5e2-25eg5de31bg7\",\"address\":\"3d8647f4f716e8c27b8b4e8c529396a65c23\",\"crypto\":{\"ciphertext\":\"b2569c...\",\"cipherparams\":{\"iv\":\"64852e...\"},\"cipher\":\"aes-128-ctr\",\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"salt\":\"532d...\",\"n\":8192,\"r\":8,\"p\":1},\"mac\":\"3419ced9196d...\"}}",
+  "password": "anotherSecurePassword456",
+  "userId": "b297ff04-26cd-661d-0840-def3e9f3759b"
+}
+```
+
+</CodeGroup>
+
+## Method 3: Import with WIF
+
+Import Bitcoin and Litecoin wallets using Wallet Import Format.
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `importWalletType` | String | WIF import type | ✅ | `"BITCOIN_WIF"` |
+| `wif` | String | Wallet Import Format string | ✅ | `"5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"` |
+| `passphrase` | String | WIF passphrase (if required) | ❌ | `"myPassphrase"` |
+| `userId` | String | ID of the user to link wallet to | ❌ | `"aee7260f-9348-4b73-b06b-f62c0f9751e4"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```json Import Bitcoin Wallet
+{
+  "importWalletType": "BITCOIN_WIF",
+  "wif": "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ",
+  "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4"
+}
+```
+
+```json Import Litecoin with Passphrase
+{
+  "importWalletType": "LITECOIN_WIF_PASSPHRASE",
+  "wif": "6PfQu77ygVyuUxZjuuMp9RGy85LQ8672AFoqxsbmgxwXwxkKbWS5K5cNd",
+  "passphrase": "mySecurePassphrase123",
+  "userId": "b297ff04-26cd-661d-0840-def3e9f3759b"
+}
+```
+
+</CodeGroup>
+
+## Method 4: Cross-Chain Migration
+
+Migrate existing Venly wallets to compatible blockchains using the same private key.
+
+### Supported Migrations
+
+| From | To | Use Case |
+|------|----|---------| 
+| ETHEREUM | MATIC | Use Ethereum wallet on Polygon |
+| MATIC | ETHEREUM | Use Polygon wallet on Ethereum |
+| ETHEREUM | BSC | Use Ethereum wallet on BSC |
+| BSC | ETHEREUM | Use BSC wallet on Ethereum |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `importWalletType` | String | Must be `"MIGRATION"` | ✅ | `"MIGRATION"` |
+| `walletId` | String | ID of existing Venly wallet | ✅ | `"a076dd02-04ab-439b-8618-626a4b44f99f"` |
+| `to` | String | Target blockchain | ✅ | `"MATIC"` |
+| `userId` | String | ID of the user to link wallet to | ❌ | `"aee7260f-9348-4b73-b06b-f62c0f9751e4"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```json Migrate Ethereum to Polygon
+{
+  "importWalletType": "MIGRATION",
+  "walletId": "a076dd02-04ab-439b-8618-626a4b44f99f",
+  "to": "MATIC",
+  "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4"
+}
+```
+
+```json Migrate BSC to Ethereum
+{
+  "importWalletType": "MIGRATION",
+  "walletId": "b186ee03-15bc-550c-9729-cdf2d8f2648a",
+  "to": "ETHEREUM",
+  "userId": "b297ff04-26cd-661d-0840-def3e9f3759b"
+}
+```
+
+</CodeGroup>
+
+## Supported Import Types
+
+<Accordion title="Complete List of Import Types">
+
+**Ethereum-Compatible Chains:**
+- `ETHEREUM_PRIVATE_KEY`, `ETHEREUM_KEYSTORE`
+- `MATIC_PRIVATE_KEY`, `MATIC_KEYSTORE`
+- `BSC_PRIVATE_KEY`, `BSC_KEYSTORE`
+- `ARBITRUM_PRIVATE_KEY`, `ARBITRUM_KEYSTORE`
+- `AVAC_PRIVATE_KEY`, `AVAC_KEYSTORE`
+
+**Bitcoin-Based Chains:**
+- `BITCOIN_WIF`, `BITCOIN_WIF_PASSPHRASE`
+- `LITECOIN_WIF`, `LITECOIN_WIF_PASSPHRASE`
+
+**Other Blockchains:**
+- `HEDERA_PRIVATE_KEY`, `HEDERA_KEYSTORE`
+- `VECHAIN_PRIVATE_KEY`, `VECHAIN_KEYSTORE`
+- `NEO_PRIVATE_KEY`, `NEO_KEYSTORE`, `NEO_WIF`
+- `IMX_PRIVATE_KEY`, `IMX_KEYSTORE`
+- `AETERNITY_PRIVATE_KEY`, `AETERNITY_KEYSTORE`
+- `GOCHAIN_PRIVATE_KEY`, `GOCHAIN_KEYSTORE`
+
+**Special Types:**
+- `MIGRATION` - Cross-chain wallet migration
+
+</Accordion>
+
+## Response Format
+
+### Success Response
+
+```json Wallet Import Success
+{
+  "success": true,
+  "result": {
+    "id": "a076dd02-04ab-439b-8618-626a4b44f99f",
+    "address": "0x10BFeBA6BEaB453c79b33Bfa1abDbD93BB8252ac",
+    "walletType": "API_WALLET",
+    "secretType": "ETHEREUM",
+    "createdAt": "2024-06-12T14:34:26.762565775",
+    "archived": false,
+    "description": "Imported wallet",
+    "primary": false,
+    "hasCustomPin": false,
+    "userId": "aee7260f-9348-4b73-b06b-f62c0f9751e4",
+    "custodial": false,
+    "balance": {
+      "available": true,
+      "secretType": "ETHEREUM",
+      "balance": 0.5,
+      "gasBalance": 0.5,
+      "symbol": "ETH",
+      "gasSymbol": "ETH",
+      "rawBalance": "500000000000000000",
+      "rawGasBalance": "500000000000000000",
+      "decimals": 18
+    }
+  }
+}
+```
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Invalid Private Key**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PRIVATE_KEY",
+  "message": "The provided private key is invalid or malformed"
+}
+```
+
+**Incorrect Keystore Password**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_KEYSTORE_PASSWORD",
+  "message": "The keystore password is incorrect"
+}
+```
+
+**Unsupported Import Type**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_IMPORT_TYPE",
+  "message": "The specified import type is not supported"
+}
+```
+
+**Wallet Already Exists**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_ALREADY_EXISTS",
+  "message": "A wallet with this address already exists"
+}
+```
+
+</Accordion>
+
+## Security Best Practices
+
+<Warning>
+**Security Considerations:**
+- Never share private keys or keystores
+- Use secure connections (HTTPS) when importing
+- Verify wallet addresses after import
+- Store backup credentials securely
+- Consider using hardware wallets for high-value assets
+</Warning>
+
+## Best Practices
+
+1. **Verify addresses** after import to ensure correctness
+2. **Test with small amounts** before using imported wallets
+3. **Keep backups** of original private keys/keystores
+4. **Use strong passwords** for keystore files
+5. **Import gradually** rather than bulk importing
+6. **Monitor balances** after import completion
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Check Wallet Balance" icon="scale-balanced" href="/Wallet-API-Basic-Guides/retrieve-native-wallet-balance">
+  Verify the imported wallet's balance and assets
+</Card>
+<Card title="Transfer Tokens" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-a-native-token-1">
+  Start using your imported wallet for transactions
+</Card>
+<Card title="Export Wallet" icon="upload" href="/Wallet-API-Basic-Guides/export-a-wallet">
+  Learn how to export wallets for backup
+</Card>
+<Card title="Wallet Management" icon="gear" href="/Wallet-API-Basic-Guides/retrieve-a-wallet">
+  Manage and configure your imported wallet
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Wallet Security](https://docs.venly.io/docs/wallet-security)
+- Understand [Private Key Management](https://docs.venly.io/docs/private-keys)
+- View [Supported Blockchains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/importwallet)
+</Note>

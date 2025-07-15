@@ -1,0 +1,270 @@
+---
+title: "Export a Wallet"
+description: "Learn how to securely export wallet keystores for backup and migration purposes."
+icon: "upload"
+---
+
+<Info>
+Wallet export creates a password-protected keystore file that allows you to backup or migrate your wallet to other platforms while maintaining security.
+</Info>
+
+## Overview
+
+Wallet export is essential for:
+- **Backup creation**: Securing wallet access outside of Venly
+- **Platform migration**: Moving wallets to other services
+- **Disaster recovery**: Ensuring wallet access in emergencies
+- **Multi-platform access**: Using wallets across different applications
+
+<Warning>
+**Critical Security Notice**: Exporting wallets removes them from Venly's security controls. Exported keystores must be handled with extreme care to prevent unauthorized access.
+</Warning>
+
+## Prerequisites
+
+Before exporting a wallet, ensure you have:
+- Export functionality enabled in your Venly Portal settings
+- A valid wallet ID that you own
+- The wallet owner's signing method credentials
+- A strong password for keystore encryption
+
+## Security Considerations
+
+<Steps>
+<Step title="Enable Export Permission">
+Export functionality must be enabled in the Venly Portal under Wallet API settings.
+</Step>
+
+<Step title="Understand the Risks">
+Exported private keys are outside Venly's protection and can be misused if compromised.
+</Step>
+
+<Step title="Use Strong Passwords">
+Keystore files are only as secure as the password protecting them.
+</Step>
+
+<Step title="Secure Storage">
+Store exported keystores in secure, encrypted locations.
+</Step>
+</Steps>
+
+## Enable Export Functionality
+
+<Warning>
+Export functionality is disabled by default for security reasons. You must explicitly enable it in the Venly Portal before using this endpoint.
+</Warning>
+
+To enable wallet export:
+1. Log into the [Venly Portal](https://portal.venly.io/)
+2. Navigate to the **Wallet API** section
+3. Enable the **Export Wallet** permission
+4. Save your settings
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/wallets/{walletId}/export
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet to export | ✅ | `"a076dd02-04ab-439b-8618-626a4b44f99f"` |
+| `password` | Body | Password to encrypt the keystore | ✅ | `"MyVerySecurePassword123!"` |
+
+<Tip>
+Use a strong password with at least 12 characters, including uppercase, lowercase, numbers, and special characters.
+</Tip>
+
+## Code Examples
+
+<CodeGroup>
+
+```json Export Ethereum Wallet
+{
+  "password": "MyVerySecurePassword123!"
+}
+```
+
+```json Export with Complex Password
+{
+  "password": "Tr0ub4dor&3_Secure_K3ystore_P@ssw0rd"
+}
+```
+
+</CodeGroup>
+
+### Full Request Example
+
+```http
+POST /api/wallets/a076dd02-04ab-439b-8618-626a4b44f99f/export
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+Content-Type: application/json
+
+{
+  "password": "MyVerySecurePassword123!"
+}
+```
+
+## Response Format
+
+### Success Response
+
+```json Wallet Export Response
+{
+  "success": true,
+  "result": {
+    "keystore": "{\"address\":\"d7a742efa8f3b24bc39ef288c2eef3f1f6956a60\",\"id\":\"0c52bfce-0b64-4871-b6ff-30ef377a8fdd\",\"version\":3,\"crypto\":{\"cipher\":\"aes-128-ctr\",\"ciphertext\":\"1c1542c31c1ac5cab30a87d84a4091b150c508110859a8105a99c4cfc20357d3\",\"cipherparams\":{\"iv\":\"99ecb2a2fd5e9f081f9efdb8002b7a09\"},\"kdf\":\"scrypt\",\"kdfparams\":{\"dklen\":32,\"n\":262144,\"p\":1,\"r\":8,\"salt\":\"3646bcc831f00926890e4801cd741514846249ed5b1c79a6d2476b5cf4f4848c\"},\"mac\":\"bbbc32f0ebc35818459da82382cd44c6c16021da9e9bb62c7fc749f042cb4764\"}}"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `keystore` | JSON string containing the encrypted wallet keystore |
+
+## Keystore Format
+
+The exported keystore follows the standard Ethereum keystore format (UTC/JSON):
+
+<Accordion title="Keystore Structure Explanation">
+
+**Standard Fields:**
+- `address` - The wallet's blockchain address (without 0x prefix)
+- `id` - Unique identifier for this keystore
+- `version` - Keystore format version (typically 3)
+
+**Crypto Section:**
+- `cipher` - Encryption algorithm used (aes-128-ctr)
+- `ciphertext` - Encrypted private key
+- `cipherparams` - Parameters for the cipher (IV)
+- `kdf` - Key derivation function (scrypt)
+- `kdfparams` - Parameters for key derivation
+- `mac` - Message authentication code for integrity
+
+**Security:**
+The private key is encrypted using the password you provided and can only be decrypted with the same password.
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Export Not Enabled**
+```json
+{
+  "success": false,
+  "errorCode": "EXPORT_NOT_ENABLED",
+  "message": "Wallet export functionality is not enabled for this application"
+}
+```
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Unauthorized Access**
+```json
+{
+  "success": false,
+  "errorCode": "UNAUTHORIZED_WALLET_ACCESS",
+  "message": "You do not have permission to export this wallet"
+}
+```
+
+**Weak Password**
+```json
+{
+  "success": false,
+  "errorCode": "WEAK_PASSWORD",
+  "message": "Password does not meet minimum security requirements"
+}
+```
+
+</Accordion>
+
+## Security Best Practices
+
+<Warning>
+**Critical Security Guidelines:**
+
+1. **Strong Passwords**: Use complex passwords with high entropy
+2. **Secure Storage**: Store keystores in encrypted, offline locations
+3. **Limited Access**: Restrict who can access exported keystores
+4. **Regular Rotation**: Consider re-exporting with new passwords periodically
+5. **Audit Trail**: Log all export activities for security monitoring
+6. **Test Recovery**: Verify you can import the keystore before relying on it
+</Warning>
+
+## Using Exported Keystores
+
+After exporting, you can use the keystore with:
+
+### Popular Wallet Applications
+- **MetaMask**: Import via "Import Account" → "JSON File"
+- **MyEtherWallet**: Use "Keystore File" option
+- **Ethereum Wallet**: Import through keystore functionality
+
+### Programming Libraries
+```javascript
+// Example with ethers.js
+import { Wallet } from 'ethers';
+
+const wallet = await Wallet.fromEncryptedJson(
+  keystoreJson, 
+  password
+);
+```
+
+### Re-importing to Venly
+You can re-import the keystore using the [Import Wallet](./import-a-wallet) guide with the `ETHEREUM_KEYSTORE` import type.
+
+## Risk Mitigation
+
+1. **Enable Only When Needed**: Disable export functionality when not required
+2. **Monitor Usage**: Track all export activities
+3. **Educate Users**: Ensure users understand the security implications
+4. **Implement Approval Workflows**: Require additional authorization for exports
+5. **Use Hardware Security**: Consider hardware wallets for high-value assets
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Import Wallet" icon="download" href="/Wallet-API-Basic-Guides/import-a-wallet">
+  Learn how to import keystores back into Venly
+</Card>
+<Card title="Wallet Security" icon="shield" href="/Wallet-API-Basic-Guides/wallet-security">
+  Understand comprehensive wallet security practices
+</Card>
+<Card title="Backup Strategies" icon="floppy-disk" href="/Wallet-API-Basic-Guides/backup-strategies">
+  Develop robust backup and recovery plans
+</Card>
+<Card title="Portal Settings" icon="gear" href="https://portal.venly.io/">
+  Configure export permissions in the Venly Portal
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Keystore Security](https://docs.venly.io/docs/keystore-security)
+- Understand [Private Key Management](https://docs.venly.io/docs/private-keys)
+- Review [Security Best Practices](https://docs.venly.io/docs/security-best-practices)
+- Complete [API Reference](https://docs.venly.io/reference/exportbyid)
+</Note>

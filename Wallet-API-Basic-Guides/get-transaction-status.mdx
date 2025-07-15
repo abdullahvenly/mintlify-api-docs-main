@@ -1,0 +1,265 @@
+---
+title: "Get Transaction Status"
+description: "Learn how to monitor and track the status of blockchain transactions in real-time."
+icon: "magnifying-glass"
+---
+
+<Info>
+Transaction status tracking allows you to monitor the progress of blockchain transactions from submission to final confirmation.
+</Info>
+
+## Overview
+
+Transaction monitoring is crucial for:
+- **User experience**: Providing real-time updates to users
+- **Application logic**: Making decisions based on transaction outcomes
+- **Error handling**: Detecting and responding to failed transactions
+- **Compliance**: Maintaining audit trails for financial operations
+
+<Tip>
+Always save transaction hashes when submitting transactions so you can track their status later.
+</Tip>
+
+## Prerequisites
+
+To check transaction status, you need:
+- A valid transaction hash from a previously submitted transaction
+- The blockchain network where the transaction was submitted
+- No authentication required (public blockchain data)
+
+## Transaction Status Flow
+
+<Steps>
+<Step title="Transaction Submitted">
+Transaction is broadcast to the blockchain network and enters the mempool.
+</Step>
+
+<Step title="Pending Confirmation">
+Transaction is picked up by miners/validators and included in a block.
+</Step>
+
+<Step title="Confirmed">
+Transaction receives initial confirmations as new blocks are added.
+</Step>
+
+<Step title="Finalized">
+Transaction reaches sufficient confirmations for finality (varies by blockchain).
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+GET /api/transactions/{secretType}/{transactionHash}/status
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `transactionHash` | Path | The transaction hash to check | ✅ | `"0x586b8c4d1f2a3d5760b6290825149cd1319c91b65b258e3f8a8fb432e6c0cbe3"` |
+
+## Code Examples
+
+<CodeGroup>
+
+```http Check Ethereum Transaction
+GET /api/transactions/ETHEREUM/0x586b8c4d1f2a3d5760b6290825149cd1319c91b65b258e3f8a8fb432e6c0cbe3/status
+```
+
+```http Check Polygon Transaction
+GET /api/transactions/MATIC/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9/status
+```
+
+```http Check BSC Transaction
+GET /api/transactions/BSC/0x8ba1f109551bD432803012645Hac136c22C501e/status
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Transaction Status Response
+{
+  "success": true,
+  "result": {
+    "hash": "0x586b8c4d1f2a3d5760b6290825149cd1319c91b65b258e3f8a8fb432e6c0cbe3",
+    "status": "SUCCEEDED",
+    "confirmations": 109092,
+    "blockHash": "0xcb0733d4c84a158863723c3f4d45da069b9acb2b361cb77d5ec376e53733c40f",
+    "blockNumber": 8538423,
+    "hasReachedFinality": true,
+    "nonce": 118,
+    "gas": 200000,
+    "gasUsed": 64484,
+    "gasPrice": 74800000000,
+    "from": "0x39069fb544c7e25122b8a54cd7b982d34d11e470",
+    "to": "0x1ec84ea808b8c30483c6bb3a82f4315f3007beac",
+    "logs": [
+      {
+        "logIndex": 1,
+        "data": "0x",
+        "type": null,
+        "topics": [
+          "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+          "0x00000000000000000000000039069fb544c7e25122b8a54cd7b982d34d11e470",
+          "0x0000000000000000000000006156174da796228b376e3e58506194543cfbca38"
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `hash` | The transaction hash |
+| `status` | Current status: `PENDING`, `SUCCEEDED`, `FAILED` |
+| `confirmations` | Number of block confirmations |
+| `blockHash` | Hash of the block containing the transaction |
+| `blockNumber` | Block number where transaction was included |
+| `hasReachedFinality` | Whether transaction is considered final |
+| `nonce` | Transaction nonce from the sender |
+| `gas` | Gas limit set for the transaction |
+| `gasUsed` | Actual gas consumed |
+| `gasPrice` | Gas price paid (in wei) |
+| `from` | Sender address |
+| `to` | Recipient address |
+| `logs` | Event logs emitted by the transaction |
+
+## Transaction Status Types
+
+<Accordion title="Status Explanations">
+
+**PENDING**
+- Transaction is in the mempool waiting to be mined
+- Or has been mined but not yet confirmed
+- Continue monitoring until status changes
+
+**SUCCEEDED**
+- Transaction was successfully executed
+- Included in a block and confirmed
+- Safe to proceed with dependent operations
+
+**FAILED**
+- Transaction was included in a block but execution failed
+- Gas was consumed but state changes were reverted
+- Check error logs for failure reason
+
+</Accordion>
+
+## Confirmation Guidelines
+
+<Warning>
+Different blockchains have different finality requirements. Consider these minimums:
+- **Ethereum**: 12+ confirmations for high-value transactions
+- **Polygon**: 128+ confirmations for finality
+- **BSC**: 15+ confirmations recommended
+</Warning>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Transaction Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "TRANSACTION_NOT_FOUND",
+  "message": "Transaction with the specified hash does not exist"
+}
+```
+
+**Invalid Transaction Hash**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_HASH_FORMAT",
+  "message": "The transaction hash format is invalid"
+}
+```
+
+**Network Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "NETWORK_UNAVAILABLE",
+  "message": "Unable to fetch transaction data from the blockchain network"
+}
+```
+
+</Accordion>
+
+## Monitoring Best Practices
+
+1. **Poll Responsibly**: Don't check status too frequently (every 10-30 seconds)
+2. **Set Timeouts**: Stop monitoring after reasonable time limits
+3. **Handle All States**: Account for pending, success, and failure scenarios
+4. **Check Finality**: Use `hasReachedFinality` for critical operations
+5. **Save Transaction Data**: Store important transaction details for records
+
+## Integration Examples
+
+### JavaScript Polling Example
+```javascript
+async function monitorTransaction(secretType, txHash) {
+  const maxAttempts = 60; // 10 minutes with 10-second intervals
+  let attempts = 0;
+  
+  while (attempts < maxAttempts) {
+    try {
+      const response = await fetch(
+        `/api/transactions/${secretType}/${txHash}/status`
+      );
+      const data = await response.json();
+      
+      if (data.result.status === 'SUCCEEDED') {
+        return { success: true, transaction: data.result };
+      } else if (data.result.status === 'FAILED') {
+        return { success: false, error: 'Transaction failed' };
+      }
+      
+      // Still pending, wait and retry
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      attempts++;
+    } catch (error) {
+      console.error('Error checking transaction status:', error);
+      attempts++;
+    }
+  }
+  
+  return { success: false, error: 'Transaction timeout' };
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Resubmit Transaction" icon="rotate-right" href="/Wallet-API-Basic-Guides/resubmit-transaction-1">
+  Learn how to resubmit stuck or failed transactions
+</Card>
+<Card title="Get Gas Fees" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Estimate appropriate gas fees for faster confirmation
+</Card>
+<Card title="Cancel Transaction" icon="xmark" href="/Wallet-API-Basic-Guides/cancel-transaction">
+  Cancel pending transactions when needed
+</Card>
+<Card title="Transaction History" icon="clock-rotate-left" href="/Wallet-API-Basic-Guides/get-all-transactions">
+  View complete transaction history for a wallet
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Transaction Lifecycle](https://docs.venly.io/docs/transaction-lifecycle)
+- Understand [Gas and Fees](https://docs.venly.io/docs/gas-fees)
+- Complete [API Reference](https://docs.venly.io/reference/getstatus)
+- Explore [Blockchain Explorers](https://docs.venly.io/docs/blockchain-explorers)
+</Note>

@@ -1,0 +1,327 @@
+---
+title: "Resubmit a Transaction"
+description: "Learn how to resubmit failed or stuck blockchain transactions with higher gas fees for faster processing."
+icon: "rotate-right"
+---
+
+<Info>
+Transaction resubmission allows you to retry failed or stuck transactions, typically with adjusted gas fees or other parameters to ensure successful completion.
+</Info>
+
+## Overview
+
+Transaction resubmission is essential for:
+- **Stuck transactions**: Transactions with insufficient gas fees that remain pending
+- **Failed transactions**: Transactions that failed due to network issues or insufficient funds
+- **Gas optimization**: Adjusting gas fees based on current network conditions
+- **Time-sensitive operations**: Ensuring critical transactions complete quickly
+
+<Tip>
+Resubmitting a transaction creates a new transaction with the same nonce but typically higher gas fees, which can help it get processed faster by miners.
+</Tip>
+
+## Prerequisites
+
+Before resubmitting a transaction, ensure you have:
+- The original transaction hash from the failed/stuck transaction
+- The blockchain network (secretType) where the transaction was submitted
+- The wallet owner's signing method credentials for authentication
+- Understanding of current network gas prices
+
+## Common Resubmission Scenarios
+
+<Steps>
+<Step title="Insufficient Gas Fees">
+Transaction was submitted with gas fees too low for current network conditions.
+</Step>
+
+<Step title="Network Congestion">
+High network traffic caused transaction delays or failures.
+</Step>
+
+<Step title="Smart Contract Errors">
+Contract interaction failed due to invalid parameters or contract state.
+</Step>
+
+<Step title="Temporary Network Issues">
+Network downtime or connectivity issues prevented transaction processing.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/resubmit
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Body | The blockchain network of the transaction | ✅ | `"ETHEREUM"` |
+| `transactionHash` | Body | Hash of the original transaction to resubmit | ✅ | `"0x0e305bdf01149c2e35ea6ffb48ab474d714aa03173b06427c6325f0693c59f92"` |
+
+<Warning>
+The deprecated `pincode` parameter should not be used. Always use the `Signing-Method` header for authentication.
+</Warning>
+
+## Code Examples
+
+<CodeGroup>
+
+```json Resubmit Ethereum Transaction
+{
+  "secretType": "ETHEREUM",
+  "transactionHash": "0x0e305bdf01149c2e35ea6ffb48ab474d714aa03173b06427c6325f0693c59f92"
+}
+```
+
+```json Resubmit Polygon Transaction
+{
+  "secretType": "MATIC",
+  "transactionHash": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9"
+}
+```
+
+```json Resubmit BSC Transaction
+{
+  "secretType": "BSC",
+  "transactionHash": "0x8ba1f109551bD432803012645Hac136c22C501e"
+}
+```
+
+</CodeGroup>
+
+### Full Request Example
+
+```http
+POST /api/transactions/resubmit
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+Content-Type: application/json
+
+{
+  "secretType": "ETHEREUM",
+  "transactionHash": "0x0e305bdf01149c2e35ea6ffb48ab474d714aa03173b06427c6325f0693c59f92"
+}
+```
+
+## Response Format
+
+### Success Response
+
+```json Resubmit Success
+{
+  "success": true,
+  "result": {
+    "transactionHash": "0xebe407f2b9987e1d37c371d395bdb603f5fc6eb43ac58711d77e7ed944b4261a"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.transactionHash` | Hash of the new resubmitted transaction |
+
+<Tip>
+The new transaction hash will be different from the original, but it will have the same nonce and typically higher gas fees for faster processing.
+</Tip>
+
+## Transaction Failure Scenarios
+
+<Accordion title="Common Failure Reasons and Solutions">
+
+**Insufficient Gas Fees**
+- **Problem**: Gas price set too low for current network conditions
+- **Solution**: Resubmit with higher gas fees based on current network prices
+- **Prevention**: Check current gas prices before submitting transactions
+
+**Network Congestion**
+- **Problem**: High network traffic causing delays
+- **Solution**: Resubmit during off-peak hours or with premium gas fees
+- **Prevention**: Monitor network congestion and time transactions accordingly
+
+**Insufficient Funds**
+- **Problem**: Wallet doesn't have enough tokens for transaction + gas
+- **Solution**: Add funds to wallet before resubmitting
+- **Prevention**: Always check balances before transactions
+
+**Smart Contract Errors**
+- **Problem**: Contract interaction failed due to invalid parameters
+- **Solution**: Review and correct transaction parameters before resubmitting
+- **Prevention**: Test contract interactions on testnets first
+
+**Nonce Issues**
+- **Problem**: Transaction nonce conflicts with pending transactions
+- **Solution**: Wait for pending transactions or cancel them first
+- **Prevention**: Implement proper nonce management
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Transaction Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "TRANSACTION_NOT_FOUND",
+  "message": "Transaction with the specified hash does not exist"
+}
+```
+
+**Transaction Already Confirmed**
+```json
+{
+  "success": false,
+  "errorCode": "TRANSACTION_ALREADY_CONFIRMED",
+  "message": "Cannot resubmit a transaction that has already been confirmed"
+}
+```
+
+**Insufficient Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_BALANCE",
+  "message": "Wallet does not have sufficient balance for resubmission"
+}
+```
+
+**Invalid Secret Type**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_SECRET_TYPE",
+  "message": "The specified blockchain is not supported"
+}
+```
+
+**Authentication Failed**
+```json
+{
+  "success": false,
+  "errorCode": "AUTHENTICATION_FAILED",
+  "message": "Invalid signing method credentials"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+<Warning>
+**Resubmission Guidelines:**
+
+1. **Check Transaction Status First**: Verify the transaction actually needs resubmission
+2. **Monitor Gas Prices**: Use current network conditions to determine optimal gas fees
+3. **Avoid Multiple Resubmissions**: Don't resubmit the same transaction multiple times rapidly
+4. **Verify Wallet Balance**: Ensure sufficient funds for both transaction and gas fees
+5. **Track New Transaction**: Monitor the new transaction hash for completion
+6. **Set Reasonable Timeouts**: Don't resubmit immediately; allow time for processing
+</Warning>
+
+## Gas Fee Strategy
+
+### Determining Optimal Gas Fees
+```javascript
+async function getOptimalGasPrice(secretType) {
+  // Get current gas prices
+  const gasResponse = await fetch(`/api/transactions/${secretType}/fees`);
+  const gasData = await gasResponse.json();
+  
+  if (gasData.success) {
+    // Use fast tier for resubmissions to ensure quick processing
+    const fastGasPrice = gasData.result[2]?.gasPrice; // Fast tier
+    return fastGasPrice;
+  }
+  
+  throw new Error('Unable to fetch current gas prices');
+}
+```
+
+### Resubmission Workflow
+```javascript
+async function resubmitWithOptimalGas(secretType, transactionHash, signingMethod) {
+  try {
+    // Step 1: Check if resubmission is needed
+    const statusResponse = await fetch(
+      `/api/transactions/${secretType}/${transactionHash}/status`
+    );
+    const statusData = await statusResponse.json();
+    
+    if (statusData.result.status === 'SUCCEEDED') {
+      return { message: 'Transaction already confirmed' };
+    }
+    
+    // Step 2: Resubmit transaction
+    const resubmitResponse = await fetch('/api/transactions/resubmit', {
+      method: 'POST',
+      headers: {
+        'Signing-Method': signingMethod,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        secretType,
+        transactionHash
+      })
+    });
+    
+    const result = await resubmitResponse.json();
+    
+    if (result.success) {
+      console.log(`Transaction resubmitted: ${result.result.transactionHash}`);
+      return result;
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('Resubmission failed:', error);
+    throw error;
+  }
+}
+```
+
+## Monitoring Resubmitted Transactions
+
+After resubmission, monitor the new transaction:
+
+1. **Track the new hash**: Use the returned transaction hash
+2. **Check status regularly**: Monitor for confirmation
+3. **Set appropriate timeouts**: Allow sufficient time for processing
+4. **Handle edge cases**: Be prepared for additional failures
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Monitor Transaction" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track the status of your resubmitted transaction
+</Card>
+<Card title="Check Gas Fees" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Get current gas prices for optimal resubmission
+</Card>
+<Card title="Cancel Transaction" icon="xmark" href="/Wallet-API-Basic-Guides/cancel-transaction">
+  Learn how to cancel stuck transactions
+</Card>
+<Card title="Transaction History" icon="clock-rotate-left" href="/Wallet-API-Basic-Guides/get-all-transactions">
+  View complete transaction history
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Transaction Lifecycle](https://docs.venly.io/docs/transaction-lifecycle)
+- Understand [Gas Optimization](https://docs.venly.io/docs/gas-optimization)
+- View [Network Status](https://docs.venly.io/docs/network-status)
+- Complete [API Reference](https://docs.venly.io/reference/resubmit)
+</Note>

@@ -1,0 +1,357 @@
+---
+title: "Retrieve ERC-20 Token Balances"
+description: "Learn how to check ERC-20 token balances for any wallet using multiple query methods."
+icon: "coins"
+---
+
+<Info>
+ERC-20 token balances include all smart contract tokens like USDC, USDT, DAI, and thousands of other tokens across supported blockchains.
+</Info>
+
+## Overview
+
+Checking ERC-20 token balances is essential for:
+- **Portfolio management**: Tracking all token holdings across wallets
+- **DeFi operations**: Verifying token balances before swaps or lending
+- **Payment validation**: Confirming token receipts and balances
+- **Application logic**: Making decisions based on specific token holdings
+
+<Tip>
+Use the `includePossibleSpam` parameter to filter out potential spam tokens and focus on legitimate holdings.
+</Tip>
+
+## Prerequisites
+
+To retrieve ERC-20 token balances, you need either:
+- A valid wallet ID from your Venly-managed wallets
+- OR a blockchain address and the corresponding network type
+- Optionally, a specific token contract address for targeted queries
+
+## Balance Query Methods
+
+<Steps>
+<Step title="All Tokens by Wallet ID">
+Get complete token portfolio for a Venly-managed wallet.
+</Step>
+
+<Step title="All Tokens by Address">
+Get complete token portfolio for any wallet address.
+</Step>
+
+<Step title="Specific Token by Wallet ID">
+Check balance of a particular token in a Venly-managed wallet.
+</Step>
+
+<Step title="Specific Token by Address">
+Check balance of a particular token in any wallet address.
+</Step>
+</Steps>
+
+## Method 1: Get All Tokens by Wallet ID
+
+Perfect for getting a complete overview of all ERC-20 tokens in a Venly-managed wallet.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{walletId}/balance/tokens
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet | ✅ | `"f21dc1e5-4253-487e-8927-3b5247437f99"` |
+| `includePossibleSpam` | Query | Include potential spam tokens | ❌ | `false` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get All Tokens (Exclude Spam)
+GET /api/wallets/f21dc1e5-4253-487e-8927-3b5247437f99/balance/tokens?includePossibleSpam=false
+```
+
+```http Get All Tokens (Include All)
+GET /api/wallets/f21dc1e5-4253-487e-8927-3b5247437f99/balance/tokens
+```
+
+</CodeGroup>
+
+## Method 2: Get All Tokens by Address
+
+Use this method to check any wallet address, including external wallets not managed by Venly.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{secretType}/{walletAddress}/balance/tokens
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `walletAddress` | Path | The wallet's blockchain address | ✅ | `"0x9f0847430a41ff52573857b49A87076e1748ed6A"` |
+| `includePossibleSpam` | Query | Include potential spam tokens | ❌ | `false` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get Ethereum Tokens
+GET /api/wallets/ETHEREUM/0x9f0847430a41ff52573857b49A87076e1748ed6A/balance/tokens
+```
+
+```http Get Polygon Tokens
+GET /api/wallets/MATIC/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9/balance/tokens
+```
+
+```http Get Arbitrum Tokens (No Spam)
+GET /api/wallets/ARBITRUM/0x9f0847430a41ff52573857b49A87076e1748ed6A/balance/tokens?includePossibleSpam=false
+```
+
+</CodeGroup>
+
+## Method 3: Get Specific Token by Wallet ID
+
+Check the balance of a particular token in a Venly-managed wallet.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{walletId}/balance/tokens/{tokenAddress}
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet | ✅ | `"f21dc1e5-4253-487e-8927-3b5247437f99"` |
+| `tokenAddress` | Path | Contract address of the token | ✅ | `"0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Check USDC Balance
+GET /api/wallets/f21dc1e5-4253-487e-8927-3b5247437f99/balance/tokens/0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9
+```
+
+```http Check UNI Balance
+GET /api/wallets/f21dc1e5-4253-487e-8927-3b5247437f99/balance/tokens/0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0
+```
+
+</CodeGroup>
+
+## Method 4: Get Specific Token by Address
+
+Check the balance of a particular token in any wallet address.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{secretType}/{walletAddress}/balance/tokens/{tokenAddress}
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `walletAddress` | Path | The wallet's blockchain address | ✅ | `"0x9f0847430a41ff52573857b49A87076e1748ed6A"` |
+| `tokenAddress` | Path | Contract address of the token | ✅ | `"0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Check USDC on Ethereum
+GET /api/wallets/ETHEREUM/0x9f0847430a41ff52573857b49A87076e1748ed6A/balance/tokens/0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9
+```
+
+```http Check USDT on Polygon
+GET /api/wallets/MATIC/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9/balance/tokens/0xc2132D05D31c914a87C6611C10748AEb04B58e8F
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Token Balance Response
+{
+  "success": true,
+  "result": [
+    {
+      "tokenAddress": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+      "rawBalance": "32876284951737501699",
+      "balance": 32.8762849517375,
+      "decimals": 18,
+      "symbol": "UNI",
+      "name": "Uniswap",
+      "logo": "https://logo.moralis.io/0xa4b1_0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0_53b65838dbb44ea0bf1ef10445f4da21",
+      "type": "ERC20",
+      "transferable": true,
+      "exchange": {
+        "usdPrice": 8.056647793652566,
+        "usdBalanceValue": 264.872648619909
+      },
+      "categories": [
+        "Automated Market Maker (AMM)",
+        "Decentralized Exchange (DEX)",
+        "Decentralized Finance (DeFi)"
+      ],
+      "links": {
+        "twitter": "https://twitter.com/Uniswap",
+        "website": "https://uniswap.org/",
+        "reddit": "https://www.reddit.com/r/Uniswap",
+        "discord": "https://discord.gg/FCfyBSbCU5"
+      },
+      "thumbnail": "https://logo.moralis.io/0xa4b1_0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0_53b65838dbb44ea0bf1ef10445f4da21",
+      "portfolioPercentage": "100"
+    }
+  ]
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `tokenAddress` | Contract address of the token |
+| `rawBalance` | Balance in smallest token unit |
+| `balance` | Human-readable balance amount |
+| `decimals` | Number of decimal places |
+| `symbol` | Token symbol (UNI, USDC, etc.) |
+| `name` | Full token name |
+| `logo` | Token logo URL |
+| `type` | Token standard (ERC20, ERC721, etc.) |
+| `transferable` | Whether the token can be transferred |
+| `exchange.usdPrice` | Current USD price per token |
+| `exchange.usdBalanceValue` | Total USD value of holdings |
+| `categories` | Token categories/tags |
+| `links` | Official project links |
+| `portfolioPercentage` | Percentage of total portfolio value |
+
+<Warning>
+Use `rawBalance` for precise calculations to avoid floating-point precision issues. The `balance` field is for display purposes only.
+</Warning>
+
+## Spam Token Filtering
+
+<Accordion title="Understanding Spam Tokens">
+
+**What are Spam Tokens?**
+- Tokens sent to wallets without permission
+- Often used for marketing or malicious purposes
+- Can clutter wallet interfaces and confuse users
+
+**Filtering Options:**
+- `includePossibleSpam=false` - Exclude suspected spam tokens
+- `includePossibleSpam=true` - Include all tokens (default)
+- Omit parameter - Include all tokens
+
+**Best Practice:**
+Use `includePossibleSpam=false` for user-facing applications to provide a cleaner experience.
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Invalid Token Address**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_TOKEN_ADDRESS",
+  "message": "The token contract address is invalid"
+}
+```
+
+**Unsupported Blockchain**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_SECRET_TYPE",
+  "message": "The specified blockchain is not supported"
+}
+```
+
+**Network Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "NETWORK_UNAVAILABLE",
+  "message": "Unable to fetch token data from the blockchain network"
+}
+```
+
+</Accordion>
+
+## Popular Token Addresses
+
+### Ethereum Mainnet
+| Token | Symbol | Contract Address |
+|-------|--------|------------------|
+| USD Coin | USDC | `0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9` |
+| Tether | USDT | `0xdAC17F958D2ee523a2206206994597C13D831ec7` |
+| Dai | DAI | `0x6B175474E89094C44Da98b954EedeAC495271d0F` |
+| Uniswap | UNI | `0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984` |
+
+### Polygon Network
+| Token | Symbol | Contract Address |
+|-------|--------|------------------|
+| USD Coin | USDC | `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174` |
+| Tether | USDT | `0xc2132D05D31c914a87C6611C10748AEb04B58e8F` |
+
+## Best Practices
+
+1. **Filter spam tokens** for better user experience
+2. **Cache token metadata** to reduce API calls
+3. **Use raw balances** for calculations
+4. **Handle empty results** gracefully
+5. **Display USD values** for user convenience
+6. **Verify token addresses** from official sources
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transfer ERC-20 Tokens" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-an-erc20-token">
+  Send ERC-20 tokens to other wallets
+</Card>
+<Card title="Check Native Balance" icon="scale-balanced" href="/Wallet-API-Basic-Guides/retrieve-native-wallet-balance">
+  View native token balances (ETH, MATIC, etc.)
+</Card>
+<Card title="View NFTs" icon="image" href="/Wallet-API-Basic-Guides/retrieve-non-fungible-tokens-1">
+  Check NFT holdings in the wallet
+</Card>
+<Card title="Get Transaction History" icon="clock-rotate-left" href="/Wallet-API-Basic-Guides/get-all-transactions">
+  View past token transactions
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [ERC-20 Standard](https://docs.venly.io/docs/erc20-tokens)
+- Understand [Token Metadata](https://docs.venly.io/docs/token-metadata)
+- View [Supported Blockchains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/viewtokenbalances)
+</Note>

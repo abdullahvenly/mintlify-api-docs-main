@@ -1,0 +1,501 @@
+---
+title: "Webhooks for Wallet API"
+description: "Learn how to configure and implement webhooks to receive real-time transaction notifications and automate your application workflows."
+icon: "webhook"
+---
+
+<Info>
+Webhooks provide real-time notifications for transaction events, allowing your application to respond immediately to successful or failed transactions without constant polling.
+</Info>
+
+## Overview
+
+Webhooks are essential for:
+- **Real-time notifications**: Instant updates on transaction status changes
+- **Automated workflows**: Triggering business logic based on transaction events
+- **User experience**: Providing immediate feedback to users about their transactions
+- **System integration**: Synchronizing transaction data with external systems
+
+<Tip>
+Configure webhooks through the Venly Developer Portal to receive notifications for all transactions across your wallets automatically.
+</Tip>
+
+## Prerequisites
+
+Before setting up webhooks, ensure you have:
+- Access to the [Venly Developer Portal](https://portal.venly.io/)
+- A publicly accessible endpoint URL that can receive POST requests
+- Authentication mechanism for your webhook endpoint
+- Understanding of webhook retry mechanisms and failure handling
+
+## Webhook Event Types
+
+<Steps>
+<Step title="Transaction Succeeded">
+Triggered when a transaction is successfully confirmed on the blockchain.
+</Step>
+
+<Step title="Transaction Failed">
+Triggered when a transaction fails during execution or confirmation.
+</Step>
+
+<Step title="Retry Mechanism">
+Failed webhook deliveries are retried up to 5 times with 10-second intervals.
+</Step>
+
+<Step title="Fallback Strategy">
+Use transaction status API as backup when webhooks fail to deliver.
+</Step>
+</Steps>
+
+## Webhook Configuration
+
+### Portal Setup Process
+
+<Steps>
+<Step title="Access Developer Portal">
+Navigate to the [Venly Developer Portal](https://portal.venly.io/) and log in to your account.
+</Step>
+
+<Step title="Select Wallet API Product">
+Click on the **Wallet API** product section to access webhook configuration.
+</Step>
+
+<Step title="Create New Webhook">
+Click the **Create webhook** button to start the configuration process.
+</Step>
+
+<Step title="Configure Webhook Details">
+Fill in the required information for your webhook endpoint.
+</Step>
+
+<Step title="Test and Activate">
+Verify your webhook configuration and activate it for production use.
+</Step>
+
+<Step title="Monitor and Manage">
+Use the portal to monitor webhook performance and make updates as needed.
+</Step>
+</Steps>
+
+### Configuration Parameters
+
+| Parameter | Description | Required | Example |
+|-----------|-------------|----------|---------|
+| **Description** | Human-readable description of the webhook | ✅ | `"Production transaction notifications"` |
+| **Endpoint URL** | Your server endpoint that accepts POST requests | ✅ | `"https://api.yourapp.com/webhooks/venly"` |
+| **Authentication Type** | Security method for webhook verification | ✅ | `Basic Auth`, `API Key`, `Custom Header` |
+| **Username/Header Name** | Authentication identifier | ✅ | `"webhook-user"` or `"X-API-Key"` |
+| **Password/API Key** | Authentication secret | ✅ | `"secure-password"` or `"your-api-key"` |
+
+<Warning>
+**Retry Mechanism**: If your endpoint is unavailable, Venly will retry delivery 5 times with 10-second intervals. After the final attempt, the message is permanently lost.
+</Warning>
+
+## Webhook Payload Structure
+
+### Success Event Payload
+
+```json Transaction Success Webhook
+{
+  "eventType": "TRANSACTION_SUCCEEDED",
+  "result": {
+    "hash": "0xa2b91d7032c71f6810aeb075c17de25c44af7fe7f75ad5c58ffd853d31fad5cd",
+    "status": "SUCCEEDED",
+    "confirmations": 5,
+    "blockHash": "0x35c20162d34a73fabbabcf5ed4d5f8585e3581f246a1a154ede1c01812cf405d",
+    "blockNumber": 46095097,
+    "hasReachedFinality": false,
+    "chain": "MATIC",
+    "nonce": 1,
+    "gas": 21000,
+    "gasUsed": 21000,
+    "gasPrice": 30000000016,
+    "from": "0x734dd2331ded9754ad8c39ddda8067a723cc36a9",
+    "to": "0x5e353f92bcaffcae9fd5c8d8ec530d63112f32fb",
+    "rawValue": 10000000000000000,
+    "value": 0.01,
+    "timestamp": "2024-02-19T10:48:33",
+    "logs": [
+      {
+        "logIndex": 0,
+        "data": "0x000000000000000000000000000000000000000000000000002386f26fc10000...",
+        "topics": [
+          "0xe6497e3ee548a3372136af2fcb0696db31fc6cf20260707645068bd3fe97f3c4",
+          "0x0000000000000000000000000000000000000000000000000000000000001010"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Failure Event Payload
+
+```json Transaction Failed Webhook
+{
+  "eventType": "TRANSACTION_FAILED",
+  "result": {
+    "hash": "0x68561b2a59413c372a1fab4353b8904e7460726cf3437621b9237ef2ce82d718",
+    "status": "FAILED",
+    "confirmations": 10,
+    "blockHash": "0x56b131735b33bc5502197d0416bbf3578efde89490d8a64aa5a463657ec3fbf0",
+    "blockNumber": 46099161,
+    "hasReachedFinality": false,
+    "chain": "MATIC",
+    "nonce": 25,
+    "gas": 500000,
+    "gasUsed": 26548,
+    "gasPrice": 30000000019,
+    "from": "0x96f06471cb1653617b778841106e40594f8d2105",
+    "to": "0xa89fc45fd76a4f46a48fcd0058ab28a3b9da55d5",
+    "rawValue": 0,
+    "value": 0.0,
+    "timestamp": "2024-02-19T13:12:29",
+    "logs": [
+      {
+        "logIndex": 0,
+        "data": "0x0000000000000000000000000000000000000000000000000002d45ba34957b4...",
+        "topics": [
+          "0x4dfe1bbbcf077ddc3e01291eea2d5c70c2b422b415d95645b9adcfd678cb1d63"
+        ]
+      }
+    ]
+  }
+}
+```
+
+### Payload Fields
+
+| Field | Description |
+|-------|-------------|
+| `eventType` | Type of event: `TRANSACTION_SUCCEEDED` or `TRANSACTION_FAILED` |
+| `result.hash` | Transaction hash on the blockchain |
+| `result.status` | Transaction status: `SUCCEEDED` or `FAILED` |
+| `result.confirmations` | Number of block confirmations |
+| `result.chain` | Blockchain network (ETHEREUM, MATIC, BSC, etc.) |
+| `result.from` | Sender wallet address |
+| `result.to` | Recipient wallet address |
+| `result.value` | Transaction amount in human-readable format |
+| `result.rawValue` | Transaction amount in smallest unit (wei) |
+| `result.gasUsed` | Actual gas consumed by the transaction |
+| `result.timestamp` | Transaction timestamp |
+| `result.logs` | Event logs emitted by the transaction |
+
+## Webhook Implementation
+
+### Basic Webhook Handler
+
+<CodeGroup>
+
+```javascript Node.js Express Handler
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
+app.use(express.json());
+
+// Webhook endpoint
+app.post('/webhooks/venly', (req, res) => {
+  try {
+    // Verify authentication (example with API key)
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== process.env.WEBHOOK_API_KEY) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const { eventType, result } = req.body;
+    
+    // Process the webhook based on event type
+    switch (eventType) {
+      case 'TRANSACTION_SUCCEEDED':
+        handleTransactionSuccess(result);
+        break;
+      case 'TRANSACTION_FAILED':
+        handleTransactionFailure(result);
+        break;
+      default:
+        console.log('Unknown event type:', eventType);
+    }
+    
+    // Always respond with 200 to acknowledge receipt
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+function handleTransactionSuccess(transaction) {
+  console.log(`Transaction ${transaction.hash} succeeded`);
+  
+  // Update database
+  updateTransactionStatus(transaction.hash, 'SUCCEEDED');
+  
+  // Notify user
+  notifyUser(transaction.from, 'Transaction completed successfully');
+  
+  // Trigger business logic
+  processSuccessfulPayment(transaction);
+}
+
+function handleTransactionFailure(transaction) {
+  console.log(`Transaction ${transaction.hash} failed`);
+  
+  // Update database
+  updateTransactionStatus(transaction.hash, 'FAILED');
+  
+  // Notify user
+  notifyUser(transaction.from, 'Transaction failed');
+  
+  // Handle failure logic
+  processFailedPayment(transaction);
+}
+```
+
+```python Python Flask Handler
+from flask import Flask, request, jsonify
+import hashlib
+import hmac
+import os
+
+app = Flask(__name__)
+
+@app.route('/webhooks/venly', methods=['POST'])
+def handle_webhook():
+    try:
+        # Verify authentication
+        api_key = request.headers.get('X-API-Key')
+        if api_key != os.environ.get('WEBHOOK_API_KEY'):
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        data = request.get_json()
+        event_type = data.get('eventType')
+        result = data.get('result')
+        
+        # Process webhook based on event type
+        if event_type == 'TRANSACTION_SUCCEEDED':
+            handle_transaction_success(result)
+        elif event_type == 'TRANSACTION_FAILED':
+            handle_transaction_failure(result)
+        else:
+            print(f'Unknown event type: {event_type}')
+        
+        return jsonify({'received': True}), 200
+    
+    except Exception as e:
+        print(f'Webhook processing error: {e}')
+        return jsonify({'error': 'Internal server error'}), 500
+
+def handle_transaction_success(transaction):
+    print(f"Transaction {transaction['hash']} succeeded")
+    
+    # Update database
+    update_transaction_status(transaction['hash'], 'SUCCEEDED')
+    
+    # Notify user
+    notify_user(transaction['from'], 'Transaction completed successfully')
+
+def handle_transaction_failure(transaction):
+    print(f"Transaction {transaction['hash']} failed")
+    
+    # Update database
+    update_transaction_status(transaction['hash'], 'FAILED')
+    
+    # Notify user
+    notify_user(transaction['from'], 'Transaction failed')
+```
+
+</CodeGroup>
+
+## Security Best Practices
+
+<Warning>
+**Security Considerations:**
+
+1. **Verify Authentication**: Always validate the authentication credentials
+2. **Use HTTPS**: Ensure your webhook endpoint uses SSL/TLS encryption
+3. **Validate Payload**: Check the payload structure and required fields
+4. **Implement Rate Limiting**: Protect against potential abuse
+5. **Log Webhook Events**: Maintain audit trails for debugging and compliance
+6. **Handle Duplicates**: Implement idempotency to handle duplicate deliveries
+</Warning>
+
+### Authentication Examples
+
+<CodeGroup>
+
+```javascript Basic Authentication
+const auth = req.headers.authorization;
+if (!auth || !auth.startsWith('Basic ')) {
+  return res.status(401).json({ error: 'Missing Basic Auth' });
+}
+
+const credentials = Buffer.from(auth.slice(6), 'base64').toString();
+const [username, password] = credentials.split(':');
+
+if (username !== process.env.WEBHOOK_USERNAME || 
+    password !== process.env.WEBHOOK_PASSWORD) {
+  return res.status(401).json({ error: 'Invalid credentials' });
+}
+```
+
+```javascript API Key Authentication
+const apiKey = req.headers['x-api-key'];
+if (!apiKey || apiKey !== process.env.WEBHOOK_API_KEY) {
+  return res.status(401).json({ error: 'Invalid API key' });
+}
+```
+
+```javascript Custom Header Authentication
+const signature = req.headers['x-venly-signature'];
+const expectedSignature = crypto
+  .createHmac('sha256', process.env.WEBHOOK_SECRET)
+  .update(JSON.stringify(req.body))
+  .digest('hex');
+
+if (signature !== expectedSignature) {
+  return res.status(401).json({ error: 'Invalid signature' });
+}
+```
+
+</CodeGroup>
+
+## Error Handling and Reliability
+
+### Idempotency Implementation
+
+```javascript
+const processedTransactions = new Set();
+
+app.post('/webhooks/venly', (req, res) => {
+  const { result } = req.body;
+  const transactionHash = result.hash;
+  
+  // Check if we've already processed this transaction
+  if (processedTransactions.has(transactionHash)) {
+    console.log(`Duplicate webhook for transaction ${transactionHash}`);
+    return res.status(200).json({ received: true, duplicate: true });
+  }
+  
+  // Process the transaction
+  processTransaction(result);
+  
+  // Mark as processed
+  processedTransactions.add(transactionHash);
+  
+  res.status(200).json({ received: true });
+});
+```
+
+### Fallback Strategy
+
+```javascript
+// Fallback function to check transaction status
+async function checkTransactionStatus(transactionHash, chain) {
+  try {
+    const response = await fetch(
+      `/api/transactions/${chain}/${transactionHash}/status`
+    );
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result.status;
+    }
+  } catch (error) {
+    console.error('Failed to check transaction status:', error);
+  }
+  
+  return null;
+}
+
+// Use fallback when webhook delivery fails
+async function handleMissedWebhook(transactionHash, chain) {
+  const status = await checkTransactionStatus(transactionHash, chain);
+  
+  if (status === 'SUCCEEDED') {
+    // Process as if webhook was received
+    handleTransactionSuccess({ hash: transactionHash, status });
+  } else if (status === 'FAILED') {
+    handleTransactionFailure({ hash: transactionHash, status });
+  }
+}
+```
+
+## Testing Webhooks
+
+### Local Development Setup
+
+```bash
+# Use ngrok to expose local server for testing
+npm install -g ngrok
+
+# Start your local server
+node webhook-server.js
+
+# In another terminal, expose it publicly
+ngrok http 3000
+
+# Use the ngrok URL in your webhook configuration
+# Example: https://abc123.ngrok.io/webhooks/venly
+```
+
+### Webhook Testing Tool
+
+```javascript
+// Simple webhook testing server
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+app.post('/webhooks/venly', (req, res) => {
+  console.log('Received webhook:');
+  console.log('Headers:', req.headers);
+  console.log('Body:', JSON.stringify(req.body, null, 2));
+  
+  res.status(200).json({ 
+    received: true, 
+    timestamp: new Date().toISOString() 
+  });
+});
+
+app.listen(3000, () => {
+  console.log('Webhook test server running on port 3000');
+});
+```
+
+## Best Practices
+
+1. **Respond Quickly**: Return HTTP 200 within 30 seconds
+2. **Process Asynchronously**: Handle heavy processing in background jobs
+3. **Implement Monitoring**: Track webhook delivery success rates
+4. **Use Database Transactions**: Ensure data consistency
+5. **Handle Retries Gracefully**: Implement idempotency for duplicate events
+6. **Log Everything**: Maintain comprehensive logs for debugging
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transaction Status" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Use as fallback when webhooks fail to deliver
+</Card>
+<Card title="Portal Configuration" icon="gear" href="https://portal.venly.io/">
+  Configure and manage your webhooks
+</Card>
+<Card title="Security Guide" icon="shield" href="/Wallet-API-Basic-Guides/webhook-security">
+  Implement robust webhook security
+</Card>
+<Card title="Monitoring Setup" icon="chart-line" href="/Wallet-API-Basic-Guides/webhook-monitoring">
+  Monitor webhook performance and reliability
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Watch the [Webhooks Video Tutorial](https://www.loom.com/embed/ca8b6560fc234186868d8c0b18d0ae16)
+- Learn about [Webhook Security](https://docs.venly.io/docs/webhook-security)
+- Understand [Event Types](https://docs.venly.io/docs/webhook-events)
+- View [Developer Portal Guide](https://docs.venly.io/docs/developer-portal)
+</Note>

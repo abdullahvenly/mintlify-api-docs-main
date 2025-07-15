@@ -1,0 +1,351 @@
+---
+title: "Create User Signing Methods"
+description: "Learn how to create and manage authentication methods for users including PIN, biometric, and emergency codes."
+icon: "key"
+---
+
+<Info>
+Signing methods are authentication mechanisms that grant users secure access to their wallets. They act like passwords for wallet operations and transaction signing.
+</Info>
+
+## Overview
+
+Signing methods are essential for:
+- **Wallet security**: Protecting user wallets from unauthorized access
+- **Transaction authentication**: Verifying user identity for transactions
+- **Multi-factor authentication**: Providing multiple security layers
+- **Account recovery**: Enabling secure wallet recovery options
+
+<Tip>
+The first signing method for any user must always be a PIN. Additional signing methods can be added later for enhanced security.
+</Tip>
+
+## Prerequisites
+
+Before creating signing methods, ensure you have:
+- A valid user ID for an existing user
+- Understanding of signing method types and their use cases
+- For additional signing methods: existing signing method credentials for authentication
+
+## Signing Method Types
+
+<Steps>
+<Step title="PIN (Required First)">
+6-digit numeric code that serves as the primary authentication method.
+</Step>
+
+<Step title="Emergency Code">
+25-character backup code for account recovery when PIN is lost.
+</Step>
+
+<Step title="Biometric">
+Fingerprint, Face ID, or other biometric authentication for mobile apps.
+</Step>
+
+<Step title="Password">
+Text-based password for additional security layers.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/users/{userId}/signing-methods
+```
+
+### Headers (For Additional Signing Methods)
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using existing signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+The first signing method (PIN) does not require authentication headers. All subsequent signing methods require authentication using an existing signing method.
+</Warning>
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Path | ID of the user to create signing method for | ✅ | `"aee7260f-9348-4b73-b06b-f62c0f9751e4"` |
+| `type` | Body | Type of signing method | ✅ | `"PIN"` |
+| `value` | Body | Value for the signing method | ❌ | `"123456"` |
+| `physicalDeviceId` | Body | Device ID for biometric authentication | ❌ | `"device_fingerprint_001"` |
+
+## Code Examples
+
+### Create First PIN (No Authentication Required)
+
+<CodeGroup>
+
+```json Create Initial PIN
+{
+  "type": "PIN",
+  "value": "123456"
+}
+```
+
+```json Create PIN with Strong Code
+{
+  "type": "PIN",
+  "value": "789012"
+}
+```
+
+</CodeGroup>
+
+### Create Additional Signing Methods (Authentication Required)
+
+<CodeGroup>
+
+```json Create Emergency Code (Auto-Generated)
+{
+  "type": "EMERGENCY_CODE"
+}
+```
+
+```json Create Custom Emergency Code
+{
+  "type": "EMERGENCY_CODE",
+  "value": "ABCD-EFGH-IJKL-MNOP-QRST"
+}
+```
+
+```json Create Biometric Method
+{
+  "type": "BIOMETRIC",
+  "physicalDeviceId": "iPhone_FaceID_User123"
+}
+```
+
+```json Create Password Method
+{
+  "type": "PASSWORD",
+  "value": "MySecurePassword123!"
+}
+```
+
+</CodeGroup>
+
+### Full Request Examples
+
+```http Create First PIN
+POST /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4/signing-methods
+Content-Type: application/json
+
+{
+  "type": "PIN",
+  "value": "123456"
+}
+```
+
+```http Create Emergency Code (With Authentication)
+POST /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4/signing-methods
+Signing-Method: f3371883-2024-469b-a122-ca22f58ba6b9:123456
+Content-Type: application/json
+
+{
+  "type": "EMERGENCY_CODE"
+}
+```
+
+## Response Format
+
+### Success Response
+
+```json Signing Method Created
+{
+  "success": true,
+  "result": {
+    "id": "f3371883-2024-469b-a122-ca22f58ba6b9",
+    "type": "PIN",
+    "incorrectAttempts": 0,
+    "remainingAttempts": 10,
+    "hasMasterSecret": true
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | Unique ID of the created signing method |
+| `result.type` | Type of signing method created |
+| `result.incorrectAttempts` | Current count of failed attempts |
+| `result.remainingAttempts` | Remaining attempts before lockout |
+| `result.hasMasterSecret` | Whether method has master secret access |
+
+## Signing Method Details
+
+### PIN Requirements
+<Accordion title="PIN Specifications">
+
+**Format Requirements:**
+- Exactly 6 digits
+- Numeric characters only
+- No special characters or letters
+
+**Security Considerations:**
+- Avoid sequential numbers (123456, 654321)
+- Avoid repeated digits (111111, 222222)
+- Use random combinations when possible
+
+**Examples:**
+- ✅ Good: `"847392"`, `"501847"`
+- ❌ Bad: `"123456"`, `"000000"`, `"111111"`
+
+</Accordion>
+
+### Emergency Code Format
+<Accordion title="Emergency Code Specifications">
+
+**Auto-Generated (Recommended):**
+- Leave `value` empty for automatic generation
+- 25 characters with proper entropy
+- Cryptographically secure random generation
+
+**Custom Format:**
+- Exactly 25 characters
+- Alphanumeric characters
+- High entropy recommended
+
+**Example Auto-Generated:**
+`"ABCD-EFGH-IJKL-MNOP-QRSTU"`
+
+</Accordion>
+
+### Biometric Authentication
+<Accordion title="Biometric Setup">
+
+**Physical Device ID:**
+- Unique identifier for the biometric sensor
+- Should be consistent across app sessions
+- Examples: `"iPhone_TouchID_User123"`, `"Android_Fingerprint_Device456"`
+
+**Supported Types:**
+- Fingerprint scanners
+- Face recognition
+- Voice recognition
+- Iris scanners
+
+**Implementation Notes:**
+- Device ID should be generated by your application
+- Must be unique per user per device
+- Store securely on the client side
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Invalid PIN Format**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PIN_FORMAT",
+  "message": "PIN must be exactly 6 digits"
+}
+```
+
+**User Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Duplicate Signing Method**
+```json
+{
+  "success": false,
+  "errorCode": "SIGNING_METHOD_EXISTS",
+  "message": "A signing method of this type already exists for this user"
+}
+```
+
+**Authentication Required**
+```json
+{
+  "success": false,
+  "errorCode": "AUTHENTICATION_REQUIRED",
+  "message": "Valid signing method required for creating additional authentication methods"
+}
+```
+
+**Invalid Emergency Code**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_EMERGENCY_CODE",
+  "message": "Emergency code must be exactly 25 characters"
+}
+```
+
+</Accordion>
+
+## Security Best Practices
+
+<Warning>
+**Security Guidelines:**
+
+1. **PIN Security**: Use random 6-digit combinations, avoid predictable patterns
+2. **Emergency Codes**: Always use auto-generated codes for maximum security
+3. **Biometric IDs**: Ensure device IDs are unique and properly managed
+4. **Multiple Methods**: Implement multiple signing methods for better security
+5. **Secure Storage**: Never store signing method values in plain text
+6. **Rate Limiting**: Monitor and limit failed authentication attempts
+</Warning>
+
+## Signing Method Workflow
+
+### Recommended Setup Order
+1. **Create PIN** (required first step)
+2. **Add Emergency Code** (for account recovery)
+3. **Add Biometric** (for convenience on mobile)
+4. **Add Password** (for additional security if needed)
+
+### Authentication Hierarchy
+- **PIN**: Primary authentication for most operations
+- **Emergency Code**: Recovery when PIN is lost
+- **Biometric**: Convenient authentication for frequent use
+- **Password**: Additional security layer for sensitive operations
+
+## Best Practices
+
+1. **Always create PIN first** - Required for initial setup
+2. **Generate emergency codes automatically** - Better security than custom codes
+3. **Use meaningful device IDs** - For biometric method tracking
+4. **Implement proper error handling** - For failed authentication attempts
+5. **Monitor signing method usage** - Track authentication patterns
+6. **Provide recovery options** - Multiple methods for account access
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Update Signing Methods" icon="pen" href="/Wallet-API-Basic-Guides/update-users-signing-method">
+  Learn how to update existing signing methods
+</Card>
+<Card title="Delete Signing Methods" icon="trash" href="/Wallet-API-Basic-Guides/delete-users-signing-method">
+  Remove signing methods when no longer needed
+</Card>
+<Card title="Create Wallets" icon="wallet" href="/Wallet-API-Basic-Guides/create-a-wallet">
+  Create wallets for users with signing methods
+</Card>
+<Card title="User Management" icon="users" href="/Wallet-API-Basic-Guides/retrieve-a-user">
+  Manage user accounts and their signing methods
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Signing Methods](https://docs.venly.io/docs/signing-methods)
+- Understand [Authentication Security](https://docs.venly.io/docs/authentication-security)
+- View [User Management](https://docs.venly.io/docs/user-management)
+- Complete [API Reference](https://docs.venly.io/reference/createsigningmethod)
+</Note>

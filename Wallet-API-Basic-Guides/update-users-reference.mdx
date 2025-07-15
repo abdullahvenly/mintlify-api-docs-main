@@ -1,0 +1,356 @@
+---
+title: "Update User Reference"
+description: "Learn how to update user reference information for better organization and identification."
+icon: "user-pen"
+---
+
+<Info>
+User reference updates allow you to modify the custom identifier associated with a user account, helping with organization and external system integration.
+</Info>
+
+## Overview
+
+Updating user references is essential for:
+- **System integration**: Syncing with external databases and CRM systems
+- **User organization**: Categorizing users by department, role, or project
+- **Data migration**: Updating references during system migrations
+- **Business logic**: Implementing custom user identification schemes
+
+<Tip>
+User references are optional but highly recommended for maintaining clear relationships between your application's user data and Venly user accounts.
+</Tip>
+
+## Prerequisites
+
+Before updating a user reference, ensure you have:
+- A valid user ID for the account to be updated
+- The new reference value you want to assign
+- Understanding of your reference naming conventions
+- No authentication required for this operation
+
+## Reference Update Process
+
+<Steps>
+<Step title="Identify Target User">
+Locate the user account that needs a reference update.
+</Step>
+
+<Step title="Prepare New Reference">
+Define the new reference value following your naming conventions.
+</Step>
+
+<Step title="Submit Update Request">
+Send the update request with the new reference value.
+</Step>
+
+<Step title="Verify Changes">
+Confirm the reference has been updated successfully.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+PUT /api/users/{userId}
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Path | The unique ID of the user to update | ✅ | `"07cc0aa5-0f98-4a4e-9c55-686124e0f0e4"` |
+| `reference` | Body | The new reference value | ❌ | `"customer_john_doe_2024"` |
+
+<Warning>
+While the reference parameter is optional, providing an empty or null value will clear the existing reference. Ensure this is intentional.
+</Warning>
+
+## Code Examples
+
+<CodeGroup>
+
+```json Update to Customer Reference
+{
+  "reference": "customer_john_doe_2024"
+}
+```
+
+```json Update to Employee Reference
+{
+  "reference": "employee_marketing_jane_smith"
+}
+```
+
+```json Update to Project Reference
+{
+  "reference": "project_alpha_user_001"
+}
+```
+
+```json Clear Reference (Set to Empty)
+{
+  "reference": ""
+}
+```
+
+</CodeGroup>
+
+### Full Request Examples
+
+```http Update Customer Reference
+PUT /api/users/07cc0aa5-0f98-4a4e-9c55-686124e0f0e4
+Content-Type: application/json
+
+{
+  "reference": "customer_john_doe_2024"
+}
+```
+
+```http Update Department Reference
+PUT /api/users/aee7260f-9348-4b73-b06b-f62c0f9751e4
+Content-Type: application/json
+
+{
+  "reference": "dept_finance_user_456"
+}
+```
+
+## Response Format
+
+### Success Response
+
+```json User Update Success
+{
+  "success": true,
+  "result": {
+    "id": "07cc0aa5-0f98-4a4e-9c55-686124e0f0e4",
+    "reference": "customer_john_doe_2024",
+    "createdAt": "2023-12-06T14:53:13.985862"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | The unique user identifier |
+| `result.reference` | The updated reference value |
+| `result.createdAt` | Original user creation timestamp |
+
+<Tip>
+The response includes the complete updated user information, allowing you to verify the reference change was applied correctly.
+</Tip>
+
+## Reference Naming Conventions
+
+<Accordion title="Best Practices for Reference Values">
+
+**Consistent Formatting:**
+- Use consistent separators (underscores, hyphens, dots)
+- Maintain consistent case (lowercase, camelCase, etc.)
+- Follow a predictable pattern across all users
+
+**Meaningful Identifiers:**
+- Include relevant context (customer, employee, project)
+- Add dates or versions when applicable
+- Use human-readable components
+
+**Examples of Good References:**
+- `customer_john_doe_2024`
+- `employee_marketing_jane_smith`
+- `project_alpha_user_001`
+- `dept_finance_manager_bob`
+- `external_api_user_12345`
+
+**Avoid:**
+- Special characters that might cause issues in URLs
+- Extremely long references (keep under 100 characters)
+- Sensitive information like SSNs or passwords
+- References that might conflict with system IDs
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**User Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Invalid User ID Format**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_USER_ID",
+  "message": "The user ID format is invalid"
+}
+```
+
+**Reference Too Long**
+```json
+{
+  "success": false,
+  "errorCode": "REFERENCE_TOO_LONG",
+  "message": "Reference value exceeds maximum allowed length"
+}
+```
+
+**Invalid Characters**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_REFERENCE_FORMAT",
+  "message": "Reference contains invalid characters"
+}
+```
+
+</Accordion>
+
+## Use Cases and Examples
+
+### Customer Management System
+```javascript
+async function updateCustomerReference(userId, customerId, customerName) {
+  const reference = `customer_${customerId}_${customerName.toLowerCase().replace(/\s+/g, '_')}`;
+  
+  const response = await fetch(`/api/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ reference })
+  });
+  
+  return await response.json();
+}
+```
+
+### Employee Onboarding
+```javascript
+async function assignEmployeeReference(userId, department, role, employeeId) {
+  const reference = `emp_${department}_${role}_${employeeId}`;
+  
+  const response = await fetch(`/api/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ reference })
+  });
+  
+  return await response.json();
+}
+```
+
+### Project Assignment
+```javascript
+async function assignProjectReference(userId, projectCode, userRole) {
+  const timestamp = new Date().getFullYear();
+  const reference = `project_${projectCode}_${userRole}_${timestamp}`;
+  
+  const response = await fetch(`/api/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ reference })
+  });
+  
+  return await response.json();
+}
+```
+
+## Integration Patterns
+
+### Bulk Reference Updates
+```javascript
+async function bulkUpdateReferences(userUpdates) {
+  const results = [];
+  
+  for (const update of userUpdates) {
+    try {
+      const response = await fetch(`/api/users/${update.userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reference: update.reference })
+      });
+      
+      const result = await response.json();
+      results.push({ userId: update.userId, success: result.success });
+    } catch (error) {
+      results.push({ userId: update.userId, success: false, error: error.message });
+    }
+  }
+  
+  return results;
+}
+```
+
+### Reference Validation
+```javascript
+function validateReference(reference) {
+  // Check length
+  if (reference.length > 100) {
+    return { valid: false, error: 'Reference too long' };
+  }
+  
+  // Check for invalid characters
+  const validPattern = /^[a-zA-Z0-9_\-\.]+$/;
+  if (!validPattern.test(reference)) {
+    return { valid: false, error: 'Invalid characters in reference' };
+  }
+  
+  // Check for meaningful content
+  if (reference.length < 3) {
+    return { valid: false, error: 'Reference too short' };
+  }
+  
+  return { valid: true };
+}
+```
+
+## Best Practices
+
+1. **Plan your reference scheme** before implementing
+2. **Use consistent formatting** across all users
+3. **Include meaningful context** in references
+4. **Validate references** before updating
+5. **Document your conventions** for team consistency
+6. **Consider future needs** when designing reference patterns
+7. **Test with edge cases** to ensure robustness
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Retrieve User Info" icon="user" href="/Wallet-API-Basic-Guides/retrieve-a-user">
+  View updated user information and verify changes
+</Card>
+<Card title="Manage Signing Methods" icon="key" href="/Wallet-API-Basic-Guides/update-users-signing-method">
+  Update user authentication methods
+</Card>
+<Card title="User Management" icon="users" href="/Wallet-API-Basic-Guides/create-a-user">
+  Learn about comprehensive user management
+</Card>
+<Card title="Delete User" icon="user-minus" href="/Wallet-API-Basic-Guides/delete-a-user">
+  Remove user accounts when no longer needed
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [User Management](https://docs.venly.io/docs/user-management)
+- Understand [Reference Best Practices](https://docs.venly.io/docs/reference-conventions)
+- View [Data Organization](https://docs.venly.io/docs/data-organization)
+- Complete [API Reference](https://docs.venly.io/reference/updateuser)
+</Note>

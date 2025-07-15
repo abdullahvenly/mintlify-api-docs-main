@@ -1,0 +1,306 @@
+---
+title: "Get Gas Fees"
+description: "Learn how to retrieve current gas prices and estimate transaction costs for optimal fee management."
+icon: "gas-pump"
+---
+
+<Info>
+Gas fees are the cost of executing transactions on blockchain networks. Understanding and optimizing gas fees is crucial for cost-effective blockchain operations.
+</Info>
+
+## Overview
+
+Gas fee management is essential for:
+- **Cost optimization**: Choosing the right fee level for your transaction priority
+- **Transaction timing**: Deciding when to submit transactions based on network conditions
+- **Budget planning**: Estimating costs for batch operations or regular transactions
+- **User experience**: Providing accurate fee estimates to users
+
+<Tip>
+Gas prices fluctuate based on network congestion. Check current fees before submitting important transactions to avoid overpaying or delays.
+</Tip>
+
+## Prerequisites
+
+To retrieve gas fees, you need:
+- The blockchain network you want to query
+- No authentication required (public network data)
+- Understanding of gas price units (wei, gwei)
+
+## Gas Fee Concepts
+
+<Steps>
+<Step title="Gas Price">
+The price per unit of gas, typically measured in gwei (1 gwei = 10^9 wei).
+</Step>
+
+<Step title="Gas Limit">
+The maximum amount of gas a transaction can consume.
+</Step>
+
+<Step title="Transaction Cost">
+Total cost = Gas Price × Gas Limit (paid in native tokens).
+</Step>
+
+<Step title="Fee Tiers">
+Different speed/cost options: slow (cheap), standard, fast (expensive).
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+GET /api/transactions/{secretType}/fees
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network to query | ✅ | `"ETHEREUM"` |
+
+## Code Examples
+
+<CodeGroup>
+
+```http Get Ethereum Gas Fees
+GET /api/transactions/ETHEREUM/fees
+```
+
+```http Get Polygon Gas Fees
+GET /api/transactions/MATIC/fees
+```
+
+```http Get BSC Gas Fees
+GET /api/transactions/BSC/fees
+```
+
+```http Get Avalanche Gas Fees
+GET /api/transactions/AVAX/fees
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Gas Fees Response
+{
+  "success": true,
+  "result": [
+    {
+      "gasPrice": 15000000000,
+      "defaultPrice": false
+    },
+    {
+      "gasPrice": 21450000000,
+      "defaultPrice": true
+    },
+    {
+      "gasPrice": 25300000000,
+      "defaultPrice": false
+    },
+    {
+      "gasPrice": 29700000000,
+      "defaultPrice": false
+    }
+  ]
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `gasPrice` | Gas price in wei (smallest unit) |
+| `defaultPrice` | Whether this is the recommended default price |
+
+## Fee Tier Interpretation
+
+The response typically contains 4 fee tiers:
+
+<Accordion title="Fee Tier Breakdown">
+
+**Slow (Economy) - Index 0**
+- Lowest gas price
+- Longer confirmation time (5-30 minutes)
+- Best for non-urgent transactions
+
+**Standard (Recommended) - Index 1**
+- `defaultPrice: true`
+- Balanced speed and cost
+- Typical confirmation time (2-5 minutes)
+
+**Fast - Index 2**
+- Higher gas price
+- Faster confirmation (1-2 minutes)
+- Good for time-sensitive transactions
+
+**Fastest - Index 3**
+- Highest gas price
+- Quickest confirmation (30 seconds - 1 minute)
+- Use for urgent transactions only
+
+</Accordion>
+
+## Gas Price Conversion
+
+<Warning>
+Gas prices are returned in wei. Use these conversions for better understanding:
+- **1 ETH** = 10^18 wei
+- **1 gwei** = 10^9 wei
+- **1 gwei** = 0.000000001 ETH
+</Warning>
+
+### Conversion Examples
+
+```javascript
+// Convert wei to gwei
+const gasPriceWei = 21450000000;
+const gasPriceGwei = gasPriceWei / 1000000000; // 21.45 gwei
+
+// Calculate transaction cost
+const gasLimit = 21000; // Standard transfer
+const totalCostWei = gasPriceWei * gasLimit; // 450,450,000,000,000 wei
+const totalCostEth = totalCostWei / 1000000000000000000; // ~0.00045 ETH
+```
+
+## Transaction Cost Estimation
+
+### Common Gas Limits
+
+| Transaction Type | Typical Gas Limit |
+|------------------|-------------------|
+| Native token transfer | 21,000 |
+| ERC-20 token transfer | 65,000 |
+| Smart contract interaction | 100,000-500,000 |
+| NFT transfer | 85,000 |
+| Uniswap swap | 150,000-300,000 |
+
+### Cost Calculation Example
+
+```javascript
+// Example: ERC-20 transfer on Ethereum
+const gasPrice = 21450000000; // wei (21.45 gwei)
+const gasLimit = 65000; // ERC-20 transfer
+const totalCost = gasPrice * gasLimit; // 1,394,250,000,000,000 wei
+const costInEth = totalCost / 1000000000000000000; // ~0.00139 ETH
+
+// At $2000 per ETH = ~$2.78 transaction cost
+```
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Unsupported Blockchain**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_SECRET_TYPE",
+  "message": "The specified blockchain is not supported"
+}
+```
+
+**Network Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "NETWORK_UNAVAILABLE",
+  "message": "Unable to fetch gas price data from the blockchain network"
+}
+```
+
+**Rate Limit Exceeded**
+```json
+{
+  "success": false,
+  "errorCode": "RATE_LIMIT_EXCEEDED",
+  "message": "Too many requests. Please try again later"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+1. **Check fees before transactions**: Always get current prices
+2. **Choose appropriate tier**: Balance cost vs. speed based on urgency
+3. **Monitor network conditions**: Avoid peak congestion times when possible
+4. **Set reasonable limits**: Don't always use the fastest option
+5. **Cache responsibly**: Don't fetch fees too frequently (every 30-60 seconds max)
+6. **Handle fluctuations**: Gas prices can change rapidly during high activity
+
+## Integration Examples
+
+### Fee Selection Logic
+```javascript
+async function selectOptimalGasPrice(secretType, urgency = 'standard') {
+  const response = await fetch(`/api/transactions/${secretType}/fees`);
+  const data = await response.json();
+  
+  if (!data.success) {
+    throw new Error('Failed to fetch gas prices');
+  }
+  
+  const fees = data.result;
+  
+  switch (urgency) {
+    case 'slow':
+      return fees[0].gasPrice;
+    case 'standard':
+      return fees.find(f => f.defaultPrice)?.gasPrice || fees[1].gasPrice;
+    case 'fast':
+      return fees[2].gasPrice;
+    case 'fastest':
+      return fees[3].gasPrice;
+    default:
+      return fees.find(f => f.defaultPrice)?.gasPrice;
+  }
+}
+```
+
+## Network-Specific Considerations
+
+### Ethereum
+- High gas prices during network congestion
+- Consider Layer 2 solutions for frequent transactions
+- Gas prices vary significantly throughout the day
+
+### Polygon
+- Generally lower and more stable gas prices
+- Less congestion than Ethereum mainnet
+- Faster block times mean quicker confirmations
+
+### BSC
+- Moderate gas prices
+- Good balance of speed and cost
+- Popular for DeFi applications
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transfer Tokens" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-a-native-token-1">
+  Use optimal gas prices for token transfers
+</Card>
+<Card title="Specific Transaction Fees" icon="calculator" href="/Wallet-API-Basic-Guides/get-fees-for-a-specific-transaction">
+  Get precise fee estimates for specific transactions
+</Card>
+<Card title="Monitor Transactions" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track transaction confirmation with your chosen gas price
+</Card>
+<Card title="Resubmit Transactions" icon="rotate-right" href="/Wallet-API-Basic-Guides/resubmit-transaction-1">
+  Learn how to speed up slow transactions
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Gas Optimization](https://docs.venly.io/docs/gas-optimization)
+- Understand [Network Congestion](https://docs.venly.io/docs/network-congestion)
+- View [Supported Blockchains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/getfees)
+</Note>

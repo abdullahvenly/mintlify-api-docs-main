@@ -1,0 +1,496 @@
+---
+title: "Retrieve Wallet Information"
+description: "Learn how to fetch wallet details using various query methods including ID, identifier, and user filters."
+icon: "magnifying-glass"
+---
+
+<Info>
+Wallet retrieval allows you to access detailed information about wallets including balances, metadata, and configuration settings.
+</Info>
+
+## Overview
+
+Retrieving wallet information is essential for:
+- **Wallet management**: Accessing wallet details and configurations
+- **Balance monitoring**: Checking current wallet balances and status
+- **User portfolio**: Viewing all wallets belonging to a specific user
+- **Application logic**: Making decisions based on wallet properties
+
+<Tip>
+Use specific query methods to efficiently retrieve exactly the wallet information you need without unnecessary data transfer.
+</Tip>
+
+## Prerequisites
+
+To retrieve wallet information, you need:
+- Valid wallet IDs, user IDs, or identifiers
+- Appropriate permissions to access the requested wallets
+- No authentication required for basic wallet information
+
+## Retrieval Methods
+
+<Steps>
+<Step title="By Wallet ID">
+Get detailed information for a specific wallet using its unique ID.
+</Step>
+
+<Step title="All Wallets">
+Retrieve a paginated list of all accessible wallets.
+</Step>
+
+<Step title="By Identifier">
+Find wallets using custom identifiers you've assigned.
+</Step>
+
+<Step title="By User ID">
+Get all wallets belonging to a specific user.
+</Step>
+</Steps>
+
+## Method 1: Get Wallet by ID
+
+Retrieve detailed information for a specific wallet.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{id}
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `id` | Path | The unique wallet ID | ✅ | `"96d7f016-a062-4d29-9e37-94b9765bc08a"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get Ethereum Wallet
+GET /api/wallets/96d7f016-a062-4d29-9e37-94b9765bc08a
+```
+
+```http Get Polygon Wallet
+GET /api/wallets/f21dc1e5-4253-487e-8927-3b5247437f99
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Get Wallet by ID Response
+{
+  "success": true,
+  "result": {
+    "id": "96d7f016-a062-4d29-9e37-94b9765bc08a",
+    "address": "0x40b8aDCbe02dfDEb032F55bEc278892c6397D4ca",
+    "walletType": "API_WALLET",
+    "secretType": "ETHEREUM",
+    "createdAt": "2024-01-08T10:16:47.553371",
+    "archived": false,
+    "description": "Primary Trading Wallet",
+    "primary": false,
+    "hasCustomPin": false,
+    "identifier": "main-trading-wallet",
+    "userId": "a69e4d35-b931-466b-a943-d1d0934bcf71",
+    "custodial": false,
+    "balance": {
+      "available": true,
+      "secretType": "ETHEREUM",
+      "balance": 1.5,
+      "gasBalance": 1.5,
+      "symbol": "ETH",
+      "gasSymbol": "ETH",
+      "rawBalance": "1500000000000000000",
+      "rawGasBalance": "1500000000000000000",
+      "decimals": 18,
+      "exchange": {
+        "usdPrice": 2450.75,
+        "usdBalanceValue": 3676.13
+      }
+    }
+  }
+}
+```
+
+## Method 2: Get All Wallets
+
+Retrieve a paginated list of all accessible wallets.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets
+```
+
+#### Query Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `page` | Query | Page number (starts from 0) | ❌ | `0` |
+| `size` | Query | Number of items per page | ❌ | `20` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get All Wallets (Default Pagination)
+GET /api/wallets
+```
+
+```http Get Wallets with Custom Pagination
+GET /api/wallets?page=0&size=50
+```
+
+```http Get Second Page
+GET /api/wallets?page=1&size=20
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Get All Wallets Response
+{
+  "success": true,
+  "pagination": {
+    "pageNumber": 1,
+    "pageSize": 10,
+    "numberOfPages": 3,
+    "numberOfElements": 25,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  },
+  "result": [
+    {
+      "id": "5a65042e-26ad-44f3-bbd0-379bddd84df1",
+      "address": "0x19c5042aB91C9e4C0C92Cbb6DEEb959a3e13306f",
+      "walletType": "API_WALLET",
+      "secretType": "ETHEREUM",
+      "createdAt": "2024-08-27T12:40:35.393118",
+      "archived": false,
+      "description": "Primary Ethereum Wallet",
+      "primary": false,
+      "hasCustomPin": false,
+      "userId": "c7d70857-61a2-4466-86bd-0f7eb70b7497",
+      "custodial": false,
+      "balance": {
+        "available": true,
+        "secretType": "ETHEREUM",
+        "balance": 0.022759964407303897,
+        "gasBalance": 0.022759964407303897,
+        "symbol": "ETH",
+        "gasSymbol": "ETH",
+        "rawBalance": "22759964407303897",
+        "rawGasBalance": "22759964407303897",
+        "decimals": 18,
+        "exchange": {
+          "usdPrice": 3245.23,
+          "usdBalanceValue": 73.86
+        }
+      }
+    }
+  ]
+}
+```
+
+## Method 3: Get Wallets by Identifier
+
+Find wallets using custom identifiers you've assigned during wallet creation.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets?identifier={identifier}
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `identifier` | Query | Custom identifier to search for | ✅ | `"trading-wallet"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get Wallets by Identifier
+GET /api/wallets?identifier=trading-wallet
+```
+
+```http Get Internal Wallets
+GET /api/wallets?identifier=internal-wallet
+```
+
+```http Get Gaming Wallets
+GET /api/wallets?identifier=gaming-wallet
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Get Wallets by Identifier Response
+{
+  "success": true,
+  "pagination": {
+    "pageNumber": 1,
+    "pageSize": 10,
+    "numberOfPages": 1,
+    "numberOfElements": 2,
+    "hasNextPage": false,
+    "hasPreviousPage": false
+  },
+  "result": [
+    {
+      "id": "d39fce23-93cb-40f4-ba61-04f273290ed9",
+      "address": "0.0.5411608",
+      "walletType": "API_WALLET",
+      "secretType": "HEDERA",
+      "createdAt": "2025-01-21T09:51:25.592554",
+      "archived": false,
+      "description": "HEDERA Trading Wallet",
+      "primary": false,
+      "hasCustomPin": false,
+      "identifier": "trading-wallet",
+      "userId": "c385239e-f231-424e-8a21-102dc9ef27c0",
+      "custodial": false,
+      "balance": {
+        "available": true,
+        "secretType": "HEDERA",
+        "balance": 100,
+        "gasBalance": 100,
+        "symbol": "HBAR",
+        "gasSymbol": "HBAR",
+        "rawBalance": "10000000000",
+        "rawGasBalance": "10000000000",
+        "decimals": 8
+      }
+    }
+  ]
+}
+```
+
+## Method 4: Get Wallets by User ID
+
+Retrieve all wallets belonging to a specific user.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets?userId={userId}
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `userId` | Query | The user ID to filter wallets | ✅ | `"a69e4d35-b931-466b-a943-d1d0934bcf71"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get User's Wallets
+GET /api/wallets?userId=a69e4d35-b931-466b-a943-d1d0934bcf71
+```
+
+```http Get User's Wallets with Pagination
+GET /api/wallets?userId=a69e4d35-b931-466b-a943-d1d0934bcf71&page=0&size=10
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Get Wallets by User ID Response
+{
+  "success": true,
+  "result": [
+    {
+      "id": "96d7f016-a062-4d29-9e37-94b9765bc08a",
+      "address": "0x40b8aDCbe02dfDEb032F55bEc278892c6397D4ca",
+      "walletType": "API_WALLET",
+      "secretType": "ETHEREUM",
+      "createdAt": "2024-01-08T10:16:47.553371",
+      "archived": false,
+      "description": "Primary Ethereum Wallet",
+      "primary": false,
+      "hasCustomPin": false,
+      "identifier": "eth-main",
+      "userId": "a69e4d35-b931-466b-a943-d1d0934bcf71",
+      "custodial": false,
+      "balance": {
+        "available": true,
+        "secretType": "ETHEREUM",
+        "balance": 2.5,
+        "gasBalance": 2.5,
+        "symbol": "ETH",
+        "gasSymbol": "ETH",
+        "rawBalance": "2500000000000000000",
+        "rawGasBalance": "2500000000000000000",
+        "decimals": 18
+      }
+    },
+    {
+      "id": "f21dc1e5-4253-487e-8927-3b5247437f99",
+      "address": "0x8fC378e105F80d340489B28519cfEDaF8ecE1944",
+      "walletType": "API_WALLET",
+      "secretType": "MATIC",
+      "createdAt": "2024-01-08T10:15:22.044877",
+      "archived": false,
+      "description": "Polygon DeFi Wallet",
+      "primary": false,
+      "hasCustomPin": false,
+      "identifier": "matic-defi",
+      "userId": "a69e4d35-b931-466b-a943-d1d0934bcf71",
+      "custodial": false,
+      "balance": {
+        "available": true,
+        "secretType": "MATIC",
+        "balance": 500,
+        "gasBalance": 500,
+        "symbol": "POL",
+        "gasSymbol": "POL",
+        "rawBalance": "500000000000000000000",
+        "rawGasBalance": "500000000000000000000",
+        "decimals": 18
+      }
+    }
+  ]
+}
+```
+
+## Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `id` | Unique wallet identifier |
+| `address` | Blockchain address of the wallet |
+| `walletType` | Type of wallet (API_WALLET, etc.) |
+| `secretType` | Blockchain network (ETHEREUM, MATIC, etc.) |
+| `createdAt` | Wallet creation timestamp |
+| `archived` | Whether the wallet is archived |
+| `description` | Human-readable wallet description |
+| `primary` | Whether this is the user's primary wallet |
+| `hasCustomPin` | Whether wallet has a custom PIN |
+| `identifier` | Custom identifier assigned to wallet |
+| `userId` | ID of the wallet owner |
+| `custodial` | Whether wallet is custodial |
+| `balance` | Current balance information |
+| `balance.exchange` | USD price and value information |
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Invalid User ID**
+```json
+{
+  "success": false,
+  "errorCode": "USER_NOT_FOUND",
+  "message": "User with the specified ID does not exist"
+}
+```
+
+**Access Denied**
+```json
+{
+  "success": false,
+  "errorCode": "ACCESS_DENIED",
+  "message": "You do not have permission to access this wallet"
+}
+```
+
+**Invalid Pagination**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PAGINATION",
+  "message": "Page number or size is invalid"
+}
+```
+
+</Accordion>
+
+## Pagination Best Practices
+
+<Warning>
+When retrieving large numbers of wallets, always use pagination to avoid performance issues and timeouts.
+</Warning>
+
+### Recommended Pagination Settings
+- **Default page size**: 20-50 items
+- **Maximum page size**: 100 items
+- **Always check**: `hasNextPage` before requesting more data
+
+### Pagination Example
+```javascript
+async function getAllUserWallets(userId) {
+  let allWallets = [];
+  let page = 0;
+  let hasMore = true;
+  
+  while (hasMore) {
+    const response = await fetch(
+      `/api/wallets?userId=${userId}&page=${page}&size=50`
+    );
+    const data = await response.json();
+    
+    allWallets.push(...data.result);
+    hasMore = data.pagination.hasNextPage;
+    page++;
+  }
+  
+  return allWallets;
+}
+```
+
+## Best Practices
+
+1. **Use specific queries** to reduce data transfer
+2. **Implement pagination** for large result sets
+3. **Cache wallet data** appropriately to reduce API calls
+4. **Filter by user ID** when managing user portfolios
+5. **Use identifiers** for logical wallet grouping
+6. **Monitor balance changes** for important wallets
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Check Balances" icon="scale-balanced" href="/Wallet-API-Basic-Guides/retrieve-native-wallet-balance">
+  View detailed balance information for wallets
+</Card>
+<Card title="Transfer Tokens" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-a-native-token-1">
+  Send tokens from retrieved wallets
+</Card>
+<Card title="Update Wallet" icon="pen" href="/Wallet-API-Basic-Guides/update-wallet">
+  Modify wallet descriptions and settings
+</Card>
+<Card title="Archive Wallet" icon="archive" href="/Wallet-API-Basic-Guides/archive-wallet">
+  Archive wallets that are no longer needed
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Wallet Management](https://docs.venly.io/docs/wallet-management)
+- Understand [Pagination](https://docs.venly.io/docs/pagination)
+- View [Wallet Types](https://docs.venly.io/docs/wallet-types)
+- Complete [API Reference](https://docs.venly.io/reference/viewwallet)
+</Note>

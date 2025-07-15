@@ -1,0 +1,257 @@
+---
+title: "Transfer ERC-20 Tokens"
+description: "Learn how to send ERC-20 tokens, stablecoins, and custom tokens between wallets."
+icon: "coins"
+---
+
+<Info>
+ERC-20 tokens are smart contract-based tokens that run on Ethereum and compatible blockchains. This includes popular tokens like USDC, USDT, DAI, and thousands of other tokens.
+</Info>
+
+## Overview
+
+ERC-20 token transfers are essential for:
+- **Stablecoin payments**: Sending USDC, USDT, DAI for stable value transfers
+- **DeFi operations**: Moving tokens between protocols and platforms
+- **Token distributions**: Sending custom tokens to users or investors
+- **Cross-border payments**: Using stablecoins for international transfers
+
+<Tip>
+Always verify the token contract address before transferring to ensure you're sending the correct token.
+</Tip>
+
+## Prerequisites
+
+Before transferring ERC-20 tokens, ensure you have:
+- A wallet with sufficient ERC-20 token balance
+- Enough native tokens (ETH, MATIC, etc.) for gas fees
+- The correct token contract address
+- The recipient's valid blockchain address
+- The wallet owner's signing method credentials
+
+## Step-by-Step Process
+
+<Steps>
+<Step title="Verify Token Balance">
+Check that your wallet has enough tokens for:
+- The amount you want to send
+- Native tokens for gas fees (ERC-20 transfers require gas)
+</Step>
+
+<Step title="Get Token Information">
+Gather the required details:
+- Token contract address
+- Token decimals (usually 18, but can vary)
+- Current token balance
+</Step>
+
+<Step title="Prepare Transfer Details">
+Calculate the transfer amount in the token's smallest unit and prepare the transaction request.
+</Step>
+
+<Step title="Execute the Transfer">
+Submit the transaction with proper authentication and receive the transaction hash.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/execute
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+<Warning>
+ERC-20 transfers require native tokens for gas fees. Ensure your wallet has sufficient ETH (Ethereum), MATIC (Polygon), or BNB (BSC) for transaction fees.
+</Warning>
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `transactionRequest` | Object | Container for all transaction details | ✅ | See below |
+| `transactionRequest.type` | String | Must be `"TOKEN_TRANSFER"` for ERC-20 transfers | ✅ | `"TOKEN_TRANSFER"` |
+| `transactionRequest.walletId` | String | ID of the source wallet | ✅ | `"c4c97f87-8e00-4f3a-8647-2f24ac9b73cb"` |
+| `transactionRequest.to` | String | Destination address or email | ✅ | `"0x2D24b9DE4F963d1Cfac1a65b6F1a85945d3e92F5"` |
+| `transactionRequest.secretType` | String | Blockchain network for the transaction | ✅ | `"ETHEREUM"` |
+| `transactionRequest.tokenAddress` | String | Contract address of the ERC-20 token | ✅ | `"0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9"` |
+| `transactionRequest.value` | String | Amount in token's smallest unit | ✅ | `"1000000000000000000"` |
+
+<Tip>
+**Token Decimals**: Most ERC-20 tokens use 18 decimals, but some use 6 (like USDC) or other values. Always check the token's decimals before calculating the value.
+</Tip>
+
+## Code Examples
+
+<CodeGroup>
+
+```json Send 100 USDC (6 decimals)
+{
+  "transactionRequest": {
+    "type": "TOKEN_TRANSFER",
+    "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+    "to": "0x2D24b9DE4F963d1Cfac1a65b6F1a85945d3e92F5",
+    "secretType": "ETHEREUM",
+    "tokenAddress": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9",
+    "value": "100000000"
+  }
+}
+```
+
+```json Send 50 DAI (18 decimals)
+{
+  "transactionRequest": {
+    "type": "TOKEN_TRANSFER",
+    "walletId": "a186ee03-15bc-550c-9729-cdf2d8f2648a",
+    "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+    "secretType": "ETHEREUM",
+    "tokenAddress": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+    "value": "50000000000000000000"
+  }
+}
+```
+
+```json Send Custom Token on Polygon
+{
+  "transactionRequest": {
+    "type": "TOKEN_TRANSFER",
+    "walletId": "b297ff04-26cd-661d-0840-def3e9f3759b",
+    "to": "recipient@example.com",
+    "secretType": "MATIC",
+    "tokenAddress": "0xe11a86849d99f524cac3e7a0ec1241828e332c62",
+    "value": "1000000000000000000"
+  }
+}
+```
+
+</CodeGroup>
+
+## Popular Token Addresses
+
+### Ethereum Mainnet
+| Token | Symbol | Contract Address | Decimals |
+|-------|--------|------------------|----------|
+| USD Coin | USDC | `0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9` | 6 |
+| Tether | USDT | `0xdAC17F958D2ee523a2206206994597C13D831ec7` | 6 |
+| Dai | DAI | `0x6B175474E89094C44Da98b954EedeAC495271d0F` | 18 |
+
+### Polygon Network
+| Token | Symbol | Contract Address | Decimals |
+|-------|--------|------------------|----------|
+| USD Coin | USDC | `0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174` | 6 |
+| Tether | USDT | `0xc2132D05D31c914a87C6611C10748AEb04B58e8F` | 6 |
+
+## Response Format
+
+### Success Response
+
+```json Transaction Submitted
+{
+  "success": true,
+  "result": {
+    "id": "994c43ab-c2bf-41d2-a230-73027b4131bc",
+    "transactionHash": "0xc57dd7ec9cf40c9c61abcde7942840d81b66477a911f867c74ed85278195a550"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | Internal transaction ID for tracking |
+| `result.transactionHash` | Blockchain transaction hash |
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Insufficient Token Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_TOKEN_BALANCE",
+  "message": "Wallet does not have enough tokens for this transfer"
+}
+```
+
+**Insufficient Gas Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_GAS_BALANCE",
+  "message": "Wallet does not have enough native tokens for gas fees"
+}
+```
+
+**Invalid Token Address**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_TOKEN_ADDRESS",
+  "message": "The specified token contract address is invalid"
+}
+```
+
+**Token Not Supported**
+```json
+{
+  "success": false,
+  "errorCode": "TOKEN_NOT_SUPPORTED",
+  "message": "The token is not supported on this blockchain"
+}
+```
+
+</Accordion>
+
+## Gas Fee Considerations
+
+<Warning>
+ERC-20 transfers typically cost more gas than native token transfers because they involve smart contract interactions. Budget accordingly for gas fees.
+</Warning>
+
+### Typical Gas Costs
+- **Simple ERC-20 transfer**: ~21,000-65,000 gas
+- **First-time token interaction**: Higher due to approval requirements
+- **Complex tokens**: Some tokens have additional logic that increases gas costs
+
+## Best Practices
+
+1. **Verify token addresses** from official sources
+2. **Check token decimals** before calculating amounts
+3. **Test with small amounts** first for new tokens
+4. **Monitor gas prices** for cost optimization
+5. **Keep native tokens** for gas fees
+6. **Use token allowances** for recurring transfers
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Check ERC-20 Balance" icon="scale-balanced" href="/Wallet-API-Basic-Guides/retrieve-erc20-token-balance">
+  View your ERC-20 token balances before and after transfers
+</Card>
+<Card title="Monitor Transaction" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track the status of your token transfer
+</Card>
+<Card title="Transfer NFTs" icon="image" href="/Wallet-API-Basic-Guides/transfer-a-non-fungible-token-1">
+  Learn how to transfer non-fungible tokens
+</Card>
+<Card title="Get Gas Estimates" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Estimate gas costs for token transfers
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [ERC-20 Standard](https://docs.venly.io/docs/erc20-tokens)
+- Understand [Token Decimals](https://docs.venly.io/docs/token-decimals)
+- View [Supported Tokens](https://docs.venly.io/docs/supported-tokens)
+- Complete [API Reference](https://docs.venly.io/reference/executetransaction_1)
+</Note>

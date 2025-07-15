@@ -1,0 +1,501 @@
+---
+title: "Get Transaction Fees for Specific Operations"
+description: "Learn how to estimate gas fees for specific blockchain transactions before execution to optimize costs and ensure successful completion."
+icon: "coins"
+---
+
+<Info>
+Transaction fee estimation allows you to calculate the exact gas costs for specific operations before execution, helping you optimize transaction timing and ensure sufficient wallet balance.
+</Info>
+
+## Overview
+
+Getting transaction fees is essential for:
+- **Cost optimization**: Timing transactions during low gas periods
+- **Budget planning**: Calculating exact costs before execution
+- **User experience**: Showing users expected fees upfront
+- **Wallet management**: Ensuring sufficient balance for gas fees
+
+<Tip>
+The build transaction endpoint calculates the exact gas requirements and current gas prices, giving you precise fee estimates without executing the transaction.
+</Tip>
+
+## Prerequisites
+
+Before estimating transaction fees, ensure you have:
+- A valid wallet ID for the transaction
+- Transaction details (recipient, amount, contract address, etc.)
+- Understanding of the transaction type you want to estimate
+- Knowledge of current network conditions
+
+## Gas Fee Calculation
+
+<Steps>
+<Step title="Gas Limit Estimation">
+The system calculates the maximum gas units needed for the transaction.
+</Step>
+
+<Step title="Gas Price Retrieval">
+Current network gas prices are fetched in real-time.
+</Step>
+
+<Step title="Fee Calculation">
+Total fee = Gas Limit × Gas Price (in Wei)
+</Step>
+
+<Step title="Response Formatting">
+Results include both raw values and human-readable amounts.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/build
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `type` | Body | Type of transaction to estimate | ✅ | `"TRANSFER"` |
+| `secretType` | Body | Blockchain network | ✅ | `"MATIC"` |
+| `walletId` | Body | ID of the wallet executing the transaction | ✅ | `"2b358962-4467-4f41-ab93-2b6395d8ae16"` |
+| `to` | Body | Recipient address | ✅ | `"0x2Eaf85AF290759770CF98BF83aa640DC2A63daDf"` |
+| `value` | Body | Amount to transfer (varies by transaction type) | ✅ | `10` |
+
+<Warning>
+Gas prices are returned in Wei (1 ETH = 10^18 Wei). Always convert to appropriate units for user display.
+</Warning>
+
+## Transaction Types and Examples
+
+### Example 1: Native Token Transfer
+
+Estimate fees for transferring native blockchain tokens.
+
+<CodeGroup>
+
+```json Polygon Native Transfer
+{
+  "type": "TRANSFER",
+  "secretType": "MATIC",
+  "walletId": "2b358962-4467-4f41-ab93-2b6395d8ae16",
+  "to": "0x2Eaf85AF290759770CF98BF83aa640DC2A63daDf",
+  "value": 10
+}
+```
+
+```json Ethereum Native Transfer
+{
+  "type": "TRANSFER",
+  "secretType": "ETHEREUM",
+  "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+  "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+  "value": 0.5
+}
+```
+
+```json BSC Native Transfer
+{
+  "type": "TRANSFER",
+  "secretType": "BSC",
+  "walletId": "a186ee03-15bc-550c-9729-cdf2d8f2648a",
+  "to": "0x8ba1f109551bD432803012645Hac136c22C501e",
+  "value": 0.1
+}
+```
+
+</CodeGroup>
+
+### Example 2: ERC-20 Token Transfer
+
+Estimate fees for transferring ERC-20 tokens.
+
+<CodeGroup>
+
+```json USDC Transfer Fee Estimate
+{
+  "type": "TOKEN_TRANSFER",
+  "secretType": "ETHEREUM",
+  "tokenAddress": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9",
+  "walletId": "b297ff04-26cd-661d-0840-def3e9f3759b",
+  "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+  "value": 100
+}
+```
+
+```json Custom Token Transfer
+{
+  "type": "TOKEN_TRANSFER",
+  "secretType": "MATIC",
+  "tokenAddress": "0x2953399124F0cBB46d2CbACD8A89cF0599974963",
+  "walletId": "355351bd-41ae-41fa-8f36-12675f056759",
+  "to": "0x548372d982F478683FC1fc59b2e3224b4899fFBE",
+  "value": 50
+}
+```
+
+</CodeGroup>
+
+### Example 3: NFT Transfer
+
+Estimate fees for transferring NFTs.
+
+<CodeGroup>
+
+```json ERC-721 NFT Transfer
+{
+  "type": "NFT_TRANSFER",
+  "secretType": "ETHEREUM",
+  "tokenAddress": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+  "walletId": "f21dc1e5-4253-487e-8927-3b5247437f99",
+  "to": "0x427d0addaa77d8bb871dbea3458dea4b5198730c",
+  "tokenId": 1234
+}
+```
+
+```json ERC-1155 NFT Transfer
+{
+  "type": "NFT_TRANSFER",
+  "secretType": "MATIC",
+  "tokenAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+  "walletId": "da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f",
+  "to": "0x96f06471cb1653617b778841106e40594f8d2105",
+  "tokenId": 202
+}
+```
+
+</CodeGroup>
+
+### Example 4: Smart Contract Execution
+
+Estimate fees for contract function calls.
+
+<CodeGroup>
+
+```json Contract Function Call
+{
+  "type": "CONTRACT_EXECUTION",
+  "walletId": "adc4c08a-b8fa-4e4c-z5a2-92c87b80f174",
+  "to": "0xdc71b72db51e227e65a45004ab2798d31e8934c9",
+  "secretType": "ETHEREUM",
+  "functionName": "transfer",
+  "value": 0,
+  "inputs": [
+    {
+      "type": "address",
+      "value": "0x80cbb6c4342948e5be81987dce8251dbedd69138"
+    },
+    {
+      "type": "uint256",
+      "value": "1000000000000000000"
+    }
+  ]
+}
+```
+
+```json DeFi Contract Interaction
+{
+  "type": "CONTRACT_EXECUTION",
+  "walletId": "07cc0aa5-0f98-4a4e-9c55-686124e0f0e4",
+  "to": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "secretType": "ETHEREUM",
+  "functionName": "swapExactTokensForTokens",
+  "value": 0,
+  "inputs": [
+    {
+      "type": "uint256",
+      "value": "1000000000000000000"
+    },
+    {
+      "type": "uint256",
+      "value": "950000000000000000"
+    }
+  ]
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Transaction Build Response
+{
+  "success": true,
+  "result": {
+    "walletId": "2b358962-4467-4f41-ab93-2b6395d8ae16",
+    "gasPrice": 20000000000,
+    "gas": 21000,
+    "value": 10000000000000000000,
+    "to": "0x2Eaf85AF290759770CF98BF83aa640DC2A63daDf",
+    "type": "MATIC_TRANSACTION"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `gasPrice` | Price per gas unit in Wei |
+| `gas` | Maximum gas units allowed for the transaction |
+| `value` | Transaction value in smallest unit (Wei) |
+| `to` | Recipient address |
+| `type` | Blockchain-specific transaction type |
+
+<Info>
+**Gas Fee Calculation:**
+Total Fee = `gas` × `gasPrice`
+
+Example: 21,000 × 20,000,000,000 = 420,000,000,000,000 Wei = 0.00042 ETH
+</Info>
+
+## Gas Price Understanding
+
+<Accordion title="Gas Price Conversion and Calculation">
+
+**Wei Conversion:**
+- 1 ETH = 10^18 Wei
+- 1 Gwei = 10^9 Wei = 0.000000001 ETH
+- Gas prices are typically expressed in Gwei for readability
+
+**Fee Calculation Examples:**
+
+**Ethereum Transaction:**
+- Gas Limit: 21,000
+- Gas Price: 20 Gwei (20,000,000,000 Wei)
+- Total Fee: 21,000 × 20,000,000,000 = 420,000,000,000,000 Wei = 0.00042 ETH
+
+**Polygon Transaction:**
+- Gas Limit: 21,000
+- Gas Price: 30 Gwei (30,000,000,000 Wei)
+- Total Fee: 21,000 × 30,000,000,000 = 630,000,000,000,000 Wei = 0.00063 MATIC
+
+**Complex Contract:**
+- Gas Limit: 300,000
+- Gas Price: 25 Gwei (25,000,000,000 Wei)
+- Total Fee: 300,000 × 25,000,000,000 = 7,500,000,000,000,000 Wei = 0.0075 ETH
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Insufficient Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_BALANCE",
+  "message": "Wallet does not have sufficient balance for this transaction"
+}
+```
+
+**Invalid Token Contract**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_CONTRACT",
+  "message": "Token contract address is invalid or does not exist"
+}
+```
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Invalid Transaction Type**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_TRANSACTION_TYPE",
+  "message": "The specified transaction type is not supported"
+}
+```
+
+**Network Error**
+```json
+{
+  "success": false,
+  "errorCode": "NETWORK_ERROR",
+  "message": "Unable to fetch current gas prices from the network"
+}
+```
+
+</Accordion>
+
+## Integration Examples
+
+### Fee Estimation with User Display
+
+```javascript
+async function estimateTransactionFee(transactionRequest) {
+  try {
+    const response = await fetch('/api/transactions/build', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(transactionRequest)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      const { gas, gasPrice } = result.result;
+      
+      // Calculate total fee in Wei
+      const totalFeeWei = BigInt(gas) * BigInt(gasPrice);
+      
+      // Convert to ETH/MATIC for display
+      const totalFeeEth = Number(totalFeeWei) / Math.pow(10, 18);
+      
+      return {
+        gasLimit: gas,
+        gasPrice: gasPrice,
+        totalFeeWei: totalFeeWei.toString(),
+        totalFeeEth: totalFeeEth.toFixed(6),
+        gasPriceGwei: (gasPrice / Math.pow(10, 9)).toFixed(2)
+      };
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('Fee estimation failed:', error);
+    throw error;
+  }
+}
+```
+
+### Batch Fee Estimation
+
+```javascript
+async function estimateMultipleTransactionFees(transactions) {
+  const estimates = [];
+  
+  for (const transaction of transactions) {
+    try {
+      const estimate = await estimateTransactionFee(transaction);
+      estimates.push({
+        transaction: transaction.type,
+        success: true,
+        estimate
+      });
+    } catch (error) {
+      estimates.push({
+        transaction: transaction.type,
+        success: false,
+        error: error.message
+      });
+    }
+    
+    // Add delay to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 200));
+  }
+  
+  return estimates;
+}
+```
+
+### Smart Fee Optimization
+
+```javascript
+async function findOptimalTransactionTime(transactionRequest, maxFeeEth) {
+  const maxAttempts = 10;
+  let attempts = 0;
+  
+  while (attempts < maxAttempts) {
+    try {
+      const estimate = await estimateTransactionFee(transactionRequest);
+      
+      if (parseFloat(estimate.totalFeeEth) <= maxFeeEth) {
+        return {
+          optimal: true,
+          estimate,
+          message: 'Current gas prices are within your budget'
+        };
+      }
+      
+      console.log(`Attempt ${attempts + 1}: Fee ${estimate.totalFeeEth} ETH exceeds budget ${maxFeeEth} ETH`);
+      
+      // Wait 30 seconds before next check
+      await new Promise(resolve => setTimeout(resolve, 30000));
+      attempts++;
+    } catch (error) {
+      console.error('Fee check failed:', error);
+      attempts++;
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+  
+  return {
+    optimal: false,
+    message: 'Unable to find optimal gas prices within the specified budget'
+  };
+}
+```
+
+## Best Practices
+
+<Warning>
+**Fee Estimation Guidelines:**
+
+1. **Check Before Execution**: Always estimate fees before executing transactions
+2. **Account for Fluctuations**: Gas prices can change rapidly, add a buffer
+3. **Monitor Network Conditions**: Use estimates to time transactions optimally
+4. **Validate Wallet Balance**: Ensure sufficient funds for both transaction and fees
+5. **Handle Estimation Failures**: Implement fallback strategies for failed estimates
+6. **Cache Appropriately**: Don't cache estimates for too long due to price volatility
+</Warning>
+
+## Use Cases
+
+### Cost-Conscious Applications
+- Show users exact fees before transaction confirmation
+- Implement fee budgets and alerts
+- Optimize transaction timing based on gas prices
+
+### DeFi Platforms
+- Calculate profitability of arbitrage opportunities
+- Estimate costs for complex multi-step transactions
+- Implement dynamic fee strategies
+
+### NFT Marketplaces
+- Display minting costs to creators
+- Calculate total costs including marketplace fees
+- Optimize batch operations based on gas costs
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Execute Transaction" icon="play" href="/Wallet-API-Basic-Guides/execute-contract-call">
+  Execute the transaction after fee estimation
+</Card>
+<Card title="Get Current Gas Prices" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Check current network gas prices
+</Card>
+<Card title="Monitor Transaction" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track transaction status after execution
+</Card>
+<Card title="Resubmit Transaction" icon="rotate-right" href="/Wallet-API-Basic-Guides/resubmit-transaction-1">
+  Handle failed transactions with adjusted fees
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Gas Optimization](https://docs.venly.io/docs/gas-optimization)
+- Understand [Transaction Types](https://docs.venly.io/docs/transaction-types)
+- View [Network Fees](https://docs.venly.io/docs/network-fees)
+- Complete [API Reference](https://docs.venly.io/reference/buildtransactionrequest)
+</Note>

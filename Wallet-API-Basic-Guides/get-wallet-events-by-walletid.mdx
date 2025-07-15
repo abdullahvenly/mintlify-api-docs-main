@@ -1,0 +1,497 @@
+---
+title: "Get Wallet Events by Wallet ID"
+description: "Learn how to retrieve comprehensive wallet activity history including transactions, authentication events, and wallet lifecycle changes."
+icon: "clock-rotate-left"
+---
+
+<Info>
+Wallet events provide a complete audit trail of all activities related to a specific wallet, including transactions, authentication attempts, and wallet management operations.
+</Info>
+
+## Overview
+
+Retrieving wallet events is essential for:
+- **Activity monitoring**: Tracking all wallet-related activities and changes
+- **Security auditing**: Reviewing authentication attempts and security events
+- **Transaction history**: Comprehensive view of incoming and outgoing transactions
+- **Compliance reporting**: Maintaining detailed records for regulatory requirements
+
+<Tip>
+Events are returned in chronological order and include detailed metadata for each activity, making it easy to reconstruct the complete wallet history.
+</Tip>
+
+## Prerequisites
+
+Before retrieving wallet events, ensure you have:
+- A valid wallet ID for the wallet you want to monitor
+- Understanding of different event types and their meanings
+- Appropriate permissions to access wallet event data
+- No authentication required for basic event retrieval
+
+## Event Categories
+
+<Steps>
+<Step title="Wallet Lifecycle Events">
+Creation, import, export, archiving, and recovery operations.
+</Step>
+
+<Step title="Transaction Events">
+Incoming and outgoing transactions with status and metadata.
+</Step>
+
+<Step title="Authentication Events">
+PIN validation, failed attempts, and signing method changes.
+</Step>
+
+<Step title="Security Events">
+API key management, wallet linking, and access control changes.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+GET /api/wallets/{walletId}/events
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet | ✅ | `"f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0"` |
+
+## Code Examples
+
+<CodeGroup>
+
+```http Get Wallet Events
+GET /api/wallets/f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0/events
+```
+
+```http Get Another Wallet Events
+GET /api/wallets/2b358962-4467-4f41-ab93-2b6395d8ae16/events
+```
+
+```http Get Production Wallet Events
+GET /api/wallets/da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f/events
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Wallet Events Response
+{
+  "success": true,
+  "result": [
+    {
+      "eventTimestamp": "2024-03-13T09:06:55.407",
+      "client": "arkane-connect-token-exchange,ArkaneMarket,Arkane",
+      "type": "INCOMING_TRANSACTION",
+      "metadata": "{\"fromWallet\":\"36fab726-9826-47a3-bfaf-9849604935a1\",\"from\":\"0xD69Fa47e04cA0626a5FfEb76A4f0E0dBE261aDD8\",\"transactionId\":\"0xef8aaa87ac3b2a42d3f1191d057197e3f7d0c5f971d703eb823624184e142532\"}",
+      "walletId": "f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0"
+    },
+    {
+      "eventTimestamp": "2024-03-13T09:08:08.613",
+      "client": "realm-management,ArkaneConnect,drila-capsule,NFT-API",
+      "type": "OUTGOING_TRANSACTION",
+      "metadata": "{\"to\":[\"0x9218e033b0c38e90695017a6dd0048f6351b04d4\"],\"transactionId\":\"0xa0c1b6caad1a8a0a1605e9b98daa6f957a5a1c238c1b89386536f8d435565b54\",\"status\":\"SUCCEEDED\",\"transactionRequestId\":\"d9ffa81d-ac46-4920-aad1-d1ad9834cd42\"}",
+      "walletId": "f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0"
+    },
+    {
+      "eventTimestamp": "2023-02-07T12:10:52.875",
+      "client": "ArkaneMarket,realm-management,ArkaneConnect,drila-capsule,NFT-API",
+      "type": "WRONG_PIN_ENTERED",
+      "metadata": "{\"walletId\":\"f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0\",\"type\":\"CUSTOM_PIN\"}",
+      "walletId": "f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0"
+    }
+  ]
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `eventTimestamp` | ISO timestamp when the event occurred |
+| `client` | Client applications that triggered the event |
+| `type` | Type of event (see event types below) |
+| `metadata` | JSON string containing event-specific details |
+| `walletId` | ID of the wallet associated with the event |
+
+## Event Types Reference
+
+<Accordion title="Complete List of Event Types">
+
+**Wallet Lifecycle Events:**
+- `WALLET_CREATED` - New wallet was created
+- `UNCLAIMED_EMAIL_WALLET_CREATED` - Email-based wallet created but not claimed
+- `UNCLAIMED_WALLET_CREATED` - Wallet created but not claimed by user
+- `WALLET_IMPORTED` - Existing wallet imported into the system
+- `WALLET_EXPORTED` - Wallet private key or seed phrase exported
+- `WALLET_CLAIMED` - Previously unclaimed wallet was claimed by user
+- `WALLET_LINKED` - Wallet linked to a user account
+- `WALLET_UNLINKED` - Wallet unlinked from a user account
+- `WALLET_ARCHIVED` - Wallet archived (soft deleted)
+- `WALLET_UNARCHIVED` - Archived wallet restored
+- `WALLET_RECOVERABLE` - Wallet marked as recoverable
+- `WALLET_UNRECOVERABLE` - Wallet marked as unrecoverable
+
+**Transaction Events:**
+- `INCOMING_TRANSACTION` - Funds received in the wallet
+- `OUTGOING_TRANSACTION` - Funds sent from the wallet
+- `SIGNATURE_CREATED` - Digital signature created using the wallet
+
+**Authentication Events:**
+- `WRONG_PIN_ENTERED` - Incorrect PIN entered during authentication
+- `PIN_MAX_TRIES_REACHED` - Maximum PIN attempts exceeded
+- `PIN_SUCCESSFULLY_VALIDATED` - PIN validation successful
+- `MASTER_PIN_UPDATED` - Master PIN changed
+- `CUSTOM_PIN_UPDATED` - Custom PIN changed
+- `CUSTOM_PIN_ADDED` - New custom PIN added
+- `CUSTOM_PIN_REMOVED` - Custom PIN removed
+
+**Security Events:**
+- `WALLET_API_KEY_ADDED` - API key added for wallet access
+- `WALLET_API_KEY_REMOVED` - API key removed from wallet
+
+</Accordion>
+
+## Event Metadata Examples
+
+<Accordion title="Understanding Event Metadata">
+
+**Incoming Transaction Metadata:**
+```json
+{
+  "fromWallet": "36fab726-9826-47a3-bfaf-9849604935a1",
+  "from": "0xD69Fa47e04cA0626a5FfEb76A4f0E0dBE261aDD8",
+  "transactionId": "0xef8aaa87ac3b2a42d3f1191d057197e3f7d0c5f971d703eb823624184e142532"
+}
+```
+
+**Outgoing Transaction Metadata:**
+```json
+{
+  "to": ["0x9218e033b0c38e90695017a6dd0048f6351b04d4"],
+  "transactionId": "0xa0c1b6caad1a8a0a1605e9b98daa6f957a5a1c238c1b89386536f8d435565b54",
+  "status": "SUCCEEDED",
+  "transactionRequestId": "d9ffa81d-ac46-4920-aad1-d1ad9834cd42"
+}
+```
+
+**Authentication Event Metadata:**
+```json
+{
+  "walletId": "f387ddcd-4f4d-4a3d-befa-c2d0fc7cadd0",
+  "type": "CUSTOM_PIN"
+}
+```
+
+**Key Metadata Fields:**
+- `transactionId`: Blockchain transaction hash
+- `transactionRequestId`: Internal request ID for tracking
+- `status`: Transaction status (SUCCEEDED, FAILED, PENDING)
+- `from`/`to`: Sender and recipient addresses
+- `fromWallet`: Source wallet ID for internal transfers
+- `type`: Specific subtype of the event
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Access Denied**
+```json
+{
+  "success": false,
+  "errorCode": "ACCESS_DENIED",
+  "message": "You do not have permission to access this wallet's events"
+}
+```
+
+**Invalid Wallet ID**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_WALLET_ID",
+  "message": "The wallet ID format is invalid"
+}
+```
+
+**Service Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "SERVICE_UNAVAILABLE",
+  "message": "Event service is temporarily unavailable"
+}
+```
+
+</Accordion>
+
+## Integration Examples
+
+### Event Processing and Analysis
+
+```javascript
+async function getWalletEvents(walletId) {
+  try {
+    const response = await fetch(`/api/wallets/${walletId}/events`);
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result.map(event => ({
+        timestamp: new Date(event.eventTimestamp),
+        type: event.type,
+        client: event.client,
+        metadata: JSON.parse(event.metadata),
+        walletId: event.walletId
+      }));
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Failed to fetch wallet events:', error);
+    throw error;
+  }
+}
+```
+
+### Event Filtering and Categorization
+
+```javascript
+function categorizeWalletEvents(events) {
+  const categories = {
+    transactions: [],
+    authentication: [],
+    lifecycle: [],
+    security: []
+  };
+  
+  const transactionTypes = ['INCOMING_TRANSACTION', 'OUTGOING_TRANSACTION'];
+  const authTypes = ['WRONG_PIN_ENTERED', 'PIN_MAX_TRIES_REACHED', 'PIN_SUCCESSFULLY_VALIDATED'];
+  const lifecycleTypes = ['WALLET_CREATED', 'WALLET_IMPORTED', 'WALLET_EXPORTED', 'WALLET_ARCHIVED'];
+  const securityTypes = ['WALLET_API_KEY_ADDED', 'WALLET_API_KEY_REMOVED', 'WALLET_LINKED'];
+  
+  events.forEach(event => {
+    if (transactionTypes.includes(event.type)) {
+      categories.transactions.push(event);
+    } else if (authTypes.includes(event.type)) {
+      categories.authentication.push(event);
+    } else if (lifecycleTypes.includes(event.type)) {
+      categories.lifecycle.push(event);
+    } else if (securityTypes.includes(event.type)) {
+      categories.security.push(event);
+    }
+  });
+  
+  return categories;
+}
+```
+
+### Security Monitoring Dashboard
+
+```javascript
+async function generateSecurityReport(walletId, timeframe = 30) {
+  const events = await getWalletEvents(walletId);
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - timeframe);
+  
+  const recentEvents = events.filter(event => event.timestamp >= cutoffDate);
+  
+  const securityMetrics = {
+    failedPinAttempts: 0,
+    successfulTransactions: 0,
+    failedTransactions: 0,
+    apiKeyChanges: 0,
+    walletLinks: 0,
+    suspiciousActivity: []
+  };
+  
+  recentEvents.forEach(event => {
+    switch (event.type) {
+      case 'WRONG_PIN_ENTERED':
+        securityMetrics.failedPinAttempts++;
+        if (securityMetrics.failedPinAttempts > 5) {
+          securityMetrics.suspiciousActivity.push({
+            type: 'Multiple failed PIN attempts',
+            timestamp: event.timestamp,
+            count: securityMetrics.failedPinAttempts
+          });
+        }
+        break;
+      
+      case 'OUTGOING_TRANSACTION':
+        if (event.metadata.status === 'SUCCEEDED') {
+          securityMetrics.successfulTransactions++;
+        } else {
+          securityMetrics.failedTransactions++;
+        }
+        break;
+      
+      case 'WALLET_API_KEY_ADDED':
+      case 'WALLET_API_KEY_REMOVED':
+        securityMetrics.apiKeyChanges++;
+        break;
+      
+      case 'WALLET_LINKED':
+      case 'WALLET_UNLINKED':
+        securityMetrics.walletLinks++;
+        break;
+    }
+  });
+  
+  return {
+    walletId,
+    timeframe,
+    metrics: securityMetrics,
+    totalEvents: recentEvents.length,
+    riskLevel: calculateRiskLevel(securityMetrics)
+  };
+}
+
+function calculateRiskLevel(metrics) {
+  let riskScore = 0;
+  
+  if (metrics.failedPinAttempts > 10) riskScore += 3;
+  else if (metrics.failedPinAttempts > 5) riskScore += 2;
+  else if (metrics.failedPinAttempts > 2) riskScore += 1;
+  
+  if (metrics.apiKeyChanges > 3) riskScore += 2;
+  if (metrics.suspiciousActivity.length > 0) riskScore += 3;
+  
+  if (riskScore >= 5) return 'HIGH';
+  if (riskScore >= 3) return 'MEDIUM';
+  return 'LOW';
+}
+```
+
+### Transaction History Analysis
+
+```javascript
+function analyzeTransactionHistory(events) {
+  const transactions = events.filter(event => 
+    ['INCOMING_TRANSACTION', 'OUTGOING_TRANSACTION'].includes(event.type)
+  );
+  
+  const analysis = {
+    totalTransactions: transactions.length,
+    incoming: 0,
+    outgoing: 0,
+    successful: 0,
+    failed: 0,
+    uniqueAddresses: new Set(),
+    transactionsByMonth: {},
+    averageTransactionsPerDay: 0
+  };
+  
+  transactions.forEach(tx => {
+    if (tx.type === 'INCOMING_TRANSACTION') {
+      analysis.incoming++;
+      if (tx.metadata.from) {
+        analysis.uniqueAddresses.add(tx.metadata.from);
+      }
+    } else {
+      analysis.outgoing++;
+      if (tx.metadata.to && Array.isArray(tx.metadata.to)) {
+        tx.metadata.to.forEach(addr => analysis.uniqueAddresses.add(addr));
+      }
+      
+      if (tx.metadata.status === 'SUCCEEDED') {
+        analysis.successful++;
+      } else {
+        analysis.failed++;
+      }
+    }
+    
+    // Group by month
+    const monthKey = tx.timestamp.toISOString().substring(0, 7);
+    analysis.transactionsByMonth[monthKey] = (analysis.transactionsByMonth[monthKey] || 0) + 1;
+  });
+  
+  analysis.uniqueAddresses = analysis.uniqueAddresses.size;
+  
+  // Calculate average transactions per day
+  if (transactions.length > 0) {
+    const firstTx = new Date(Math.min(...transactions.map(tx => tx.timestamp)));
+    const lastTx = new Date(Math.max(...transactions.map(tx => tx.timestamp)));
+    const daysDiff = Math.ceil((lastTx - firstTx) / (1000 * 60 * 60 * 24)) || 1;
+    analysis.averageTransactionsPerDay = (analysis.totalTransactions / daysDiff).toFixed(2);
+  }
+  
+  return analysis;
+}
+```
+
+## Best Practices
+
+<Warning>
+**Event Monitoring Guidelines:**
+
+1. **Regular Monitoring**: Check events regularly for security anomalies
+2. **Event Filtering**: Focus on relevant event types for your use case
+3. **Metadata Parsing**: Always parse metadata JSON safely with error handling
+4. **Time-based Analysis**: Use timestamps for trend analysis and reporting
+5. **Security Alerts**: Set up alerts for suspicious activity patterns
+6. **Data Retention**: Consider local storage for long-term event analysis
+</Warning>
+
+## Use Cases
+
+### Security Monitoring
+- Track failed authentication attempts
+- Monitor unusual transaction patterns
+- Detect unauthorized access attempts
+- Generate security compliance reports
+
+### User Activity Analysis
+- Understand user behavior patterns
+- Identify most active wallets
+- Track feature usage and adoption
+- Generate user engagement metrics
+
+### Compliance and Auditing
+- Maintain complete audit trails
+- Generate regulatory compliance reports
+- Track wallet lifecycle events
+- Document security incidents
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Retrieve Wallet Info" icon="wallet" href="/Wallet-API-Basic-Guides/retrieve-a-wallet">
+  Get detailed wallet information and status
+</Card>
+<Card title="Monitor Transactions" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track specific transaction status
+</Card>
+<Card title="Webhook Integration" icon="webhook" href="/Wallet-API-Basic-Guides/webhooks-wallet-api">
+  Set up real-time event notifications
+</Card>
+<Card title="User Management" icon="users" href="/Wallet-API-Basic-Guides/retrieve-a-user">
+  Manage users and their wallet associations
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Event Types](https://docs.venly.io/docs/wallet-events)
+- Understand [Security Monitoring](https://docs.venly.io/docs/security-monitoring)
+- View [Audit Trails](https://docs.venly.io/docs/audit-trails)
+- Complete [API Reference](https://docs.venly.io/reference/index)
+</Note>

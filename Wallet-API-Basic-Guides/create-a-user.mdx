@@ -1,0 +1,162 @@
+---
+title: "Create a User"
+description: "Learn how to create a new user and optionally set up their first signing method in one request."
+icon: "user-plus"
+---
+
+<Info>
+A User represents an end user of your application or your company account. Each User can have multiple wallets and signing methods for secure access.
+</Info>
+
+## Overview
+
+Users are the foundation of the Wallet API. Whether you're building an app with individual end-users or managing company treasury operations, you'll need at least one User to create and manage wallets.
+
+<Tip>
+Use the `reference` parameter to assign a unique identifier that makes it easy to search for specific users in your system.
+</Tip>
+
+## Prerequisites
+
+Before creating a user, ensure you have:
+- Valid API credentials for the Wallet API
+- Decided on a reference identifier for the user (optional but recommended)
+
+## Step-by-Step Process
+
+<Steps>
+<Step title="Prepare User Information">
+Decide on a reference identifier for your user. This can be:
+- A unique ID from your database
+- An email address
+- Any string that helps you identify the user
+</Step>
+
+<Step title="Choose Signing Method (Optional)">
+If you want to create a signing method immediately:
+- **PIN**: 6-digit numeric code (recommended for first method)
+- **BIOMETRIC**: For mobile applications
+- **EMERGENCY_CODE**: 25-character backup code
+</Step>
+
+<Step title="Make the API Request">
+Send a POST request to create the user with your chosen parameters.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/users
+```
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `reference` | String | Unique identifier for the user | ❌ | `"user_12345"` |
+| `signingMethod` | Object | Initial signing method configuration | ❌ | See below |
+| `signingMethod.type` | String | Type: `PIN`, `BIOMETRIC`, or `EMERGENCY_CODE` | ❌ | `"PIN"` |
+| `signingMethod.value` | String | Method value (6 digits for PIN, 25 chars for emergency code) | ❌ | `"123456"` |
+
+<Warning>
+The first signing method for any user should always be `PIN` for security best practices.
+</Warning>
+
+## Code Examples
+
+<CodeGroup>
+
+```json Basic User Creation
+{
+  "reference": "customer_john_doe_001"
+}
+```
+
+```json User with PIN Signing Method
+{
+  "reference": "customer_jane_smith_002",
+  "signingMethod": {
+    "type": "PIN",
+    "value": "123456"
+  }
+}
+```
+
+```json User with Auto-Generated Emergency Code
+{
+  "reference": "company_treasury_wallet",
+  "signingMethod": {
+    "type": "EMERGENCY_CODE"
+  }
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Successful User Creation
+{
+  "success": true,
+  "result": {
+    "id": "aee7260f-9348-4b73-b06b-f62c0f9751e4",
+    "reference": "customer_john_doe_001",
+    "createdAt": "2024-06-12T13:14:26.437357135"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.id` | Unique user ID (use this for wallet creation) |
+| `result.reference` | Your custom reference identifier |
+| `result.createdAt` | Timestamp of user creation |
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Invalid PIN Format**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PIN_FORMAT",
+  "message": "PIN must be exactly 6 digits"
+}
+```
+
+**Duplicate Reference**
+```json
+{
+  "success": false,
+  "errorCode": "REFERENCE_ALREADY_EXISTS",
+  "message": "A user with this reference already exists"
+}
+```
+
+</Accordion>
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Create a Wallet" icon="wallet" href="/Wallet-API-Basic-Guides/create-a-wallet">
+  Link a blockchain wallet to your newly created user
+</Card>
+<Card title="Add Signing Methods" icon="key" href="/Wallet-API-Basic-Guides/create-users-signing-method">
+  Set up additional authentication methods for the user
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn more about [User Management](https://docs.venly.io/docs/user-management)
+- View the complete [API Reference](https://docs.venly.io/reference/createuser)
+- Understand [Signing Methods](https://docs.venly.io/docs/create-users-signing-method)
+</Note>

@@ -1,0 +1,522 @@
+---
+title: "Execute Smart Contract Functions"
+description: "Learn how to execute state-changing smart contract functions on EVM-based blockchains with proper gas management and error handling."
+icon: "code"
+---
+
+<Info>
+Contract execution allows you to call state-changing functions on smart contracts, creating blockchain transactions that modify contract state and consume gas.
+</Info>
+
+## Overview
+
+Executing smart contracts is essential for:
+- **DeFi operations**: Swapping tokens, providing liquidity, and staking
+- **NFT interactions**: Minting, transferring, and managing digital assets
+- **Game mechanics**: Updating player stats, claiming rewards, and item management
+- **DAO governance**: Voting, proposal creation, and treasury management
+
+<Warning>
+This functionality is only available for EVM-based blockchains (Ethereum, Polygon, BSC, Arbitrum, etc.). Contract execution requires gas fees and wallet authentication.
+</Warning>
+
+## Prerequisites
+
+Before executing smart contracts, ensure you have:
+- A wallet with sufficient native tokens for gas fees
+- The contract address and function details
+- Proper authentication via signing method
+- Understanding of the function parameters and expected behavior
+
+## Contract Execution Process
+
+<Steps>
+<Step title="Prepare Function Call">
+Identify the contract function, parameters, and expected gas requirements.
+</Step>
+
+<Step title="Format Parameters">
+Convert all input parameters to the correct Solidity types and string format.
+</Step>
+
+<Step title="Set Gas Limits">
+Configure appropriate gas limits and chain-specific parameters.
+</Step>
+
+<Step title="Execute Transaction">
+Submit the transaction with proper authentication and monitor for confirmation.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/execute
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `transactionRequest` | Body | Container for all transaction details | ✅ | See examples below |
+| `transactionRequest.type` | Body | Must be `"CONTRACT_EXECUTION"` | ✅ | `"CONTRACT_EXECUTION"` |
+| `transactionRequest.walletId` | Body | ID of the wallet executing the transaction | ✅ | `"adc4c08a-b8fa-4e4c-z5a2-92c87b80f174"` |
+| `transactionRequest.to` | Body | Contract address to interact with | ✅ | `"0xdc71b72db51e227e65a45004ab2798d31e8934c9"` |
+| `transactionRequest.secretType` | Body | Blockchain network | ✅ | `"ETHEREUM"` |
+| `transactionRequest.functionName` | Body | Contract function to call | ✅ | `"transfer"` |
+| `transactionRequest.value` | Body | Native token amount to send (usually 0) | ✅ | `0` |
+| `transactionRequest.inputs` | Body | Array of function parameters | ✅ | See examples below |
+| `transactionRequest.chainSpecificFields` | Body | Gas limits and chain-specific settings | ✅ | `{"gasLimit": "300000"}` |
+
+<Warning>
+The deprecated `pincode` parameter should not be used. Always use the `Signing-Method` header for authentication.
+</Warning>
+
+## Code Examples
+
+### Example 1: ERC-20 Token Transfer
+
+Execute a direct ERC-20 token transfer using the contract's transfer function.
+
+<CodeGroup>
+
+```json ERC-20 Transfer
+{
+  "transactionRequest": {
+    "type": "CONTRACT_EXECUTION",
+    "walletId": "adc4c08a-b8fa-4e4c-z5a2-92c87b80f174",
+    "to": "0xdc71b72db51e227e65a45004ab2798d31e8934c9",
+    "secretType": "ETHEREUM",
+    "functionName": "transfer",
+    "value": 0,
+    "inputs": [
+      {
+        "type": "address",
+        "value": "0x80cbb6c4342948e5be81987dce8251dbedd69138"
+      },
+      {
+        "type": "uint256",
+        "value": "1000000000000000000"
+      }
+    ],
+    "chainSpecificFields": {
+      "gasLimit": "300000"
+    }
+  }
+}
+```
+
+```json USDC Transfer (6 decimals)
+{
+  "transactionRequest": {
+    "type": "CONTRACT_EXECUTION",
+    "walletId": "b297ff04-26cd-661d-0840-def3e9f3759b",
+    "to": "0xA0b86a33E6441E8C8C7014A37712A4F2BD4C6a9",
+    "secretType": "ETHEREUM",
+    "functionName": "transfer",
+    "value": 0,
+    "inputs": [
+      {
+        "type": "address",
+        "value": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9"
+      },
+      {
+        "type": "uint256",
+        "value": "100000000"
+      }
+    ],
+    "chainSpecificFields": {
+      "gasLimit": "65000"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 2: NFT Operations
+
+Execute NFT minting and transfer operations.
+
+<CodeGroup>
+
+```json NFT Mint Function
+{
+  "transactionRequest": {
+    "type": "CONTRACT_EXECUTION",
+    "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+    "to": "0x86b16217e6df213aa9de167a11b009c4740a8c8c",
+    "secretType": "MATIC",
+    "functionName": "mint",
+    "value": 0,
+    "inputs": [
+      {
+        "type": "address",
+        "value": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9"
+      },
+      {
+        "type": "uint256",
+        "value": "1"
+      },
+      {
+        "type": "string",
+        "value": "https://metadata.example.com/token/1"
+      }
+    ],
+    "chainSpecificFields": {
+      "gasLimit": "500000"
+    }
+  }
+}
+```
+
+```json NFT Approve Function
+{
+  "transactionRequest": {
+    "type": "CONTRACT_EXECUTION",
+    "walletId": "a186ee03-15bc-550c-9729-cdf2d8f2648a",
+    "to": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+    "secretType": "ETHEREUM",
+    "functionName": "approve",
+    "value": 0,
+    "inputs": [
+      {
+        "type": "address",
+        "value": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
+      },
+      {
+        "type": "uint256",
+        "value": "1234"
+      }
+    ],
+    "chainSpecificFields": {
+      "gasLimit": "100000"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 3: Complex Data Types
+
+Handle complex parameter types including tuples and arrays.
+
+<CodeGroup>
+
+```json Tuple Parameter Example
+{
+  "transactionRequest": {
+    "type": "CONTRACT_EXECUTION",
+    "walletId": "355351bd-41ae-41fa-8f36-12675f056759",
+    "to": "0xb48d8c9e8783465a548f562cb83e8b84d0525a96",
+    "secretType": "MATIC",
+    "functionName": "setValue",
+    "value": 0,
+    "inputs": [
+      {
+        "type": "tuple",
+        "value": [
+          {
+            "type": "address",
+            "value": "0xb48d8c9e8783465a548f562cb83e8b84d0525a96"
+          },
+          {
+            "type": "uint256",
+            "value": "100"
+          }
+        ]
+      }
+    ],
+    "chainSpecificFields": {
+      "gasLimit": "200000"
+    }
+  }
+}
+```
+
+```json Array Parameter Example
+{
+  "transactionRequest": {
+    "type": "CONTRACT_EXECUTION",
+    "walletId": "f21dc1e5-4253-487e-8927-3b5247437f99",
+    "to": "0x8c53de6a889cf0a3151168c3e84263c982d09a2f",
+    "secretType": "ETHEREUM",
+    "functionName": "batchTransfer",
+    "value": 0,
+    "inputs": [
+      {
+        "type": "address[]",
+        "value": "[\"0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9\",\"0x8ba1f109551bD432803012645Hac136c22C501e\"]"
+      },
+      {
+        "type": "uint256[]",
+        "value": "[1000000000000000000,2000000000000000000]"
+      }
+    ],
+    "chainSpecificFields": {
+      "gasLimit": "400000"
+    }
+  }
+}
+```
+
+</CodeGroup>
+
+## Response Format
+
+### Success Response
+
+```json Contract Execution Response
+{
+  "success": true,
+  "result": {
+    "transactionHash": "0x621f692e386a8bc0c53d36aa793864893106e10f54f63fa9c063e24ad975d907"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.transactionHash` | Blockchain transaction hash for tracking |
+
+<Tip>
+Save the transaction hash to monitor the transaction status and confirm successful execution on the blockchain.
+</Tip>
+
+## Supported Parameter Types
+
+<Accordion title="Complete List of Supported Types">
+
+**Integer Types:**
+- `uint8`, `uint16`, `uint24`, `uint32`, `uint40`, `uint48`, `uint56`, `uint64`
+- `uint72`, `uint80`, `uint88`, `uint96`, `uint104`, `uint112`, `uint120`, `uint128`
+- `uint136`, `uint144`, `uint152`, `uint160`, `uint168`, `uint176`, `uint184`, `uint192`
+- `uint200`, `uint208`, `uint216`, `uint224`, `uint232`, `uint240`, `uint248`, `uint256`
+- `int8`, `int16`, `int24`, `int32`, `int40`, `int48`, `int56`, `int64`
+- `int72`, `int80`, `int88`, `int96`, `int104`, `int112`, `int120`, `int128`
+- `int136`, `int144`, `int152`, `int160`, `int168`, `int176`, `int184`, `int192`
+- `int200`, `int208`, `int216`, `int224`, `int232`, `int240`, `int248`, `int256`
+
+**Other Types:**
+- `address` - Ethereum addresses
+- `bool` - Boolean values
+- `string` - Dynamic strings
+- `bytes` - Dynamic byte arrays
+- `bytes1` through `bytes32` - Fixed-size byte arrays
+- `tuple` - Complex structured data
+
+**Array Types:**
+- Add `[]` to any type for dynamic arrays (e.g., `uint256[]`, `address[]`)
+- Use `[n]` for fixed-size arrays (e.g., `uint256[5]`)
+
+**Parameter Formatting:**
+- All values must be provided as strings
+- Arrays: `"[value1,value2,value3]"`
+- Bytes: Hex-encoded strings (e.g., `"0x1234abcd"`)
+- Booleans: `"true"` or `"false"`
+
+</Accordion>
+
+## Gas Management
+
+<Accordion title="Gas Limit Guidelines">
+
+**Common Gas Limits:**
+- Simple ERC-20 transfer: `65,000 - 100,000`
+- ERC-20 approve: `50,000 - 80,000`
+- NFT mint: `200,000 - 500,000`
+- NFT transfer: `80,000 - 150,000`
+- Complex DeFi operations: `300,000 - 1,000,000`
+
+**Gas Estimation Tips:**
+1. Start with conservative estimates
+2. Monitor actual gas usage in successful transactions
+3. Adjust based on contract complexity
+4. Consider network congestion
+
+**Chain-Specific Fields:**
+```json
+"chainSpecificFields": {
+  "gasLimit": "300000",
+  "gasPrice": "20000000000",  // Optional: custom gas price
+  "maxFeePerGas": "30000000000",  // EIP-1559 networks
+  "maxPriorityFeePerGas": "2000000000"  // EIP-1559 networks
+}
+```
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Insufficient Gas**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_GAS",
+  "message": "Transaction ran out of gas during execution"
+}
+```
+
+**Contract Execution Reverted**
+```json
+{
+  "success": false,
+  "errorCode": "EXECUTION_REVERTED",
+  "message": "Contract function execution reverted with reason: 'Insufficient balance'"
+}
+```
+
+**Invalid Function Parameters**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_PARAMETERS",
+  "message": "Function parameters do not match the expected signature"
+}
+```
+
+**Insufficient Balance**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_BALANCE",
+  "message": "Wallet does not have sufficient balance for gas fees"
+}
+```
+
+**Contract Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "CONTRACT_NOT_FOUND",
+  "message": "No contract found at the specified address"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+<Warning>
+**Security and Performance Guidelines:**
+
+1. **Validate Parameters**: Ensure all parameters match the contract's expected types
+2. **Set Appropriate Gas Limits**: Avoid setting limits too low or unnecessarily high
+3. **Test on Testnets**: Always test contract interactions on test networks first
+4. **Handle Reverts**: Implement proper error handling for contract execution failures
+5. **Monitor Transactions**: Track transaction status after submission
+6. **Use Current Gas Prices**: Check network conditions for optimal gas pricing
+</Warning>
+
+## Integration Examples
+
+### DeFi Token Swap
+
+```javascript
+async function executeTokenSwap(walletId, tokenIn, tokenOut, amountIn, minAmountOut) {
+  const swapData = {
+    transactionRequest: {
+      type: 'CONTRACT_EXECUTION',
+      walletId,
+      to: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D', // Uniswap V2 Router
+      secretType: 'ETHEREUM',
+      functionName: 'swapExactTokensForTokens',
+      value: 0,
+      inputs: [
+        { type: 'uint256', value: amountIn.toString() },
+        { type: 'uint256', value: minAmountOut.toString() },
+        { type: 'address[]', value: `["${tokenIn}","${tokenOut}"]` },
+        { type: 'address', value: walletAddress },
+        { type: 'uint256', value: (Date.now() + 1200000).toString() } // 20 min deadline
+      ],
+      chainSpecificFields: {
+        gasLimit: '300000'
+      }
+    }
+  };
+  
+  const response = await fetch('/api/transactions/execute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Signing-Method': `${signingMethodId}:${signingMethodValue}`
+    },
+    body: JSON.stringify(swapData)
+  });
+  
+  return await response.json();
+}
+```
+
+### NFT Batch Operations
+
+```javascript
+async function batchMintNFTs(walletId, contractAddress, recipients, tokenIds) {
+  const mintData = {
+    transactionRequest: {
+      type: 'CONTRACT_EXECUTION',
+      walletId,
+      to: contractAddress,
+      secretType: 'MATIC',
+      functionName: 'batchMint',
+      value: 0,
+      inputs: [
+        { type: 'address[]', value: JSON.stringify(recipients) },
+        { type: 'uint256[]', value: JSON.stringify(tokenIds) }
+      ],
+      chainSpecificFields: {
+        gasLimit: (recipients.length * 100000).toString() // Dynamic gas based on batch size
+      }
+    }
+  };
+  
+  const response = await fetch('/api/transactions/execute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Signing-Method': `${signingMethodId}:${signingMethodValue}`
+    },
+    body: JSON.stringify(mintData)
+  });
+  
+  return await response.json();
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Monitor Transaction" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track the status of your contract execution
+</Card>
+<Card title="Read Contract Data" icon="book-open" href="/Wallet-API-Basic-Guides/read-contract">
+  Query contract state without executing transactions
+</Card>
+<Card title="Gas Fee Estimation" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Get current gas prices for optimal execution
+</Card>
+<Card title="Resubmit Transaction" icon="rotate-right" href="/Wallet-API-Basic-Guides/resubmit-transaction-1">
+  Handle failed or stuck contract executions
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Smart Contracts](https://docs.venly.io/docs/smart-contracts)
+- Understand [EIP-712 Signatures](https://docs.venly.io/docs/eip712-signatures)
+- View [Gas Optimization](https://docs.venly.io/docs/gas-optimization)
+- Complete [API Reference](https://docs.venly.io/reference/executetransaction_1)
+</Note>

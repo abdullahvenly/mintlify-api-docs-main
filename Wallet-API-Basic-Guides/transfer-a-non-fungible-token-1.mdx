@@ -1,0 +1,519 @@
+---
+title: "Transfer Non-Fungible Tokens (NFTs)"
+description: "Learn how to transfer unique NFTs (ERC-721 and ERC-1155) between wallets with proper authentication and error handling."
+icon: "arrow-right-arrow-left"
+---
+
+<Info>
+NFT transfers allow you to send unique digital assets like collectibles, art, gaming items, and other non-fungible tokens between wallets.
+</Info>
+
+## Overview
+
+NFT transfers are essential for:
+- **Digital collectibles**: Trading unique art, cards, and memorabilia
+- **Gaming assets**: Transferring characters, weapons, and in-game items
+- **Marketplace transactions**: Buying and selling NFTs on platforms
+- **Gifting and rewards**: Sending unique tokens as gifts or achievements
+
+<Tip>
+This endpoint works for both ERC-721 (unique tokens) and ERC-1155 (multi-token standard) NFTs. For ERC-1155, this transfers exactly one copy of the specified token.
+</Tip>
+
+## Prerequisites
+
+Before transferring NFTs, ensure you have:
+- A wallet containing the NFT you want to transfer
+- The recipient's wallet address or email
+- Sufficient native tokens for gas fees
+- The wallet owner's signing method credentials for authentication
+
+## NFT Transfer Process
+
+<Steps>
+<Step title="Verify NFT Ownership">
+Confirm that the sender wallet owns the specific NFT to be transferred.
+</Step>
+
+<Step title="Prepare Transfer Details">
+Gather the NFT contract address, token ID, and recipient information.
+</Step>
+
+<Step title="Set Recipient Address">
+Specify the destination wallet address or email address.
+</Step>
+
+<Step title="Execute Transfer">
+Submit the transaction with proper authentication and monitor for confirmation.
+</Step>
+</Steps>
+
+## API Reference
+
+### Endpoint
+```http
+POST /api/transactions/execute
+```
+
+### Headers
+
+| Header | Format | Description | Example |
+|--------|--------|-------------|---------|
+| `Signing-Method` | `id:value` | Authentication using wallet owner's signing method | `756ae7a7-3713-43ee-9936-0dff50306488:123456` |
+
+### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `transactionRequest` | Body | Container for all transaction details | ✅ | See examples below |
+| `transactionRequest.type` | Body | Must be `"NFT_TRANSFER"` | ✅ | `"NFT_TRANSFER"` |
+| `transactionRequest.walletId` | Body | ID of the wallet sending the NFT | ✅ | `"adc4c08a-b8fa-4e4c-z5a2-92c87b80f174"` |
+| `transactionRequest.to` | Body | Recipient wallet address or email | ✅ | `"0xdc71b72db51e227e65a45004ab2798d31e8934c9"` |
+| `transactionRequest.secretType` | Body | Blockchain network | ✅ | `"MATIC"` |
+| `transactionRequest.tokenAddress` | Body | Contract address of the NFT | ✅ | `"0x4df47b4969b2911c966506e3592c41389493953b"` |
+| `transactionRequest.tokenId` | Body | ID of the specific NFT within the contract | ✅ | `1` |
+
+<Warning>
+The deprecated `pincode` parameter should not be used. Always use the `Signing-Method` header for authentication.
+</Warning>
+
+## Code Examples
+
+### Example 1: Basic NFT Transfer
+
+Transfer unique NFTs between wallets on different networks.
+
+<CodeGroup>
+
+```json ERC-721 NFT Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "adc4c08a-b8fa-4e4c-z5a2-92c87b80f174",
+    "to": "0xdc71b72db51e227e65a45004ab2798d31e8934c9",
+    "secretType": "MATIC",
+    "tokenAddress": "0x4df47b4969b2911c966506e3592c41389493953b",
+    "tokenId": 1
+  }
+}
+```
+
+```json Ethereum NFT Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "c4c97f87-8e00-4f3a-8647-2f24ac9b73cb",
+    "to": "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9",
+    "secretType": "ETHEREUM",
+    "tokenAddress": "0xBC4CA0EdA7647A8aB7C2061c2E118A18a936f13D",
+    "tokenId": 5678
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 2: Cross-Chain NFT Transfers
+
+Transfer NFTs on different blockchain networks.
+
+<CodeGroup>
+
+```json BSC NFT Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "b297ff04-26cd-661d-0840-def3e9f3759b",
+    "to": "0x8ba1f109551bD432803012645Hac136c22C501e",
+    "secretType": "BSC",
+    "tokenAddress": "0x8c53de6a889cf0a3151168c3e84263c982d09a2f",
+    "tokenId": 42
+  }
+}
+```
+
+```json Arbitrum NFT Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "a186ee03-15bc-550c-9729-cdf2d8f2648a",
+    "to": "0x548372d982F478683FC1fc59b2e3224b4899fFBE",
+    "secretType": "ARBITRUM",
+    "tokenAddress": "0x2953399124F0cBB46d2CbACD8A89cF0599974963",
+    "tokenId": 999
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 3: Email-Based NFT Transfers
+
+Send NFTs to recipients using their email addresses.
+
+<CodeGroup>
+
+```json Email Recipient Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "355351bd-41ae-41fa-8f36-12675f056759",
+    "to": "collector@example.com",
+    "secretType": "ETHEREUM",
+    "tokenAddress": "0x86b16217e6df213aa9de167a11b009c4740a8c8c",
+    "tokenId": 36
+  }
+}
+```
+
+```json Gift NFT Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "f21dc1e5-4253-487e-8927-3b5247437f99",
+    "to": "friend@artplatform.com",
+    "secretType": "MATIC",
+    "tokenAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+    "tokenId": 202
+  }
+}
+```
+
+</CodeGroup>
+
+### Example 4: Gaming NFT Transfers
+
+Transfer gaming assets and collectibles.
+
+<CodeGroup>
+
+```json Gaming Character Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "da8d6b3b-5e4a-4e9d-b12f-59d68b396d6f",
+    "to": "0x427d0addaa77d8bb871dbea3458dea4b5198730c",
+    "secretType": "MATIC",
+    "tokenAddress": "0xb48d8c9e8783465a548f562cb83e8b84d0525a96",
+    "tokenId": 1337
+  }
+}
+```
+
+```json Collectible Card Transfer
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "07cc0aa5-0f98-4a4e-9c55-686124e0f0e4",
+    "to": "0x96f06471cb1653617b778841106e40594f8d2105",
+    "secretType": "ETHEREUM",
+    "tokenAddress": "0x0e3a2a1f2146d86a604adc220b4967a898d7fe07",
+    "tokenId": 777
+  }
+}
+```
+
+</CodeGroup>
+
+### Full Request Example
+
+```http
+POST /api/transactions/execute
+Signing-Method: 756ae7a7-3713-43ee-9936-0dff50306488:123456
+Content-Type: application/json
+
+{
+  "transactionRequest": {
+    "type": "NFT_TRANSFER",
+    "walletId": "adc4c08a-b8fa-4e4c-z5a2-92c87b80f174",
+    "to": "0xdc71b72db51e227e65a45004ab2798d31e8934c9",
+    "secretType": "MATIC",
+    "tokenAddress": "0x4df47b4969b2911c966506e3592c41389493953b",
+    "tokenId": 1
+  }
+}
+```
+
+## Response Format
+
+### Success Response
+
+```json NFT Transfer Success Response
+{
+  "success": true,
+  "result": {
+    "transactionHash": "0x8c953e09d8cede9f4eb0d1ee96de4f5a99e31dba7e64312bb252a465de12d10d"
+  }
+}
+```
+
+### Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `result.transactionHash` | Blockchain transaction hash for tracking |
+
+<Tip>
+Save the transaction hash to monitor the transfer status and confirm successful completion on the blockchain.
+</Tip>
+
+## NFT Standards Support
+
+<Accordion title="Supported NFT Standards">
+
+**ERC-721 (Ethereum)**
+- Each token is completely unique
+- One owner per token
+- Most common standard for digital collectibles
+- Examples: CryptoPunks, Bored Ape Yacht Club
+
+**ERC-1155 (Multi-Token)**
+- Can represent both fungible and non-fungible tokens
+- Batch operations supported
+- More gas-efficient for multiple transfers
+- Examples: Gaming items, trading cards
+
+**Cross-Chain Support:**
+- Ethereum mainnet
+- Polygon (MATIC)
+- Binance Smart Chain (BSC)
+- Arbitrum
+- Avalanche (AVAX)
+- Optimism
+
+**Transfer Behavior:**
+- ERC-721: Transfers ownership of unique token
+- ERC-1155: Transfers one copy of the specified token ID
+
+</Accordion>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**NFT Not Owned**
+```json
+{
+  "success": false,
+  "errorCode": "TOKEN_NOT_OWNED",
+  "message": "Wallet does not own the specified NFT"
+}
+```
+
+**Invalid Token Contract**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_CONTRACT",
+  "message": "Token contract address is invalid or does not exist"
+}
+```
+
+**Token Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "TOKEN_NOT_FOUND",
+  "message": "Token ID does not exist in the specified contract"
+}
+```
+
+**Invalid Recipient**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_RECIPIENT",
+  "message": "Recipient address is invalid or malformed"
+}
+```
+
+**Transfer Not Approved**
+```json
+{
+  "success": false,
+  "errorCode": "TRANSFER_NOT_APPROVED",
+  "message": "NFT transfer is not approved by the owner"
+}
+```
+
+**Contract Paused**
+```json
+{
+  "success": false,
+  "errorCode": "CONTRACT_PAUSED",
+  "message": "Token contract has paused transfers"
+}
+```
+
+**Insufficient Gas**
+```json
+{
+  "success": false,
+  "errorCode": "INSUFFICIENT_GAS",
+  "message": "Wallet does not have enough native tokens for gas fees"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+<Warning>
+**NFT Transfer Guidelines:**
+
+1. **Verify Ownership**: Always confirm the wallet owns the NFT before transfer
+2. **Validate Recipients**: Double-check recipient addresses to prevent loss
+3. **Check Approvals**: Ensure proper approvals are set for marketplace transfers
+4. **Monitor Gas Fees**: NFT transfers can be gas-intensive, especially on Ethereum
+5. **Handle Errors**: Implement robust error handling for failed transfers
+6. **Track Transactions**: Monitor transaction status after submission
+7. **Test Transfers**: Use testnets for initial testing and validation
+</Warning>
+
+## Integration Examples
+
+### NFT Marketplace Integration
+
+```javascript
+async function transferNFT(fromWalletId, toAddress, contractAddress, tokenId, blockchain) {
+  // First verify ownership
+  const isOwner = await verifyNFTOwnership(fromWalletId, contractAddress, tokenId);
+  
+  if (!isOwner) {
+    throw new Error('Wallet does not own this NFT');
+  }
+  
+  const transferData = {
+    transactionRequest: {
+      type: 'NFT_TRANSFER',
+      walletId: fromWalletId,
+      to: toAddress,
+      secretType: blockchain,
+      tokenAddress: contractAddress,
+      tokenId: parseInt(tokenId)
+    }
+  };
+  
+  const response = await fetch('/api/transactions/execute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Signing-Method': `${signingMethodId}:${signingMethodValue}`
+    },
+    body: JSON.stringify(transferData)
+  });
+  
+  const result = await response.json();
+  
+  if (result.success) {
+    console.log(`NFT transfer initiated: ${result.result.transactionHash}`);
+    return result.result;
+  } else {
+    throw new Error(`Transfer failed: ${result.message}`);
+  }
+}
+```
+
+### Gaming Asset Transfer
+
+```javascript
+async function transferGameAsset(playerWalletId, recipientAddress, assetTokenId) {
+  try {
+    // Check if asset is transferable (not locked in game)
+    const isTransferable = await checkAssetTransferability(assetTokenId);
+    
+    if (!isTransferable) {
+      throw new Error('Asset is currently locked and cannot be transferred');
+    }
+    
+    const transferResult = await transferNFT(
+      playerWalletId,
+      recipientAddress,
+      process.env.GAME_ASSETS_CONTRACT,
+      assetTokenId,
+      'MATIC'
+    );
+    
+    // Update game database
+    await updateAssetOwnership(assetTokenId, recipientAddress);
+    
+    return transferResult;
+  } catch (error) {
+    console.error('Game asset transfer failed:', error);
+    throw error;
+  }
+}
+```
+
+### Batch NFT Transfer
+
+```javascript
+async function batchTransferNFTs(transfers) {
+  const results = [];
+  
+  for (const transfer of transfers) {
+    try {
+      const result = await transferNFT(
+        transfer.walletId,
+        transfer.recipient,
+        transfer.contractAddress,
+        transfer.tokenId,
+        transfer.blockchain
+      );
+      
+      results.push({
+        tokenId: transfer.tokenId,
+        recipient: transfer.recipient,
+        success: true,
+        transactionHash: result.transactionHash
+      });
+    } catch (error) {
+      results.push({
+        tokenId: transfer.tokenId,
+        recipient: transfer.recipient,
+        success: false,
+        error: error.message
+      });
+    }
+    
+    // Add delay between transfers to avoid rate limiting
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+  
+  return results;
+}
+```
+
+## Gas Optimization Tips
+
+1. **Batch Operations**: Use ERC-1155 for multiple token transfers
+2. **Timing**: Transfer during low network congestion periods
+3. **Gas Estimation**: Check current gas prices before transfers
+4. **Layer 2**: Use Polygon or other L2 solutions for lower fees
+5. **Approval Management**: Set approvals efficiently for marketplace operations
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Transfer Fungible Tokens" icon="coins" href="/Wallet-API-Basic-Guides/transfer-a-fungible-token-1">
+  Learn how to transfer fungible tokens (ERC-1155)
+</Card>
+<Card title="Monitor Transaction" icon="magnifying-glass" href="/Wallet-API-Basic-Guides/get-transaction-status">
+  Track the status of your NFT transfer
+</Card>
+<Card title="Retrieve NFTs" icon="image" href="/Wallet-API-Basic-Guides/retrieve-non-fungible-tokens-1">
+  View all NFTs in a wallet
+</Card>
+<Card title="Read Contract Data" icon="book-open" href="/Wallet-API-Basic-Guides/read-contract">
+  Query NFT metadata and properties
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [NFT Standards](https://docs.venly.io/docs/nft-standards)
+- Understand [Token Metadata](https://docs.venly.io/docs/nft-metadata)
+- View [Gas Optimization](https://docs.venly.io/docs/gas-optimization)
+- Complete [API Reference](https://docs.venly.io/reference/executetransaction_1)
+</Note>

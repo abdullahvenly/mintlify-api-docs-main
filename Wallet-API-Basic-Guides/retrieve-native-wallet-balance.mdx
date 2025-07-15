@@ -1,0 +1,246 @@
+---
+title: "Retrieve Native Wallet Balance"
+description: "Learn how to check the native token balance of any wallet using wallet ID or blockchain address."
+icon: "scale-balanced"
+---
+
+<Info>
+Native balance refers to the primary cryptocurrency of a blockchain (ETH for Ethereum, MATIC for Polygon, BNB for BSC, etc.).
+</Info>
+
+## Overview
+
+Checking wallet balances is essential for:
+- **Transaction validation**: Ensuring sufficient funds before transfers
+- **Portfolio tracking**: Monitoring asset values across wallets
+- **Application logic**: Making decisions based on user balances
+- **Gas fee estimation**: Confirming enough native tokens for transaction fees
+
+<Tip>
+Balance queries are read-only operations that don't require authentication or gas fees.
+</Tip>
+
+## Prerequisites
+
+To retrieve wallet balances, you need either:
+- A valid wallet ID from your Venly-managed wallets
+- OR a blockchain address and the corresponding network type
+
+## Balance Retrieval Methods
+
+<Steps>
+<Step title="By Wallet ID">
+Use this method for wallets you manage through the Venly API. Requires only the wallet ID.
+</Step>
+
+<Step title="By Address and Blockchain">
+Use this method for any wallet address, including external wallets. Requires the address and blockchain type.
+</Step>
+</Steps>
+
+## Method 1: Get Balance by Wallet ID
+
+Perfect for wallets created and managed through the Venly API.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{walletId}/balance
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `walletId` | Path | The unique ID of the wallet | ✅ | `"a7185cb1-66ec-41c7-94e3-be7a7e17ee67"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Get Ethereum Wallet Balance
+GET /api/wallets/a7185cb1-66ec-41c7-94e3-be7a7e17ee67/balance
+```
+
+```http Get Polygon Wallet Balance
+GET /api/wallets/b8296dc2-77fd-52d8-a5f4-cf8b8f28ff78/balance
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Native Balance Response
+{
+  "success": true,
+  "result": {
+    "available": true,
+    "secretType": "ETHEREUM",
+    "balance": 1.25,
+    "gasBalance": 1.25,
+    "symbol": "ETH",
+    "gasSymbol": "ETH",
+    "rawBalance": "1250000000000000000",
+    "rawGasBalance": "1250000000000000000",
+    "decimals": 18,
+    "exchange": {
+      "usdPrice": 2450.75,
+      "usdBalanceValue": 3063.44
+    }
+  }
+}
+```
+
+## Method 2: Get Balance by Address and Blockchain
+
+Use this method to check any wallet address, including external wallets not managed by Venly.
+
+### API Reference
+
+#### Endpoint
+```http
+GET /api/wallets/{secretType}/{walletAddress}/balance
+```
+
+#### Parameters
+
+| Parameter | Type | Description | Required | Example |
+|-----------|------|-------------|----------|---------|
+| `secretType` | Path | The blockchain network | ✅ | `"ETHEREUM"` |
+| `walletAddress` | Path | The wallet's blockchain address | ✅ | `"0xF8e6A6F31DD0d8B907BfBB4237F69147AcAEFBE2"` |
+
+### Code Examples
+
+<CodeGroup>
+
+```http Check Ethereum Address
+GET /api/wallets/ETHEREUM/0xF8e6A6F31DD0d8B907BfBB4237F69147AcAEFBE2/balance
+```
+
+```http Check Polygon Address
+GET /api/wallets/MATIC/0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b9/balance
+```
+
+```http Check BSC Address
+GET /api/wallets/BSC/0x8ba1f109551bD432803012645Hac136c22C501e/balance
+```
+
+</CodeGroup>
+
+### Response Format
+
+```json Balance by Address Response
+{
+  "success": true,
+  "result": {
+    "available": true,
+    "secretType": "MATIC",
+    "balance": 0.009474999998803,
+    "gasBalance": 0.009474999998803,
+    "symbol": "POL",
+    "gasSymbol": "POL",
+    "rawBalance": "9474999998803000",
+    "rawGasBalance": "9474999998803000",
+    "decimals": 18,
+    "exchange": {
+      "usdPrice": 0.45474635658060353,
+      "usdBalanceValue": 0.004308721728056887
+    }
+  }
+}
+```
+
+## Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `available` | Whether balance data is available |
+| `secretType` | The blockchain network |
+| `balance` | Human-readable balance amount |
+| `gasBalance` | Available balance for gas fees |
+| `symbol` | Token symbol (ETH, MATIC, BNB, etc.) |
+| `rawBalance` | Balance in smallest unit (wei, etc.) |
+| `decimals` | Number of decimal places for the token |
+| `exchange.usdPrice` | Current USD price per token |
+| `exchange.usdBalanceValue` | Total USD value of the balance |
+
+<Warning>
+Use `rawBalance` for precise calculations to avoid floating-point precision issues. The `balance` field is for display purposes only.
+</Warning>
+
+## Error Handling
+
+<Accordion title="Common Error Scenarios">
+
+**Wallet Not Found**
+```json
+{
+  "success": false,
+  "errorCode": "WALLET_NOT_FOUND",
+  "message": "Wallet with the specified ID does not exist"
+}
+```
+
+**Invalid Address Format**
+```json
+{
+  "success": false,
+  "errorCode": "INVALID_ADDRESS",
+  "message": "The wallet address format is invalid for this blockchain"
+}
+```
+
+**Unsupported Blockchain**
+```json
+{
+  "success": false,
+  "errorCode": "UNSUPPORTED_SECRET_TYPE",
+  "message": "The specified blockchain is not supported"
+}
+```
+
+**Network Unavailable**
+```json
+{
+  "success": false,
+  "errorCode": "NETWORK_UNAVAILABLE",
+  "message": "Unable to fetch balance data from the blockchain network"
+}
+```
+
+</Accordion>
+
+## Best Practices
+
+1. **Cache balance data** appropriately to avoid excessive API calls
+2. **Use raw values** for calculations to maintain precision
+3. **Handle network errors** gracefully with retry logic
+4. **Display USD values** for better user experience
+5. **Check gas balance** before initiating transactions
+
+## Next Steps
+
+<CardGroup cols={2}>
+<Card title="Check ERC-20 Balances" icon="coins" href="/Wallet-API-Basic-Guides/retrieve-erc20-token-balance">
+  View balances for custom tokens and stablecoins
+</Card>
+<Card title="Transfer Tokens" icon="arrow-right-arrow-left" href="/Wallet-API-Basic-Guides/transfer-a-native-token-1">
+  Send native tokens to another wallet
+</Card>
+<Card title="Get Transaction History" icon="clock-rotate-left" href="/Wallet-API-Basic-Guides/get-all-transactions">
+  View past transactions for the wallet
+</Card>
+<Card title="Estimate Gas Fees" icon="gas-pump" href="/Wallet-API-Basic-Guides/get-fees">
+  Calculate transaction costs before sending
+</Card>
+</CardGroup>
+
+## Additional Resources
+
+<Note>
+- Learn about [Token Standards](https://docs.venly.io/docs/token-standards)
+- View [Supported Blockchains](https://docs.venly.io/reference/getsupportedchains)
+- Complete [API Reference](https://docs.venly.io/reference/viewbalance)
+- Understand [Balance Precision](https://docs.venly.io/docs/balance-precision)
+</Note>
