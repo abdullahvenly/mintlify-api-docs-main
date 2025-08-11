@@ -1,0 +1,457 @@
+---
+title: "Create ERC20 Token Contract"
+description: "Learn how to create and deploy ERC20 smart contracts for fungible tokens on the blockchain"
+icon: "coins"
+---
+
+<Info>
+**Token Contract Creation:** Deploy ERC20 smart contracts to create fungible tokens for cryptocurrencies, stablecoins, loyalty programs, and more.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is an ERC20 Token Contract?
+
+An ERC-20 smart contract is a standardized blueprint for creating fungible tokens on Ethereum-compatible blockchains. These contracts define how tokens behave, ensuring compatibility across wallets, exchanges, and DeFi platforms.
+
+<CardGroup cols={2}>
+  <Card title="Standardized Protocol" icon="check-circle">
+    Follow ERC-20 standard for universal compatibility
+  </Card>
+  <Card title="Fungible Tokens" icon="coins">
+    Create interchangeable tokens with identical value
+  </Card>
+  <Card title="Smart Contract Logic" icon="code">
+    Built-in transfer, approval, and balance functions
+  </Card>
+  <Card title="Cross-Platform Support" icon="network-wired">
+    Works with all ERC-20 compatible wallets and platforms
+  </Card>
+</CardGroup>
+
+<Note>
+Think of ERC-20 as a universal language that ensures your tokens can be easily traded, stored, and used across the entire blockchain ecosystem without compatibility issues.
+</Note>
+
+## Common Use Cases
+
+<Tabs>
+  <Tab title="Cryptocurrencies">
+    **Digital Currencies**
+    - Create new cryptocurrencies for trading
+    - Build payment tokens for specific ecosystems
+    - Develop utility tokens for platform access
+    - Launch governance tokens for DAOs
+  </Tab>
+  <Tab title="Business Applications">
+    **Enterprise Solutions**
+    - Issue stablecoins pegged to fiat currencies
+    - Create loyalty and reward program tokens
+    - Build supply chain tracking tokens
+    - Develop employee incentive tokens
+  </Tab>
+  <Tab title="Gaming & Entertainment">
+    **Digital Assets**
+    - In-game currencies for blockchain games
+    - Fan tokens for sports teams
+    - Creator tokens for content platforms
+    - Virtual world currencies
+  </Tab>
+  <Tab title="DeFi & Finance">
+    **Financial Instruments**
+    - Yield farming tokens
+    - Liquidity pool tokens
+    - Synthetic asset tokens
+    - Insurance protocol tokens
+  </Tab>
+</Tabs>
+
+## Prerequisites
+
+<Steps>
+  <Step title="API Access" icon="key">
+    Ensure you have valid Venly API credentials from the [Portal](https://portal.venly.io)
+  </Step>
+  <Step title="Blockchain Selection" icon="link">
+    Choose your target blockchain (we'll use Polygon testnet)
+  </Step>
+  <Step title="Token Planning" icon="clipboard">
+    Define your token name, symbol, supply, and ownership structure
+  </Step>
+  <Step title="Owner Wallet" icon="wallet">
+    Have the owner wallet address ready (optional but recommended)
+  </Step>
+</Steps>
+
+## Create Your ERC20 Contract
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/api/v3/erc20/contracts/deployments', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    chain: "MATIC",
+    name: "Infinity Token",
+    symbol: "IFT",
+    maxSupply: "100",
+    burnable: "true",
+    owner: "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+  })
+});
+
+const data = await response.json();
+console.log('Contract deployment:', data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/api/v3/erc20/contracts/deployments',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'chain': 'MATIC',
+        'name': 'Infinity Token',
+        'symbol': 'IFT',
+        'maxSupply': '100',
+        'burnable': 'true',
+        'owner': '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9'
+    }
+)
+
+data = response.json()
+print('Contract deployment:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc20/contracts/deployments' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "name": "Infinity Token",
+    "symbol": "IFT",
+    "maxSupply": "100",
+    "burnable": "true",
+    "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | The blockchain to deploy on (e.g., "MATIC" for Polygon) |
+| `name` | string | ✅ | The full name of your token contract |
+| `symbol` | string | ❌ | The ticker symbol for your token (e.g., "IFT") |
+| `maxSupply` | string | ❌ | Maximum number of tokens that can ever be minted |
+| `burnable` | boolean | ❌ | Whether tokens can be permanently destroyed |
+| `owner` | string | ❌ | Wallet address that will own and control the contract |
+
+<Tip>
+**Parameter Guidelines:**
+- **Name**: Use descriptive names (e.g., "Infinity Token", "Loyalty Points")
+- **Symbol**: Keep it short and memorable (3-5 characters)
+- **Max Supply**: Consider your tokenomics carefully - this cannot be changed later
+- **Owner**: Use a secure wallet address you control
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "id": "7eae57cb-6769-4a2a-84c8-32e72f0aaee7",
+        "chain": "MATIC",
+        "name": "Infinity Token",
+        "symbol": "IFT",
+        "maxSupply": 100,
+        "burnable": true,
+        "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+        "transactionHash": "0x7dd053caa4a77f84d70c38478bc14dd25766765d018740b0633eabf3b1307c6d",
+        "status": "PENDING"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields to save:**
+    - **`result.id`** - Deployment ID for status tracking
+    - **`transactionHash`** - Blockchain transaction hash
+    - **`status`** - Current deployment status (PENDING → SUCCESS)
+    - **`owner`** - Contract owner address
+    - **`maxSupply`** - Maximum token supply limit
+  </Tab>
+</Tabs>
+
+<Check>
+**Save the Deployment ID:** The `result.id` is your deployment ID - use it to check the contract creation status and retrieve the final contract address.
+</Check>
+
+## Contract Configuration Options
+
+<AccordionGroup>
+  <Accordion title="Supply Management" icon="chart-line">
+    **Max Supply Options:**
+    
+    ```javascript
+    // Fixed supply (recommended for most use cases)
+    {
+      "maxSupply": "1000000",  // 1 million tokens max
+      "name": "Fixed Supply Token"
+    }
+    
+    // Unlimited supply (use with caution)
+    {
+      "maxSupply": null,  // No supply limit
+      "name": "Unlimited Token"
+    }
+    ```
+    
+    **Considerations:**
+    - Fixed supply creates scarcity and potential value appreciation
+    - Unlimited supply allows for future expansion but may affect token value
+    - Consider your long-term tokenomics strategy
+  </Accordion>
+  
+  <Accordion title="Burnable Tokens" icon="fire">
+    **Burn Functionality:**
+    
+    ```javascript
+    // Burnable tokens (deflationary)
+    {
+      "burnable": true,
+      "name": "Deflationary Token"
+    }
+    
+    // Non-burnable tokens (stable supply)
+    {
+      "burnable": false,
+      "name": "Stable Token"
+    }
+    ```
+    
+    **Use cases:**
+    - **Burnable**: Deflationary tokens, fee burning mechanisms
+    - **Non-burnable**: Stablecoins, utility tokens, governance tokens
+  </Accordion>
+  
+  <Accordion title="Ownership Structure" icon="crown">
+    **Owner Responsibilities:**
+    
+    ```javascript
+    // Specify owner (recommended)
+    {
+      "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+      "name": "Owned Token"
+    }
+    
+    // No owner specified (deployer becomes owner)
+    {
+      "name": "Auto-Owned Token"
+    }
+    ```
+    
+    **Owner capabilities:**
+    - Mint new tokens (up to max supply)
+    - Transfer ownership
+    - Pause/unpause token transfers (if implemented)
+    - Update contract parameters (if implemented)
+  </Accordion>
+  
+  <Accordion title="Chain Selection" icon="link">
+    **Supported Blockchains:**
+    
+    | Chain | Identifier | Use Case |
+    |-------|------------|----------|
+    | Polygon | `MATIC` | Low fees, fast transactions |
+    | Ethereum | `ETHEREUM` | Maximum compatibility, higher fees |
+    | BSC | `BSC` | Binance ecosystem integration |
+    | Avalanche | `AVAX` | High throughput applications |
+    
+    **Selection criteria:**
+    - **Gas costs**: Polygon < BSC < Avalanche < Ethereum
+    - **Ecosystem**: Consider where your users are
+    - **Liquidity**: Ethereum has the most DeFi protocols
+  </Accordion>
+</AccordionGroup>
+
+## Deployment Status Monitoring
+
+Contract deployment is asynchronous. Monitor the progress:
+
+<CodeGroup>
+```javascript JavaScript
+const deploymentId = "7eae57cb-6769-4a2a-84c8-32e72f0aaee7";
+
+const statusResponse = await fetch(`/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const status = await statusResponse.json();
+console.log('Deployment status:', status.result.status);
+console.log('Contract address:', status.result.address);
+```
+
+```python Python
+deployment_id = "7eae57cb-6769-4a2a-84c8-32e72f0aaee7"
+
+status_response = requests.get(
+    f'/api/v3/erc20/contracts/deployments/{deployment_id}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+status = status_response.json()
+print('Deployment status:', status['result']['status'])
+print('Contract address:', status['result']['address'])
+```
+</CodeGroup>
+
+## Token Contract Examples
+
+<Tabs>
+  <Tab title="Stablecoin">
+    ```json
+    {
+      "chain": "MATIC",
+      "name": "USD Stable Token",
+      "symbol": "USDS",
+      "maxSupply": "1000000000",
+      "burnable": false,
+      "owner": "0x..."
+    }
+    ```
+    Perfect for payment systems and value storage.
+  </Tab>
+  <Tab title="Governance Token">
+    ```json
+    {
+      "chain": "ETHEREUM",
+      "name": "DAO Governance Token",
+      "symbol": "GOV",
+      "maxSupply": "100000000",
+      "burnable": true,
+      "owner": "0x..."
+    }
+    ```
+    Ideal for decentralized autonomous organizations.
+  </Tab>
+  <Tab title="Utility Token">
+    ```json
+    {
+      "chain": "MATIC",
+      "name": "Platform Utility Token",
+      "symbol": "UTIL",
+      "maxSupply": "500000000",
+      "burnable": true,
+      "owner": "0x..."
+    }
+    ```
+    Great for platform access and services.
+  </Tab>
+  <Tab title="Gaming Token">
+    ```json
+    {
+      "chain": "MATIC",
+      "name": "Game Currency",
+      "symbol": "GAME",
+      "maxSupply": null,
+      "burnable": true,
+      "owner": "0x..."
+    }
+    ```
+    Perfect for in-game economies.
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Token Design Best Practices:**
+
+1. **Clear Naming** - Use descriptive names and recognizable symbols
+2. **Supply Planning** - Consider long-term tokenomics and inflation
+3. **Security First** - Use secure owner addresses and test thoroughly
+4. **Documentation** - Document your token's purpose and mechanics
+5. **Community** - Build community around your token's utility
+6. **Compliance** - Ensure regulatory compliance in your jurisdiction
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Contract deployment failed">
+    **Common causes:**
+    - Invalid owner address format
+    - Insufficient API key permissions
+    - Network congestion
+    - Invalid parameter values
+    
+    **Solution:** Verify all parameters, check API permissions, and retry with correct values.
+  </Accordion>
+  
+  <Accordion title="Symbol already exists">
+    **Issue:**
+    - Token symbol conflicts with existing tokens
+    - Symbol format not accepted
+    
+    **Solution:** Choose a unique symbol and ensure it follows naming conventions (3-5 characters, alphanumeric).
+  </Accordion>
+  
+  <Accordion title="Max supply validation error">
+    **Common issues:**
+    - Supply too large for blockchain limits
+    - Invalid number format
+    - Negative values
+    
+    **Solution:** Use reasonable supply numbers and ensure proper string formatting for large numbers.
+  </Accordion>
+  
+  <Accordion title="Owner address invalid">
+    **Possible causes:**
+    - Malformed wallet address
+    - Wrong blockchain address format
+    - Contract address instead of wallet address
+    
+    **Solution:** Verify the owner address is a valid wallet address for the target blockchain.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Check Contract Status" href="/Token-API-Basic-Guides/check-erc20-token-contract-status" icon="magnifying-glass">
+    Monitor your contract deployment progress
+  </Card>
+  <Card title="Mint ERC20 Tokens" href="/Token-API-Basic-Guides/mint-erc20-tokens" icon="coins">
+    Create and distribute your tokens
+  </Card>
+  <Card title="Manage Contract" href="/Token-API-Basic-Guides/retrieve-erc20-token-contracts" icon="gear">
+    View and manage your deployed contracts
+  </Card>
+  <Card title="Set Up Webhooks" href="/Token-API-Basic-Guides/webhooks-token-api" icon="webhook">
+    Get real-time notifications for token events
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important Considerations:** 
+- Contract parameters like max supply and burnable status cannot be changed after deployment
+- Test thoroughly on testnets before mainnet deployment
+- Ensure you control the owner wallet address
+</Warning>

@@ -1,0 +1,535 @@
+---
+title: "Store NFT Media"
+description: "Learn how to upload and store images and media files for your NFTs using Venly's storage solutions"
+icon: "image"
+---
+
+<Info>
+**Media Storage:** Upload images, videos, audio, and other media files to Venly's secure storage infrastructure for use in your NFT collections.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is NFT Media Storage?
+
+NFT media storage is where your actual image or media data will be hosted. The data in your NFT will link to this **image/media** and be displayed anywhere the NFT is used, such as in user wallets or on marketplaces.
+
+<CardGroup cols={2}>
+  <Card title="Secure Hosting" icon="shield">
+    Reliable cloud storage with high availability
+  </Card>
+  <Card title="Multiple Formats" icon="file">
+    Support for images, videos, audio, and documents
+  </Card>
+  <Card title="Automatic Optimization" icon="magic">
+    Generate preview and thumbnail versions automatically
+  </Card>
+  <Card title="Global CDN" icon="globe">
+    Fast delivery worldwide through content delivery network
+  </Card>
+</CardGroup>
+
+## Supported Media Types
+
+<Tabs>
+  <Tab title="Images">
+    **Supported formats:**
+    - JPG/JPEG
+    - PNG
+    - GIF
+    - SVG
+    - WebP
+    
+    **Recommendations:**
+    - Minimum: 400x400px
+    - Optimal: 1000x1000px
+    - Max file size: 10MB
+  </Tab>
+  <Tab title="Videos">
+    **Supported formats:**
+    - MP4
+    - WebM
+    - MOV
+    - AVI
+    
+    **Recommendations:**
+    - Max duration: 10 minutes
+    - Max file size: 100MB
+    - H.264 codec preferred
+  </Tab>
+  <Tab title="Audio">
+    **Supported formats:**
+    - MP3
+    - WAV
+    - OGG
+    - M4A
+    
+    **Recommendations:**
+    - Max duration: 30 minutes
+    - Max file size: 50MB
+    - 44.1kHz sample rate
+  </Tab>
+  <Tab title="Documents">
+    **Supported formats:**
+    - PDF
+    - TXT
+    - JSON
+    
+    **Use cases:**
+    - Certificates
+    - Metadata files
+    - Documentation
+  </Tab>
+</Tabs>
+
+## Upload NFT Images
+
+Use this endpoint specifically for uploading NFT images. It automatically generates optimized versions for different display contexts.
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const formData = new FormData();
+formData.append('file', imageFile); // imageFile is a File object
+
+const response = await fetch('/api/v3/images', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: formData
+});
+
+const data = await response.json();
+console.log('Image uploaded:', data);
+```
+
+```python Python
+import requests
+
+files = {'file': open('nft-image.png', 'rb')}
+
+response = requests.post(
+    '/api/v3/images',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    files=files
+)
+
+data = response.json()
+print('Image uploaded:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/images' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -F 'file=@nft-image.png'
+```
+</CodeGroup>
+
+### Image Upload Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "image": "https://storage-staging.venly.io/applications/8034d564-dec0-4b6f-99df-b377b0ab8b8a/Welcometo.png",
+        "imagePreview": "https://storage-staging.venly.io/applications/8034d564-dec0-4b6f-99df-b377b0ab8b8a/Welcometo.png",
+        "imageThumbnail": "https://storage-staging.venly.io/applications/8034d564-dec0-4b6f-99df-b377b0ab8b8a/Welcometo.png"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Generated URLs:**
+    - **`image`** - Full-size original image
+    - **`imagePreview`** - Medium-sized preview version
+    - **`imageThumbnail`** - Small thumbnail version
+    
+    All versions are automatically optimized for web delivery.
+  </Tab>
+</Tabs>
+
+<Check>
+**Automatic Optimization:** The image endpoint automatically generates multiple sizes (original, preview, thumbnail) optimized for different display contexts.
+</Check>
+
+## Upload Media Files
+
+Use this endpoint for uploading videos, audio files, and other media types beyond images.
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const formData = new FormData();
+formData.append('file', mediaFile); // mediaFile is a File object
+
+const response = await fetch('/api/v3/media', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: formData
+});
+
+const data = await response.json();
+console.log('Media uploaded:', data);
+```
+
+```python Python
+import requests
+
+files = {'file': open('nft-video.mp4', 'rb')}
+
+response = requests.post(
+    '/api/v3/media',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    files=files
+)
+
+data = response.json()
+print('Media uploaded:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/media' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -F 'file=@nft-video.mp4'
+```
+</CodeGroup>
+
+### Media Upload Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "media": "https://storage-staging.venly.io/applications/8034d564-dec0-4b6f-99df-b377b0ab8b8a/NewUserSignUp.mp4"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Media URL:**
+    - **`media`** - Direct URL to the uploaded media file
+    - Accessible via HTTPS
+    - Optimized for global delivery
+    - Permanent storage location
+  </Tab>
+</Tabs>
+
+## Using Uploaded Media in NFTs
+
+Once uploaded, use the returned URLs in your token-type or NFT metadata:
+
+<CodeGroup>
+```javascript JavaScript
+// Using uploaded image in token-type creation
+const tokenTypeResponse = await fetch('/api/v3/erc1155/token-types/creations', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    chain: "MATIC",
+    contractAddress: "0x...",
+    creations: [
+      {
+        name: "My NFT",
+        description: "An awesome NFT with uploaded media",
+        image: "https://storage-staging.venly.io/applications/.../image.png",
+        animationUrl: "https://storage-staging.venly.io/applications/.../video.mp4"
+      }
+    ]
+  })
+});
+```
+
+```python Python
+# Using uploaded media in token-type creation
+token_type_response = requests.post(
+    '/api/v3/erc1155/token-types/creations',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'chain': 'MATIC',
+        'contractAddress': '0x...',
+        'creations': [
+            {
+                'name': 'My NFT',
+                'description': 'An awesome NFT with uploaded media',
+                'image': 'https://storage-staging.venly.io/applications/.../image.png',
+                'animationUrl': 'https://storage-staging.venly.io/applications/.../video.mp4'
+            }
+        ]
+    }
+)
+```
+</CodeGroup>
+
+## Media Upload Strategies
+
+<AccordionGroup>
+  <Accordion title="Image Optimization" icon="image">
+    **Best practices for images:**
+    
+    ```javascript
+    // Optimize before upload
+    const optimizeImage = (file) => {
+      // Resize to optimal dimensions
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Set optimal size (1000x1000 for square NFTs)
+      canvas.width = 1000;
+      canvas.height = 1000;
+      
+      // Draw and compress
+      ctx.drawImage(file, 0, 0, 1000, 1000);
+      return canvas.toBlob(callback, 'image/jpeg', 0.9);
+    };
+    ```
+    
+    **Tips:**
+    - Use square aspect ratios (1:1) for profile pictures
+    - Compress images to reduce file size
+    - Use PNG for images with transparency
+    - Use JPEG for photographs
+  </Accordion>
+  
+  <Accordion title="Video Optimization" icon="video">
+    **Best practices for videos:**
+    
+    ```javascript
+    // Check video specifications
+    const validateVideo = (file) => {
+      const video = document.createElement('video');
+      video.src = URL.createObjectURL(file);
+      
+      video.onloadedmetadata = () => {
+        console.log('Duration:', video.duration);
+        console.log('Dimensions:', video.videoWidth, 'x', video.videoHeight);
+        console.log('File size:', file.size);
+      };
+    };
+    ```
+    
+    **Recommendations:**
+    - Keep videos under 10 minutes
+    - Use H.264 codec for compatibility
+    - Optimize for web delivery
+    - Consider file size for user experience
+  </Accordion>
+  
+  <Accordion title="Audio Files" icon="music">
+    **Best practices for audio:**
+    
+    ```javascript
+    // Audio file validation
+    const validateAudio = (file) => {
+      const audio = new Audio();
+      audio.src = URL.createObjectURL(file);
+      
+      audio.onloadedmetadata = () => {
+        console.log('Duration:', audio.duration);
+        console.log('File size:', file.size);
+      };
+    };
+    ```
+    
+    **Tips:**
+    - Use MP3 for broad compatibility
+    - 44.1kHz sample rate is standard
+    - Consider bitrate vs file size trade-offs
+    - Test playback across different platforms
+  </Accordion>
+  
+  <Accordion title="Batch Upload" icon="layer-group">
+    **Upload multiple files efficiently:**
+    
+    ```javascript
+    const uploadMultipleFiles = async (files) => {
+      const uploadPromises = files.map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const endpoint = file.type.startsWith('image/') ? '/api/v3/images' : '/api/v3/media';
+        
+        return fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' },
+          body: formData
+        });
+      });
+      
+      const responses = await Promise.all(uploadPromises);
+      return Promise.all(responses.map(r => r.json()));
+    };
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## File Upload Validation
+
+<CodeGroup>
+```javascript JavaScript
+const validateFile = (file) => {
+  // Check file size (10MB for images, 100MB for videos)
+  const maxSize = file.type.startsWith('image/') ? 10 * 1024 * 1024 : 100 * 1024 * 1024;
+  if (file.size > maxSize) {
+    throw new Error('File too large');
+  }
+  
+  // Check file type
+  const allowedTypes = [
+    'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml',
+    'video/mp4', 'video/webm', 'audio/mpeg', 'audio/wav'
+  ];
+  
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error('Unsupported file type');
+  }
+  
+  return true;
+};
+```
+
+```python Python
+def validate_file(file_path):
+    import os
+    import mimetypes
+    
+    # Check file size
+    file_size = os.path.getsize(file_path)
+    mime_type, _ = mimetypes.guess_type(file_path)
+    
+    max_size = 10 * 1024 * 1024 if mime_type.startswith('image/') else 100 * 1024 * 1024
+    
+    if file_size > max_size:
+        raise ValueError('File too large')
+    
+    # Check file type
+    allowed_types = [
+        'image/jpeg', 'image/png', 'image/gif', 'image/svg+xml',
+        'video/mp4', 'video/webm', 'audio/mpeg', 'audio/wav'
+    ]
+    
+    if mime_type not in allowed_types:
+        raise ValueError('Unsupported file type')
+    
+    return True
+```
+</CodeGroup>
+
+## Storage and CDN Benefits
+
+<CardGroup cols={2}>
+  <Card title="Global CDN" icon="globe">
+    **Worldwide Distribution**
+    - Fast loading times globally
+    - Automatic edge caching
+    - 99.9% uptime guarantee
+  </Card>
+  <Card title="Secure Storage" icon="shield">
+    **Enterprise Security**
+    - Encrypted file storage
+    - Access control and authentication
+    - Regular backups and redundancy
+  </Card>
+  <Card title="Automatic Optimization" icon="magic">
+    **Smart Processing**
+    - Image resizing and compression
+    - Format optimization
+    - Thumbnail generation
+  </Card>
+  <Card title="Scalable Infrastructure" icon="chart-line">
+    **Enterprise Ready**
+    - Handle high traffic volumes
+    - Automatic scaling
+    - Performance monitoring
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="File upload failed">
+    **Common causes:**
+    - File size exceeds limits
+    - Unsupported file format
+    - Network connectivity issues
+    - Invalid API key
+    
+    **Solution:** Validate file size and format before upload, check network connection and API credentials.
+  </Accordion>
+  
+  <Accordion title="Slow upload speeds">
+    **Possible causes:**
+    - Large file sizes
+    - Poor network connection
+    - Server congestion
+    
+    **Solution:** Optimize file sizes, check network speed, try uploading during off-peak hours.
+  </Accordion>
+  
+  <Accordion title="Media not displaying">
+    **Common issues:**
+    - Incorrect URL format
+    - File corruption during upload
+    - Browser compatibility issues
+    
+    **Solution:** Verify the returned URL, re-upload if necessary, test across different browsers.
+  </Accordion>
+  
+  <Accordion title="File format not supported">
+    **Supported formats:**
+    - Images: JPG, PNG, GIF, SVG, WebP
+    - Videos: MP4, WebM, MOV, AVI
+    - Audio: MP3, WAV, OGG, M4A
+    - Documents: PDF, TXT, JSON
+    
+    **Solution:** Convert files to supported formats before uploading.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Media Upload Optimization:**
+
+1. **File Size Management** - Compress files without losing quality
+2. **Format Selection** - Choose appropriate formats for content type
+3. **Naming Convention** - Use descriptive filenames for organization
+4. **Validation** - Always validate files before upload
+5. **Error Handling** - Implement retry logic for failed uploads
+6. **Progress Tracking** - Show upload progress for better UX
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Add Audio to NFTs" href="/NFT-API-Basic-Guides/how-to-add-audio-in-your-nfts" icon="music">
+    Learn how to incorporate audio files in your NFTs
+  </Card>
+  <Card title="Add Video to NFTs" href="/NFT-API-Basic-Guides/how-to-add-video-in-your-nfts" icon="video">
+    Create NFTs with video content and animations
+  </Card>
+  <Card title="Create Token Types" href="/guides/nft-api/token-types/create-nft-template" icon="shapes">
+    Use uploaded media in your NFT templates
+  </Card>
+  <Card title="Update NFT Metadata" href="/NFT-API-Basic-Guides/update-nft-metadata" icon="pen">
+    Modify NFT properties and media after creation
+  </Card>
+</CardGroup>
+
+<Warning>
+**Storage Considerations:** Uploaded files are permanently stored and cannot be deleted. Ensure you upload the correct files and optimize them appropriately before uploading.
+</Warning>

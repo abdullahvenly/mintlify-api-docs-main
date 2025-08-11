@@ -1,0 +1,1280 @@
+---
+title: "Update Contract Metadata"
+description: "Comprehensive guide to updating NFT contract metadata with validation, versioning, and rollback capabilities"
+icon: "pen-to-square"
+---
+
+<Info>
+**Metadata Updates:** Modify NFT contract metadata including names, descriptions, images, and social media links with proper validation and change tracking.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is Contract Metadata Update?
+
+Contract metadata updates allow you to modify the descriptive information of your NFT collection after deployment. This includes updating the collection name, symbol, description, images, external URLs, and social media links. Proper metadata management is crucial for maintaining brand consistency, improving discoverability, and keeping your collection information current.
+
+<CardGroup cols={2}>
+  <Card title="Brand Evolution" icon="palette">
+    Update branding elements as your project evolves
+  </Card>
+  <Card title="Content Refresh" icon="refresh">
+    Keep descriptions and links current and relevant
+  </Card>
+  <Card title="SEO Optimization" icon="search">
+    Improve discoverability with better metadata
+  </Card>
+  <Card title="Community Growth" icon="users">
+    Add new social media and community links
+  </Card>
+</CardGroup>
+
+## When to Update Metadata
+
+<Tabs>
+  <Tab title="Brand Updates">
+    **Rebranding Scenarios:**
+    - Company name changes or rebranding
+    - Logo and visual identity updates
+    - Website URL changes
+    - Marketing message refinement
+    
+    **Best Practices:**
+    - Plan updates during low-activity periods
+    - Notify community before major changes
+    - Maintain brand consistency across platforms
+    - Update all related materials simultaneously
+  </Tab>
+  <Tab title="Content Enhancement">
+    **Content Improvements:**
+    - More detailed descriptions
+    - Better keyword optimization
+    - Additional social media links
+    - Updated external resources
+    
+    **Optimization Tips:**
+    - A/B test different descriptions
+    - Monitor engagement after updates
+    - Use analytics to guide improvements
+    - Regular content audits and updates
+  </Tab>
+  <Tab title="Community Growth">
+    **Community Expansion:**
+    - New Discord or Telegram channels
+    - Additional social media presence
+    - Partnership announcements
+    - Community milestone updates
+    
+    **Engagement Strategies:**
+    - Announce new channels to existing community
+    - Cross-promote on all platforms
+    - Maintain consistent messaging
+    - Track community growth metrics
+  </Tab>
+</Tabs>
+
+## Update Contract Metadata
+
+<Steps>
+  <Step title="Prepare Updates" icon="clipboard">
+    Plan and validate all metadata changes before implementation
+    
+    ```javascript
+    const metadataUpdates = {
+      name: "Updated NFT Collection Name",
+      symbol: "UPDATED",
+      description: "Enhanced description with better keywords and details",
+      externalUrl: "https://www.newwebsite.com",
+      image: "https://cdn.example.com/new-logo.png",
+      media: [
+        { type: "twitter", value: "https://twitter.com/newhandle" },
+        { type: "discord", value: "https://discord.gg/newserver" }
+      ]
+    };
+    ```
+  </Step>
+  <Step title="Validate Changes" icon="check">
+    Ensure all URLs are valid and content meets requirements
+  </Step>
+  <Step title="Apply Updates" icon="upload">
+    Submit the metadata update request to the API
+  </Step>
+  <Step title="Verify Results" icon="eye">
+    Confirm changes are applied correctly and propagated
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Update contract metadata
+const updateContractMetadata = async (chain, contractAddress, updates) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/metadata`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updates)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Contract metadata updated successfully');
+      return data.result;
+    } else {
+      throw new Error('Failed to update contract metadata');
+    }
+  } catch (error) {
+    console.error('Error updating contract metadata:', error);
+    throw error;
+  }
+};
+
+// Enhanced metadata update manager with validation and versioning
+class MetadataUpdateManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.updateHistory = new Map();
+    this.validationRules = this.initializeValidationRules();
+  }
+
+  initializeValidationRules() {
+    return {
+      name: {
+        minLength: 1,
+        maxLength: 100,
+        required: true,
+        pattern: /^[a-zA-Z0-9\s\-_\.]+$/
+      },
+      symbol: {
+        minLength: 1,
+        maxLength: 20,
+        required: true,
+        pattern: /^[A-Z0-9]+$/
+      },
+      description: {
+        minLength: 10,
+        maxLength: 1000,
+        required: false
+      },
+      externalUrl: {
+        required: false,
+        pattern: /^https?:\/\/.+/
+      },
+      image: {
+        required: false,
+        pattern: /^https?:\/\/.+\.(jpg|jpeg|png|gif|svg|webp)$/i
+      }
+    };
+  }
+
+  async updateMetadata(chain, contractAddress, updates, options = {}) {
+    const {
+      validateBeforeUpdate = true,
+      createBackup = true,
+      notifyStakeholders = false
+    } = options;
+
+    try {
+      // Create backup of current metadata
+      let currentMetadata = null;
+      if (createBackup) {
+        currentMetadata = await this.getCurrentMetadata(chain, contractAddress);
+        this.createBackup(chain, contractAddress, currentMetadata);
+      }
+
+      // Validate updates
+      if (validateBeforeUpdate) {
+        const validation = this.validateUpdates(updates);
+        if (!validation.isValid) {
+          throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+        }
+      }
+
+      // Apply updates
+      const updatedMetadata = await updateContractMetadata(chain, contractAddress, updates);
+
+      // Record update in history
+      this.recordUpdate(chain, contractAddress, {
+        timestamp: new Date().toISOString(),
+        updates,
+        previousMetadata: currentMetadata,
+        newMetadata: updatedMetadata
+      });
+
+      // Notify stakeholders if requested
+      if (notifyStakeholders) {
+        await this.notifyStakeholders(chain, contractAddress, updates);
+      }
+
+      console.log('Metadata update completed successfully');
+      return updatedMetadata;
+
+    } catch (error) {
+      console.error('Metadata update failed:', error);
+      throw error;
+    }
+  }
+
+  validateUpdates(updates) {
+    const errors = [];
+    const warnings = [];
+
+    for (const [field, value] of Object.entries(updates)) {
+      const rule = this.validationRules[field];
+      
+      if (!rule) {
+        warnings.push(`Unknown field: ${field}`);
+        continue;
+      }
+
+      // Required field validation
+      if (rule.required && (!value || value.toString().trim().length === 0)) {
+        errors.push(`${field} is required`);
+        continue;
+      }
+
+      // Skip validation for empty optional fields
+      if (!value && !rule.required) continue;
+
+      const stringValue = value.toString().trim();
+
+      // Length validation
+      if (rule.minLength && stringValue.length < rule.minLength) {
+        errors.push(`${field} must be at least ${rule.minLength} characters`);
+      }
+
+      if (rule.maxLength && stringValue.length > rule.maxLength) {
+        errors.push(`${field} must be no more than ${rule.maxLength} characters`);
+      }
+
+      // Pattern validation
+      if (rule.pattern && !rule.pattern.test(stringValue)) {
+        errors.push(`${field} format is invalid`);
+      }
+
+      // URL validation
+      if ((field === 'externalUrl' || field === 'image') && stringValue) {
+        try {
+          new URL(stringValue);
+        } catch {
+          errors.push(`${field} must be a valid URL`);
+        }
+      }
+    }
+
+    // Business logic validation
+    if (updates.symbol && updates.symbol !== updates.symbol.toUpperCase()) {
+      warnings.push('Symbol should be uppercase for consistency');
+    }
+
+    if (updates.description && updates.description.length < 50) {
+      warnings.push('Description under 50 characters may impact SEO');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  async getCurrentMetadata(chain, contractAddress) {
+    try {
+      const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/metadata`, {
+        headers: { 'Authorization': `Bearer ${this.apiKey}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch current metadata');
+      }
+
+      const data = await response.json();
+      return data.success ? data.result : null;
+    } catch (error) {
+      console.warn('Could not fetch current metadata for backup:', error);
+      return null;
+    }
+  }
+
+  createBackup(chain, contractAddress, metadata) {
+    const backupKey = `${chain}:${contractAddress}`;
+    
+    if (!this.updateHistory.has(backupKey)) {
+      this.updateHistory.set(backupKey, []);
+    }
+
+    const history = this.updateHistory.get(backupKey);
+    history.push({
+      type: 'backup',
+      timestamp: new Date().toISOString(),
+      metadata
+    });
+
+    // Keep only last 10 backups
+    if (history.length > 10) {
+      history.splice(0, history.length - 10);
+    }
+  }
+
+  recordUpdate(chain, contractAddress, updateRecord) {
+    const historyKey = `${chain}:${contractAddress}`;
+    
+    if (!this.updateHistory.has(historyKey)) {
+      this.updateHistory.set(historyKey, []);
+    }
+
+    const history = this.updateHistory.get(historyKey);
+    history.push({
+      type: 'update',
+      ...updateRecord
+    });
+  }
+
+  async rollbackToVersion(chain, contractAddress, versionIndex) {
+    const historyKey = `${chain}:${contractAddress}`;
+    const history = this.updateHistory.get(historyKey);
+
+    if (!history || versionIndex >= history.length) {
+      throw new Error('Invalid version index');
+    }
+
+    const targetVersion = history[versionIndex];
+    
+    if (targetVersion.type !== 'backup' && !targetVersion.previousMetadata) {
+      throw new Error('Cannot rollback: no previous metadata available');
+    }
+
+    const rollbackMetadata = targetVersion.type === 'backup' 
+      ? targetVersion.metadata 
+      : targetVersion.previousMetadata;
+
+    // Apply rollback
+    const result = await updateContractMetadata(chain, contractAddress, rollbackMetadata);
+
+    // Record rollback
+    this.recordUpdate(chain, contractAddress, {
+      timestamp: new Date().toISOString(),
+      updates: rollbackMetadata,
+      previousMetadata: await this.getCurrentMetadata(chain, contractAddress),
+      newMetadata: result,
+      isRollback: true,
+      rolledBackFrom: versionIndex
+    });
+
+    return result;
+  }
+
+  async batchUpdate(updates) {
+    const results = [];
+    const errors = [];
+
+    for (const update of updates) {
+      try {
+        const result = await this.updateMetadata(
+          update.chain,
+          update.contractAddress,
+          update.metadata,
+          update.options
+        );
+        
+        results.push({
+          chain: update.chain,
+          contractAddress: update.contractAddress,
+          success: true,
+          result
+        });
+      } catch (error) {
+        errors.push({
+          chain: update.chain,
+          contractAddress: update.contractAddress,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  async notifyStakeholders(chain, contractAddress, updates) {
+    // Implementation would depend on your notification system
+    console.log(`Notifying stakeholders of metadata update for ${contractAddress}`);
+    
+    const notification = {
+      type: 'metadata_update',
+      chain,
+      contractAddress,
+      updates,
+      timestamp: new Date().toISOString()
+    };
+
+    // Send notifications (email, webhook, etc.)
+    // await sendNotification(notification);
+  }
+
+  getUpdateHistory(chain, contractAddress) {
+    const historyKey = `${chain}:${contractAddress}`;
+    return this.updateHistory.get(historyKey) || [];
+  }
+
+  generateUpdateReport(chain, contractAddress) {
+    const history = this.getUpdateHistory(chain, contractAddress);
+    
+    return {
+      contractAddress,
+      chain,
+      totalUpdates: history.filter(h => h.type === 'update').length,
+      totalBackups: history.filter(h => h.type === 'backup').length,
+      lastUpdate: history.length > 0 ? history[history.length - 1].timestamp : null,
+      updateFrequency: this.calculateUpdateFrequency(history),
+      mostUpdatedFields: this.analyzeMostUpdatedFields(history)
+    };
+  }
+
+  calculateUpdateFrequency(history) {
+    const updates = history.filter(h => h.type === 'update');
+    if (updates.length < 2) return 'Insufficient data';
+
+    const firstUpdate = new Date(updates[0].timestamp);
+    const lastUpdate = new Date(updates[updates.length - 1].timestamp);
+    const daysDiff = (lastUpdate - firstUpdate) / (1000 * 60 * 60 * 24);
+
+    if (daysDiff === 0) return 'Multiple updates today';
+    
+    const frequency = updates.length / daysDiff;
+    
+    if (frequency > 1) return `${frequency.toFixed(1)} updates per day`;
+    if (frequency > 0.14) return `${(frequency * 7).toFixed(1)} updates per week`;
+    return `${(frequency * 30).toFixed(1)} updates per month`;
+  }
+
+  analyzeMostUpdatedFields(history) {
+    const fieldCounts = {};
+    
+    history
+      .filter(h => h.type === 'update' && h.updates)
+      .forEach(update => {
+        Object.keys(update.updates).forEach(field => {
+          fieldCounts[field] = (fieldCounts[field] || 0) + 1;
+        });
+      });
+
+    return Object.entries(fieldCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([field, count]) => ({ field, count }));
+  }
+}
+
+// Usage examples
+const updateManager = new MetadataUpdateManager('YOUR_API_KEY');
+
+// Simple update
+const updates = {
+  name: "Updated Collection Name",
+  description: "Enhanced description with better SEO keywords",
+  externalUrl: "https://www.newwebsite.com"
+};
+
+const result = await updateManager.updateMetadata('MATIC', '0xcontractaddress', updates);
+console.log('Update result:', result);
+
+// Batch update multiple contracts
+const batchUpdates = [
+  {
+    chain: 'MATIC',
+    contractAddress: '0xcontract1',
+    metadata: { description: "Updated description 1" }
+  },
+  {
+    chain: 'ETH',
+    contractAddress: '0xcontract2',
+    metadata: { name: "New Collection Name" }
+  }
+];
+
+const batchResult = await updateManager.batchUpdate(batchUpdates);
+console.log('Batch update result:', batchResult);
+```
+
+```python Python
+import requests
+import json
+import re
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+from urllib.parse import urlparse
+
+class MetadataUpdateManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.update_history = {}
+        self.validation_rules = self._initialize_validation_rules()
+    
+    def _initialize_validation_rules(self) -> Dict[str, Dict]:
+        return {
+            'name': {
+                'min_length': 1,
+                'max_length': 100,
+                'required': True,
+                'pattern': r'^[a-zA-Z0-9\s\-_\.]+$'
+            },
+            'symbol': {
+                'min_length': 1,
+                'max_length': 20,
+                'required': True,
+                'pattern': r'^[A-Z0-9]+$'
+            },
+            'description': {
+                'min_length': 10,
+                'max_length': 1000,
+                'required': False
+            },
+            'externalUrl': {
+                'required': False,
+                'pattern': r'^https?://.+'
+            },
+            'image': {
+                'required': False,
+                'pattern': r'^https?://.+\.(jpg|jpeg|png|gif|svg|webp)$'
+            }
+        }
+    
+    def update_metadata(self, chain: str, contract_address: str, updates: Dict[str, Any], 
+                       options: Dict[str, bool] = None) -> Dict[str, Any]:
+        """Update contract metadata with validation and backup"""
+        if options is None:
+            options = {}
+        
+        validate_before_update = options.get('validate_before_update', True)
+        create_backup = options.get('create_backup', True)
+        notify_stakeholders = options.get('notify_stakeholders', False)
+        
+        try:
+            # Create backup of current metadata
+            current_metadata = None
+            if create_backup:
+                current_metadata = self._get_current_metadata(chain, contract_address)
+                self._create_backup(chain, contract_address, current_metadata)
+            
+            # Validate updates
+            if validate_before_update:
+                validation = self.validate_updates(updates)
+                if not validation['is_valid']:
+                    raise Exception(f"Validation failed: {', '.join(validation['errors'])}")
+            
+            # Apply updates
+            updated_metadata = self._update_contract_metadata(chain, contract_address, updates)
+            
+            # Record update in history
+            self._record_update(chain, contract_address, {
+                'timestamp': datetime.now().isoformat(),
+                'updates': updates,
+                'previous_metadata': current_metadata,
+                'new_metadata': updated_metadata
+            })
+            
+            # Notify stakeholders if requested
+            if notify_stakeholders:
+                self._notify_stakeholders(chain, contract_address, updates)
+            
+            print('Metadata update completed successfully')
+            return updated_metadata
+            
+        except Exception as error:
+            print(f'Metadata update failed: {error}')
+            raise error
+    
+    def _update_contract_metadata(self, chain: str, contract_address: str, updates: Dict[str, Any]) -> Dict[str, Any]:
+        """Internal method to call the API"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/metadata'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.patch(url, headers=headers, json=updates)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to update contract metadata')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error updating contract metadata: {error}')
+            raise error
+    
+    def validate_updates(self, updates: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate metadata updates"""
+        errors = []
+        warnings = []
+        
+        for field, value in updates.items():
+            rule = self.validation_rules.get(field)
+            
+            if not rule:
+                warnings.append(f'Unknown field: {field}')
+                continue
+            
+            # Required field validation
+            if rule['required'] and (not value or str(value).strip() == ''):
+                errors.append(f'{field} is required')
+                continue
+            
+            # Skip validation for empty optional fields
+            if not value and not rule['required']:
+                continue
+            
+            string_value = str(value).strip()
+            
+            # Length validation
+            if 'min_length' in rule and len(string_value) < rule['min_length']:
+                errors.append(f'{field} must be at least {rule["min_length"]} characters')
+            
+            if 'max_length' in rule and len(string_value) > rule['max_length']:
+                errors.append(f'{field} must be no more than {rule["max_length"]} characters')
+            
+            # Pattern validation
+            if 'pattern' in rule and not re.match(rule['pattern'], string_value, re.IGNORECASE):
+                errors.append(f'{field} format is invalid')
+            
+            # URL validation
+            if field in ['externalUrl', 'image'] and string_value:
+                try:
+                    result = urlparse(string_value)
+                    if not all([result.scheme, result.netloc]):
+                        errors.append(f'{field} must be a valid URL')
+                except Exception:
+                    errors.append(f'{field} must be a valid URL')
+        
+        # Business logic validation
+        if 'symbol' in updates and updates['symbol'] != updates['symbol'].upper():
+            warnings.append('Symbol should be uppercase for consistency')
+        
+        if 'description' in updates and len(updates['description']) < 50:
+            warnings.append('Description under 50 characters may impact SEO')
+        
+        return {
+            'is_valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+    
+    def _get_current_metadata(self, chain: str, contract_address: str) -> Optional[Dict[str, Any]]:
+        """Get current metadata for backup"""
+        try:
+            url = f'{self.base_url}/contracts/{chain}/{contract_address}/metadata'
+            headers = {'Authorization': f'Bearer {self.api_key}'}
+            
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            return data['result'] if data.get('success') else None
+            
+        except Exception as error:
+            print(f'Could not fetch current metadata for backup: {error}')
+            return None
+    
+    def _create_backup(self, chain: str, contract_address: str, metadata: Dict[str, Any]):
+        """Create backup of current metadata"""
+        backup_key = f"{chain}:{contract_address}"
+        
+        if backup_key not in self.update_history:
+            self.update_history[backup_key] = []
+        
+        history = self.update_history[backup_key]
+        history.append({
+            'type': 'backup',
+            'timestamp': datetime.now().isoformat(),
+            'metadata': metadata
+        })
+        
+        # Keep only last 10 backups
+        if len(history) > 10:
+            self.update_history[backup_key] = history[-10:]
+    
+    def _record_update(self, chain: str, contract_address: str, update_record: Dict[str, Any]):
+        """Record update in history"""
+        history_key = f"{chain}:{contract_address}"
+        
+        if history_key not in self.update_history:
+            self.update_history[history_key] = []
+        
+        self.update_history[history_key].append({
+            'type': 'update',
+            **update_record
+        })
+    
+    def batch_update(self, updates: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Update multiple contracts in batch"""
+        results = []
+        errors = []
+        
+        for update in updates:
+            try:
+                result = self.update_metadata(
+                    update['chain'],
+                    update['contract_address'],
+                    update['metadata'],
+                    update.get('options', {})
+                )
+                
+                results.append({
+                    'chain': update['chain'],
+                    'contract_address': update['contract_address'],
+                    'success': True,
+                    'result': result
+                })
+                
+            except Exception as error:
+                errors.append({
+                    'chain': update['chain'],
+                    'contract_address': update['contract_address'],
+                    'success': False,
+                    'error': str(error)
+                })
+        
+        return {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+    
+    def _notify_stakeholders(self, chain: str, contract_address: str, updates: Dict[str, Any]):
+        """Notify stakeholders of metadata update"""
+        print(f'Notifying stakeholders of metadata update for {contract_address}')
+        
+        notification = {
+            'type': 'metadata_update',
+            'chain': chain,
+            'contract_address': contract_address,
+            'updates': updates,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        # Implementation would depend on your notification system
+        # send_notification(notification)
+    
+    def get_update_history(self, chain: str, contract_address: str) -> List[Dict[str, Any]]:
+        """Get update history for a contract"""
+        history_key = f"{chain}:{contract_address}"
+        return self.update_history.get(history_key, [])
+    
+    def generate_update_report(self, chain: str, contract_address: str) -> Dict[str, Any]:
+        """Generate comprehensive update report"""
+        history = self.get_update_history(chain, contract_address)
+        
+        updates = [h for h in history if h['type'] == 'update']
+        backups = [h for h in history if h['type'] == 'backup']
+        
+        return {
+            'contract_address': contract_address,
+            'chain': chain,
+            'total_updates': len(updates),
+            'total_backups': len(backups),
+            'last_update': history[-1]['timestamp'] if history else None,
+            'update_frequency': self._calculate_update_frequency(updates),
+            'most_updated_fields': self._analyze_most_updated_fields(updates)
+        }
+    
+    def _calculate_update_frequency(self, updates: List[Dict[str, Any]]) -> str:
+        """Calculate update frequency"""
+        if len(updates) < 2:
+            return 'Insufficient data'
+        
+        first_update = datetime.fromisoformat(updates[0]['timestamp'])
+        last_update = datetime.fromisoformat(updates[-1]['timestamp'])
+        days_diff = (last_update - first_update).days
+        
+        if days_diff == 0:
+            return 'Multiple updates today'
+        
+        frequency = len(updates) / days_diff
+        
+        if frequency > 1:
+            return f'{frequency:.1f} updates per day'
+        elif frequency > 0.14:
+            return f'{frequency * 7:.1f} updates per week'
+        else:
+            return f'{frequency * 30:.1f} updates per month'
+    
+    def _analyze_most_updated_fields(self, updates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Analyze which fields are updated most frequently"""
+        field_counts = {}
+        
+        for update in updates:
+            if 'updates' in update:
+                for field in update['updates'].keys():
+                    field_counts[field] = field_counts.get(field, 0) + 1
+        
+        sorted_fields = sorted(field_counts.items(), key=lambda x: x[1], reverse=True)
+        
+        return [{'field': field, 'count': count} for field, count in sorted_fields[:5]]
+
+# Usage
+update_manager = MetadataUpdateManager('YOUR_API_KEY')
+
+# Simple update
+updates = {
+    'name': 'Updated Collection Name',
+    'description': 'Enhanced description with better SEO keywords',
+    'externalUrl': 'https://www.newwebsite.com'
+}
+
+result = update_manager.update_metadata('MATIC', '0xcontractaddress', updates)
+print('Update result:', result)
+
+# Generate report
+report = update_manager.generate_update_report('MATIC', '0xcontractaddress')
+print('Update report:', report)
+```
+
+```bash cURL
+# Update contract metadata
+curl -X PATCH '/api/v3/erc1155/contracts/MATIC/0xfc5500094af58ded18e92da5ff1dd7cc84b74633/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Updated NFT Contract Name",
+    "symbol": "UPDATED",
+    "description": "Updated description with enhanced details",
+    "externalUrl": "https://www.updated-website.com"
+  }'
+
+# Update with media links
+curl -X PATCH '/api/v3/erc1155/contracts/MATIC/0xfc5500094af58ded18e92da5ff1dd7cc84b74633/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "description": "Updated collection with new social media presence",
+    "media": [
+      {
+        "type": "twitter",
+        "value": "https://twitter.com/newhandle"
+      },
+      {
+        "type": "discord",
+        "value": "https://discord.gg/newserver"
+      }
+    ]
+  }'
+
+# Batch update script
+#!/bin/bash
+CONTRACTS=("0xcontract1" "0xcontract2" "0xcontract3")
+CHAIN="MATIC"
+
+for contract in "${CONTRACTS[@]}"; do
+  echo "Updating metadata for $contract..."
+  
+  curl -X PATCH "/api/v3/erc1155/contracts/$CHAIN/$contract/metadata" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "description": "Batch updated description for improved SEO and engagement"
+    }' \
+    -s | jq '.success'
+  
+  echo "Update completed for $contract"
+  sleep 1  # Rate limiting
+done
+```
+
+```php PHP
+<?php
+class MetadataUpdateManager {
+    private $apiKey;
+    private $baseUrl;
+    private $updateHistory;
+    private $validationRules;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->updateHistory = [];
+        $this->validationRules = $this->initializeValidationRules();
+    }
+    
+    private function initializeValidationRules() {
+        return [
+            'name' => [
+                'minLength' => 1,
+                'maxLength' => 100,
+                'required' => true,
+                'pattern' => '/^[a-zA-Z0-9\s\-_\.]+$/'
+            ],
+            'symbol' => [
+                'minLength' => 1,
+                'maxLength' => 20,
+                'required' => true,
+                'pattern' => '/^[A-Z0-9]+$/'
+            ],
+            'description' => [
+                'minLength' => 10,
+                'maxLength' => 1000,
+                'required' => false
+            ],
+            'externalUrl' => [
+                'required' => false,
+                'pattern' => '/^https?:\/\/.+/'
+            ],
+            'image' => [
+                'required' => false,
+                'pattern' => '/^https?:\/\/.+\.(jpg|jpeg|png|gif|svg|webp)$/i'
+            ]
+        ];
+    }
+    
+    public function updateMetadata($chain, $contractAddress, $updates, $options = []) {
+        $validateBeforeUpdate = $options['validateBeforeUpdate'] ?? true;
+        $createBackup = $options['createBackup'] ?? true;
+        $notifyStakeholders = $options['notifyStakeholders'] ?? false;
+        
+        try {
+            // Create backup of current metadata
+            $currentMetadata = null;
+            if ($createBackup) {
+                $currentMetadata = $this->getCurrentMetadata($chain, $contractAddress);
+                $this->createBackup($chain, $contractAddress, $currentMetadata);
+            }
+            
+            // Validate updates
+            if ($validateBeforeUpdate) {
+                $validation = $this->validateUpdates($updates);
+                if (!$validation['isValid']) {
+                    throw new Exception('Validation failed: ' . implode(', ', $validation['errors']));
+                }
+            }
+            
+            // Apply updates
+            $updatedMetadata = $this->updateContractMetadata($chain, $contractAddress, $updates);
+            
+            // Record update in history
+            $this->recordUpdate($chain, $contractAddress, [
+                'timestamp' => date('c'),
+                'updates' => $updates,
+                'previousMetadata' => $currentMetadata,
+                'newMetadata' => $updatedMetadata
+            ]);
+            
+            // Notify stakeholders if requested
+            if ($notifyStakeholders) {
+                $this->notifyStakeholders($chain, $contractAddress, $updates);
+            }
+            
+            echo "Metadata update completed successfully\n";
+            return $updatedMetadata;
+            
+        } catch (Exception $error) {
+            echo "Metadata update failed: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function updateContractMetadata($chain, $contractAddress, $updates) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/metadata";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updates));
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to update contract metadata");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to update contract metadata');
+        }
+        
+        return $data['result'];
+    }
+    
+    public function validateUpdates($updates) {
+        $errors = [];
+        $warnings = [];
+        
+        foreach ($updates as $field => $value) {
+            $rule = $this->validationRules[$field] ?? null;
+            
+            if (!$rule) {
+                $warnings[] = "Unknown field: {$field}";
+                continue;
+            }
+            
+            // Required field validation
+            if ($rule['required'] && (empty($value) || trim($value) === '')) {
+                $errors[] = "{$field} is required";
+                continue;
+            }
+            
+            // Skip validation for empty optional fields
+            if (empty($value) && !$rule['required']) {
+                continue;
+            }
+            
+            $stringValue = trim($value);
+            
+            // Length validation
+            if (isset($rule['minLength']) && strlen($stringValue) < $rule['minLength']) {
+                $errors[] = "{$field} must be at least {$rule['minLength']} characters";
+            }
+            
+            if (isset($rule['maxLength']) && strlen($stringValue) > $rule['maxLength']) {
+                $errors[] = "{$field} must be no more than {$rule['maxLength']} characters";
+            }
+            
+            // Pattern validation
+            if (isset($rule['pattern']) && !preg_match($rule['pattern'], $stringValue)) {
+                $errors[] = "{$field} format is invalid";
+            }
+            
+            // URL validation
+            if (in_array($field, ['externalUrl', 'image']) && $stringValue) {
+                if (!filter_var($stringValue, FILTER_VALIDATE_URL)) {
+                    $errors[] = "{$field} must be a valid URL";
+                }
+            }
+        }
+        
+        // Business logic validation
+        if (isset($updates['symbol']) && $updates['symbol'] !== strtoupper($updates['symbol'])) {
+            $warnings[] = 'Symbol should be uppercase for consistency';
+        }
+        
+        if (isset($updates['description']) && strlen($updates['description']) < 50) {
+            $warnings[] = 'Description under 50 characters may impact SEO';
+        }
+        
+        return [
+            'isValid' => empty($errors),
+            'errors' => $errors,
+            'warnings' => $warnings
+        ];
+    }
+    
+    private function getCurrentMetadata($chain, $contractAddress) {
+        try {
+            $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/metadata";
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer {$this->apiKey}"
+            ]);
+            
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            
+            if ($httpCode !== 200) {
+                return null;
+            }
+            
+            $data = json_decode($response, true);
+            return $data['success'] ? $data['result'] : null;
+            
+        } catch (Exception $error) {
+            echo "Could not fetch current metadata for backup: " . $error->getMessage() . "\n";
+            return null;
+        }
+    }
+    
+    private function createBackup($chain, $contractAddress, $metadata) {
+        $backupKey = "{$chain}:{$contractAddress}";
+        
+        if (!isset($this->updateHistory[$backupKey])) {
+            $this->updateHistory[$backupKey] = [];
+        }
+        
+        $this->updateHistory[$backupKey][] = [
+            'type' => 'backup',
+            'timestamp' => date('c'),
+            'metadata' => $metadata
+        ];
+        
+        // Keep only last 10 backups
+        if (count($this->updateHistory[$backupKey]) > 10) {
+            $this->updateHistory[$backupKey] = array_slice($this->updateHistory[$backupKey], -10);
+        }
+    }
+    
+    private function recordUpdate($chain, $contractAddress, $updateRecord) {
+        $historyKey = "{$chain}:{$contractAddress}";
+        
+        if (!isset($this->updateHistory[$historyKey])) {
+            $this->updateHistory[$historyKey] = [];
+        }
+        
+        $this->updateHistory[$historyKey][] = array_merge([
+            'type' => 'update'
+        ], $updateRecord);
+    }
+    
+    private function notifyStakeholders($chain, $contractAddress, $updates) {
+        echo "Notifying stakeholders of metadata update for {$contractAddress}\n";
+        
+        $notification = [
+            'type' => 'metadata_update',
+            'chain' => $chain,
+            'contractAddress' => $contractAddress,
+            'updates' => $updates,
+            'timestamp' => date('c')
+        ];
+        
+        // Implementation would depend on your notification system
+        // sendNotification($notification);
+    }
+    
+    public function getUpdateHistory($chain, $contractAddress) {
+        $historyKey = "{$chain}:{$contractAddress}";
+        return $this->updateHistory[$historyKey] ?? [];
+    }
+    
+    public function generateUpdateReport($chain, $contractAddress) {
+        $history = $this->getUpdateHistory($chain, $contractAddress);
+        
+        $updates = array_filter($history, function($h) { return $h['type'] === 'update'; });
+        $backups = array_filter($history, function($h) { return $h['type'] === 'backup'; });
+        
+        return [
+            'contractAddress' => $contractAddress,
+            'chain' => $chain,
+            'totalUpdates' => count($updates),
+            'totalBackups' => count($backups),
+            'lastUpdate' => !empty($history) ? end($history)['timestamp'] : null,
+            'updateFrequency' => $this->calculateUpdateFrequency($updates),
+            'mostUpdatedFields' => $this->analyzeMostUpdatedFields($updates)
+        ];
+    }
+    
+    private function calculateUpdateFrequency($updates) {
+        if (count($updates) < 2) {
+            return 'Insufficient data';
+        }
+        
+        $firstUpdate = new DateTime($updates[0]['timestamp']);
+        $lastUpdate = new DateTime(end($updates)['timestamp']);
+        $daysDiff = $firstUpdate->diff($lastUpdate)->days;
+        
+        if ($daysDiff === 0) {
+            return 'Multiple updates today';
+        }
+        
+        $frequency = count($updates) / $daysDiff;
+        
+        if ($frequency > 1) {
+            return number_format($frequency, 1) . ' updates per day';
+        } elseif ($frequency > 0.14) {
+            return number_format($frequency * 7, 1) . ' updates per week';
+        } else {
+            return number_format($frequency * 30, 1) . ' updates per month';
+        }
+    }
+    
+    private function analyzeMostUpdatedFields($updates) {
+        $fieldCounts = [];
+        
+        foreach ($updates as $update) {
+            if (isset($update['updates'])) {
+                foreach (array_keys($update['updates']) as $field) {
+                    $fieldCounts[$field] = ($fieldCounts[$field] ?? 0) + 1;
+                }
+            }
+        }
+        
+        arsort($fieldCounts);
+        
+        return array_slice(array_map(function($field, $count) {
+            return ['field' => $field, 'count' => $count];
+        }, array_keys($fieldCounts), $fieldCounts), 0, 5);
+    }
+}
+
+// Usage
+$updateManager = new MetadataUpdateManager('YOUR_API_KEY');
+
+try {
+    $updates = [
+        'name' => 'Updated Collection Name',
+        'description' => 'Enhanced description with better SEO keywords',
+        'externalUrl' => 'https://www.newwebsite.com'
+    ];
+    
+    $result = $updateManager->updateMetadata('MATIC', '0xcontractaddress', $updates);
+    echo "Update result: " . json_encode($result, JSON_PRETTY_PRINT) . "\n";
+    
+    $report = $updateManager->generateUpdateReport('MATIC', '0xcontractaddress');
+    echo "Update report: " . json_encode($report, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Metadata Update Best Practices:**
+
+1. **Plan Updates** - Prepare and validate all changes before implementation
+2. **Create Backups** - Always backup current metadata before making changes
+3. **Validate Input** - Use proper validation to prevent invalid data
+4. **Batch Updates** - Group related changes to minimize API calls
+5. **Monitor Impact** - Track how updates affect engagement and discoverability
+6. **Version Control** - Maintain history of changes for rollback capability
+7. **Stakeholder Communication** - Notify relevant parties of significant changes
+8. **SEO Optimization** - Use updates to improve search engine visibility
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Retrieve Metadata" href="/guides/nft-api/metadata/retrieve-contract-metadata" icon="search">
+    Learn how to retrieve contract metadata
+  </Card>
+  <Card title="Token Metadata" href="/guides/nft-api/metadata/update-nft-metadata" icon="file-text">
+    Update individual NFT metadata
+  </Card>
+  <Card title="Contract Management" href="/guides/nft-api/contracts/retrieve-contract" icon="folder">
+    Comprehensive contract management
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract-metadata/update-contract-metadata" icon="book">
+    Explore the complete metadata update API documentation
+  </Card>
+</CardGroup>

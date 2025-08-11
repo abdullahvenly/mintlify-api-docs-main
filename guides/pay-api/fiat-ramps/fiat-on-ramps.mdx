@@ -1,0 +1,555 @@
+---
+title: "Fiat On-Ramps"
+description: "Create onramp URLs for users to purchase cryptocurrency with fiat currency using Transak, Moonpay, and Ramp Network"
+icon: "arrow-up"
+---
+
+<Info>
+**Cryptocurrency Purchase:** Enable users to buy cryptocurrency with fiat currency through integrated on-ramp providers.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What are Fiat On-Ramps?
+
+Fiat on-ramps allow users to purchase cryptocurrency using traditional fiat currencies (USD, EUR, GBP, etc.). Venly integrates with three leading providers to offer flexible options for your users.
+
+<CardGroup cols={2}>
+  <Card title="Multiple Providers" icon="building">
+    Choose from Transak, Moonpay, and Ramp Network
+  </Card>
+  <Card title="Global Coverage" icon="globe">
+    Support for multiple fiat currencies and regions
+  </Card>
+  <Card title="Seamless Integration" icon="plug">
+    Generate URLs with pre-filled user information
+  </Card>
+  <Card title="Flexible Configuration" icon="gear">
+    Customize amounts, currencies, and destinations
+  </Card>
+</CardGroup>
+
+## Supported Providers
+
+<Tabs>
+  <Tab title="Transak">
+    **Global Coverage**
+    - 100+ countries supported
+    - 60+ fiat currencies
+    - Bank transfers, cards, Apple Pay
+    - Competitive fees and rates
+  </Tab>
+  <Tab title="Moonpay">
+    **User-Friendly**
+    - Simple, intuitive interface
+    - Fast verification process
+    - Mobile-optimized experience
+    - Strong compliance framework
+  </Tab>
+  <Tab title="Ramp Network">
+    **European Focus**
+    - Strong European presence
+    - SEPA instant transfers
+    - Low fees for EU users
+    - Quick onboarding
+  </Tab>
+</Tabs>
+
+## Transak On-Ramp
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/fiat-ramp/transak/on', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fiatAmount: "300",
+    fiatCurrency: "USD",
+    cryptoAmount: "0.15",
+    cryptoCurrency: {
+      network: "ETHEREUM",
+      symbol: "ETH"
+    },
+    redirectUrl: "https://www.venly.io/",
+    email: "user@example.com",
+    walletAddress: "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E"
+  })
+});
+
+const data = await response.json();
+console.log('Transak URL:', data.result.url);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/fiat-ramp/transak/on',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fiatAmount': '300',
+        'fiatCurrency': 'USD',
+        'cryptoAmount': '0.15',
+        'cryptoCurrency': {
+            'network': 'ETHEREUM',
+            'symbol': 'ETH'
+        },
+        'redirectUrl': 'https://www.venly.io/',
+        'email': 'user@example.com',
+        'walletAddress': '0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E'
+    }
+)
+
+data = response.json()
+print('Transak URL:', data['result']['url'])
+```
+
+```bash cURL
+curl -X POST '/fiat-ramp/transak/on' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fiatAmount": "300",
+    "fiatCurrency": "USD",
+    "cryptoAmount": "0.15",
+    "cryptoCurrency": {
+      "network": "ETHEREUM",
+      "symbol": "ETH"
+    },
+    "redirectUrl": "https://www.venly.io/",
+    "email": "user@example.com",
+    "walletAddress": "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E"
+  }'
+```
+</CodeGroup>
+
+### Transak Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fiatAmount` | number | ❌ | Amount in fiat currency user wants to spend |
+| `fiatCurrency` | string | ❌ | Fiat currency code (USD, EUR, GBP, etc.) |
+| `cryptoAmount` | number | ❌ | Amount of crypto user wants to buy |
+| `cryptoCurrency.network` | string | ❌ | Blockchain network (ETHEREUM, BITCOIN, etc.) |
+| `cryptoCurrency.symbol` | string | ❌ | Cryptocurrency symbol (ETH, BTC, etc.) |
+| `redirectUrl` | string | ❌ | URL to redirect after purchase completion |
+| `email` | string | ❌ | User's email address |
+| `walletAddress` | string | ❌ | Destination wallet address |
+| `isFeeCalculationHidden` | boolean | ❌ | Hide detailed fee breakdown |
+| `hideMenu` | boolean | ❌ | Hide menu options completely |
+
+<Tip>
+**Transak Features:**
+- If `fiatAmount` is passed, users can't change it later
+- `cryptoAmount` is skipped if valid `fiatCurrency` and `fiatAmount` are provided
+- Pre-filling email and wallet address improves user experience
+</Tip>
+
+## Moonpay On-Ramp
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/fiat-ramp/moonpay/on', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fiatAmount: "300",
+    fiatCurrency: "EUR",
+    cryptoAmount: "0.15",
+    cryptoCurrency: {
+      symbol: "ETH"
+    },
+    redirectUrl: "https://www.venly.io/",
+    email: "user@example.com",
+    walletAddress: "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E"
+  })
+});
+
+const data = await response.json();
+console.log('Moonpay URL:', data.result.url);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/fiat-ramp/moonpay/on',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fiatAmount': '300',
+        'fiatCurrency': 'EUR',
+        'cryptoAmount': '0.15',
+        'cryptoCurrency': {
+            'symbol': 'ETH'
+        },
+        'redirectUrl': 'https://www.venly.io/',
+        'email': 'user@example.com',
+        'walletAddress': '0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E'
+    }
+)
+
+data = response.json()
+print('Moonpay URL:', data['result']['url'])
+```
+
+```bash cURL
+curl -X POST '/fiat-ramp/moonpay/on' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fiatAmount": "300",
+    "fiatCurrency": "EUR",
+    "cryptoAmount": "0.15",
+    "cryptoCurrency": {
+      "symbol": "ETH"
+    },
+    "redirectUrl": "https://www.venly.io/",
+    "email": "user@example.com",
+    "walletAddress": "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E"
+  }'
+```
+</CodeGroup>
+
+### Moonpay Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fiatAmount` | number | ❌ | Amount user wants to spend in fiat |
+| `fiatCurrency` | string | ❌ | Fiat currency code (USD, EUR, GBP, etc.) |
+| `cryptoAmount` | number | ❌ | Amount of crypto user wants to buy |
+| `cryptoCurrency.symbol` | string | ❌ | Cryptocurrency symbol (required if walletAddress is passed) |
+| `redirectUrl` | string | ❌ | Redirect URL after purchase (includes transaction ID and status) |
+| `email` | string | ❌ | User's email address |
+| `walletAddress` | string | ❌ | Destination wallet address |
+
+<Note>
+**Moonpay Priority:** If both `fiatAmount` and `cryptoAmount` are provided, `cryptoAmount` takes precedence.
+</Note>
+
+## Ramp Network On-Ramp
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/fiat-ramp/ramp-network/on', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fiatAmount: "300",
+    fiatCurrency: "USD",
+    cryptoAmount: "0.15",
+    cryptoCurrency: {
+      network: "MATIC",
+      symbol: "MATIC"
+    },
+    redirectUrl: "https://www.venly.io/",
+    email: "user@example.com",
+    walletAddress: "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E",
+    selectedCountryCode: "US"
+  })
+});
+
+const data = await response.json();
+console.log('Ramp Network URL:', data.result.url);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/fiat-ramp/ramp-network/on',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fiatAmount': '300',
+        'fiatCurrency': 'USD',
+        'cryptoAmount': '0.15',
+        'cryptoCurrency': {
+            'network': 'MATIC',
+            'symbol': 'MATIC'
+        },
+        'redirectUrl': 'https://www.venly.io/',
+        'email': 'user@example.com',
+        'walletAddress': '0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E',
+        'selectedCountryCode': 'US'
+    }
+)
+
+data = response.json()
+print('Ramp Network URL:', data['result']['url'])
+```
+
+```bash cURL
+curl -X POST '/fiat-ramp/ramp-network/on' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fiatAmount": "300",
+    "fiatCurrency": "USD",
+    "cryptoAmount": "0.15",
+    "cryptoCurrency": {
+      "network": "MATIC",
+      "symbol": "MATIC"
+    },
+    "redirectUrl": "https://www.venly.io/",
+    "email": "user@example.com",
+    "walletAddress": "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E",
+    "selectedCountryCode": "US"
+  }'
+```
+</CodeGroup>
+
+### Ramp Network Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fiatAmount` | number | ❌ | Amount user wants to spend (overridden by cryptoAmount) |
+| `fiatCurrency` | string | ❌ | Fiat currency code (required if fiatAmount is passed) |
+| `cryptoAmount` | number | ❌ | Amount of crypto user wants to buy |
+| `cryptoCurrency.network` | string | ❌ | Blockchain network (required if symbol is passed) |
+| `cryptoCurrency.symbol` | string | ❌ | Cryptocurrency symbol |
+| `redirectUrl` | string | ❌ | Redirect URL after completion |
+| `email` | string | ❌ | User's email address |
+| `walletAddress` | string | ❌ | Destination wallet address |
+| `selectedCountryCode` | string | ❌ | Two-letter country code (ISO 3166-1 alpha-2) |
+
+<Check>
+**Ramp Network Advantage:** Pre-selecting country code with `selectedCountryCode` improves user experience by showing relevant payment methods.
+</Check>
+
+## Response Examples
+
+<Tabs>
+  <Tab title="Transak Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "url": "https://global-stg.transak.com?apiKey=9d45e3b1-9b6b-4ed6-94aa-a093693ef7c0&productsAvailed=BUY&fiatAmount=300&fiatCurrency=USD&walletAddress=0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E&redirectUrl=https%3A%2F%2Fwww.venly.io%2F&email=user%40example.com&network=ETHEREUM&cryptoCurrencyCode=ETH"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Moonpay Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "url": "https://buy-sandbox.moonpay.com?apiKey=pk_test_uHJf0DO1w0yfpJxhh7xkLaejUmjeY0&baseCurrencyAmount=300&baseCurrencyCode=EUR&walletAddress=0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E&redirectUrl=https%3A%2F%2Fwww.venly.io%2F&email=user%40example.com&currencyCode=eth&signature=XlJGPnR3v3CDw1He8MyLjB%2Fw%2FNt9TctO%2FmE71f1a660%3D"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Ramp Network Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "url": "https://app.demo.ramp.network?hostApiKey=unkvxgqfdpbpzet33gqnpnf2at7p7rytq458avkc&fiatValue=300&fiatCurrency=USD&userAddress=0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E&finalUrl=https%3A%2F%2Fwww.venly.io%2F&userEmailAddress=user%40example.com&selectedCountryCode=US&swapAsset=MATIC_MATIC"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Integration Workflow
+
+<Steps>
+  <Step title="Choose Provider" icon="building">
+    Select the most suitable provider based on your users' location and preferences
+  </Step>
+  <Step title="Generate URL" icon="link">
+    Call the appropriate API endpoint with user parameters
+  </Step>
+  <Step title="Redirect User" icon="arrow-right">
+    Direct the user to the generated URL for the purchase flow
+  </Step>
+  <Step title="Handle Callback" icon="arrow-left">
+    Process the redirect callback with transaction information
+  </Step>
+  <Step title="Confirm Purchase" icon="check">
+    Verify the transaction and update your application state
+  </Step>
+</Steps>
+
+## Provider Comparison
+
+<AccordionGroup>
+  <Accordion title="Geographic Coverage" icon="globe">
+    **Best regions for each provider:**
+    
+    - **Transak**: Global coverage, excellent for worldwide users
+    - **Moonpay**: Strong in North America and Europe
+    - **Ramp Network**: Optimized for European users, especially SEPA regions
+    
+    Consider your user base when choosing providers.
+  </Accordion>
+  
+  <Accordion title="Payment Methods" icon="credit-card">
+    **Supported payment options:**
+    
+    - **Transak**: Bank transfers, credit/debit cards, Apple Pay, Google Pay
+    - **Moonpay**: Credit/debit cards, bank transfers, mobile wallets
+    - **Ramp Network**: SEPA instant, bank transfers, cards
+    
+    Different methods have varying processing times and fees.
+  </Accordion>
+  
+  <Accordion title="Cryptocurrency Support" icon="coins">
+    **Available cryptocurrencies:**
+    
+    Use the [supported currencies endpoint](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies) to get current lists for each provider.
+    
+    - **Transak**: 100+ cryptocurrencies
+    - **Moonpay**: 80+ cryptocurrencies  
+    - **Ramp Network**: 50+ cryptocurrencies
+  </Accordion>
+  
+  <Accordion title="Fees and Limits" icon="calculator">
+    **Cost considerations:**
+    
+    - **Transak**: Competitive fees, higher limits
+    - **Moonpay**: Transparent pricing, moderate limits
+    - **Ramp Network**: Low fees for SEPA, good limits
+    
+    Fees vary by payment method, amount, and region.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**On-Ramp Optimization:**
+
+1. **Provider Selection** - Choose based on user geography and preferences
+2. **Pre-fill Information** - Use known user data to reduce friction
+3. **Clear Communication** - Explain the process and expected timeframes
+4. **Fallback Options** - Offer multiple providers for better success rates
+5. **Mobile Optimization** - Ensure URLs work well on mobile devices
+6. **Compliance** - Understand KYC/AML requirements for each provider
+</Tip>
+
+## User Experience Examples
+
+<Tabs>
+  <Tab title="Gaming Platform">
+    ```javascript
+    // Gaming platform buying in-game currency
+    const onRampUrl = await createTransakUrl({
+      fiatAmount: "50",
+      fiatCurrency: "USD",
+      cryptoCurrency: { network: "MATIC", symbol: "USDC" },
+      walletAddress: userWallet,
+      email: userEmail,
+      redirectUrl: "https://game.com/purchase-complete"
+    });
+    ```
+  </Tab>
+  <Tab title="NFT Marketplace">
+    ```javascript
+    // NFT marketplace funding wallet
+    const onRampUrl = await createMoonpayUrl({
+      fiatAmount: "200",
+      fiatCurrency: "EUR",
+      cryptoCurrency: { symbol: "ETH" },
+      walletAddress: userWallet,
+      redirectUrl: "https://nftmarket.com/wallet-funded"
+    });
+    ```
+  </Tab>
+  <Tab title="DeFi Platform">
+    ```javascript
+    // DeFi platform entry point
+    const onRampUrl = await createRampUrl({
+      cryptoAmount: "1000",
+      cryptoCurrency: { network: "ETHEREUM", symbol: "USDC" },
+      walletAddress: userWallet,
+      selectedCountryCode: userCountry,
+      redirectUrl: "https://defi.com/ready-to-trade"
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invalid currency combination">
+    **Common issues:**
+    - Unsupported fiat/crypto pair
+    - Wrong network for cryptocurrency
+    - Currency not available in user's region
+    
+    **Solution:** Use the [supported currencies endpoint](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies) to verify valid combinations.
+  </Accordion>
+  
+  <Accordion title="User verification failed">
+    **Possible causes:**
+    - Incomplete KYC documentation
+    - Restricted jurisdiction
+    - Payment method not supported
+    
+    **Solution:** Provide clear guidance on verification requirements and offer alternative providers.
+  </Accordion>
+  
+  <Accordion title="Transaction timeout">
+    **Common scenarios:**
+    - User abandoned the flow
+    - Payment processing delays
+    - Network congestion
+    
+    **Solution:** Implement proper timeout handling and provide status updates to users.
+  </Accordion>
+  
+  <Accordion title="Redirect URL issues">
+    **Problems:**
+    - URL not properly encoded
+    - HTTPS requirement not met
+    - Callback parameters not handled
+    
+    **Solution:** Ensure URLs are properly formatted and implement robust callback handling.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Fiat Off-Ramps" href="/PAY-API-Basic-Guides/fiat-off-ramps" icon="arrow-down">
+    Enable users to sell cryptocurrency for fiat
+  </Card>
+  <Card title="Supported Currencies" href="/PAY-API-Basic-Guides/on-ramp-off-ramp-supported-fiat-crypto-currencies" icon="list">
+    View all supported fiat and crypto currencies
+  </Card>
+  <Card title="Configuration Guide" href="/PAY-API-Basic-Guides/fiat-on-off-ramps-configuration" icon="gear">
+    Configure on-ramp and off-ramp settings
+  </Card>
+  <Card title="Webhooks" href="/PAY-API-Basic-Guides/webhooks-pay-api" icon="webhook">
+    Get real-time notifications for transactions
+  </Card>
+</CardGroup>
+
+<Warning>
+**Compliance Note:** On-ramp providers have different KYC/AML requirements and geographic restrictions. Ensure your users understand the verification process and any limitations that may apply.
+</Warning>

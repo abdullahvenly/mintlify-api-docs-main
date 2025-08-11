@@ -1,0 +1,3276 @@
+openapi: 3.1.0
+info:
+  title: PAY API
+  description: Venly Pay OA3.0 Documentation
+  contact:
+    name: Venly
+    url: https://venly.io
+    email: contact@venly.io
+  version: 1.7.0
+servers:
+  - url: https://api-pay-sandbox.venly.io/
+    description: Sandbox Environment
+  - url: https://api-pay.venly.io/
+    description: Production Environment
+paths:
+  /actuator/health:
+    get:
+      tags:
+        - PAY-API Health
+      summary: Check Health 
+      description: This endpoint is used to check the current health of the **PAY-API**. It returns the API health status as either **UP** or **DOWN**.
+      operationId: healthCheckPay
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    description: "Indicates the status of API services as either `UP` or `DOWN`."
+                    examples: 
+                      - "UP"
+      security:
+        - OAuth2: []
+  /fiat-ramp/{provider}/currencies:
+    get:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Get supported fiat and crypto currencies'
+      description: 'Get all supported fiat currencies and crypto currencies for a specific provider. The response includes the `fiat` and `crypto` arrays. The `fiat[]` array includes all the supported fiat currencies for the specific provider, and the `crypto[]` array includes all the supported crypto currencies for the specific provider.'
+      operationId: getCurrencies
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - TRANSAK
+              - MOONPAY
+              - RAMP_NETWORK
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FiatRampResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - view:currencies
+  /fiat-ramp/transak/on:
+    post:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Transak Onramp'
+      description: 'This endpoint is used to create a Transak onramp URL.'
+      operationId: getTransakFiatOnRampUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransakOnRampUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FiatRampUrlResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - use:on-ramp
+  /fiat-ramp/transak/off:
+    post:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Transak Offramp'
+      description: 'This endpoint is used to create a Transak offramp URL.'
+      operationId: getTransakFiatOffRampUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransakOffRampUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FiatRampUrlResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - use:off-ramp
+  /fiat-ramp/ramp-network/on:
+    post:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Ramp Network Onramp'
+      description: 'This endpoint is used to create a Ramp Network onramp URL.'
+      operationId: getRampNetworkFiatOnRampUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RampNetworkOnRampUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FiatRampUrlResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - use:on-ramp
+  /fiat-ramp/ramp-network/off:
+    post:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Ramp Network Offramp'
+      description: 'This endpoint is used to create a Ramp Network offramp URL.'
+      operationId: getRampNetworkFiatOffRampUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RampNetworkOffRampUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FiatRampUrlResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - use:off-ramp
+  /fiat-ramp/moonpay/on:
+    post:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Moonpay Onramp'
+      description: 'This endpoint is used to create a Moonpay onramp URL.'
+      operationId: getMoonpayFiatOnRampUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoonpayOnRampUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FiatRampUrlResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - use:on-ramp
+  /fiat-ramp/moonpay/off:
+    post:
+      tags:
+        - Fiat On/Off Ramp
+      summary: 'Moonpay Offramp'
+      description: 'This endpoint is used to create a Moonpay offramp URL.'
+      operationId: getMoonpayFiatOffRampUrl
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MoonpayOffRampUrlRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FiatRampUrlResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - use:off-ramp
+  /checkout/sessions:
+    post:
+      tags:
+        - Checkout
+      summary: 'Create Checkout Link'
+      description: "Initiate the checkout process for a single payment by calling this endpoint. Save the `id` and `url` from response body. The `id` parameter is the sessionId (Used when checking status of this checkout), and the `url` parameter is the checkout URL (You pass this to your end-user)."
+      operationId: checkoutSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutSessionRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCheckoutLinkResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2:
+            - create:checkout-session
+  /account/settings/branding/icon:
+    post:
+      tags:
+        - Checkout Branding
+      operationId: uploadIcon
+      summary: "Upload Icon"
+      description: "Personalize your checkout page by adding your business' icon or logo. The icon must be a square image and have a minimum size of **128px x 128px**."
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - icon
+              type: object
+              properties:
+                icon:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadIconResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2: []
+  /account/settings/branding:
+    post:
+      tags:
+        - Checkout Branding
+      operationId: updateSettingsBranding
+      summary: "Customize Checkout Page"
+      description: "You can select a primary color for the left side of the checkout page, and a secondary color for the PAY button. The checkout page will also feature your icon."
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonNode'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2: []        
+  /stripe-dashboard:
+    get:
+      tags:
+        - Stripe Dashboard
+      operationId: getDashboardLink
+      summary: "Get Stripe Dashboard Login Link"
+      description: "This endpoint allows you to fetch a login link for your Stripe dashboard."
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StripeDashboardResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2: []
+  /checkout/sessions/{sessionId}:
+    get:
+      tags:
+        - Checkout
+      summary: 'Get Checkout Status'
+      description: "To retrieve the details of a completed or canceled checkout, call this endpoint using the corresponding session `ID`."
+      operationId: getSession
+      parameters:
+        - name: sessionId
+          description: "This is the session `ID` to check the status of a specific checkout payment. It's in the response body when you create a checkout link."          
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+               $ref: '#/components/schemas/GetCheckoutStatusResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2:
+            - retrieve:checkout-session
+  /webhooks:
+    post:
+      tags:
+        - Webhooks
+      summary: 'Create a Webhook'
+      description: "This endpoint is used to create a webhook, to receive updates of your user's payments (_successful/cancelled_)."
+      operationId: createWebhook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreateOrUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelopeWebhookDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2:
+            - manage:webhooks
+    get:
+      tags:
+        - Webhooks
+      summary: 'Get Webhooks'
+      description: "This endpoint is used to get all of your webhooks."
+      operationId: findAll
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelopeListWebhookDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2:
+            - manage:webhooks
+  /webhooks/{webhookId}:
+    put:
+      tags:
+        - Webhooks
+      summary: 'Update a Webhook'
+      operationId: update
+      parameters:
+        - name: webhookId
+          description: "This is the `ID` of the webhook you want to update."
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreateOrUpdateRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookDto'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2:
+            - manage:webhooks
+    delete:
+      tags:
+        - Webhooks
+      summary: 'Delete a Webhook'
+      operationId: delete
+      parameters:
+        - name: webhookId
+          description: "This is the `ID` of the webhook you want to delete."
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - OAuth2:
+            - manage:webhooks
+  /checkout/sessions/{sessionId}/line_items:
+    get:
+      tags:
+        - Checkout
+      summary: 'Get Line Items'
+      description: "This endpoint retrieves a checkout session's line items."
+      operationId: getLineItems
+      parameters:
+        - name: sessionId
+          description: "This is the session `ID`. It's in the response body when you create a checkout link."
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLineItemsResponse'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+components:
+  schemas:
+    ErrorBody:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorBody'
+    CheckoutSessionRequest:
+      type: object
+      properties:
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItemRequest'
+        success_url:
+          type: string
+          description: "The URL where your user will be directed in case of successful checkout. (URLs must begin with http or https)"
+        cancel_url:
+          type: string
+          description: "The URL where your user will be directed in case they decide to cancel the payment. (URLs must begin with http or https)"          
+        mode:
+          type: string
+          description: "Only **payment** mode is allowed."
+          default: payment
+        expires_at:
+          type: string
+          format: date-time
+          description: "The date-time at which the Checkout Session will expire. It can be set to expire anytime between 30 minutes to 24 hours after it's created. By default, it expires 24 hours after creation. This field accepts a date-time in ISO-8601 format."
+          example: "2024-02-09T09:26:50.895Z"
+        client_reference_id:
+          type: string
+          description: "A distinctive identifier for the Checkout Session. This might be a customer ID, cart ID, or something similar, and can be utilized to match the session with your internal systems."
+        customer:
+          $ref: '#/components/schemas/CustomerRequest'
+    CustomerRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The unique ID of your customer for whom this checkout request is being created. This identifier, whether a customer ID, cart ID, or similar, can help you match the session with your internal systems."
+    LineItemRequest:
+      type: object
+      properties:
+        price_data:
+          $ref: '#/components/schemas/PriceDataRequest'
+        quantity:
+          type: integer
+          format: int64
+          description: "The quantity of products you want to create a checkout for."
+    PriceDataRequest:
+      type: object
+      properties:
+        product_data:
+          $ref: '#/components/schemas/ProductDataRequest'
+        unit_amount:
+          type: integer
+          format: int64
+          description: "Non-negative integer in cents representing the price of your product."
+        currency:
+          type: string
+          description: "Three-letter ISO currency code, in uppercase."
+    ProductDataRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of the product to be displayed to your end-user. Such as “Ring NFT”"
+    GetLineItemsResponse:            
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      object:
+                        type: string
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            object:
+                              type: string
+                            amount_discount:
+                              type: integer
+                            amount_subtotal:
+                              type: integer
+                            amount_tax:
+                              type: integer
+                            amount_total:
+                              type: integer
+                            currency:
+                              type: string
+                            description:
+                              type: string
+                            price:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                object:
+                                  type: string
+                                active:
+                                  type: boolean
+                                billing_scheme:
+                                  type: string
+                                created:
+                                  type: integer
+                                currency:
+                                  type: string
+                                custom_unit_amount:
+                                  type: object
+                                livemode:
+                                  type: boolean
+                                lookup_key:
+                                  type: string
+                                metadata:
+                                  type: object
+                                  properties: {}
+                                nickname:
+                                  type: string
+                                product:
+                                  type: string
+                                recurring:
+                                  type: object
+                                tax_behavior:
+                                  type: string
+                                tiers_mode:
+                                  type: string
+                                transform_quantity:
+                                  type: object
+                                type:
+                                  type: string
+                                unit_amount:
+                                  type: integer
+                                unit_amount_decimal:
+                                  type: string
+                            quantity:
+                              type: integer
+                      has_more:
+                        type: boolean
+                      url:
+                        type: string
+    StripeDashboardResponse:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      object:
+                        type: string
+                      created:
+                        type: integer
+                      url:
+                        type: string
+    CreateCheckoutLinkResponse:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      object:
+                        type: string
+                      after_expiration:
+                        type: object
+                      allow_promotion_codes:
+                        type: boolean
+                      amount_subtotal:
+                        type: integer
+                      amount_total:
+                        type: integer
+                      automatic_tax:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                          status:
+                            type: string
+                      billing_address_collection:
+                        type: string
+                      cancel_url:
+                        type: string
+                      client_reference_id:
+                        type: string
+                      client_secret:
+                        type: string
+                      consent:
+                        type: object
+                      consent_collection:
+                        type: object
+                      created:
+                        type: integer
+                      currency:
+                        type: string
+                      currency_conversion:
+                        type: object
+                      custom_fields:
+                        type: array
+                        items:
+                          type: object
+                          properties: {}
+                      custom_text:
+                        type: object
+                        properties:
+                          after_submit:
+                            type: object
+                          shipping_address:
+                            type: object
+                          submit:
+                            type: object
+                          terms_of_service_acceptance:
+                            type: object
+                      customer:
+                        type: string
+                      customer_creation:
+                        type: string
+                      customer_details:
+                        type: object
+                      customer_email:
+                        type: string
+                      expires_at:
+                        type: integer
+                      invoice:
+                        type: string
+                      invoice_creation:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                          invoice_data:
+                            type: object
+                            properties:
+                              account_tax_ids:
+                                type: array
+                              custom_fields:
+                                type: array
+                              description:
+                                type: string
+                              footer:
+                                type: string
+                              metadata:
+                                type: object
+                                properties: {}
+                              rendering_options:
+                                type: object
+                      livemode:
+                        type: boolean
+                      locale:
+                        type: string
+                      metadata:
+                        type: object
+                        properties: {}
+                      mode:
+                        type: string
+                      payment_intent:
+                        type: object
+                      payment_link:
+                        type: string
+                      payment_method_collection:
+                        type: string
+                      payment_method_configuration_details:
+                        type: object
+                      payment_method_options:
+                        type: object
+                        properties: {}
+                      payment_method_types:
+                        type: array
+                        items:
+                          type: string
+                      payment_status:
+                        type: string
+                      phone_number_collection:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                      recovered_from:
+                        type: string
+                      setup_intent:
+                        type: string
+                      shipping_address_collection:
+                        type: object
+                      shipping_cost:
+                        type: object
+                      shipping_details:
+                        type: object
+                      shipping_options:
+                        type: array
+                        items:
+                          type: object
+                          properties: {}
+                      status:
+                        type: string
+                      submit_type:
+                        type: string
+                      subscription:
+                        type: string
+                      success_url:
+                        type: string
+                      total_details:
+                        type: object
+                        properties:
+                          amount_discount:
+                            type: integer
+                          amount_shipping:
+                            type: integer
+                          amount_tax:
+                            type: integer
+                      ui_mode:
+                        type: string
+                      url:
+                        type: string
+    GetCheckoutStatusResponse:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      object:
+                        type: string
+                      after_expiration:
+                        type: object
+                      allow_promotion_codes:
+                        type: boolean
+                      amount_subtotal:
+                        type: integer
+                      amount_total:
+                        type: integer
+                      automatic_tax:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                          status:
+                            type: string
+                      billing_address_collection:
+                        type: string
+                      cancel_url:
+                        type: string
+                      client_reference_id:
+                        type: string
+                      client_secret:
+                        type: string
+                      consent:
+                        type: object
+                      consent_collection:
+                        type: object
+                      created:
+                        type: integer
+                      currency:
+                        type: string
+                      currency_conversion:
+                        type: object
+                      custom_fields:
+                        type: array
+                        items:
+                          type: object
+                          properties: {}
+                      custom_text:
+                        type: object
+                        properties:
+                          after_submit:
+                            type: object
+                          shipping_address:
+                            type: object
+                          submit:
+                            type: object
+                          terms_of_service_acceptance:
+                            type: object
+                      customer:
+                        type: string
+                      customer_creation:
+                        type: string
+                      customer_details:
+                        type: object
+                      customer_email:
+                        type: string
+                      expires_at:
+                        type: integer
+                      invoice:
+                        type: string
+                      invoice_creation:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                          invoice_data:
+                            type: object
+                            properties:
+                              account_tax_ids:
+                                type: array
+                              custom_fields:
+                                type: array
+                              description:
+                                type: string
+                              footer:
+                                type: string
+                              metadata:
+                                type: object
+                                properties: {}
+                              rendering_options:
+                                type: object
+                      livemode:
+                        type: boolean
+                      locale:
+                        type: string
+                      metadata:
+                        type: object
+                        properties: {}
+                      mode:
+                        type: string
+                      payment_intent:
+                        type: object
+                      payment_link:
+                        type: string
+                      payment_method_collection:
+                        type: string
+                      payment_method_configuration_details:
+                        type: object
+                      payment_method_options:
+                        type: object
+                        properties: {}
+                      payment_method_types:
+                        type: array
+                        items:
+                          type: string
+                      payment_status:
+                        type: string
+                      phone_number_collection:
+                        type: object
+                        properties:
+                          enabled:
+                            type: boolean
+                      recovered_from:
+                        type: string
+                      setup_intent:
+                        type: string
+                      shipping_address_collection:
+                        type: object
+                      shipping_cost:
+                        type: object
+                      shipping_details:
+                        type: object
+                      shipping_options:
+                        type: array
+                        items:
+                          type: object
+                          properties: {}
+                      status:
+                        type: string
+                      submit_type:
+                        type: string
+                      subscription:
+                        type: string
+                      success_url:
+                        type: string
+                      total_details:
+                        type: object
+                        properties:
+                          amount_discount:
+                            type: integer
+                          amount_shipping:
+                            type: integer
+                          amount_tax:
+                            type: integer
+                      ui_mode:
+                        type: string
+                      url:
+                        type: string
+    UploadIconResponse:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      object:
+                        type: string
+                      created:
+                        type: integer
+                      expires_at:
+                        type: string
+                      filename:
+                        type: string
+                      links:
+                        type: object
+                        properties:
+                          object:
+                            type: string
+                          data:
+                            type: array
+                            items:
+                              type: object
+                              properties: {}
+                          has_more:
+                            type: boolean
+                          url:
+                            type: string
+                      purpose:
+                        type: string
+                      size:
+                        type: integer
+                      title:
+                        type: string
+                      type:
+                        type: string
+                      url:
+                        type: string 
+    FiatRampResponse:
+      type: object
+      properties:
+        fiat:
+          type: array
+          description: "This array includes all the supported fiat currencies for the specific provider."
+          items:
+            $ref: '#/components/schemas/FiatRampDto'
+        crypto:
+          type: array
+          description: "This array includes all the supported crypto currencies for the specific provider indicates and indicates if the crypto currency is supported for an onramp and/or offramp."
+          items:
+            $ref: '#/components/schemas/CryptoDto' 
+    FiatRampDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "The name of fiat currency."
+        symbol:
+          type: string
+          description: "The fiat currency's symbol that can be passed as the `fiatCurrency` param to create on/off ramp URLs."
+        rampType:
+          type: array
+          description: "Indicates if the fiat currency is supported for an onramp and/or offramp."
+          items:
+            type: string
+    CryptoDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: "Blockchain name."
+        symbol:
+          type: string
+          description: "The symbol of the crypto currency. The `symbol` param can be passed in the `cryptoCurrency` object when creating an on/off ramp URL"
+        network:
+          type: string
+          description: "The network or blockchain. The `network` param can be passed in the `cryptoCurrency` object when creating an on/off ramp URL"
+        chainId:
+          type: string
+        rampType:
+          type: array
+          description: "Indicates if the crypto currency is supported for an onramp and/or offramp."
+          items:
+            type: string
+    TransakOnRampUrlRequest:
+      type: object
+      properties:
+        fiatAmount:
+          type: number
+          format: int64
+          description: "The amount in fiat currency showing how much your user wants to spend or receive. If this is passed, the user can't change the fiat amount. This param will be skipped if `fiatCurrency` is not passed."
+        fiatCurrency:
+          type: string
+          description: "The code of the fiat currency (_e.g. USD, AUD, GBP_) you want the user to purchase with"
+        cryptoAmount:
+          type: number
+          format: int64
+          description: "An integer amount showing how much crypto your user wants to buy. This parameter will be skipped if `cryptoCurrency.symbol` is not passed. This parameter will be skipped if a valid combination of `fiatCurrency` and `fiatAmount` is passed"
+        cryptoCurrency:
+          description: "Define the crypto network and the crypto token's symbol"
+          $ref: '#/components/schemas/CryptoCurrency'
+        redirectUrl:
+          type: string
+          description: "Once the customer has completed the purchase/sell process, Transak will redirect back to this URL with additional order info appended to it as parameters."
+        email:
+          type: string
+          description: "The email that will be used to identify your user and their order"
+        walletAddress:
+          type: string
+          description: "The wallet address of your user where crypto will be sent to"
+        isFeeCalculationHidden:
+          type: boolean
+          description: "If this is set to `true`, your user won't see a detailed breakdown of fees—they'll only see the total fee"
+        hideMenu:
+          type: boolean
+          description: "When `true`, then the user will not see the menu options. This will hide the menu completely"
+    TransakOffRampUrlRequest:
+      type: object
+      properties:
+        fiatCurrency:
+          type: string
+          description: "The code of the fiat currency you want your user to buy/sell cryptocurrency"
+        cryptoAmount:
+          type: number
+          format: int64
+          description: "The amount in crypto currency showing how much crypto your user wants to sell. If this is passed, the user can't change the crypto amount."
+        cryptoCurrency:
+          description: "Define the crypto network and the crypto token's symbol"
+          $ref: '#/components/schemas/CryptoCurrency'
+        redirectUrl:
+          type: string
+          description: "Once the customer has completed the purchase/sell process, Transak will redirect back to this URL with additional order info appended to it as parameters."
+        email:
+          type: string
+          description: "The email that will be used to identify your user and their order"
+        isFeeCalculationHidden:
+          type: boolean
+          description: "If this is set to `true`, your user won't see a detailed breakdown of fees—they'll only see the total fee"
+        hideMenu:
+          type: boolean
+          description: "When `true`, then the user will not see the menu options. This will hide the menu completely."
+    RampNetworkOnRampUrlRequest:
+      type: object
+      properties:
+        fiatAmount:
+          type: number
+          format: int64
+          description: "A positive integer representing how much fiat the user wants to spend. It will be overridden by `cryptoAmount`, if passed."
+        fiatCurrency:
+          type: string
+          description: "The code of the fiat currency (_e.g. USD, AUD, GBP_) you want the user to purchase with. Mandatory if `fiatAmount` is passed."
+        cryptoAmount:
+          type: number
+          format: int64
+          description: "A positive integer representing how much crypto the user wants to buy. If left blank, the user will choose the amount on their own."
+        cryptoCurrency:
+          description: "Define the crypto network and the crypto token's symbol"
+          $ref: '#/components/schemas/CryptoCurrency'
+        redirectUrl:
+          type: string
+          description: "The URL the user will be redirected to after completing the flow"
+        email:
+          type: string
+          description: "The email address for your user to make their onramping experience even quicker"
+        walletAddress:
+          type: string
+          description: "The wallet address the crypto will be sent to"
+        selectedCountryCode:
+          pattern: ^[A-Z]{2}$
+          type: string
+          description: "This param pre-selects the user's country. The value should be a two-letter country code (ISO 3166-1 alpha-2)"
+    RampNetworkOffRampUrlRequest:
+      type: object
+      properties:
+        fiatAmount:
+          type: number
+          format: int64
+          description: "The fiat amount the user wants to receive"
+        fiatCurrency:
+          type: string
+          description: "The fiat currency code that will pre-set the currency"
+        cryptoCurrency:
+          description: "Define the crypto network and the crypto token's symbol"
+          $ref: '#/components/schemas/CryptoCurrency'
+        redirectUrl:
+          type: string
+          description: "The URL the user will be redirected to after completing the flow"
+        email:
+          type: string
+          description: "The email address for your user to make their onramping experience even quicker"
+        userAddress:
+          type: string
+          description: "The wallet address of your user where crypto will be sent to"
+        selectedCountryCode:
+          pattern: ^[A-Z]{2}$
+          type: string
+          description: "This param pre-selects user country. The value should be a two-letter country code (ISO 3166-1 alpha-2). "
+    MoonpayOnRampUrlRequest:
+      type: object
+      properties:
+        fiatAmount:
+          type: number
+          format: int64
+          description: "A positive integer representing how much fiat the user wants to spend"
+        fiatCurrency:
+          type: string
+          description: "The code of the fiat currency (_e.g. usd, aud, gbp_) you want the user to purchase with"
+        cryptoAmount:
+          type: number
+          format: int64
+          description: "A positive integer representing how much crypto the user wants to buy. If you pass both `fiatAmount` and `cryptoAmount`, the `cryptoAmount` amount will take precedence."
+        cryptoCurrency:
+          description: "Define the crypto network"
+          $ref: '#/components/schemas/CryptoCurrencySymbol'
+        redirectUrl:
+          type: string
+          description: "This is the URL where you want to send the user after they finish the buying process. A transaction ID and status is added to the URL as query parameters."
+        email:
+          type: string
+          description: "This is the user's email address. If you provide a valid email address, the user won't need to enter it"
+        walletAddress:
+          type: string
+          description: "This is the cryptocurrency wallet address where the purchased funds will be sent. If a valid wallet address is passed, the user won't need to enter one."
+    MoonpayOffRampUrlRequest:
+      type: object
+      properties:
+        fiatCurrency:
+          type: string
+          description: "The code of the fiat currency you want the user to be paid in. Possible values: _usd, eur, gbp_"
+        cryptoAmount:
+          type: number
+          format: int64
+          description: "A positive number representing how much crypto the user wants to sell. This parameter will be skipped if `cryptoCurrency.symbol` is not passed."
+        cryptoCurrency:
+          description: "Define the crypto network"
+          $ref: '#/components/schemas/CryptoCurrencySymbol'
+        redirectUrl:
+          type: string
+          description: "A URL you'd like to redirect the user to after they complete the sell flow"
+        email:
+          type: string
+          description: "The user's email address"
+        refundWalletAddress:
+          type: string
+          description: "The cryptocurrency wallet address the funds will be sent to in case of a refund. This parameter will be skipped if `cryptoCurrency.symbol` is not passed."
+    CryptoCurrency:
+      title: "Define crypto network and symbol"
+      type: object
+      properties:
+        network:
+          type: string
+          description: "The crypto network such as `bitcoin` or `ethereum` that you would allow your customers to buy/sell. Can be obtained from response of the [**Get supported fiat and crypto currencies endpoint**](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies)."
+        symbol:
+          type: string
+          description: "The code/symbol of the cryptocurrency you want the user to buy/sell. Can be obtained from response of the [**Get supported fiat and crypto currencies endpoint**](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies)."
+    CryptoCurrencySymbol:
+      title: "Define Crypto Symbol"
+      type: object
+      properties:
+        symbol:
+          type: string
+          description: "The code/symbol of the cryptocurrency you want the user to buy/sell. Can be obtained from response of the [**Get supported fiat and crypto currencies endpoint**](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies)."
+    FiatRampUrlResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          description: 'The generated on/off ramp URL.'
+    StripeAccountIdMappingDTO:
+      required:
+        - companyId
+        - stripeAccountId
+      type: object
+      properties:
+        stripeAccountId:
+          type: string
+        companyId:
+          type: string
+    JsonNode:
+      type: object
+    AccountRequest:
+      type: object
+      properties:
+        settings:
+          $ref: '#/components/schemas/AccountSettingsRequest'
+    AccountSettingsBrandingRequest:
+      type: object
+      properties:
+        primary_color:
+          type: string
+          description: "A color hex code to customize your checkout page."
+        secondary_color:
+          type: string
+          description: "A color hex code to customize the PAY button."
+        icon:
+          type: string
+          description: "This is the id of your previously uploaded icon. "
+    AccountSettingsRequest:
+      type: object
+      properties:
+        branding:
+          $ref: '#/components/schemas/AccountSettingsBrandingRequest'
+    Account:
+      type: object
+      properties:
+        stripeAccountId:
+          type: string
+        companyId:
+          type: string
+    WebhookCreateOrUpdateRequest:
+      required:
+        - url
+        - companyId
+        - name
+      type: object
+      properties:
+        url:
+          type: string
+          description: "This is your endpoint URL which can accept `POST` calls."
+        companyId:
+          type: string
+          description: "Can be obtained from the [Portal](https://portal.venly.io/) clicking the❔icon on the top right. Use the **Company ID** when creating webhooks on production env, and use the **Sandbox Company ID** when creating webhooks on sandbox env."
+        name:
+          type: string
+          description: "Any name for the webhook you're about to create."
+          example: "PAY API Webhook"
+        authenticationMethod:
+          description: "This is the type of authentication for your endpoint. Authentication is to be set up by you so you can authenticate the incoming webhooks from Venly. We allow two types: `BASIC_AUTHENTICATION` and `API_KEY`"
+          oneOf:
+            - $ref: '#/components/schemas/AuthenticationMethodRequestApiKey'
+            - $ref: '#/components/schemas/AuthenticationMethodRequestBasicAuth'
+          discriminator:
+            propertyName: type
+            mapping:
+              API_KEY: '#/components/schemas/AuthenticationMethodRequestApiKey'
+              BASIC_AUTHENTICATION: '#/components/schemas/AuthenticationMethodRequestBasicAuth'
+    AuthenticationMethodRequestApiKey:
+      required:
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          default: "API_KEY"
+        headerName:
+          type: string
+          description: "This is the name of your api key. (A custom API header name that you enter)"
+        apiKey:
+          type: string
+          description: "This is the value of your API key for your endpoint. (A custom value that you enter for your endpoint.)" 
+    AuthenticationMethodRequestBasicAuth:
+      required:
+        - type
+      type: object
+      properties:
+        type:
+          type: string
+          default: BASIC_AUTHENTICATION
+        username:
+          type: string
+          description: "This is the username for your endpoint. (A custom username that you enter)"
+        password:
+          type: string
+          description: "This is the password you enter for your endpoint."
+    ResponseEnvelopeWebhookDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+        result:
+          $ref: '#/components/schemas/WebhookDto'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorBody'
+    WebhookDto:
+      type: object
+      properties:
+        id:
+          type: string
+        targetId:
+          type: string
+        application:
+          type: string
+        url:
+          type: string
+        authenticationType:
+          type: string
+          enum:
+            - BASIC_AUTHENTICATION
+            - API_KEY
+        basicAuthCredentials:
+          $ref: '#/components/schemas/BasicAuthCredentialsDto'
+        apiKeyAuthCredentials:
+          $ref: '#/components/schemas/ApiKeyAuthCredentialsDto'
+    BasicAuthCredentialsDto:
+      type: object
+      properties:
+        username:
+          type: string
+    ApiKeyAuthCredentialsDto:
+      type: object
+      properties:
+        authenticationHeader:
+          type: string
+    ResponseEnvelopeListWebhookDto:
+      type: object
+      properties:
+        success:
+          type: boolean
+        result:
+          type: array
+          items:
+            $ref: '#/components/schemas/WebhookDto'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorBody'
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://login-qa.arkane.network/auth/realms/Arkane/protocol/openid-connect/token
+          scopes:
+            openid: openid

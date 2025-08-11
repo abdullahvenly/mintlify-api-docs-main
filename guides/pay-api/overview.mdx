@@ -1,0 +1,425 @@
+---
+title: "PAY API Overview"
+description: "Comprehensive overview of Venly's PAY API - accept fiat payments for NFTs through Stripe integration with global reach"
+icon: "credit-card"
+---
+
+
+<Info>
+**Venly PAY API** enables seamless fiat payments for NFTs through Stripe integration, making it easy for your users to purchase digital assets with traditional currencies.
+</Info>
+
+## What is PAY?
+
+Venly has partnered with **Stripe** to bring you **PAY**, an API payment gateway that allows our customers to create **Stripe** payment links to sell and purchase NFTs (Non-Fungible Tokens).
+
+This collaboration is part of a limited beta program, granting exclusive access to partners enabling NFT sales.
+
+**PAY** makes onboarding easy and integrates you with **Stripe** so your users can sell or purchase NFTs in **fiat currency** (US Dollar (USD), Euro (EUR), British Pound (GBP), etc).
+
+
+<CardGroup cols={2}>
+  <Card title="Stripe Integration" icon="stripe">
+    Seamless integration with Stripe for secure payments
+  </Card>
+  <Card title="Global Payments" icon="globe">
+    Accept payments in multiple fiat currencies worldwide
+  </Card>
+  <Card title="Custom Branding" icon="palette">
+    Customize checkout pages with your brand colors and logo
+  </Card>
+  <Card title="Compliance Ready" icon="shield-check">
+    Fully compliant payment solution for NFT transactions
+  </Card>
+</CardGroup>
+
+## What Does PAY Do?
+
+### 1. Easy Onboarding & Integration with Stripe
+
+Traditional Stripe clients cannot use Stripe Payments for NFTs due to the complex and lengthy process. Stripe rejects most applications for NFT use cases due to compliance issues.
+
+**Venly** has partnered with **Stripe**, assuring you of a fully compliant and trusted payment solution.
+
+Our streamlined **Know Your Business** (KYB) process simplifies the onboarding of clients, making it easier for them to use Stripe payments.
+
+<Tabs>
+  <Tab title="Onboarding Process">
+    The onboarding process with PAY includes:
+    
+    - **PAY Onboarding Form** - Initial application
+    - **Stripe Form** - Business and payment details
+    - **Know Your Business (KYB) Form** - Compliance verification
+    
+    <Check>
+    If accepted, you will receive the credentials and can start using PAY to create Stripe checkout links for your end-users.
+    </Check>
+  </Tab>
+  <Tab title="Benefits">
+    **Why Choose PAY over Direct Stripe:**
+    
+    - **Simplified Compliance** - Lightweight KYB process
+    - **NFT-Specific Approval** - Pre-approved for NFT transactions
+    - **Faster Onboarding** - Streamlined application process
+    - **Expert Support** - Dedicated compliance management
+  </Tab>
+</Tabs>
+
+### 2. Create Stripe Checkout Links
+
+With PAY, you can create Stripe checkout links for end-users of different NFT products. When creating the link, you can specify the **currency** of your choice (based on what currency your users want to pay in).
+
+This allows your end-users the option to complete payments using various fiat currencies such as US Dollar (USD), Euro (EUR), British Pound (GBP), and more.
+
+<AccordionGroup>
+  <Accordion title="Checkout Link Features" icon="link">
+    **Customizable Parameters:**
+    - Product name and description
+    - Price and quantity
+    - Currency selection
+    - Success and cancel URLs
+    - Customer information collection
+    
+    **Supported Payment Methods:**
+    - Credit and debit cards
+    - Digital wallets (Apple Pay, Google Pay)
+    - Bank transfers (where available)
+    - Local payment methods by region
+  </Accordion>
+  
+  <Accordion title="Multi-Currency Support" icon="coins">
+    **Global Currency Support:**
+    - USD (US Dollar)
+    - EUR (Euro)
+    - GBP (British Pound)
+    - CAD (Canadian Dollar)
+    - AUD (Australian Dollar)
+    - JPY (Japanese Yen)
+    - And many more...
+    
+    View the complete list of [currencies supported by Stripe](https://stripe.com/docs/currencies).
+  </Accordion>
+</AccordionGroup>
+
+### 3. Customize Checkout Links
+
+You have the flexibility to personalize the checkout links by incorporating your **company's logo** and adding your preferred **color scheme**.
+
+This way, your end-users will make payments on a Stripe checkout page with your **company logo** and chosen **color scheme**.
+
+<CardGroup cols={2}>
+  <Card title="Brand Customization" icon="palette">
+    - Upload your company logo
+    - Set custom color schemes
+    - Match your brand identity
+    - Professional appearance
+  </Card>
+  <Card title="User Experience" icon="user">
+    - Consistent branding
+    - Trusted checkout experience
+    - Reduced cart abandonment
+    - Increased conversion rates
+  </Card>
+</CardGroup>
+
+### 4. Sell NFTs Globally using Fiat Payments
+
+PAY facilitates secure payments via Stripe on a **global scale**. Using PAY, you can sell your NFT collection **globally**, and accept payment in **any currency** that is supported by Stripe.
+
+Create custom checkout links in your desired currency for different users all over the world.
+
+## API Endpoints
+
+<Tabs>
+  <Tab title="Sandbox">
+    **Base URL:** `https://api-pay-sandbox.venly.io`
+    
+    Use the sandbox environment for:
+    - Development and testing
+    - Integration validation
+    - Payment flow testing
+    - Webhook configuration
+  </Tab>
+  <Tab title="Production">
+    **Base URL:** `https://api-pay.venly.io`
+    
+    Use the production environment for:
+    - Live transactions
+    - Real customer payments
+    - Production applications
+    - Live webhook notifications
+  </Tab>
+</Tabs>
+
+## Why Not Use Stripe Directly?
+
+<Warning>
+**Challenges with Direct Stripe Integration:**
+- Rigorous and time-consuming compliance process
+- Complex NFT-specific requirements
+- High rejection rate for NFT applications
+- Lengthy approval times
+- Complex integration requirements
+</Warning>
+
+<Tip>
+**PAY Advantages:**
+- **Fully Compliant** - Pre-approved for NFT transactions
+- **Simplified Onboarding** - Lightweight KYB process
+- **Expert Support** - Dedicated compliance management
+- **Easy Integration** - Stripe Connect capabilities through documentation
+- **Faster Approval** - Streamlined due diligence process
+</Tip>
+
+Our customers often face the burden of integrating our services with separate payment providers, leading to inefficiencies and complications.
+
+**PAY** is fully compliant with Stripe and thus simplifies onboarding with our **lightweight KYB process**.
+
+The PAY compliance manager carries out a due diligence process before onboarding a customer. This is rather straightforward and simpler compared to Stripe.
+
+## Fee Structure
+
+**PAY** deducts a **small percentage fee** on every successful transaction:
+
+<Tabs>
+  <Tab title="Pricing Tiers">
+    | Plan | Fee Structure |
+    |------|---------------|
+    | **Developer** | 4.99% + $0.75/tx |
+    | **Professional** | 4.99% + $0.75/tx |
+    | **Enterprise** | 4.99% + $0.50/tx |
+  </Tab>
+  <Tab title="Additional Costs">
+    **Other Fees to Consider:**
+    - **Stripe Processing Fees** - [View Stripe pricing](https://stripe.com/pricing)
+    - **Currency Conversion** - Applied for international transactions
+    - **Chargeback Fees** - Standard Stripe chargeback handling
+    
+    For complete fee information, view the [Venly pricing plans](https://www.venly.io/pricing).
+  </Tab>
+</Tabs>
+
+## Key Features & Capabilities
+
+### Payment Processing
+- **Secure Transactions** - PCI DSS compliant payment processing
+- **Real-time Processing** - Instant payment confirmation
+- **Fraud Protection** - Advanced fraud detection and prevention
+- **Dispute Management** - Automated chargeback handling
+
+### Integration Features
+- **RESTful API** - Easy integration with existing systems
+- **Webhook Support** - Real-time payment notifications
+- **SDK Support** - Multiple programming language support
+- **Comprehensive Documentation** - Detailed guides and examples
+
+### Business Tools
+- **Dashboard Analytics** - Payment insights and reporting
+- **Transaction Management** - Complete payment history
+- **Customer Management** - User payment profiles
+- **Refund Processing** - Easy refund management
+
+### Compliance & Security
+- **KYB Process** - Streamlined business verification
+- **PCI Compliance** - Secure payment data handling
+- **GDPR Compliant** - European data protection standards
+- **SOC 2 Certified** - Enterprise security standards
+
+## Use Cases & Applications
+
+<AccordionGroup>
+  <Accordion title="NFT Marketplaces" icon="store">
+    **Digital Asset Trading Platforms**
+    - Enable fiat purchases for NFT collections
+    - Support multiple currencies for global reach
+    - Integrate with existing marketplace infrastructure
+    - Provide seamless checkout experiences
+    
+    **Implementation Benefits:**
+    - Increased accessibility for non-crypto users
+    - Higher conversion rates with familiar payment methods
+    - Global market expansion opportunities
+    - Reduced barriers to NFT adoption
+  </Accordion>
+  
+  <Accordion title="Gaming Platforms" icon="gamepad">
+    **In-Game Asset Sales**
+    - Sell gaming NFTs and collectibles
+    - Enable microtransactions for game items
+    - Support seasonal and limited-time offers
+    - Integrate with game economies
+    
+    **Implementation Benefits:**
+    - Monetize gaming assets effectively
+    - Reach broader gaming audiences
+    - Simplify in-game purchases
+    - Support various payment preferences
+  </Accordion>
+  
+  <Accordion title="Art & Collectibles" icon="palette">
+    **Digital Art Sales**
+    - Enable art collectors to purchase with fiat
+    - Support auction-style pricing
+    - Handle high-value transactions securely
+    - Provide professional checkout experiences
+    
+    **Implementation Benefits:**
+    - Attract traditional art collectors
+    - Professional transaction handling
+    - Secure high-value payments
+    - Brand-consistent experiences
+  </Accordion>
+  
+  <Accordion title="Enterprise Solutions" icon="building">
+    **Corporate NFT Programs**
+    - Employee recognition programs
+    - Corporate collectibles and memorabilia
+    - Event tickets and access passes
+    - Brand loyalty programs
+    
+    **Implementation Benefits:**
+    - Professional payment processing
+    - Enterprise-grade security
+    - Compliance with corporate standards
+    - Scalable payment solutions
+  </Accordion>
+</AccordionGroup>
+
+## Getting Started
+
+<Steps>
+  <Step title="Check Prerequisites" icon="clipboard-check">
+    Ensure your business meets the requirements for PAY onboarding
+  </Step>
+  <Step title="Complete Onboarding" icon="user-plus">
+    Fill out the PAY onboarding form and KYB documentation
+  </Step>
+  <Step title="Stripe Integration" icon="stripe">
+    Complete Stripe business verification and payment setup
+  </Step>
+  <Step title="Get Credentials" icon="key">
+    Receive your Client ID and Client Secret for API access
+  </Step>
+  <Step title="Configure Branding" icon="palette">
+    Customize checkout pages with your brand elements
+  </Step>
+  <Step title="Set Up Webhooks" icon="webhook">
+    Configure payment notifications for your application
+  </Step>
+  <Step title="Start Processing" icon="rocket">
+    Begin creating checkout links and processing payments
+  </Step>
+</Steps>
+
+## Prerequisites
+
+<Warning>
+**Business Requirements:**
+1. Your business/company must be registered in the **USA**, **UK**, or any **EU country**
+2. You must already be a user of Venly's **NFT-API** or **Wallet-API**
+3. Valid business documentation for KYB verification
+4. Stripe-supported business type and location
+</Warning>
+
+<Note>
+If you wish to use **PAY** as a stand-alone product, please [reach out to support](https://support.venly.io/support/tickets/new).
+</Note>
+
+## Integration Workflow
+
+<Tabs>
+  <Tab title="Basic Flow">
+    1. **Create Checkout Session** - Generate payment link for NFT
+    2. **Send to Customer** - Share checkout URL with buyer
+    3. **Process Payment** - Customer completes payment on Stripe
+    4. **Receive Webhook** - Get payment confirmation notification
+    5. **Verify Payment** - Check payment status via API
+    6. **Transfer NFT** - Complete the NFT transfer to buyer
+  </Tab>
+  <Tab title="Advanced Features">
+    - **Custom Success/Cancel URLs** - Redirect users after payment
+    - **Metadata Tracking** - Include custom data with payments
+    - **Customer Information** - Collect buyer details
+    - **Subscription Support** - Recurring payment options
+    - **Refund Processing** - Handle returns and refunds
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" href="/guides/pay-api/quickstart" icon="rocket">
+    Follow our step-by-step guide to process your first payment
+  </Card>
+  <Card title="Checkout Management" href="/guides/pay-api/checkout/checkout-link-management" icon="link">
+    Learn how to create and manage checkout sessions
+  </Card>
+  <Card title="Branding Setup" href="/guides/pay-api/checkout/checkout-link-branding" icon="palette">
+    Customize your checkout pages with brand elements
+  </Card>
+  <Card title="Webhook Configuration" href="/guides/pay-api/webhooks/configuring-webhooks-notifications" icon="webhook">
+    Set up real-time payment notifications
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Payment Security" icon="shield">
+    **Security Best Practices:**
+    - Always verify payment status before NFT transfer
+    - Implement proper webhook signature validation
+    - Use HTTPS for all webhook endpoints
+    - Store sensitive data securely
+    - Implement proper error handling
+  </Accordion>
+  
+  <Accordion title="User Experience" icon="user">
+    **UX Optimization:**
+    - Customize checkout pages with your branding
+    - Provide clear product descriptions and pricing
+    - Set appropriate success and cancel URLs
+    - Test payment flows thoroughly
+    - Monitor conversion rates and optimize
+  </Accordion>
+  
+  <Accordion title="Business Operations" icon="chart-line">
+    **Operational Excellence:**
+    - Monitor payment success rates
+    - Handle refunds and disputes promptly
+    - Maintain accurate transaction records
+    - Implement proper customer support
+    - Regular compliance reviews
+  </Accordion>
+  
+  <Accordion title="Technical Implementation" icon="code">
+    **Development Guidelines:**
+    - Implement proper error handling
+    - Use idempotency keys for safety
+    - Test in sandbox before production
+    - Monitor API rate limits
+    - Keep API credentials secure
+  </Accordion>
+</AccordionGroup>
+
+## Support & Resources
+
+<AccordionGroup>
+  <Accordion title="API Reference" icon="book">
+    Complete API documentation with all endpoints, parameters, and examples available in our [API Reference](https://docs.venly.io/reference).
+  </Accordion>
+  
+  <Accordion title="Developer Portal" icon="portal">
+    Access your API keys, monitor usage, and manage your applications in the [Venly Portal](https://portal.venly.io).
+  </Accordion>
+  
+  <Accordion title="Stripe Resources" icon="stripe">
+    Additional resources and documentation from [Stripe's official documentation](https://stripe.com/docs) for advanced payment features.
+  </Accordion>
+  
+  <Accordion title="Community Support" icon="users">
+    Join our developer community for support, discussions, and updates on new features and best practices.
+  </Accordion>
+</AccordionGroup>
+
+---

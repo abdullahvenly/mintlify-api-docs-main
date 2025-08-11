@@ -1,0 +1,1615 @@
+---
+title: "Retrieve NFT Metadata"
+description: "Comprehensive guide to retrieving individual NFT metadata with advanced parsing, validation, and metadata analysis tools"
+icon: "file-search"
+---
+
+<Info>
+**NFT Metadata Retrieval:** Efficiently retrieve and analyze individual NFT metadata with advanced parsing, validation, and comprehensive metadata insights.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is NFT Metadata Retrieval?
+
+NFT metadata retrieval allows you to fetch detailed metadata information for specific minted NFTs using their unique token ID. This provides access to all NFT properties including images, descriptions, attributes, rarity data, and contract information. Essential for displaying NFT details, building marketplaces, and analyzing individual token properties.
+
+<CardGroup cols={2}>
+  <Card title="Individual NFT Data" icon="fingerprint">
+    Retrieve complete metadata for specific minted NFTs
+  </Card>
+  <Card title="Rich Media Assets" icon="images">
+    Access images, animations, and multimedia content
+  </Card>
+  <Card title="Attribute Analysis" icon="chart-bar">
+    Parse traits, stats, and rarity indicators
+  </Card>
+  <Card title="Contract Context" icon="file-contract">
+    Get contract details and collection information
+  </Card>
+</CardGroup>
+
+## NFT Metadata Structure
+
+<Tabs>
+  <Tab title="Core Properties">
+    **Essential Information:**
+    - Name and description
+    - Primary image and media variants
+    - Background colors and themes
+    - External links and references
+    
+    **Use Cases:**
+    - NFT marketplace displays
+    - Collection galleries
+    - Individual NFT pages
+    - Social media previews
+  </Tab>
+  <Tab title="Media & Assets">
+    **Rich Content:**
+    - High-resolution images
+    - Animation URLs (video/audio)
+    - Preview and thumbnail variants
+    - Background colors and styling
+    
+    **Use Cases:**
+    - Interactive NFT viewers
+    - Media galleries
+    - Animation playback
+    - Responsive displays
+  </Tab>
+  <Tab title="Attributes & Traits">
+    **NFT Properties:**
+    - Custom properties and traits
+    - Statistical attributes with ranges
+    - Boost values and modifiers
+    - System-generated metadata
+    
+    **Use Cases:**
+    - Rarity analysis
+    - Trait filtering
+    - Gaming mechanics
+    - Collection analytics
+  </Tab>
+</Tabs>
+
+## Retrieve NFT Metadata
+
+<Steps>
+  <Step title="Identify NFT" icon="search">
+    Specify the chain, contract address, and token ID
+    
+    ```javascript
+    const nftRequest = {
+      chain: 'MATIC',
+      contractAddress: '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+      tokenId: 2
+    };
+    ```
+  </Step>
+  <Step title="Fetch Metadata" icon="download">
+    Retrieve the complete NFT metadata from the API
+  </Step>
+  <Step title="Parse & Validate" icon="check">
+    Parse the metadata and validate all fields
+  </Step>
+  <Step title="Analyze Properties" icon="chart-line">
+    Extract insights and analyze NFT properties
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Get NFT metadata
+const getNFTMetadata = async (chain, contractAddress, tokenId) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/tokens/${tokenId}/metadata`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve NFT metadata');
+    }
+  } catch (error) {
+    console.error('Error retrieving NFT metadata:', error);
+    throw error;
+  }
+};
+
+// Enhanced NFT metadata retrieval and analysis system
+class NFTMetadataManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = new Map();
+    this.defaultCacheTTL = 300000; // 5 minutes
+    this.metadataAnalytics = new Map();
+  }
+
+  async getMetadata(chain, contractAddress, tokenId, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      validateMetadata = true,
+      analyzeMedia = true,
+      parseAttributes = true,
+      calculateRarity = true
+    } = options;
+
+    const cacheKey = `${chain}:${contractAddress}:${tokenId}:metadata`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached NFT metadata');
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      const metadata = await getNFTMetadata(chain, contractAddress, tokenId);
+
+      // Validate metadata structure
+      if (validateMetadata) {
+        this.validateMetadata(metadata);
+      }
+
+      // Analyze media assets
+      if (analyzeMedia) {
+        metadata.mediaAnalysis = await this.analyzeMediaAssets(metadata);
+      }
+
+      // Parse and enhance attributes
+      if (parseAttributes) {
+        metadata.attributeAnalysis = this.parseAttributes(metadata.attributes);
+      }
+
+      // Calculate rarity metrics
+      if (calculateRarity) {
+        metadata.rarityAnalysis = this.calculateRarityMetrics(metadata.attributes);
+      }
+
+      // Add comprehensive insights
+      metadata.insights = this.generateNFTInsights(metadata);
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, metadata);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      // Record analytics
+      this.recordMetadataAccess(chain, contractAddress, tokenId);
+
+      return metadata;
+    } catch (error) {
+      console.error(`Failed to retrieve metadata for NFT ${tokenId}:`, error);
+      throw error;
+    }
+  }
+
+  async batchGetMetadata(requests, options = {}) {
+    const {
+      concurrency = 5,
+      retryAttempts = 3,
+      retryDelay = 1000
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Process requests in batches
+    for (let i = 0; i < requests.length; i += concurrency) {
+      const batch = requests.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (request) => {
+        let attempts = 0;
+        
+        while (attempts < retryAttempts) {
+          try {
+            const metadata = await this.getMetadata(
+              request.chain,
+              request.contractAddress,
+              request.tokenId,
+              request.options
+            );
+            
+            return {
+              success: true,
+              request,
+              metadata
+            };
+          } catch (error) {
+            attempts++;
+            
+            if (attempts >= retryAttempts) {
+              return {
+                success: false,
+                request,
+                error: error.message
+              };
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, retryDelay * attempts));
+          }
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  validateMetadata(metadata) {
+    const errors = [];
+
+    // Check required fields
+    if (!metadata.name) {
+      errors.push('Missing required field: name');
+    }
+
+    if (!metadata.image && !metadata.animationUrls?.length) {
+      errors.push('Missing media: no image or animation URLs');
+    }
+
+    // Validate URLs
+    const urlFields = ['image', 'imagePreview', 'imageThumbnail', 'animationUrl', 'animation_url', 'externalUrl', 'external_url'];
+    urlFields.forEach(field => {
+      if (metadata[field] && !this.isValidUrl(metadata[field])) {
+        errors.push(`Invalid URL in field: ${field}`);
+      }
+    });
+
+    // Validate animation URLs array
+    if (metadata.animationUrls) {
+      metadata.animationUrls.forEach((animUrl, index) => {
+        if (!animUrl.value || !this.isValidUrl(animUrl.value)) {
+          errors.push(`Invalid animation URL at index ${index}`);
+        }
+      });
+    }
+
+    // Validate contract information
+    if (metadata.contract) {
+      if (!metadata.contract.address || !this.isValidAddress(metadata.contract.address)) {
+        errors.push('Invalid contract address');
+      }
+    }
+
+    if (errors.length > 0) {
+      console.warn('NFT metadata validation warnings:', errors);
+    }
+
+    return errors;
+  }
+
+  async analyzeMediaAssets(metadata) {
+    const analysis = {
+      hasImage: !!metadata.image,
+      hasPreview: !!metadata.imagePreview,
+      hasThumbnail: !!metadata.imageThumbnail,
+      hasAnimations: metadata.animationUrls?.length > 0,
+      hasBackgroundColor: !!(metadata.backgroundColor || metadata.background_color),
+      mediaTypes: [],
+      totalMediaAssets: 0,
+      imageProperties: null,
+      animationProperties: [],
+      colorAnalysis: null
+    };
+
+    // Analyze image properties
+    if (metadata.image) {
+      analysis.imageProperties = await this.analyzeImageUrl(metadata.image);
+      analysis.totalMediaAssets++;
+    }
+
+    // Analyze animation URLs
+    if (metadata.animationUrls) {
+      for (const animUrl of metadata.animationUrls) {
+        const animProps = await this.analyzeAnimationUrl(animUrl);
+        analysis.animationProperties.push(animProps);
+        analysis.mediaTypes.push(animUrl.type || 'unknown');
+        analysis.totalMediaAssets++;
+      }
+    }
+
+    // Analyze background color
+    if (metadata.backgroundColor || metadata.background_color) {
+      analysis.colorAnalysis = this.analyzeBackgroundColor(
+        metadata.backgroundColor || metadata.background_color
+      );
+    }
+
+    // Remove duplicates from media types
+    analysis.mediaTypes = [...new Set(analysis.mediaTypes)];
+
+    return analysis;
+  }
+
+  parseAttributes(attributes) {
+    if (!attributes || !Array.isArray(attributes)) {
+      return {
+        total: 0,
+        properties: 0,
+        stats: 0,
+        boosts: 0,
+        system: 0,
+        traitTypes: [],
+        attributeMap: {},
+        rarityIndicators: [],
+        statRanges: {},
+        boostValues: {}
+      };
+    }
+
+    const analysis = {
+      total: attributes.length,
+      properties: 0,
+      stats: 0,
+      boosts: 0,
+      system: 0,
+      traitTypes: [],
+      attributeMap: {},
+      rarityIndicators: [],
+      statRanges: {},
+      boostValues: {}
+    };
+
+    attributes.forEach(attr => {
+      // Count attribute types
+      switch (attr.type) {
+        case 'property':
+          analysis.properties++;
+          break;
+        case 'stat':
+          analysis.stats++;
+          // Track stat ranges
+          if (attr.maxValue) {
+            analysis.statRanges[attr.name] = {
+              value: parseInt(attr.value) || 0,
+              maxValue: parseInt(attr.maxValue) || 0,
+              percentage: ((parseInt(attr.value) || 0) / (parseInt(attr.maxValue) || 1)) * 100
+            };
+          }
+          break;
+        case 'boost':
+          analysis.boosts++;
+          // Track boost values
+          analysis.boostValues[attr.name] = {
+            value: attr.value,
+            numericValue: this.parseBoostValue(attr.value)
+          };
+          break;
+        case 'system':
+          analysis.system++;
+          break;
+      }
+
+      // Collect trait types
+      if (attr.traitType || attr.trait_type) {
+        const traitType = attr.traitType || attr.trait_type;
+        if (!analysis.traitTypes.includes(traitType)) {
+          analysis.traitTypes.push(traitType);
+        }
+      }
+
+      // Build attribute map
+      const key = attr.name || attr.traitType || attr.trait_type;
+      if (key) {
+        analysis.attributeMap[key] = {
+          value: attr.value,
+          type: attr.type,
+          traitType: attr.traitType || attr.trait_type,
+          displayType: attr.displayType || attr.display_type,
+          maxValue: attr.maxValue
+        };
+      }
+
+      // Identify potential rarity indicators
+      if (this.isRarityIndicator(attr)) {
+        analysis.rarityIndicators.push(attr);
+      }
+    });
+
+    return analysis;
+  }
+
+  calculateRarityMetrics(attributes) {
+    if (!attributes || !Array.isArray(attributes)) {
+      return {
+        rarityScore: 0,
+        rarityRank: 'Unknown',
+        uniqueTraits: 0,
+        commonTraits: 0,
+        rareTraits: 0
+      };
+    }
+
+    const metrics = {
+      rarityScore: 0,
+      rarityRank: 'Unknown',
+      uniqueTraits: 0,
+      commonTraits: 0,
+      rareTraits: 0,
+      traitAnalysis: {}
+    };
+
+    // Simple rarity calculation based on attribute types and values
+    let score = 0;
+    
+    attributes.forEach(attr => {
+      if (attr.type !== 'system') {
+        // Base score for having the attribute
+        score += 10;
+        
+        // Bonus for stats and boosts
+        if (attr.type === 'stat' && attr.maxValue) {
+          const percentage = (parseInt(attr.value) || 0) / (parseInt(attr.maxValue) || 1);
+          score += percentage * 20; // Up to 20 points for max stats
+        }
+        
+        if (attr.type === 'boost') {
+          const boostValue = this.parseBoostValue(attr.value);
+          score += Math.abs(boostValue) * 2; // 2 points per boost unit
+        }
+        
+        // Analyze trait rarity (simplified)
+        const traitRarity = this.estimateTraitRarity(attr);
+        metrics.traitAnalysis[attr.name || attr.traitType] = traitRarity;
+        
+        if (traitRarity === 'rare') {
+          metrics.rareTraits++;
+          score += 50;
+        } else if (traitRarity === 'uncommon') {
+          score += 25;
+        } else {
+          metrics.commonTraits++;
+          score += 5;
+        }
+      }
+    });
+
+    metrics.rarityScore = Math.round(score);
+    metrics.rarityRank = this.calculateRarityRank(metrics.rarityScore);
+    metrics.uniqueTraits = metrics.rareTraits;
+
+    return metrics;
+  }
+
+  generateNFTInsights(metadata) {
+    const insights = {
+      completeness: this.calculateCompletenessScore(metadata),
+      mediaRichness: this.calculateMediaRichness(metadata),
+      attributeComplexity: this.calculateAttributeComplexity(metadata),
+      rarityScore: metadata.rarityAnalysis?.rarityScore || 0,
+      qualityScore: 0,
+      recommendations: [],
+      marketplaceReadiness: 0
+    };
+
+    // Calculate overall quality score
+    insights.qualityScore = Math.round(
+      (insights.completeness + insights.mediaRichness + insights.attributeComplexity) / 3
+    );
+
+    // Calculate marketplace readiness
+    insights.marketplaceReadiness = this.calculateMarketplaceReadiness(metadata, insights);
+
+    // Generate recommendations
+    insights.recommendations = this.generateRecommendations(metadata, insights);
+
+    return insights;
+  }
+
+  calculateCompletenessScore(metadata) {
+    let score = 0;
+
+    // Required fields
+    if (metadata.name) score += 15;
+    if (metadata.description) score += 15;
+    if (metadata.image) score += 20;
+
+    // Optional but valuable fields
+    if (metadata.imagePreview) score += 10;
+    if (metadata.imageThumbnail) score += 10;
+    if (metadata.animationUrls?.length > 0) score += 15;
+    if (metadata.attributes?.length > 0) score += 10;
+    if (metadata.externalUrl || metadata.external_url) score += 5;
+
+    return Math.min(score, 100);
+  }
+
+  calculateMediaRichness(metadata) {
+    let score = 0;
+
+    if (metadata.image) score += 25;
+    if (metadata.imagePreview) score += 15;
+    if (metadata.imageThumbnail) score += 15;
+    if (metadata.animationUrls?.length > 0) score += 30;
+    if (metadata.backgroundColor || metadata.background_color) score += 10;
+    if (metadata.externalUrl || metadata.external_url) score += 5;
+
+    return Math.min(score, 100);
+  }
+
+  calculateAttributeComplexity(metadata) {
+    if (!metadata.attributes) return 0;
+
+    const nonSystemAttributes = metadata.attributes.filter(attr => attr.type !== 'system');
+    const uniqueTraitTypes = new Set(
+      metadata.attributes.map(attr => attr.traitType || attr.trait_type).filter(Boolean)
+    );
+
+    let score = 0;
+    score += Math.min(nonSystemAttributes.length * 8, 40); // Up to 40 for attributes
+    score += Math.min(uniqueTraitTypes.size * 12, 40);     // Up to 40 for trait diversity
+    
+    // Bonus for different attribute types
+    const hasStats = metadata.attributes.some(attr => attr.type === 'stat');
+    const hasBoosts = metadata.attributes.some(attr => attr.type === 'boost');
+    const hasProperties = metadata.attributes.some(attr => attr.type === 'property');
+    
+    if (hasStats) score += 7;
+    if (hasBoosts) score += 7;
+    if (hasProperties) score += 6;
+
+    return Math.min(score, 100);
+  }
+
+  calculateMarketplaceReadiness(metadata, insights) {
+    let score = 0;
+
+    // Essential marketplace requirements
+    if (metadata.name && metadata.image) score += 30;
+    if (metadata.description) score += 20;
+    if (metadata.attributes?.length > 0) score += 20;
+    if (metadata.imagePreview && metadata.imageThumbnail) score += 15;
+    if (metadata.contract?.name && metadata.contract?.symbol) score += 10;
+    if (metadata.externalUrl || metadata.external_url) score += 5;
+
+    return Math.min(score, 100);
+  }
+
+  generateRecommendations(metadata, insights) {
+    const recommendations = [];
+
+    if (!metadata.description) {
+      recommendations.push({
+        type: 'missing_field',
+        priority: 'high',
+        message: 'Add a description to improve NFT appeal and searchability'
+      });
+    }
+
+    if (!metadata.imagePreview || !metadata.imageThumbnail) {
+      recommendations.push({
+        type: 'missing_media',
+        priority: 'medium',
+        message: 'Add preview and thumbnail images for better marketplace display'
+      });
+    }
+
+    if (!metadata.attributes || metadata.attributes.length === 0) {
+      recommendations.push({
+        type: 'missing_attributes',
+        priority: 'high',
+        message: 'Add attributes to enhance NFT properties and rarity'
+      });
+    }
+
+    if (insights.marketplaceReadiness < 80) {
+      recommendations.push({
+        type: 'marketplace_readiness',
+        priority: 'medium',
+        message: 'Improve metadata completeness for better marketplace performance'
+      });
+    }
+
+    if (!metadata.externalUrl && !metadata.external_url) {
+      recommendations.push({
+        type: 'missing_link',
+        priority: 'low',
+        message: 'Consider adding an external URL for additional context'
+      });
+    }
+
+    return recommendations;
+  }
+
+  // Utility methods
+  isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  isValidAddress(address) {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }
+
+  async analyzeImageUrl(imageUrl) {
+    try {
+      const url = new URL(imageUrl);
+      const pathname = url.pathname;
+      const extension = pathname.split('.').pop()?.toLowerCase();
+      
+      return {
+        url: imageUrl,
+        extension,
+        format: this.getImageFormat(extension),
+        isValid: this.isValidImageExtension(extension),
+        domain: url.hostname,
+        path: pathname
+      };
+    } catch (error) {
+      return {
+        url: imageUrl,
+        isValid: false,
+        error: error.message
+      };
+    }
+  }
+
+  async analyzeAnimationUrl(animationUrl) {
+    try {
+      const url = new URL(animationUrl.value);
+      const pathname = url.pathname;
+      const extension = pathname.split('.').pop()?.toLowerCase();
+      
+      return {
+        type: animationUrl.type,
+        url: animationUrl.value,
+        extension,
+        format: this.getMediaFormat(extension),
+        isValid: this.isValidMediaExtension(extension),
+        domain: url.hostname,
+        path: pathname
+      };
+    } catch (error) {
+      return {
+        type: animationUrl.type,
+        url: animationUrl.value,
+        isValid: false,
+        error: error.message
+      };
+    }
+  }
+
+  analyzeBackgroundColor(color) {
+    const hexPattern = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    
+    return {
+      value: color,
+      isValidHex: hexPattern.test(color),
+      format: color.startsWith('#') ? 'hex' : 'unknown',
+      brightness: this.calculateColorBrightness(color)
+    };
+  }
+
+  calculateColorBrightness(hexColor) {
+    if (!hexColor.startsWith('#')) return 'unknown';
+    
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    
+    // Calculate perceived brightness
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    
+    if (brightness > 186) return 'light';
+    if (brightness > 93) return 'medium';
+    return 'dark';
+  }
+
+  parseBoostValue(value) {
+    if (typeof value === 'string') {
+      const match = value.match(/([+-]?\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    }
+    return parseInt(value) || 0;
+  }
+
+  estimateTraitRarity(attribute) {
+    // Simplified rarity estimation
+    const rarityKeywords = ['legendary', 'epic', 'rare', 'mythic', 'unique'];
+    const uncommonKeywords = ['uncommon', 'special', 'premium'];
+    
+    const name = (attribute.name || '').toLowerCase();
+    const value = (attribute.value || '').toLowerCase();
+    const traitType = (attribute.traitType || attribute.trait_type || '').toLowerCase();
+    
+    const text = `${name} ${value} ${traitType}`;
+    
+    if (rarityKeywords.some(keyword => text.includes(keyword))) {
+      return 'rare';
+    }
+    
+    if (uncommonKeywords.some(keyword => text.includes(keyword))) {
+      return 'uncommon';
+    }
+    
+    // Check for high stat values
+    if (attribute.type === 'stat' && attribute.maxValue) {
+      const percentage = (parseInt(attribute.value) || 0) / (parseInt(attribute.maxValue) || 1);
+      if (percentage > 0.8) return 'rare';
+      if (percentage > 0.6) return 'uncommon';
+    }
+    
+    return 'common';
+  }
+
+  calculateRarityRank(score) {
+    if (score >= 500) return 'Legendary';
+    if (score >= 300) return 'Epic';
+    if (score >= 200) return 'Rare';
+    if (score >= 100) return 'Uncommon';
+    return 'Common';
+  }
+
+  getImageFormat(extension) {
+    const formats = {
+      'jpg': 'JPEG',
+      'jpeg': 'JPEG',
+      'png': 'PNG',
+      'gif': 'GIF',
+      'svg': 'SVG',
+      'webp': 'WebP'
+    };
+    return formats[extension] || 'Unknown';
+  }
+
+  getMediaFormat(extension) {
+    const formats = {
+      'mp4': 'MP4 Video',
+      'webm': 'WebM Video',
+      'mov': 'QuickTime Video',
+      'mp3': 'MP3 Audio',
+      'wav': 'WAV Audio',
+      'ogg': 'OGG Audio'
+    };
+    return formats[extension] || 'Unknown';
+  }
+
+  isValidImageExtension(extension) {
+    const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'svg', 'webp'];
+    return validExtensions.includes(extension?.toLowerCase());
+  }
+
+  isValidMediaExtension(extension) {
+    const validExtensions = ['mp4', 'webm', 'mov', 'mp3', 'wav', 'ogg'];
+    return validExtensions.includes(extension?.toLowerCase());
+  }
+
+  isRarityIndicator(attribute) {
+    const rarityKeywords = ['rarity', 'rare', 'legendary', 'epic', 'common', 'uncommon', 'mythic', 'unique'];
+    const name = (attribute.name || '').toLowerCase();
+    const value = (attribute.value || '').toLowerCase();
+    const traitType = (attribute.traitType || attribute.trait_type || '').toLowerCase();
+    
+    return rarityKeywords.some(keyword => 
+      name.includes(keyword) || value.includes(keyword) || traitType.includes(keyword)
+    );
+  }
+
+  isCacheValid(key) {
+    if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
+      return false;
+    }
+    return Date.now() < this.cacheExpiry.get(key);
+  }
+
+  recordMetadataAccess(chain, contractAddress, tokenId) {
+    const key = `${chain}:${contractAddress}:${tokenId}`;
+    
+    if (!this.metadataAnalytics.has(key)) {
+      this.metadataAnalytics.set(key, {
+        accessCount: 0,
+        firstAccess: new Date().toISOString(),
+        lastAccess: null
+      });
+    }
+    
+    const analytics = this.metadataAnalytics.get(key);
+    analytics.accessCount++;
+    analytics.lastAccess = new Date().toISOString();
+  }
+
+  async searchNFTsByAttributes(chain, contractAddress, searchCriteria) {
+    // This would typically require getting all NFTs first
+    // then filtering by their metadata attributes
+    console.log('Searching NFTs by attributes:', searchCriteria);
+    // Implementation would depend on having a collection of NFTs to search through
+  }
+
+  generateNFTReport(chain, contractAddress, tokenId) {
+    const analyticsKey = `${chain}:${contractAddress}:${tokenId}`;
+    const analytics = this.metadataAnalytics.get(analyticsKey);
+    
+    return {
+      chain,
+      contractAddress,
+      tokenId,
+      analytics: analytics || { accessCount: 0 },
+      cacheStatus: this.isCacheValid(`${analyticsKey}:metadata`) ? 'cached' : 'not_cached',
+      lastRetrieved: new Date().toISOString()
+    };
+  }
+
+  clearCache(pattern = null) {
+    if (pattern) {
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+          this.cacheExpiry.delete(key);
+        }
+      }
+    } else {
+      this.cache.clear();
+      this.cacheExpiry.clear();
+    }
+  }
+}
+
+// Usage examples
+const nftManager = new NFTMetadataManager('YOUR_API_KEY');
+
+// Get NFT metadata with full analysis
+const nftMetadata = await nftManager.getMetadata(
+  'MATIC',
+  '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+  2,
+  {
+    useCache: true,
+    validateMetadata: true,
+    analyzeMedia: true,
+    parseAttributes: true,
+    calculateRarity: true
+  }
+);
+
+console.log('NFT Metadata:', nftMetadata);
+console.log('Media Analysis:', nftMetadata.mediaAnalysis);
+console.log('Attribute Analysis:', nftMetadata.attributeAnalysis);
+console.log('Rarity Analysis:', nftMetadata.rarityAnalysis);
+console.log('Insights:', nftMetadata.insights);
+
+// Batch NFT metadata retrieval
+const batchRequests = [
+  {
+    chain: 'MATIC',
+    contractAddress: '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+    tokenId: 1
+  },
+  {
+    chain: 'MATIC',
+    contractAddress: '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+    tokenId: 2
+  }
+];
+
+const batchResults = await nftManager.batchGetMetadata(batchRequests);
+console.log('Batch results:', batchResults);
+
+// Generate NFT report
+const report = nftManager.generateNFTReport(
+  'MATIC',
+  '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+  2
+);
+console.log('NFT report:', report);
+```
+
+```python Python
+import requests
+import re
+from urllib.parse import urlparse
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+
+class NFTMetadataManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.cache = {}
+        self.cache_expiry = {}
+        self.default_cache_ttl = 300  # 5 minutes
+        self.metadata_analytics = {}
+    
+    def get_metadata(self, chain: str, contract_address: str, token_id: int, options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Get NFT metadata with comprehensive analysis"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        validate_metadata = options.get('validate_metadata', True)
+        analyze_media = options.get('analyze_media', True)
+        parse_attributes = options.get('parse_attributes', True)
+        calculate_rarity = options.get('calculate_rarity', True)
+        
+        cache_key = f"{chain}:{contract_address}:{token_id}:metadata"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached NFT metadata')
+            return self.cache[cache_key]
+        
+        try:
+            metadata = self._get_nft_metadata(chain, contract_address, token_id)
+            
+            # Validate metadata structure
+            if validate_metadata:
+                self._validate_metadata(metadata)
+            
+            # Analyze media assets
+            if analyze_media:
+                metadata['media_analysis'] = self._analyze_media_assets(metadata)
+            
+            # Parse and enhance attributes
+            if parse_attributes:
+                metadata['attribute_analysis'] = self._parse_attributes(metadata.get('attributes', []))
+            
+            # Calculate rarity metrics
+            if calculate_rarity:
+                metadata['rarity_analysis'] = self._calculate_rarity_metrics(metadata.get('attributes', []))
+            
+            # Add comprehensive insights
+            metadata['insights'] = self._generate_nft_insights(metadata)
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = metadata
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            # Record analytics
+            self._record_metadata_access(chain, contract_address, token_id)
+            
+            return metadata
+            
+        except Exception as error:
+            print(f'Failed to retrieve metadata for NFT {token_id}: {error}')
+            raise error
+    
+    def _get_nft_metadata(self, chain: str, contract_address: str, token_id: int) -> Dict[str, Any]:
+        """Internal method to call the API"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/tokens/{token_id}/metadata'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to retrieve NFT metadata')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving NFT metadata: {error}')
+            raise error
+    
+    def _validate_metadata(self, metadata: Dict[str, Any]) -> List[str]:
+        """Validate metadata structure"""
+        errors = []
+        
+        # Check required fields
+        if not metadata.get('name'):
+            errors.append('Missing required field: name')
+        
+        if not metadata.get('image') and not metadata.get('animationUrls'):
+            errors.append('Missing media: no image or animation URLs')
+        
+        # Validate URLs
+        url_fields = ['image', 'imagePreview', 'imageThumbnail', 'animationUrl', 'animation_url', 'externalUrl', 'external_url']
+        for field in url_fields:
+            if metadata.get(field) and not self._is_valid_url(metadata[field]):
+                errors.append(f'Invalid URL in field: {field}')
+        
+        if errors:
+            print(f'NFT metadata validation warnings: {errors}')
+        
+        return errors
+    
+    def _analyze_media_assets(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze media assets in metadata"""
+        analysis = {
+            'has_image': bool(metadata.get('image')),
+            'has_preview': bool(metadata.get('imagePreview')),
+            'has_thumbnail': bool(metadata.get('imageThumbnail')),
+            'has_animations': bool(metadata.get('animationUrls')),
+            'has_background_color': bool(metadata.get('backgroundColor') or metadata.get('background_color')),
+            'media_types': [],
+            'total_media_assets': 0
+        }
+        
+        if metadata.get('image'):
+            analysis['total_media_assets'] += 1
+        
+        if metadata.get('animationUrls'):
+            for anim_url in metadata['animationUrls']:
+                analysis['media_types'].append(anim_url.get('type', 'unknown'))
+                analysis['total_media_assets'] += 1
+        
+        # Remove duplicates
+        analysis['media_types'] = list(set(analysis['media_types']))
+        
+        return analysis
+    
+    def _parse_attributes(self, attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Parse and analyze NFT attributes"""
+        if not attributes:
+            return {
+                'total': 0,
+                'properties': 0,
+                'stats': 0,
+                'boosts': 0,
+                'system': 0,
+                'trait_types': [],
+                'attribute_map': {}
+            }
+        
+        analysis = {
+            'total': len(attributes),
+            'properties': 0,
+            'stats': 0,
+            'boosts': 0,
+            'system': 0,
+            'trait_types': [],
+            'attribute_map': {}
+        }
+        
+        for attr in attributes:
+            # Count attribute types
+            attr_type = attr.get('type', 'property')
+            if attr_type == 'property':
+                analysis['properties'] += 1
+            elif attr_type == 'stat':
+                analysis['stats'] += 1
+            elif attr_type == 'boost':
+                analysis['boosts'] += 1
+            elif attr_type == 'system':
+                analysis['system'] += 1
+            
+            # Collect trait types
+            trait_type = attr.get('traitType') or attr.get('trait_type')
+            if trait_type and trait_type not in analysis['trait_types']:
+                analysis['trait_types'].append(trait_type)
+            
+            # Build attribute map
+            key = attr.get('name') or trait_type
+            if key:
+                analysis['attribute_map'][key] = {
+                    'value': attr.get('value'),
+                    'type': attr_type,
+                    'trait_type': trait_type
+                }
+        
+        return analysis
+    
+    def _calculate_rarity_metrics(self, attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Calculate rarity metrics for NFT"""
+        if not attributes:
+            return {
+                'rarity_score': 0,
+                'rarity_rank': 'Unknown',
+                'unique_traits': 0,
+                'common_traits': 0,
+                'rare_traits': 0
+            }
+        
+        # Simple rarity calculation
+        score = len([attr for attr in attributes if attr.get('type') != 'system']) * 10
+        
+        return {
+            'rarity_score': score,
+            'rarity_rank': self._calculate_rarity_rank(score),
+            'unique_traits': 0,
+            'common_traits': len(attributes),
+            'rare_traits': 0
+        }
+    
+    def _generate_nft_insights(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate comprehensive NFT insights"""
+        insights = {
+            'completeness': self._calculate_completeness_score(metadata),
+            'media_richness': self._calculate_media_richness(metadata),
+            'attribute_complexity': self._calculate_attribute_complexity(metadata),
+            'quality_score': 0,
+            'recommendations': []
+        }
+        
+        # Calculate overall quality score
+        insights['quality_score'] = round(
+            (insights['completeness'] + insights['media_richness'] + insights['attribute_complexity']) / 3
+        )
+        
+        # Generate recommendations
+        if not metadata.get('description'):
+            insights['recommendations'].append('Add a description to improve NFT appeal')
+        
+        if not metadata.get('attributes'):
+            insights['recommendations'].append('Add attributes to enhance NFT properties')
+        
+        return insights
+    
+    def _calculate_completeness_score(self, metadata: Dict[str, Any]) -> int:
+        """Calculate metadata completeness score"""
+        score = 0
+        
+        if metadata.get('name'):
+            score += 20
+        if metadata.get('description'):
+            score += 20
+        if metadata.get('image'):
+            score += 25
+        if metadata.get('attributes'):
+            score += 20
+        if metadata.get('imagePreview'):
+            score += 10
+        if metadata.get('externalUrl') or metadata.get('external_url'):
+            score += 5
+        
+        return min(score, 100)
+    
+    def _calculate_media_richness(self, metadata: Dict[str, Any]) -> int:
+        """Calculate media richness score"""
+        score = 0
+        
+        if metadata.get('image'):
+            score += 30
+        if metadata.get('imagePreview'):
+            score += 20
+        if metadata.get('imageThumbnail'):
+            score += 20
+        if metadata.get('animationUrls'):
+            score += 25
+        if metadata.get('backgroundColor') or metadata.get('background_color'):
+            score += 5
+        
+        return min(score, 100)
+    
+    def _calculate_attribute_complexity(self, metadata: Dict[str, Any]) -> int:
+        """Calculate attribute complexity score"""
+        attributes = metadata.get('attributes', [])
+        if not attributes:
+            return 0
+        
+        score = min(len(attributes) * 10, 60)
+        
+        # Bonus for different attribute types
+        types = set(attr.get('type', 'property') for attr in attributes)
+        score += len(types) * 10
+        
+        return min(score, 100)
+    
+    def _calculate_rarity_rank(self, score: int) -> str:
+        """Calculate rarity rank from score"""
+        if score >= 200:
+            return 'Legendary'
+        elif score >= 150:
+            return 'Epic'
+        elif score >= 100:
+            return 'Rare'
+        elif score >= 50:
+            return 'Uncommon'
+        else:
+            return 'Common'
+    
+    def _is_valid_url(self, url: str) -> bool:
+        """Check if URL is valid"""
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except:
+            return False
+    
+    def _is_cache_valid(self, key: str) -> bool:
+        """Check if cache entry is valid"""
+        if key not in self.cache or key not in self.cache_expiry:
+            return False
+        return datetime.now() < self.cache_expiry[key]
+    
+    def _record_metadata_access(self, chain: str, contract_address: str, token_id: int):
+        """Record metadata access for analytics"""
+        key = f"{chain}:{contract_address}:{token_id}"
+        
+        if key not in self.metadata_analytics:
+            self.metadata_analytics[key] = {
+                'access_count': 0,
+                'first_access': datetime.now().isoformat(),
+                'last_access': None
+            }
+        
+        self.metadata_analytics[key]['access_count'] += 1
+        self.metadata_analytics[key]['last_access'] = datetime.now().isoformat()
+
+# Usage
+nft_manager = NFTMetadataManager('YOUR_API_KEY')
+
+# Get NFT metadata with analysis
+metadata = nft_manager.get_metadata(
+    'MATIC',
+    '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+    2,
+    {
+        'use_cache': True,
+        'validate_metadata': True,
+        'analyze_media': True,
+        'parse_attributes': True,
+        'calculate_rarity': True
+    }
+)
+
+print('NFT Metadata:', metadata)
+```
+
+```bash cURL
+# Get NFT metadata
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0x8b92df864bc1cdd103d92cba3c18b3f7492d815a/tokens/2/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get metadata with formatted output
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0x8b92df864bc1cdd103d92cba3c18b3f7492d815a/tokens/2/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -s | jq '.'
+
+# Batch retrieve multiple NFT metadata
+#!/bin/bash
+CONTRACT_ADDRESS="0x8b92df864bc1cdd103d92cba3c18b3f7492d815a"
+CHAIN="MATIC"
+TOKEN_IDS=(1 2 3 4 5)
+
+for token_id in "${TOKEN_IDS[@]}"; do
+  echo "Retrieving metadata for token $token_id..."
+  curl -X GET "/api/v3/erc1155/contracts/$CHAIN/$CONTRACT_ADDRESS/tokens/$token_id/metadata" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result' > "nft_${token_id}_metadata.json"
+  echo "Saved to nft_${token_id}_metadata.json"
+  sleep 0.5  # Rate limiting
+done
+```
+
+```php PHP
+<?php
+class NFTMetadataManager {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    private $defaultCacheTTL;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = [];
+        $this->defaultCacheTTL = 300; // 5 minutes
+    }
+    
+    public function getMetadata($chain, $contractAddress, $tokenId, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $validateMetadata = $options['validateMetadata'] ?? true;
+        $analyzeMedia = $options['analyzeMedia'] ?? true;
+        $parseAttributes = $options['parseAttributes'] ?? true;
+        
+        $cacheKey = "{$chain}:{$contractAddress}:{$tokenId}:metadata";
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached NFT metadata\n";
+            return $this->cache[$cacheKey];
+        }
+        
+        try {
+            $metadata = $this->getNFTMetadata($chain, $contractAddress, $tokenId);
+            
+            // Validate metadata structure
+            if ($validateMetadata) {
+                $this->validateMetadata($metadata);
+            }
+            
+            // Analyze media assets
+            if ($analyzeMedia) {
+                $metadata['mediaAnalysis'] = $this->analyzeMediaAssets($metadata);
+            }
+            
+            // Parse and enhance attributes
+            if ($parseAttributes) {
+                $metadata['attributeAnalysis'] = $this->parseAttributes($metadata['attributes'] ?? []);
+            }
+            
+            // Add insights
+            $metadata['insights'] = $this->generateNFTInsights($metadata);
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $metadata;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            return $metadata;
+            
+        } catch (Exception $error) {
+            echo "Failed to retrieve metadata for NFT {$tokenId}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function getNFTMetadata($chain, $contractAddress, $tokenId) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/tokens/{$tokenId}/metadata";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve NFT metadata");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve NFT metadata');
+        }
+        
+        return $data['result'];
+    }
+    
+    private function validateMetadata($metadata) {
+        $errors = [];
+        
+        if (empty($metadata['name'])) {
+            $errors[] = 'Missing required field: name';
+        }
+        
+        if (empty($metadata['image']) && empty($metadata['animationUrls'])) {
+            $errors[] = 'Missing media: no image or animation URLs';
+        }
+        
+        if (!empty($errors)) {
+            echo "NFT metadata validation warnings: " . implode(', ', $errors) . "\n";
+        }
+        
+        return $errors;
+    }
+    
+    private function analyzeMediaAssets($metadata) {
+        return [
+            'hasImage' => !empty($metadata['image']),
+            'hasPreview' => !empty($metadata['imagePreview']),
+            'hasThumbnail' => !empty($metadata['imageThumbnail']),
+            'hasAnimations' => !empty($metadata['animationUrls']),
+            'hasBackgroundColor' => !empty($metadata['backgroundColor']) || !empty($metadata['background_color']),
+            'totalMediaAssets' => (int)!empty($metadata['image']) + count($metadata['animationUrls'] ?? [])
+        ];
+    }
+    
+    private function parseAttributes($attributes) {
+        if (empty($attributes)) {
+            return [
+                'total' => 0,
+                'properties' => 0,
+                'stats' => 0,
+                'boosts' => 0,
+                'traitTypes' => []
+            ];
+        }
+        
+        $analysis = [
+            'total' => count($attributes),
+            'properties' => 0,
+            'stats' => 0,
+            'boosts' => 0,
+            'traitTypes' => []
+        ];
+        
+        foreach ($attributes as $attr) {
+            $type = $attr['type'] ?? 'property';
+            
+            switch ($type) {
+                case 'property':
+                    $analysis['properties']++;
+                    break;
+                case 'stat':
+                    $analysis['stats']++;
+                    break;
+                case 'boost':
+                    $analysis['boosts']++;
+                    break;
+            }
+            
+            $traitType = $attr['traitType'] ?? $attr['trait_type'] ?? null;
+            if ($traitType && !in_array($traitType, $analysis['traitTypes'])) {
+                $analysis['traitTypes'][] = $traitType;
+            }
+        }
+        
+        return $analysis;
+    }
+    
+    private function generateNFTInsights($metadata) {
+        $completeness = $this->calculateCompletenessScore($metadata);
+        $mediaRichness = $this->calculateMediaRichness($metadata);
+        $attributeComplexity = $this->calculateAttributeComplexity($metadata);
+        
+        return [
+            'completeness' => $completeness,
+            'mediaRichness' => $mediaRichness,
+            'attributeComplexity' => $attributeComplexity,
+            'qualityScore' => round(($completeness + $mediaRichness + $attributeComplexity) / 3),
+            'recommendations' => $this->generateRecommendations($metadata)
+        ];
+    }
+    
+    private function calculateCompletenessScore($metadata) {
+        $score = 0;
+        
+        if (!empty($metadata['name'])) $score += 20;
+        if (!empty($metadata['description'])) $score += 20;
+        if (!empty($metadata['image'])) $score += 25;
+        if (!empty($metadata['attributes'])) $score += 20;
+        if (!empty($metadata['imagePreview'])) $score += 10;
+        if (!empty($metadata['externalUrl']) || !empty($metadata['external_url'])) $score += 5;
+        
+        return min($score, 100);
+    }
+    
+    private function calculateMediaRichness($metadata) {
+        $score = 0;
+        
+        if (!empty($metadata['image'])) $score += 30;
+        if (!empty($metadata['imagePreview'])) $score += 20;
+        if (!empty($metadata['imageThumbnail'])) $score += 20;
+        if (!empty($metadata['animationUrls'])) $score += 25;
+        if (!empty($metadata['backgroundColor']) || !empty($metadata['background_color'])) $score += 5;
+        
+        return min($score, 100);
+    }
+    
+    private function calculateAttributeComplexity($metadata) {
+        $attributes = $metadata['attributes'] ?? [];
+        if (empty($attributes)) return 0;
+        
+        $score = min(count($attributes) * 10, 60);
+        
+        $types = array_unique(array_column($attributes, 'type'));
+        $score += count($types) * 10;
+        
+        return min($score, 100);
+    }
+    
+    private function generateRecommendations($metadata) {
+        $recommendations = [];
+        
+        if (empty($metadata['description'])) {
+            $recommendations[] = 'Add a description to improve NFT appeal';
+        }
+        
+        if (empty($metadata['attributes'])) {
+            $recommendations[] = 'Add attributes to enhance NFT properties';
+        }
+        
+        if (empty($metadata['imagePreview'])) {
+            $recommendations[] = 'Add preview images for better display';
+        }
+        
+        return $recommendations;
+    }
+    
+    private function isCacheValid($key) {
+        return isset($this->cache[$key]) && 
+               isset($this->cacheExpiry[$key]) && 
+               time() < $this->cacheExpiry[$key];
+    }
+}
+
+// Usage
+$nftManager = new NFTMetadataManager('YOUR_API_KEY');
+
+try {
+    $metadata = $nftManager->getMetadata(
+        'MATIC',
+        '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+        2,
+        [
+            'useCache' => true,
+            'validateMetadata' => true,
+            'analyzeMedia' => true,
+            'parseAttributes' => true
+        ]
+    );
+    
+    echo "NFT Metadata: " . json_encode($metadata, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**NFT Metadata Best Practices:**
+
+1. **Comprehensive Retrieval** - Always fetch complete metadata including attributes and media
+2. **Validation** - Validate all URLs and required fields before processing
+3. **Caching** - Implement caching to reduce API calls and improve performance
+4. **Media Analysis** - Analyze media assets for completeness and quality
+5. **Attribute Parsing** - Parse attributes systematically for rarity and trait analysis
+6. **Error Handling** - Implement robust error handling for missing or invalid data
+7. **Batch Processing** - Use batch operations for multiple NFT metadata retrieval
+8. **Analytics** - Track metadata access patterns for insights and optimization
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Update NFT Metadata" href="/guides/nft-api/metadata/update-nft-metadata" icon="edit">
+    Learn how to update individual NFT metadata
+  </Card>
+  <Card title="Token Type Metadata" href="/guides/nft-api/metadata/retrieve-token-type-metadata" icon="layer-group">
+    Retrieve token type metadata templates
+  </Card>
+  <Card title="NFT Querying" href="/guides/nft-api/querying/retrieve-nft-details" icon="search">
+    Advanced NFT querying and filtering
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/token-metadata/get-token-metadata" icon="book">
+    Explore the complete NFT metadata API documentation
+  </Card>
+</CardGroup>

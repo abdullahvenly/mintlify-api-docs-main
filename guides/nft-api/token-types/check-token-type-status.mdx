@@ -1,0 +1,985 @@
+---
+title: "Check Token Type Status"
+description: "Comprehensive guide to monitoring NFT token type creation status with real-time tracking, automated polling, and failure recovery"
+icon: "clock"
+---
+
+<Info>
+**Status Monitoring:** Track NFT token type creation progress with real-time status updates, automated polling, and comprehensive error handling.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Token Type Status Checking?
+
+Token type status checking allows you to monitor the progress of NFT template creation on the blockchain. Since blockchain operations are asynchronous, you need to poll the status endpoint to determine when your token type has been successfully created, is still pending, or has failed. This is essential for building reliable NFT applications with proper user feedback.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Tracking" icon="clock">
+    Monitor creation progress with live status updates
+  </Card>
+  <Card title="Automated Polling" icon="refresh">
+    Implement smart polling strategies for efficiency
+  </Card>
+  <Card title="Error Handling" icon="shield">
+    Comprehensive failure detection and recovery
+  </Card>
+  <Card title="Status Analytics" icon="chart-line">
+    Track creation times and success rates
+  </Card>
+</CardGroup>
+
+## Token Type Status Values
+
+<Tabs>
+  <Tab title="SUCCEEDED">
+    **Successful Creation:**
+    - Token type has been successfully created on blockchain
+    - Transaction hash is available for verification
+    - Token type ID is assigned and ready for minting
+    - All metadata has been processed and stored
+    
+    **Next Steps:**
+    - Begin minting NFTs using the token type
+    - Update your application with the new token type ID
+    - Notify users of successful creation
+    - Store token type details for future reference
+  </Tab>
+  <Tab title="PENDING">
+    **In Progress:**
+    - Token type creation is being processed
+    - Transaction is waiting for blockchain confirmation
+    - Metadata is being uploaded and validated
+    - Continue polling for status updates
+    
+    **Monitoring Strategy:**
+    - Poll every 10-30 seconds initially
+    - Increase interval if pending for extended time
+    - Set reasonable timeout limits (5-10 minutes)
+    - Provide user feedback on progress
+  </Tab>
+  <Tab title="FAILED">
+    **Creation Failed:**
+    - Token type creation encountered an error
+    - Transaction may have been rejected
+    - Metadata validation may have failed
+    - Requires investigation and potential retry
+    
+    **Recovery Actions:**
+    - Check error details and logs
+    - Validate input parameters
+    - Retry with corrected parameters
+    - Contact support if issue persists
+  </Tab>
+</Tabs>
+
+## Check Token Type Status
+
+<Steps>
+  <Step title="Get Creation ID" icon="search">
+    Obtain the creation ID from the token type creation response
+    
+    ```javascript
+    // From token type creation response
+    const creationResponse = await createTokenType(tokenTypeData);
+    const creationId = creationResponse.result.id;
+    
+    console.log('Creation ID:', creationId);
+    // Example: "20bd87e9-c590-47fb-a3e3-679673556e6b"
+    ```
+  </Step>
+  <Step title="Poll Status" icon="clock">
+    Regularly check the status until completion
+  </Step>
+  <Step title="Handle Results" icon="gear">
+    Process the final status and take appropriate actions
+  </Step>
+  <Step title="Update Application" icon="check">
+    Update your application state based on the results
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Check token type status
+const checkTokenTypeStatus = async (creationId) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/token-types/creations/${creationId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to check token type status');
+    }
+  } catch (error) {
+    console.error('Error checking token type status:', error);
+    throw error;
+  }
+};
+
+// Enhanced status monitoring system
+class TokenTypeStatusMonitor {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.activePolls = new Map();
+    this.statusHistory = new Map();
+    this.defaultConfig = {
+      initialInterval: 5000,    // 5 seconds
+      maxInterval: 30000,       // 30 seconds
+      backoffMultiplier: 1.5,
+      maxAttempts: 120,         // 10 minutes at max interval
+      timeout: 600000           // 10 minutes total timeout
+    };
+  }
+
+  async monitorStatus(creationId, options = {}) {
+    const config = { ...this.defaultConfig, ...options };
+    
+    return new Promise((resolve, reject) => {
+      const startTime = Date.now();
+      let attempts = 0;
+      let currentInterval = config.initialInterval;
+      
+      const poll = async () => {
+        try {
+          attempts++;
+          
+          // Check timeout
+          if (Date.now() - startTime > config.timeout) {
+            this.stopPolling(creationId);
+            reject(new Error(`Timeout: Token type creation exceeded ${config.timeout / 1000} seconds`));
+            return;
+          }
+          
+          // Check max attempts
+          if (attempts > config.maxAttempts) {
+            this.stopPolling(creationId);
+            reject(new Error(`Max attempts reached: ${config.maxAttempts} attempts`));
+            return;
+          }
+          
+          const status = await checkTokenTypeStatus(creationId);
+          
+          // Record status in history
+          this.recordStatusCheck(creationId, status, attempts);
+          
+          // Handle different status values
+          switch (status.status) {
+            case 'SUCCEEDED':
+              this.stopPolling(creationId);
+              console.log(`Token type created successfully after ${attempts} attempts`);
+              resolve(status);
+              break;
+              
+            case 'FAILED':
+              this.stopPolling(creationId);
+              const error = new Error(`Token type creation failed: ${status.error || 'Unknown error'}`);
+              error.statusData = status;
+              reject(error);
+              break;
+              
+            case 'PENDING':
+              // Continue polling with backoff
+              currentInterval = Math.min(
+                currentInterval * config.backoffMultiplier,
+                config.maxInterval
+              );
+              
+              console.log(`Token type still pending (attempt ${attempts}), checking again in ${currentInterval / 1000}s`);
+              
+              const timeoutId = setTimeout(poll, currentInterval);
+              this.activePolls.set(creationId, { timeoutId, attempts, startTime });
+              break;
+              
+            default:
+              this.stopPolling(creationId);
+              reject(new Error(`Unknown status: ${status.status}`));
+          }
+          
+        } catch (error) {
+          // Handle API errors with retry logic
+          if (attempts < 3) {
+            console.warn(`API error on attempt ${attempts}, retrying...`, error.message);
+            const timeoutId = setTimeout(poll, currentInterval);
+            this.activePolls.set(creationId, { timeoutId, attempts, startTime });
+          } else {
+            this.stopPolling(creationId);
+            reject(error);
+          }
+        }
+      };
+      
+      // Start polling
+      poll();
+    });
+  }
+
+  async monitorMultiple(creationIds, options = {}) {
+    const promises = creationIds.map(id => 
+      this.monitorStatus(id, options).catch(error => ({ id, error }))
+    );
+    
+    const results = await Promise.allSettled(promises);
+    
+    return {
+      successful: results.filter(r => r.status === 'fulfilled' && !r.value.error).map(r => r.value),
+      failed: results.filter(r => r.status === 'rejected' || r.value?.error).map(r => ({
+        id: r.value?.id,
+        error: r.status === 'rejected' ? r.reason : r.value.error
+      }))
+    };
+  }
+
+  stopPolling(creationId) {
+    const poll = this.activePolls.get(creationId);
+    if (poll) {
+      clearTimeout(poll.timeoutId);
+      this.activePolls.delete(creationId);
+    }
+  }
+
+  stopAllPolling() {
+    for (const [creationId] of this.activePolls) {
+      this.stopPolling(creationId);
+    }
+  }
+
+  recordStatusCheck(creationId, status, attempt) {
+    if (!this.statusHistory.has(creationId)) {
+      this.statusHistory.set(creationId, []);
+    }
+    
+    const history = this.statusHistory.get(creationId);
+    history.push({
+      timestamp: new Date().toISOString(),
+      status: status.status,
+      attempt,
+      transactionHash: status.transactionHash,
+      tokenTypeId: status.tokenTypeId
+    });
+  }
+
+  getStatusHistory(creationId) {
+    return this.statusHistory.get(creationId) || [];
+  }
+
+  generateStatusReport(creationId) {
+    const history = this.getStatusHistory(creationId);
+    const activePoll = this.activePolls.get(creationId);
+    
+    if (history.length === 0) {
+      return { creationId, status: 'Not monitored' };
+    }
+    
+    const firstCheck = history[0];
+    const lastCheck = history[history.length - 1];
+    const duration = new Date(lastCheck.timestamp) - new Date(firstCheck.timestamp);
+    
+    return {
+      creationId,
+      currentStatus: lastCheck.status,
+      totalAttempts: history.length,
+      duration: `${Math.round(duration / 1000)}s`,
+      isActive: !!activePoll,
+      transactionHash: lastCheck.transactionHash,
+      tokenTypeId: lastCheck.tokenTypeId,
+      timeline: history
+    };
+  }
+
+  async waitForCompletion(creationId, options = {}) {
+    try {
+      const result = await this.monitorStatus(creationId, options);
+      
+      return {
+        success: true,
+        status: result.status,
+        tokenTypeId: result.tokenTypeId,
+        transactionHash: result.transactionHash,
+        metadata: result.metadata,
+        report: this.generateStatusReport(creationId)
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+        report: this.generateStatusReport(creationId)
+      };
+    }
+  }
+
+  // Utility method for simple status check without polling
+  async getStatus(creationId) {
+    try {
+      const status = await checkTokenTypeStatus(creationId);
+      this.recordStatusCheck(creationId, status, 1);
+      return status;
+    } catch (error) {
+      console.error(`Failed to get status for ${creationId}:`, error);
+      throw error;
+    }
+  }
+
+  // Batch status checking
+  async checkMultipleStatus(creationIds) {
+    const results = await Promise.allSettled(
+      creationIds.map(id => this.getStatus(id))
+    );
+
+    return {
+      successful: results
+        .filter(r => r.status === 'fulfilled')
+        .map((r, index) => ({ creationId: creationIds[index], ...r.value })),
+      failed: results
+        .filter(r => r.status === 'rejected')
+        .map((r, index) => ({ creationId: creationIds[index], error: r.reason.message }))
+    };
+  }
+}
+
+// Usage examples
+const statusMonitor = new TokenTypeStatusMonitor('YOUR_API_KEY');
+
+// Simple status check
+const creationId = "20bd87e9-c590-47fb-a3e3-679673556e6b";
+const status = await statusMonitor.getStatus(creationId);
+console.log('Current status:', status);
+
+// Monitor with automatic polling
+try {
+  const result = await statusMonitor.monitorStatus(creationId, {
+    initialInterval: 3000,  // Start checking every 3 seconds
+    maxInterval: 15000,     // Max 15 seconds between checks
+    timeout: 300000         // 5 minute timeout
+  });
+  
+  console.log('Token type created successfully!');
+  console.log('Token Type ID:', result.tokenTypeId);
+  console.log('Transaction Hash:', result.transactionHash);
+} catch (error) {
+  console.error('Token type creation failed:', error.message);
+}
+
+// Wait for completion with detailed reporting
+const completion = await statusMonitor.waitForCompletion(creationId);
+if (completion.success) {
+  console.log('Success! Token Type ID:', completion.tokenTypeId);
+  console.log('Creation Report:', completion.report);
+} else {
+  console.error('Failed:', completion.error);
+  console.log('Failure Report:', completion.report);
+}
+
+// Monitor multiple token types
+const multipleIds = ["id1", "id2", "id3"];
+const multipleResults = await statusMonitor.monitorMultiple(multipleIds);
+console.log('Successful creations:', multipleResults.successful.length);
+console.log('Failed creations:', multipleResults.failed.length);
+```
+
+```python Python
+import requests
+import time
+import asyncio
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+
+class TokenTypeStatusMonitor:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.status_history = {}
+        self.default_config = {
+            'initial_interval': 5,      # 5 seconds
+            'max_interval': 30,         # 30 seconds
+            'backoff_multiplier': 1.5,
+            'max_attempts': 120,        # 10 minutes at max interval
+            'timeout': 600              # 10 minutes total timeout
+        }
+    
+    def check_token_type_status(self, creation_id: str) -> Dict[str, Any]:
+        """Check token type status"""
+        url = f'{self.base_url}/token-types/creations/{creation_id}'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to check token type status')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error checking token type status: {error}')
+            raise error
+    
+    def monitor_status(self, creation_id: str, options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Monitor token type status with polling"""
+        if options is None:
+            options = {}
+        
+        config = {**self.default_config, **options}
+        
+        start_time = time.time()
+        attempts = 0
+        current_interval = config['initial_interval']
+        
+        while True:
+            attempts += 1
+            
+            # Check timeout
+            if time.time() - start_time > config['timeout']:
+                raise Exception(f"Timeout: Token type creation exceeded {config['timeout']} seconds")
+            
+            # Check max attempts
+            if attempts > config['max_attempts']:
+                raise Exception(f"Max attempts reached: {config['max_attempts']} attempts")
+            
+            try:
+                status = self.check_token_type_status(creation_id)
+                
+                # Record status in history
+                self._record_status_check(creation_id, status, attempts)
+                
+                # Handle different status values
+                if status['status'] == 'SUCCEEDED':
+                    print(f'Token type created successfully after {attempts} attempts')
+                    return status
+                elif status['status'] == 'FAILED':
+                    error_msg = status.get('error', 'Unknown error')
+                    raise Exception(f'Token type creation failed: {error_msg}')
+                elif status['status'] == 'PENDING':
+                    # Continue polling with backoff
+                    current_interval = min(
+                        current_interval * config['backoff_multiplier'],
+                        config['max_interval']
+                    )
+                    
+                    print(f'Token type still pending (attempt {attempts}), checking again in {current_interval}s')
+                    time.sleep(current_interval)
+                else:
+                    raise Exception(f'Unknown status: {status["status"]}')
+                    
+            except requests.exceptions.RequestException as error:
+                # Handle API errors with retry logic
+                if attempts < 3:
+                    print(f'API error on attempt {attempts}, retrying... {error}')
+                    time.sleep(current_interval)
+                else:
+                    raise error
+    
+    def monitor_multiple(self, creation_ids: List[str], options: Dict[str, Any] = None) -> Dict[str, List]:
+        """Monitor multiple token types"""
+        successful = []
+        failed = []
+        
+        for creation_id in creation_ids:
+            try:
+                result = self.monitor_status(creation_id, options)
+                successful.append({'creation_id': creation_id, **result})
+            except Exception as error:
+                failed.append({'creation_id': creation_id, 'error': str(error)})
+        
+        return {
+            'successful': successful,
+            'failed': failed
+        }
+    
+    def _record_status_check(self, creation_id: str, status: Dict[str, Any], attempt: int):
+        """Record status check in history"""
+        if creation_id not in self.status_history:
+            self.status_history[creation_id] = []
+        
+        self.status_history[creation_id].append({
+            'timestamp': datetime.now().isoformat(),
+            'status': status['status'],
+            'attempt': attempt,
+            'transaction_hash': status.get('transactionHash'),
+            'token_type_id': status.get('tokenTypeId')
+        })
+    
+    def get_status_history(self, creation_id: str) -> List[Dict[str, Any]]:
+        """Get status history for a creation ID"""
+        return self.status_history.get(creation_id, [])
+    
+    def generate_status_report(self, creation_id: str) -> Dict[str, Any]:
+        """Generate comprehensive status report"""
+        history = self.get_status_history(creation_id)
+        
+        if not history:
+            return {'creation_id': creation_id, 'status': 'Not monitored'}
+        
+        first_check = history[0]
+        last_check = history[-1]
+        
+        start_time = datetime.fromisoformat(first_check['timestamp'])
+        end_time = datetime.fromisoformat(last_check['timestamp'])
+        duration = (end_time - start_time).total_seconds()
+        
+        return {
+            'creation_id': creation_id,
+            'current_status': last_check['status'],
+            'total_attempts': len(history),
+            'duration': f'{round(duration)}s',
+            'transaction_hash': last_check.get('transaction_hash'),
+            'token_type_id': last_check.get('token_type_id'),
+            'timeline': history
+        }
+    
+    def wait_for_completion(self, creation_id: str, options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Wait for token type creation completion"""
+        try:
+            result = self.monitor_status(creation_id, options)
+            
+            return {
+                'success': True,
+                'status': result['status'],
+                'token_type_id': result.get('tokenTypeId'),
+                'transaction_hash': result.get('transactionHash'),
+                'metadata': result.get('metadata'),
+                'report': self.generate_status_report(creation_id)
+            }
+        except Exception as error:
+            return {
+                'success': False,
+                'error': str(error),
+                'report': self.generate_status_report(creation_id)
+            }
+    
+    def get_status(self, creation_id: str) -> Dict[str, Any]:
+        """Get current status without polling"""
+        try:
+            status = self.check_token_type_status(creation_id)
+            self._record_status_check(creation_id, status, 1)
+            return status
+        except Exception as error:
+            print(f'Failed to get status for {creation_id}: {error}')
+            raise error
+    
+    def check_multiple_status(self, creation_ids: List[str]) -> Dict[str, List]:
+        """Check status of multiple token types"""
+        successful = []
+        failed = []
+        
+        for creation_id in creation_ids:
+            try:
+                status = self.get_status(creation_id)
+                successful.append({'creation_id': creation_id, **status})
+            except Exception as error:
+                failed.append({'creation_id': creation_id, 'error': str(error)})
+        
+        return {
+            'successful': successful,
+            'failed': failed
+        }
+
+# Usage
+status_monitor = TokenTypeStatusMonitor('YOUR_API_KEY')
+
+# Simple status check
+creation_id = "20bd87e9-c590-47fb-a3e3-679673556e6b"
+status = status_monitor.get_status(creation_id)
+print('Current status:', status)
+
+# Monitor with automatic polling
+try:
+    result = status_monitor.monitor_status(creation_id, {
+        'initial_interval': 3,    # Start checking every 3 seconds
+        'max_interval': 15,       # Max 15 seconds between checks
+        'timeout': 300            # 5 minute timeout
+    })
+    
+    print('Token type created successfully!')
+    print('Token Type ID:', result.get('tokenTypeId'))
+    print('Transaction Hash:', result.get('transactionHash'))
+except Exception as error:
+    print('Token type creation failed:', error)
+
+# Wait for completion with detailed reporting
+completion = status_monitor.wait_for_completion(creation_id)
+if completion['success']:
+    print('Success! Token Type ID:', completion['token_type_id'])
+    print('Creation Report:', completion['report'])
+else:
+    print('Failed:', completion['error'])
+    print('Failure Report:', completion['report'])
+```
+
+```bash cURL
+# Check token type status
+curl -X GET '/api/v3/erc1155/token-types/creations/20bd87e9-c590-47fb-a3e3-679673556e6b' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Polling script with status monitoring
+#!/bin/bash
+CREATION_ID="20bd87e9-c590-47fb-a3e3-679673556e6b"
+API_KEY="YOUR_API_KEY"
+MAX_ATTEMPTS=60
+INTERVAL=10
+
+echo "Monitoring token type creation: $CREATION_ID"
+
+for ((i=1; i<=MAX_ATTEMPTS; i++)); do
+  echo "Attempt $i/$MAX_ATTEMPTS..."
+  
+  response=$(curl -s -X GET "/api/v3/erc1155/token-types/creations/$CREATION_ID" \
+    -H "Authorization: Bearer $API_KEY" \
+    -H 'Content-Type: application/json')
+  
+  status=$(echo "$response" | jq -r '.result.status')
+  
+  case $status in
+    "SUCCEEDED")
+      echo "✓ Token type created successfully!"
+      token_type_id=$(echo "$response" | jq -r '.result.tokenTypeId')
+      tx_hash=$(echo "$response" | jq -r '.result.transactionHash')
+      echo "Token Type ID: $token_type_id"
+      echo "Transaction Hash: $tx_hash"
+      exit 0
+      ;;
+    "FAILED")
+      echo "✗ Token type creation failed!"
+      echo "$response" | jq '.result'
+      exit 1
+      ;;
+    "PENDING")
+      echo "⏳ Token type creation is pending..."
+      if [ $i -lt $MAX_ATTEMPTS ]; then
+        echo "Waiting ${INTERVAL}s before next check..."
+        sleep $INTERVAL
+      fi
+      ;;
+    *)
+      echo "Unknown status: $status"
+      echo "$response"
+      exit 1
+      ;;
+  esac
+done
+
+echo "Timeout: Token type creation took too long"
+exit 1
+```
+
+```php PHP
+<?php
+class TokenTypeStatusMonitor {
+    private $apiKey;
+    private $baseUrl;
+    private $statusHistory;
+    private $defaultConfig;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->statusHistory = [];
+        $this->defaultConfig = [
+            'initial_interval' => 5,      // 5 seconds
+            'max_interval' => 30,         // 30 seconds
+            'backoff_multiplier' => 1.5,
+            'max_attempts' => 120,        // 10 minutes at max interval
+            'timeout' => 600              // 10 minutes total timeout
+        ];
+    }
+    
+    public function checkTokenTypeStatus($creationId) {
+        $url = "{$this->baseUrl}/token-types/creations/{$creationId}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            "Content-Type: application/json"
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to check token type status");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to check token type status');
+        }
+        
+        return $data['result'];
+    }
+    
+    public function monitorStatus($creationId, $options = []) {
+        $config = array_merge($this->defaultConfig, $options);
+        
+        $startTime = time();
+        $attempts = 0;
+        $currentInterval = $config['initial_interval'];
+        
+        while (true) {
+            $attempts++;
+            
+            // Check timeout
+            if (time() - $startTime > $config['timeout']) {
+                throw new Exception("Timeout: Token type creation exceeded {$config['timeout']} seconds");
+            }
+            
+            // Check max attempts
+            if ($attempts > $config['max_attempts']) {
+                throw new Exception("Max attempts reached: {$config['max_attempts']} attempts");
+            }
+            
+            try {
+                $status = $this->checkTokenTypeStatus($creationId);
+                
+                // Record status in history
+                $this->recordStatusCheck($creationId, $status, $attempts);
+                
+                // Handle different status values
+                switch ($status['status']) {
+                    case 'SUCCEEDED':
+                        echo "Token type created successfully after {$attempts} attempts\n";
+                        return $status;
+                        
+                    case 'FAILED':
+                        $errorMsg = $status['error'] ?? 'Unknown error';
+                        throw new Exception("Token type creation failed: {$errorMsg}");
+                        
+                    case 'PENDING':
+                        // Continue polling with backoff
+                        $currentInterval = min(
+                            $currentInterval * $config['backoff_multiplier'],
+                            $config['max_interval']
+                        );
+                        
+                        echo "Token type still pending (attempt {$attempts}), checking again in {$currentInterval}s\n";
+                        sleep($currentInterval);
+                        break;
+                        
+                    default:
+                        throw new Exception("Unknown status: {$status['status']}");
+                }
+                
+            } catch (Exception $error) {
+                // Handle API errors with retry logic
+                if ($attempts < 3) {
+                    echo "API error on attempt {$attempts}, retrying... {$error->getMessage()}\n";
+                    sleep($currentInterval);
+                } else {
+                    throw $error;
+                }
+            }
+        }
+    }
+    
+    public function monitorMultiple($creationIds, $options = []) {
+        $successful = [];
+        $failed = [];
+        
+        foreach ($creationIds as $creationId) {
+            try {
+                $result = $this->monitorStatus($creationId, $options);
+                $successful[] = array_merge(['creation_id' => $creationId], $result);
+            } catch (Exception $error) {
+                $failed[] = [
+                    'creation_id' => $creationId,
+                    'error' => $error->getMessage()
+                ];
+            }
+        }
+        
+        return [
+            'successful' => $successful,
+            'failed' => $failed
+        ];
+    }
+    
+    private function recordStatusCheck($creationId, $status, $attempt) {
+        if (!isset($this->statusHistory[$creationId])) {
+            $this->statusHistory[$creationId] = [];
+        }
+        
+        $this->statusHistory[$creationId][] = [
+            'timestamp' => date('c'),
+            'status' => $status['status'],
+            'attempt' => $attempt,
+            'transaction_hash' => $status['transactionHash'] ?? null,
+            'token_type_id' => $status['tokenTypeId'] ?? null
+        ];
+    }
+    
+    public function getStatusHistory($creationId) {
+        return $this->statusHistory[$creationId] ?? [];
+    }
+    
+    public function generateStatusReport($creationId) {
+        $history = $this->getStatusHistory($creationId);
+        
+        if (empty($history)) {
+            return ['creation_id' => $creationId, 'status' => 'Not monitored'];
+        }
+        
+        $firstCheck = $history[0];
+        $lastCheck = end($history);
+        
+        $startTime = new DateTime($firstCheck['timestamp']);
+        $endTime = new DateTime($lastCheck['timestamp']);
+        $duration = $endTime->getTimestamp() - $startTime->getTimestamp();
+        
+        return [
+            'creation_id' => $creationId,
+            'current_status' => $lastCheck['status'],
+            'total_attempts' => count($history),
+            'duration' => $duration . 's',
+            'transaction_hash' => $lastCheck['transaction_hash'],
+            'token_type_id' => $lastCheck['token_type_id'],
+            'timeline' => $history
+        ];
+    }
+    
+    public function waitForCompletion($creationId, $options = []) {
+        try {
+            $result = $this->monitorStatus($creationId, $options);
+            
+            return [
+                'success' => true,
+                'status' => $result['status'],
+                'token_type_id' => $result['tokenTypeId'] ?? null,
+                'transaction_hash' => $result['transactionHash'] ?? null,
+                'metadata' => $result['metadata'] ?? null,
+                'report' => $this->generateStatusReport($creationId)
+            ];
+        } catch (Exception $error) {
+            return [
+                'success' => false,
+                'error' => $error->getMessage(),
+                'report' => $this->generateStatusReport($creationId)
+            ];
+        }
+    }
+    
+    public function getStatus($creationId) {
+        try {
+            $status = $this->checkTokenTypeStatus($creationId);
+            $this->recordStatusCheck($creationId, $status, 1);
+            return $status;
+        } catch (Exception $error) {
+            echo "Failed to get status for {$creationId}: {$error->getMessage()}\n";
+            throw $error;
+        }
+    }
+    
+    public function checkMultipleStatus($creationIds) {
+        $successful = [];
+        $failed = [];
+        
+        foreach ($creationIds as $creationId) {
+            try {
+                $status = $this->getStatus($creationId);
+                $successful[] = array_merge(['creation_id' => $creationId], $status);
+            } catch (Exception $error) {
+                $failed[] = [
+                    'creation_id' => $creationId,
+                    'error' => $error->getMessage()
+                ];
+            }
+        }
+        
+        return [
+            'successful' => $successful,
+            'failed' => $failed
+        ];
+    }
+}
+
+// Usage
+$statusMonitor = new TokenTypeStatusMonitor('YOUR_API_KEY');
+
+try {
+    // Simple status check
+    $creationId = "20bd87e9-c590-47fb-a3e3-679673556e6b";
+    $status = $statusMonitor->getStatus($creationId);
+    echo "Current status: " . json_encode($status, JSON_PRETTY_PRINT) . "\n";
+    
+    // Monitor with automatic polling
+    $result = $statusMonitor->monitorStatus($creationId, [
+        'initial_interval' => 3,    // Start checking every 3 seconds
+        'max_interval' => 15,       // Max 15 seconds between checks
+        'timeout' => 300            // 5 minute timeout
+    ]);
+    
+    echo "Token type created successfully!\n";
+    echo "Token Type ID: " . ($result['tokenTypeId'] ?? 'N/A') . "\n";
+    echo "Transaction Hash: " . ($result['transactionHash'] ?? 'N/A') . "\n";
+    
+    // Wait for completion with detailed reporting
+    $completion = $statusMonitor->waitForCompletion($creationId);
+    if ($completion['success']) {
+        echo "Success! Token Type ID: " . $completion['token_type_id'] . "\n";
+        echo "Creation Report: " . json_encode($completion['report'], JSON_PRETTY_PRINT) . "\n";
+    } else {
+        echo "Failed: " . $completion['error'] . "\n";
+        echo "Failure Report: " . json_encode($completion['report'], JSON_PRETTY_PRINT) . "\n";
+    }
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Token Type Status Monitoring Best Practices:**
+
+1. **Smart Polling** - Use exponential backoff to reduce API calls while maintaining responsiveness
+2. **Timeout Handling** - Set reasonable timeouts to prevent infinite polling
+3. **Error Recovery** - Implement retry logic for transient API errors
+4. **Status History** - Track status changes for debugging and analytics
+5. **User Feedback** - Provide clear progress indicators to users
+6. **Batch Monitoring** - Monitor multiple token types efficiently
+7. **Resource Management** - Clean up polling timers and resources properly
+8. **Logging** - Log status changes and errors for troubleshooting
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create NFT Template" href="/guides/nft-api/token-types/create-nft-template" icon="plus">
+    Learn how to create NFT token types
+  </Card>
+  <Card title="Retrieve Token Types" href="/guides/nft-api/token-types/retrieve-token-types" icon="list">
+    Get all your created token types
+  </Card>
+  <Card title="Delete Token Type" href="/guides/nft-api/token-types/delete-token-type" icon="trash">
+    Remove unwanted token types
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/token-types/check-token-type-status" icon="book">
+    Explore the complete token type status API documentation
+  </Card>
+</CardGroup>

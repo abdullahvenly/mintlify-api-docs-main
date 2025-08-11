@@ -1,0 +1,1133 @@
+---
+title: "Supported Fiat & Crypto Currencies"
+description: "Retrieve supported fiat and cryptocurrency pairs for Transak, MoonPay, and Ramp Network providers"
+icon: "coins"
+---
+
+<Info>
+**Currency Discovery:** Query supported fiat and cryptocurrency combinations for each provider to ensure compatibility before creating on/off ramp URLs.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What are Supported Currencies?
+
+Each fiat ramp provider (Transak, MoonPay, and Ramp Network) supports different combinations of fiat currencies and cryptocurrencies. This endpoint allows you to retrieve the complete list of supported currencies for each provider, helping you build dynamic currency selection interfaces and validate user choices.
+
+<CardGroup cols={2}>
+  <Card title="Fiat Currencies" icon="dollar-sign">
+    Traditional currencies like USD, EUR, GBP
+  </Card>
+  <Card title="Cryptocurrencies" icon="bitcoin">
+    Digital assets across multiple blockchain networks
+  </Card>
+  <Card title="Ramp Type Support" icon="arrows-up-down">
+    On-ramp (buy) and off-ramp (sell) availability
+  </Card>
+  <Card title="Network Information" icon="network-wired">
+    Blockchain network details for each cryptocurrency
+  </Card>
+</CardGroup>
+
+## Why Query Supported Currencies?
+
+<Tabs>
+  <Tab title="Dynamic UI">
+    **User Interface**
+    - Build dynamic currency dropdowns
+    - Show only available options
+    - Filter by ramp type (buy/sell)
+    - Provide real-time availability
+  </Tab>
+  <Tab title="Validation">
+    **Input Validation**
+    - Validate user currency selections
+    - Prevent invalid combinations
+    - Check ramp type compatibility
+    - Ensure network support
+  </Tab>
+  <Tab title="Provider Selection">
+    **Optimal Provider Choice**
+    - Compare provider coverage
+    - Select best provider for currency pair
+    - Optimize user experience
+    - Maximize success rates
+  </Tab>
+</Tabs>
+
+## API Endpoint
+
+### Get Supported Currencies
+
+<CodeGroup>
+```javascript JavaScript
+// Get supported currencies for a specific provider
+const provider = "TRANSAK"; // TRANSAK, MOONPAY, or RAMP_NETWORK
+
+const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Supported currencies:', data.result);
+```
+
+```python Python
+import requests
+
+# Get supported currencies for a specific provider
+provider = "TRANSAK"  # TRANSAK, MOONPAY, or RAMP_NETWORK
+
+response = requests.get(
+    f'/fiat-ramp/{provider}/currencies',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Supported currencies:', data['result'])
+```
+
+```bash cURL
+# Get supported currencies for Transak
+curl -X GET '/fiat-ramp/TRANSAK/currencies' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+
+# Get supported currencies for MoonPay
+curl -X GET '/fiat-ramp/MOONPAY/currencies' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+
+# Get supported currencies for Ramp Network
+curl -X GET '/fiat-ramp/RAMP_NETWORK/currencies' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `provider` | string | ✅ | Provider name: `TRANSAK`, `MOONPAY`, or `RAMP_NETWORK` |
+
+<Tip>
+**Provider Names:** Use exact case-sensitive provider names as shown above. Each provider has different currency support and capabilities.
+</Tip>
+
+## Response Structure
+
+<Tabs>
+  <Tab title="Response Format">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "fiat": [
+          {
+            "name": "US Dollar",
+            "symbol": "USD",
+            "rampType": ["ON", "OFF"]
+          }
+        ],
+        "crypto": [
+          {
+            "name": "Ethereum",
+            "symbol": "ETH",
+            "network": "ethereum",
+            "chainId": "11155111",
+            "rampType": ["ON", "OFF"]
+          }
+        ]
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Field Descriptions">
+    **Fiat Currency Fields:**
+    - **`name`** - Full currency name (e.g., "US Dollar")
+    - **`symbol`** - Currency code for API calls (e.g., "USD")
+    - **`rampType`** - Supported operations: `["ON"]`, `["OFF"]`, or `["ON", "OFF"]`
+    
+    **Cryptocurrency Fields:**
+    - **`name`** - Full cryptocurrency name (e.g., "Ethereum")
+    - **`symbol`** - Token symbol for API calls (e.g., "ETH")
+    - **`network`** - Blockchain network identifier
+    - **`chainId`** - Network chain ID (when applicable)
+    - **`rampType`** - Supported operations: `["ON"]`, `["OFF"]`, or `["ON", "OFF"]`
+  </Tab>
+</Tabs>
+
+## Currency Analysis & Filtering
+
+<CodeGroup>
+```javascript JavaScript
+class CurrencyAnalyzer {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.providerData = {};
+  }
+
+  async loadAllProviders() {
+    const providers = ['TRANSAK', 'MOONPAY', 'RAMP_NETWORK'];
+    
+    for (const provider of providers) {
+      try {
+        const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        this.providerData[provider] = data.result;
+        
+        console.log(`Loaded ${provider}: ${data.result.fiat.length} fiat, ${data.result.crypto.length} crypto`);
+      } catch (error) {
+        console.error(`Failed to load ${provider}:`, error);
+      }
+    }
+  }
+
+  getSupportedFiatCurrencies(rampType = null) {
+    const allFiat = new Map();
+    
+    Object.entries(this.providerData).forEach(([provider, data]) => {
+      data.fiat.forEach(currency => {
+        if (!rampType || currency.rampType.includes(rampType)) {
+          if (!allFiat.has(currency.symbol)) {
+            allFiat.set(currency.symbol, {
+              ...currency,
+              providers: []
+            });
+          }
+          allFiat.get(currency.symbol).providers.push(provider);
+        }
+      });
+    });
+    
+    return Array.from(allFiat.values()).sort((a, b) => a.symbol.localeCompare(b.symbol));
+  }
+
+  getSupportedCryptocurrencies(rampType = null, network = null) {
+    const allCrypto = new Map();
+    
+    Object.entries(this.providerData).forEach(([provider, data]) => {
+      data.crypto.forEach(currency => {
+        const matchesRampType = !rampType || currency.rampType.includes(rampType);
+        const matchesNetwork = !network || currency.network === network;
+        
+        if (matchesRampType && matchesNetwork) {
+          const key = `${currency.symbol}-${currency.network}`;
+          
+          if (!allCrypto.has(key)) {
+            allCrypto.set(key, {
+              ...currency,
+              providers: []
+            });
+          }
+          allCrypto.get(key).providers.push(provider);
+        }
+      });
+    });
+    
+    return Array.from(allCrypto.values()).sort((a, b) => a.symbol.localeCompare(b.symbol));
+  }
+
+  findBestProvider(fiatSymbol, cryptoSymbol, cryptoNetwork, rampType) {
+    const providers = [];
+    
+    Object.entries(this.providerData).forEach(([provider, data]) => {
+      const supportsFiat = data.fiat.some(f => 
+        f.symbol === fiatSymbol && f.rampType.includes(rampType)
+      );
+      
+      const supportsCrypto = data.crypto.some(c => 
+        c.symbol === cryptoSymbol && 
+        c.network === cryptoNetwork && 
+        c.rampType.includes(rampType)
+      );
+      
+      if (supportsFiat && supportsCrypto) {
+        providers.push(provider);
+      }
+    });
+    
+    return providers;
+  }
+
+  generateCurrencyMatrix() {
+    const matrix = {
+      fiatSupport: {},
+      cryptoSupport: {},
+      providerComparison: {}
+    };
+    
+    // Analyze fiat support across providers
+    const allFiat = this.getSupportedFiatCurrencies();
+    allFiat.forEach(currency => {
+      matrix.fiatSupport[currency.symbol] = {
+        name: currency.name,
+        providers: currency.providers,
+        onRamp: currency.rampType.includes('ON'),
+        offRamp: currency.rampType.includes('OFF')
+      };
+    });
+    
+    // Analyze crypto support across providers
+    const allCrypto = this.getSupportedCryptocurrencies();
+    allCrypto.forEach(currency => {
+      const key = `${currency.symbol}-${currency.network}`;
+      matrix.cryptoSupport[key] = {
+        name: currency.name,
+        symbol: currency.symbol,
+        network: currency.network,
+        providers: currency.providers,
+        onRamp: currency.rampType.includes('ON'),
+        offRamp: currency.rampType.includes('OFF')
+      };
+    });
+    
+    // Provider comparison
+    Object.keys(this.providerData).forEach(provider => {
+      const data = this.providerData[provider];
+      matrix.providerComparison[provider] = {
+        fiatCount: data.fiat.length,
+        cryptoCount: data.crypto.length,
+        onRampFiat: data.fiat.filter(f => f.rampType.includes('ON')).length,
+        offRampFiat: data.fiat.filter(f => f.rampType.includes('OFF')).length,
+        onRampCrypto: data.crypto.filter(c => c.rampType.includes('ON')).length,
+        offRampCrypto: data.crypto.filter(c => c.rampType.includes('OFF')).length
+      };
+    });
+    
+    return matrix;
+  }
+}
+
+// Usage
+const analyzer = new CurrencyAnalyzer('YOUR_API_KEY');
+await analyzer.loadAllProviders();
+
+// Get all supported fiat currencies for buying crypto
+const onRampFiat = analyzer.getSupportedFiatCurrencies('ON');
+console.log('On-ramp fiat currencies:', onRampFiat);
+
+// Get all supported cryptocurrencies for selling
+const offRampCrypto = analyzer.getSupportedCryptocurrencies('OFF');
+console.log('Off-ramp cryptocurrencies:', offRampCrypto);
+
+// Find best provider for USD to ETH on Ethereum
+const providers = analyzer.findBestProvider('USD', 'ETH', 'ethereum', 'ON');
+console.log('Providers supporting USD to ETH:', providers);
+
+// Generate comprehensive currency matrix
+const matrix = analyzer.generateCurrencyMatrix();
+console.log('Currency support matrix:', matrix);
+```
+
+```python Python
+import requests
+from collections import defaultdict
+
+class CurrencyAnalyzer:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.provider_data = {}
+    
+    def load_all_providers(self):
+        """Load currency data for all providers"""
+        providers = ['TRANSAK', 'MOONPAY', 'RAMP_NETWORK']
+        
+        for provider in providers:
+            try:
+                response = requests.get(
+                    f'/fiat-ramp/{provider}/currencies',
+                    headers={'Authorization': f'Bearer {self.api_key}'}
+                )
+                
+                data = response.json()
+                self.provider_data[provider] = data['result']
+                
+                print(f'Loaded {provider}: {len(data["result"]["fiat"])} fiat, {len(data["result"]["crypto"])} crypto')
+            except Exception as error:
+                print(f'Failed to load {provider}: {error}')
+    
+    def get_supported_fiat_currencies(self, ramp_type=None):
+        """Get all supported fiat currencies across providers"""
+        all_fiat = {}
+        
+        for provider, data in self.provider_data.items():
+            for currency in data['fiat']:
+                if not ramp_type or ramp_type in currency['rampType']:
+                    symbol = currency['symbol']
+                    
+                    if symbol not in all_fiat:
+                        all_fiat[symbol] = {
+                            **currency,
+                            'providers': []
+                        }
+                    
+                    all_fiat[symbol]['providers'].append(provider)
+        
+        return sorted(all_fiat.values(), key=lambda x: x['symbol'])
+    
+    def get_supported_cryptocurrencies(self, ramp_type=None, network=None):
+        """Get all supported cryptocurrencies across providers"""
+        all_crypto = {}
+        
+        for provider, data in self.provider_data.items():
+            for currency in data['crypto']:
+                matches_ramp_type = not ramp_type or ramp_type in currency['rampType']
+                matches_network = not network or currency['network'] == network
+                
+                if matches_ramp_type and matches_network:
+                    key = f"{currency['symbol']}-{currency['network']}"
+                    
+                    if key not in all_crypto:
+                        all_crypto[key] = {
+                            **currency,
+                            'providers': []
+                        }
+                    
+                    all_crypto[key]['providers'].append(provider)
+        
+        return sorted(all_crypto.values(), key=lambda x: x['symbol'])
+    
+    def find_best_provider(self, fiat_symbol, crypto_symbol, crypto_network, ramp_type):
+        """Find providers that support a specific currency pair"""
+        providers = []
+        
+        for provider, data in self.provider_data.items():
+            supports_fiat = any(
+                f['symbol'] == fiat_symbol and ramp_type in f['rampType']
+                for f in data['fiat']
+            )
+            
+            supports_crypto = any(
+                c['symbol'] == crypto_symbol and 
+                c['network'] == crypto_network and 
+                ramp_type in c['rampType']
+                for c in data['crypto']
+            )
+            
+            if supports_fiat and supports_crypto:
+                providers.append(provider)
+        
+        return providers
+    
+    def generate_currency_matrix(self):
+        """Generate comprehensive currency support matrix"""
+        matrix = {
+            'fiat_support': {},
+            'crypto_support': {},
+            'provider_comparison': {}
+        }
+        
+        # Analyze fiat support
+        all_fiat = self.get_supported_fiat_currencies()
+        for currency in all_fiat:
+            matrix['fiat_support'][currency['symbol']] = {
+                'name': currency['name'],
+                'providers': currency['providers'],
+                'on_ramp': 'ON' in currency['rampType'],
+                'off_ramp': 'OFF' in currency['rampType']
+            }
+        
+        # Analyze crypto support
+        all_crypto = self.get_supported_cryptocurrencies()
+        for currency in all_crypto:
+            key = f"{currency['symbol']}-{currency['network']}"
+            matrix['crypto_support'][key] = {
+                'name': currency['name'],
+                'symbol': currency['symbol'],
+                'network': currency['network'],
+                'providers': currency['providers'],
+                'on_ramp': 'ON' in currency['rampType'],
+                'off_ramp': 'OFF' in currency['rampType']
+            }
+        
+        # Provider comparison
+        for provider, data in self.provider_data.items():
+            matrix['provider_comparison'][provider] = {
+                'fiat_count': len(data['fiat']),
+                'crypto_count': len(data['crypto']),
+                'on_ramp_fiat': len([f for f in data['fiat'] if 'ON' in f['rampType']]),
+                'off_ramp_fiat': len([f for f in data['fiat'] if 'OFF' in f['rampType']]),
+                'on_ramp_crypto': len([c for c in data['crypto'] if 'ON' in c['rampType']]),
+                'off_ramp_crypto': len([c for c in data['crypto'] if 'OFF' in c['rampType']])
+            }
+        
+        return matrix
+
+# Usage
+analyzer = CurrencyAnalyzer('YOUR_API_KEY')
+analyzer.load_all_providers()
+
+# Get supported currencies
+on_ramp_fiat = analyzer.get_supported_fiat_currencies('ON')
+print('On-ramp fiat currencies:', on_ramp_fiat)
+
+# Find best provider
+providers = analyzer.find_best_provider('USD', 'ETH', 'ethereum', 'ON')
+print('Providers supporting USD to ETH:', providers)
+
+# Generate matrix
+matrix = analyzer.generate_currency_matrix()
+print('Currency support matrix:', matrix)
+```
+</CodeGroup>
+
+## Advanced Currency Management
+
+<AccordionGroup>
+  <Accordion title="Dynamic Currency Selection" icon="list">
+    **Build dynamic currency selection interfaces:**
+    
+    ```javascript
+    class CurrencySelector {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.currencies = {};
+        this.selectedProvider = null;
+      }
+    
+      async loadCurrencies(provider) {
+        try {
+          const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          this.currencies[provider] = data.result;
+          this.selectedProvider = provider;
+          
+          return data.result;
+        } catch (error) {
+          console.error(`Failed to load currencies for ${provider}:`, error);
+          throw error;
+        }
+      }
+    
+      getFiatOptions(rampType = null) {
+        if (!this.selectedProvider || !this.currencies[this.selectedProvider]) {
+          return [];
+        }
+        
+        const fiatCurrencies = this.currencies[this.selectedProvider].fiat;
+        
+        return fiatCurrencies
+          .filter(currency => !rampType || currency.rampType.includes(rampType))
+          .map(currency => ({
+            value: currency.symbol,
+            label: `${currency.name} (${currency.symbol})`,
+            rampTypes: currency.rampType
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label));
+      }
+    
+      getCryptoOptions(rampType = null, networkFilter = null) {
+        if (!this.selectedProvider || !this.currencies[this.selectedProvider]) {
+          return [];
+        }
+        
+        const cryptoCurrencies = this.currencies[this.selectedProvider].crypto;
+        
+        return cryptoCurrencies
+          .filter(currency => {
+            const matchesRampType = !rampType || currency.rampType.includes(rampType);
+            const matchesNetwork = !networkFilter || currency.network === networkFilter;
+            return matchesRampType && matchesNetwork;
+          })
+          .map(currency => ({
+            value: currency.symbol,
+            network: currency.network,
+            label: `${currency.name} (${currency.symbol}) - ${currency.network}`,
+            rampTypes: currency.rampType,
+            chainId: currency.chainId
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label));
+      }
+    
+      getNetworkOptions(cryptoSymbol = null) {
+        if (!this.selectedProvider || !this.currencies[this.selectedProvider]) {
+          return [];
+        }
+        
+        const cryptoCurrencies = this.currencies[this.selectedProvider].crypto;
+        const networks = new Set();
+        
+        cryptoCurrencies
+          .filter(currency => !cryptoSymbol || currency.symbol === cryptoSymbol)
+          .forEach(currency => networks.add(currency.network));
+        
+        return Array.from(networks).sort();
+      }
+    
+      validateCurrencyPair(fiatSymbol, cryptoSymbol, cryptoNetwork, rampType) {
+        if (!this.selectedProvider || !this.currencies[this.selectedProvider]) {
+          return { valid: false, error: 'No provider selected' };
+        }
+        
+        const data = this.currencies[this.selectedProvider];
+        
+        // Check fiat support
+        const fiatSupported = data.fiat.some(f => 
+          f.symbol === fiatSymbol && f.rampType.includes(rampType)
+        );
+        
+        if (!fiatSupported) {
+          return { 
+            valid: false, 
+            error: `${fiatSymbol} not supported for ${rampType.toLowerCase()}-ramp` 
+          };
+        }
+        
+        // Check crypto support
+        const cryptoSupported = data.crypto.some(c => 
+          c.symbol === cryptoSymbol && 
+          c.network === cryptoNetwork && 
+          c.rampType.includes(rampType)
+        );
+        
+        if (!cryptoSupported) {
+          return { 
+            valid: false, 
+            error: `${cryptoSymbol} on ${cryptoNetwork} not supported for ${rampType.toLowerCase()}-ramp` 
+          };
+        }
+        
+        return { valid: true };
+      }
+    }
+    
+    // Usage in React component
+    const selector = new CurrencySelector('YOUR_API_KEY');
+    
+    // Load currencies for a provider
+    await selector.loadCurrencies('TRANSAK');
+    
+    // Get fiat options for buying crypto
+    const fiatOptions = selector.getFiatOptions('ON');
+    
+    // Get crypto options for selling
+    const cryptoOptions = selector.getCryptoOptions('OFF');
+    
+    // Get available networks for ETH
+    const ethNetworks = selector.getNetworkOptions('ETH');
+    
+    // Validate currency pair
+    const validation = selector.validateCurrencyPair('USD', 'ETH', 'ethereum', 'ON');
+    console.log('Validation result:', validation);
+    ```
+  </Accordion>
+  
+  <Accordion title="Provider Comparison" icon="balance-scale">
+    **Compare currency support across providers:**
+    
+    ```javascript
+    class ProviderComparator {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.providerData = {};
+      }
+    
+      async loadAllProviders() {
+        const providers = ['TRANSAK', 'MOONPAY', 'RAMP_NETWORK'];
+        const loadPromises = providers.map(async provider => {
+          try {
+            const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+              headers: { 'Authorization': `Bearer ${this.apiKey}` }
+            });
+            const data = await response.json();
+            this.providerData[provider] = data.result;
+          } catch (error) {
+            console.error(`Failed to load ${provider}:`, error);
+          }
+        });
+        
+        await Promise.all(loadPromises);
+      }
+    
+      compareProviders() {
+        const comparison = {
+          overview: {},
+          fiatSupport: {},
+          cryptoSupport: {},
+          uniqueCurrencies: {}
+        };
+        
+        // Provider overview
+        Object.entries(this.providerData).forEach(([provider, data]) => {
+          comparison.overview[provider] = {
+            totalFiat: data.fiat.length,
+            totalCrypto: data.crypto.length,
+            onRampFiat: data.fiat.filter(f => f.rampType.includes('ON')).length,
+            offRampFiat: data.fiat.filter(f => f.rampType.includes('OFF')).length,
+            onRampCrypto: data.crypto.filter(c => c.rampType.includes('ON')).length,
+            offRampCrypto: data.crypto.filter(c => c.rampType.includes('OFF')).length
+          };
+        });
+        
+        // Fiat currency comparison
+        const allFiatSymbols = new Set();
+        Object.values(this.providerData).forEach(data => {
+          data.fiat.forEach(f => allFiatSymbols.add(f.symbol));
+        });
+        
+        allFiatSymbols.forEach(symbol => {
+          comparison.fiatSupport[symbol] = {};
+          Object.entries(this.providerData).forEach(([provider, data]) => {
+            const currency = data.fiat.find(f => f.symbol === symbol);
+            comparison.fiatSupport[symbol][provider] = currency ? {
+              supported: true,
+              name: currency.name,
+              rampTypes: currency.rampType
+            } : { supported: false };
+          });
+        });
+        
+        // Crypto currency comparison
+        const allCryptoKeys = new Set();
+        Object.values(this.providerData).forEach(data => {
+          data.crypto.forEach(c => allCryptoKeys.add(`${c.symbol}-${c.network}`));
+        });
+        
+        allCryptoKeys.forEach(key => {
+          const [symbol, network] = key.split('-');
+          comparison.cryptoSupport[key] = {};
+          Object.entries(this.providerData).forEach(([provider, data]) => {
+            const currency = data.crypto.find(c => c.symbol === symbol && c.network === network);
+            comparison.cryptoSupport[key][provider] = currency ? {
+              supported: true,
+              name: currency.name,
+              rampTypes: currency.rampType,
+              chainId: currency.chainId
+            } : { supported: false };
+          });
+        });
+        
+        // Find unique currencies per provider
+        Object.entries(this.providerData).forEach(([provider, data]) => {
+          comparison.uniqueCurrencies[provider] = {
+            fiat: [],
+            crypto: []
+          };
+          
+          // Unique fiat currencies
+          data.fiat.forEach(currency => {
+            const isUnique = !Object.entries(this.providerData)
+              .filter(([p]) => p !== provider)
+              .some(([, otherData]) => 
+                otherData.fiat.some(f => f.symbol === currency.symbol)
+              );
+            
+            if (isUnique) {
+              comparison.uniqueCurrencies[provider].fiat.push(currency);
+            }
+          });
+          
+          // Unique crypto currencies
+          data.crypto.forEach(currency => {
+            const key = `${currency.symbol}-${currency.network}`;
+            const isUnique = !Object.entries(this.providerData)
+              .filter(([p]) => p !== provider)
+              .some(([, otherData]) => 
+                otherData.crypto.some(c => `${c.symbol}-${c.network}` === key)
+              );
+            
+            if (isUnique) {
+              comparison.uniqueCurrencies[provider].crypto.push(currency);
+            }
+          });
+        });
+        
+        return comparison;
+      }
+    
+      findBestProviderForPair(fiatSymbol, cryptoSymbol, cryptoNetwork, rampType) {
+        const supportingProviders = [];
+        
+        Object.entries(this.providerData).forEach(([provider, data]) => {
+          const fiatSupported = data.fiat.some(f => 
+            f.symbol === fiatSymbol && f.rampType.includes(rampType)
+          );
+          
+          const cryptoSupported = data.crypto.some(c => 
+            c.symbol === cryptoSymbol && 
+            c.network === cryptoNetwork && 
+            c.rampType.includes(rampType)
+          );
+          
+          if (fiatSupported && cryptoSupported) {
+            supportingProviders.push({
+              provider,
+              fiatCurrencies: data.fiat.length,
+              cryptoCurrencies: data.crypto.length,
+              // Add scoring logic here
+              score: this.calculateProviderScore(provider, fiatSymbol, cryptoSymbol)
+            });
+          }
+        });
+        
+        return supportingProviders.sort((a, b) => b.score - a.score);
+      }
+    
+      calculateProviderScore(provider, fiatSymbol, cryptoSymbol) {
+        // Implement scoring logic based on:
+        // - Provider reliability
+        // - Fee structure
+        // - Processing time
+        // - User experience
+        
+        const baseScores = {
+          'TRANSAK': 85,
+          'MOONPAY': 90,
+          'RAMP_NETWORK': 80
+        };
+        
+        return baseScores[provider] || 50;
+      }
+    }
+    
+    // Usage
+    const comparator = new ProviderComparator('YOUR_API_KEY');
+    await comparator.loadAllProviders();
+    
+    const comparison = comparator.compareProviders();
+    console.log('Provider comparison:', comparison);
+    
+    const bestProviders = comparator.findBestProviderForPair('USD', 'ETH', 'ethereum', 'ON');
+    console.log('Best providers for USD to ETH:', bestProviders);
+    ```
+  </Accordion>
+  
+  <Accordion title="Currency Caching" icon="database">
+    **Implement efficient currency data caching:**
+    
+    ```javascript
+    class CurrencyCache {
+      constructor(apiKey, cacheTimeout = 3600000) { // 1 hour default
+        this.apiKey = apiKey;
+        this.cacheTimeout = cacheTimeout;
+        this.cache = new Map();
+        this.lastUpdated = new Map();
+      }
+    
+      async getCurrencies(provider, forceRefresh = false) {
+        const cacheKey = provider;
+        const now = Date.now();
+        const lastUpdate = this.lastUpdated.get(cacheKey) || 0;
+        
+        // Check if cache is valid
+        if (!forceRefresh && this.cache.has(cacheKey) && (now - lastUpdate) < this.cacheTimeout) {
+          console.log(`Using cached data for ${provider}`);
+          return this.cache.get(cacheKey);
+        }
+        
+        // Fetch fresh data
+        console.log(`Fetching fresh data for ${provider}`);
+        try {
+          const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          
+          // Update cache
+          this.cache.set(cacheKey, data.result);
+          this.lastUpdated.set(cacheKey, now);
+          
+          return data.result;
+        } catch (error) {
+          // Return cached data if available, otherwise throw error
+          if (this.cache.has(cacheKey)) {
+            console.warn(`API failed, using stale cache for ${provider}`);
+            return this.cache.get(cacheKey);
+          }
+          throw error;
+        }
+      }
+    
+      async preloadAllProviders() {
+        const providers = ['TRANSAK', 'MOONPAY', 'RAMP_NETWORK'];
+        const loadPromises = providers.map(provider => 
+          this.getCurrencies(provider).catch(error => {
+            console.error(`Failed to preload ${provider}:`, error);
+            return null;
+          })
+        );
+        
+        const results = await Promise.all(loadPromises);
+        const successful = results.filter(result => result !== null);
+        
+        console.log(`Preloaded ${successful.length}/${providers.length} providers`);
+        return successful.length;
+      }
+    
+      clearCache(provider = null) {
+        if (provider) {
+          this.cache.delete(provider);
+          this.lastUpdated.delete(provider);
+          console.log(`Cleared cache for ${provider}`);
+        } else {
+          this.cache.clear();
+          this.lastUpdated.clear();
+          console.log('Cleared all cache');
+        }
+      }
+    
+      getCacheStatus() {
+        const status = {};
+        const now = Date.now();
+        
+        for (const [provider, lastUpdate] of this.lastUpdated.entries()) {
+          const age = now - lastUpdate;
+          const isValid = age < this.cacheTimeout;
+          
+          status[provider] = {
+            cached: this.cache.has(provider),
+            lastUpdated: new Date(lastUpdate).toISOString(),
+            ageMs: age,
+            isValid,
+            expiresIn: isValid ? this.cacheTimeout - age : 0
+          };
+        }
+        
+        return status;
+      }
+    }
+    
+    // Usage
+    const cache = new CurrencyCache('YOUR_API_KEY', 1800000); // 30 minutes
+    
+    // Preload all providers
+    await cache.preloadAllProviders();
+    
+    // Get currencies (will use cache if available)
+    const transakCurrencies = await cache.getCurrencies('TRANSAK');
+    
+    // Force refresh
+    const freshData = await cache.getCurrencies('MOONPAY', true);
+    
+    // Check cache status
+    const status = cache.getCacheStatus();
+    console.log('Cache status:', status);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Common Use Cases
+
+<Tabs>
+  <Tab title="Currency Dropdown">
+    **Building dynamic currency selection:**
+    
+    ```javascript
+    // React component example
+    function CurrencyDropdown({ provider, rampType, onCurrencyChange }) {
+      const [currencies, setCurrencies] = useState([]);
+      const [loading, setLoading] = useState(true);
+      
+      useEffect(() => {
+        async function loadCurrencies() {
+          try {
+            const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+              headers: { 'Authorization': `Bearer ${API_KEY}` }
+            });
+            
+            const data = await response.json();
+            
+            // Filter currencies based on ramp type
+            const filteredFiat = data.result.fiat.filter(currency =>
+              currency.rampType.includes(rampType)
+            );
+            
+            setCurrencies(filteredFiat);
+          } catch (error) {
+            console.error('Failed to load currencies:', error);
+          } finally {
+            setLoading(false);
+          }
+        }
+        
+        loadCurrencies();
+      }, [provider, rampType]);
+      
+      if (loading) return <div>Loading currencies...</div>;
+      
+      return (
+        <select onChange={(e) => onCurrencyChange(e.target.value)}>
+          <option value="">Select Currency</option>
+          {currencies.map(currency => (
+            <option key={currency.symbol} value={currency.symbol}>
+              {currency.name} ({currency.symbol})
+            </option>
+          ))}
+        </select>
+      );
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Provider Selection">
+    **Choosing the best provider for a currency pair:**
+    
+    ```javascript
+    async function selectBestProvider(fiatSymbol, cryptoSymbol, cryptoNetwork, rampType) {
+      const providers = ['TRANSAK', 'MOONPAY', 'RAMP_NETWORK'];
+      const supportingProviders = [];
+      
+      for (const provider of providers) {
+        try {
+          const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+            headers: { 'Authorization': `Bearer ${API_KEY}` }
+          });
+          
+          const data = await response.json();
+          
+          const supportsFiat = data.result.fiat.some(f =>
+            f.symbol === fiatSymbol && f.rampType.includes(rampType)
+          );
+          
+          const supportsCrypto = data.result.crypto.some(c =>
+            c.symbol === cryptoSymbol &&
+            c.network === cryptoNetwork &&
+            c.rampType.includes(rampType)
+          );
+          
+          if (supportsFiat && supportsCrypto) {
+            supportingProviders.push({
+              provider,
+              fiatCount: data.result.fiat.length,
+              cryptoCount: data.result.crypto.length
+            });
+          }
+        } catch (error) {
+          console.error(`Failed to check ${provider}:`, error);
+        }
+      }
+      
+      // Sort by total currency support (or implement your own scoring)
+      supportingProviders.sort((a, b) => 
+        (b.fiatCount + b.cryptoCount) - (a.fiatCount + a.cryptoCount)
+      );
+      
+      return supportingProviders;
+    }
+    
+    // Usage
+    const providers = await selectBestProvider('USD', 'ETH', 'ethereum', 'ON');
+    console.log('Best providers:', providers);
+    ```
+  </Tab>
+  
+  <Tab title="Validation">
+    **Validating currency pairs before creating ramp URLs:**
+    
+    ```javascript
+    async function validateCurrencyPair(provider, fiatSymbol, cryptoSymbol, cryptoNetwork, rampType) {
+      try {
+        const response = await fetch(`/fiat-ramp/${provider}/currencies`, {
+          headers: { 'Authorization': `Bearer ${API_KEY}` }
+        });
+        
+        const data = await response.json();
+        
+        // Validate fiat currency
+        const fiatCurrency = data.result.fiat.find(f => f.symbol === fiatSymbol);
+        if (!fiatCurrency) {
+          return {
+            valid: false,
+            error: `Fiat currency ${fiatSymbol} not supported by ${provider}`
+          };
+        }
+        
+        if (!fiatCurrency.rampType.includes(rampType)) {
+          return {
+            valid: false,
+            error: `${fiatSymbol} does not support ${rampType.toLowerCase()}-ramp on ${provider}`
+          };
+        }
+        
+        // Validate cryptocurrency
+        const cryptoCurrency = data.result.crypto.find(c =>
+          c.symbol === cryptoSymbol && c.network === cryptoNetwork
+        );
+        
+        if (!cryptoCurrency) {
+          return {
+            valid: false,
+            error: `Cryptocurrency ${cryptoSymbol} on ${cryptoNetwork} not supported by ${provider}`
+          };
+        }
+        
+        if (!cryptoCurrency.rampType.includes(rampType)) {
+          return {
+            valid: false,
+            error: `${cryptoSymbol} on ${cryptoNetwork} does not support ${rampType.toLowerCase()}-ramp on ${provider}`
+          };
+        }
+        
+        return {
+          valid: true,
+          fiatCurrency,
+          cryptoCurrency
+        };
+        
+      } catch (error) {
+        return {
+          valid: false,
+          error: `Failed to validate currencies: ${error.message}`
+        };
+      }
+    }
+    
+    // Usage
+    const validation = await validateCurrencyPair(
+      'TRANSAK',
+      'USD',
+      'ETH',
+      'ethereum',
+      'ON'
+    );
+    
+    if (validation.valid) {
+      console.log('Currency pair is valid');
+      // Proceed with creating ramp URL
+    } else {
+      console.error('Validation failed:', validation.error);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Currency Management Best Practices:**
+
+1. **Cache Currency Data** - Currency lists change infrequently, implement caching to reduce API calls
+2. **Validate Before Use** - Always validate currency pairs before creating ramp URLs
+3. **Handle Provider Differences** - Each provider has different currency support and capabilities
+4. **Update Regularly** - Refresh currency data periodically as providers add new currencies
+5. **Fallback Providers** - Implement fallback logic when preferred providers don't support a currency pair
+6. **User Experience** - Show only available currencies to users based on their selected ramp type
+7. **Error Handling** - Gracefully handle API failures and provide meaningful error messages
+8. **Performance** - Load currency data asynchronously and show loading states
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Fiat On-Ramps" href="/guides/pay-api/fiat-ramps/fiat-on-ramps" icon="arrow-up">
+    Create buy crypto URLs with supported currencies
+  </Card>
+  <Card title="Fiat Off-Ramps" href="/guides/pay-api/fiat-ramps/fiat-off-ramps" icon="arrow-down">
+    Create sell crypto URLs with supported currencies
+  </Card>
+  <Card title="Ramp Configuration" href="/guides/pay-api/fiat-ramps/fiat-on-off-ramps-configuration" icon="gear">
+    Configure ramp settings and parameters
+  </Card>
+  <Card title="API Reference" href="/api-reference/pay-api/fiat-ramps" icon="book">
+    Explore the complete fiat ramp API documentation
+  </Card>
+</CardGroup>

@@ -1,0 +1,418 @@
+---
+title: "Check Contract Status"
+description: "Learn how to monitor the on-chain deployment status of your NFT contract/collection"
+icon: "magnifying-glass"
+---
+
+<Info>
+**Status Monitoring:** Track the deployment progress of your NFT contracts and get real-time updates on blockchain confirmation status.
+
+**Time required:** ~2 minutes
+</Info>
+
+## What is Contract Status Checking?
+
+Contract status checking allows you to monitor the on-chain deployment progress of your NFT contract/collection. Since blockchain deployments are asynchronous, this endpoint helps you track when your contract is successfully deployed and ready to use.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Tracking" icon="chart-line">
+    Monitor deployment progress in real-time
+  </Card>
+  <Card title="Status Updates" icon="refresh">
+    Get current deployment status and details
+  </Card>
+  <Card title="Error Detection" icon="exclamation-triangle">
+    Identify and troubleshoot deployment issues
+  </Card>
+  <Card title="Contract Details" icon="info">
+    Retrieve complete contract information once deployed
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Contract Deployment" icon="file-contract">
+    You must have initiated a contract deployment using the [create contract endpoint](https://docs.venly.io/docs/create-contract)
+  </Step>
+  <Step title="Deployment ID" icon="key">
+    Save the `result.id` from the contract creation response - this is your **deployment ID**
+  </Step>
+  <Step title="API Access" icon="shield">
+    Ensure you have valid API credentials for making requests
+  </Step>
+</Steps>
+
+<Note>
+The deployment ID is returned as `result.id` in the response body when you create a contract. This unique identifier is required to check the deployment status.
+</Note>
+
+## Check Contract Status
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const deploymentId = "ec5fdbd8-ca5e-4cf1-94aa-843dcc4e0dcc";
+
+const response = await fetch(`/api/v3/erc1155/contracts/deployments/${deploymentId}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  }
+});
+
+const data = await response.json();
+console.log('Contract status:', data.result.status);
+console.log('Contract address:', data.result.address);
+```
+
+```python Python
+import requests
+
+deployment_id = "ec5fdbd8-ca5e-4cf1-94aa-843dcc4e0dcc"
+
+response = requests.get(
+    f'/api/v3/erc1155/contracts/deployments/{deployment_id}',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    }
+)
+
+data = response.json()
+print('Contract status:', data['result']['status'])
+print('Contract address:', data['result']['address'])
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc1155/contracts/deployments/ec5fdbd8-ca5e-4cf1-94aa-843dcc4e0dcc' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+```
+</CodeGroup>
+
+### URL Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `deploymentId` | string | ✅ | The deployment ID from contract creation response (`result.id`) |
+
+## Understanding Status Values
+
+<Tabs>
+  <Tab title="Status Types">
+    | Status | Description | Next Steps |
+    |--------|-------------|------------|
+    | `PENDING` | Contract deployment is in progress | Wait and check again in 1-2 minutes |
+    | `SUCCEEDED` | Contract successfully deployed | Contract is ready to use |
+    | `FAILED` | Deployment failed | Check error details and retry |
+  </Tab>
+  <Tab title="Status Timeline">
+    **Typical deployment timeline:**
+    
+    1. **PENDING** (0-5 minutes) - Transaction submitted to blockchain
+    2. **SUCCEEDED** - Contract deployed and confirmed
+    3. **Contract Address Available** - Ready for token-type creation
+  </Tab>
+</Tabs>
+
+<Check>
+**Key Status Field:** Look for the `result.status` parameter in the response body to determine the current deployment state.
+</Check>
+
+## Response Structure
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "name": "NFT Collection",
+        "description": "Sample description",
+        "address": "0xe2a43584f37f9d4a8e446d2e38c37bde0405c75d",
+        "id": "ec5fdbd8-ca5e-4cf1-94aa-843dcc4e0dcc",
+        "chain": "MATIC",
+        "symbol": "NFTC",
+        "externalUrl": "www.venly.io",
+        "image": "https://techround.co.uk/wp-content/uploads/2022/01/Venly-logo.png",
+        "media": [
+          {
+            "type": "instagram",
+            "value": "https://www.instagram.com/venly.market/"
+          }
+        ],
+        "transactionHash": "0xa7f550773dd957f3d586cae27f1ed5142cd48c63888065b00cb25d1c50254c7a",
+        "status": "SUCCEEDED",
+        "storage": {
+          "type": "ipfs",
+          "location": "ipfs://QmTxV2QFBWy7iXnusuLA1qHZAFp5wK3jF8KTQCyvnn4x2T"
+        },
+        "contractUri": "ipfs://QmTxV2QFBWy7iXnusuLA1qHZAFp5wK3jF8KTQCyvnn4x2T",
+        "external_link": "www.venly.io"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields:**
+    - **`status`** - Current deployment status
+    - **`address`** - Contract address (available when SUCCEEDED)
+    - **`transactionHash`** - Blockchain transaction hash
+    - **`chain`** - Blockchain network
+    - **`contractUri`** - Metadata storage location
+    - **`storage`** - Storage type and location details
+  </Tab>
+</Tabs>
+
+## Automated Status Monitoring
+
+### Polling Implementation
+
+<CodeGroup>
+```javascript JavaScript
+async function waitForContractDeployment(deploymentId, maxAttempts = 30) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch(`/api/v3/erc1155/contracts/deployments/${deploymentId}`, {
+        headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+      });
+      
+      const data = await response.json();
+      const status = data.result.status;
+      
+      console.log(`Attempt ${attempt}: Status is ${status}`);
+      
+      if (status === 'SUCCEEDED') {
+        console.log('✅ Contract deployed successfully!');
+        console.log('Contract address:', data.result.address);
+        return data.result;
+      } else if (status === 'FAILED') {
+        console.error('❌ Contract deployment failed');
+        throw new Error('Contract deployment failed');
+      }
+      
+      // Wait 10 seconds before next check
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      
+    } catch (error) {
+      console.error('Error checking status:', error);
+      throw error;
+    }
+  }
+  
+  throw new Error('Contract deployment timeout');
+}
+
+// Usage
+const deploymentId = "ec5fdbd8-ca5e-4cf1-94aa-843dcc4e0dcc";
+const contract = await waitForContractDeployment(deploymentId);
+```
+
+```python Python
+import time
+import requests
+
+def wait_for_contract_deployment(deployment_id, max_attempts=30):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.get(
+                f'/api/v3/erc1155/contracts/deployments/{deployment_id}',
+                headers={'Authorization': 'Bearer YOUR_API_KEY'}
+            )
+            
+            data = response.json()
+            status = data['result']['status']
+            
+            print(f'Attempt {attempt}: Status is {status}')
+            
+            if status == 'SUCCEEDED':
+                print('✅ Contract deployed successfully!')
+                print('Contract address:', data['result']['address'])
+                return data['result']
+            elif status == 'FAILED':
+                print('❌ Contract deployment failed')
+                raise Exception('Contract deployment failed')
+            
+            # Wait 10 seconds before next check
+            time.sleep(10)
+            
+        except Exception as error:
+            print('Error checking status:', error)
+            raise error
+    
+    raise Exception('Contract deployment timeout')
+
+# Usage
+deployment_id = "ec5fdbd8-ca5e-4cf1-94aa-843dcc4e0dcc"
+contract = wait_for_contract_deployment(deployment_id)
+```
+</CodeGroup>
+
+### Best Practices for Polling
+
+<Tip>
+**Polling Optimization:**
+
+1. **Reasonable Intervals** - Check every 10-30 seconds, not more frequently
+2. **Timeout Handling** - Set maximum attempts to avoid infinite loops
+3. **Error Handling** - Handle network errors and API failures gracefully
+4. **User Feedback** - Show progress indicators to users
+5. **Webhook Alternative** - Consider using webhooks for real-time notifications
+</Tip>
+
+## Status-Based Actions
+
+<AccordionGroup>
+  <Accordion title="When Status is PENDING" icon="clock">
+    **Actions to take:**
+    - Continue monitoring the deployment
+    - Show loading indicators to users
+    - Avoid making additional deployment requests
+    - Be patient - blockchain confirmations take time
+    
+    **Typical duration:**
+    - Testnets: 1-3 minutes
+    - Mainnets: 2-10 minutes (depending on network congestion)
+  </Accordion>
+  
+  <Accordion title="When Status is SUCCEEDED" icon="check">
+    **Actions to take:**
+    - Save the contract address for future use
+    - Proceed with token-type creation
+    - Update your application state
+    - Notify users of successful deployment
+    
+    **Available data:**
+    - Contract address
+    - Transaction hash
+    - Contract metadata URI
+    - Complete contract details
+  </Accordion>
+  
+  <Accordion title="When Status is FAILED" icon="x">
+    **Actions to take:**
+    - Check error details in the response
+    - Verify deployment parameters
+    - Retry deployment if necessary
+    - Contact support if issues persist
+    
+    **Common failure causes:**
+    - Network congestion
+    - Insufficient gas fees
+    - Invalid parameters
+    - Blockchain connectivity issues
+  </Accordion>
+</AccordionGroup>
+
+## Integration with Webhooks
+
+<Note>
+For real-time notifications without polling, consider setting up [webhooks](https://docs.venly.io/docs/webhooks-nft-api) to receive automatic status updates when your contract deployment completes.
+</Note>
+
+<CodeGroup>
+```javascript JavaScript
+// Webhook handler for contract deployment events
+app.post('/webhooks/nft-api', (req, res) => {
+  const { eventType, result } = req.body;
+  
+  if (eventType === 'CONTRACT_CREATION_SUCCEEDED') {
+    console.log('Contract deployed:', result.address);
+    // Update your database, notify users, etc.
+    handleContractSuccess(result);
+  } else if (eventType === 'CONTRACT_CREATION_FAILED') {
+    console.error('Contract deployment failed:', result.id);
+    // Handle failure, retry logic, etc.
+    handleContractFailure(result);
+  }
+  
+  res.status(200).send('OK');
+});
+```
+
+```python Python
+from flask import Flask, request
+
+@app.route('/webhooks/nft-api', methods=['POST'])
+def handle_webhook():
+    data = request.get_json()
+    event_type = data.get('eventType')
+    result = data.get('result')
+    
+    if event_type == 'CONTRACT_CREATION_SUCCEEDED':
+        print('Contract deployed:', result.get('address'))
+        # Update your database, notify users, etc.
+        handle_contract_success(result)
+    elif event_type == 'CONTRACT_CREATION_FAILED':
+        print('Contract deployment failed:', result.get('id'))
+        # Handle failure, retry logic, etc.
+        handle_contract_failure(result)
+    
+    return {'status': 'success'}, 200
+```
+</CodeGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Status stuck on PENDING">
+    **Possible causes:**
+    - Network congestion causing delays
+    - Low gas price causing transaction delays
+    - Blockchain connectivity issues
+    
+    **Solution:** Wait longer (up to 15 minutes on mainnet) or check the transaction hash on a blockchain explorer.
+  </Accordion>
+  
+  <Accordion title="Deployment ID not found">
+    **Possible causes:**
+    - Incorrect deployment ID
+    - Deployment ID from different environment
+    - Very old deployment (beyond retention period)
+    
+    **Solution:** Verify the deployment ID from your contract creation response and ensure you're using the correct environment.
+  </Accordion>
+  
+  <Accordion title="Status shows FAILED">
+    **Common causes:**
+    - Insufficient gas fees
+    - Network congestion
+    - Invalid contract parameters
+    - Blockchain network issues
+    
+    **Solution:** Check the error details, verify parameters, and retry deployment with adjusted settings.
+  </Accordion>
+  
+  <Accordion title="Contract address not available">
+    **Possible causes:**
+    - Status is still PENDING
+    - Deployment failed
+    - Response parsing error
+    
+    **Solution:** Ensure status is SUCCEEDED before accessing the contract address field.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create Token Types" href="/guides/nft-api/token-types/create-nft-template" icon="shapes">
+    Use your deployed contract to create NFT templates
+  </Card>
+  <Card title="Update Contract Metadata" href="/NFT-API-Basic-Guides/update-contract-metadata" icon="pen">
+    Modify your contract's metadata and settings
+  </Card>
+  <Card title="Set Up Webhooks" href="/guides/nft-api/advanced/webhooks-nft-api" icon="webhook">
+    Get real-time notifications for contract events
+  </Card>
+  <Card title="View on Blockchain" icon="external-link">
+    Check your contract on Polygonscan or Etherscan using the contract address
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Don't proceed with token-type creation or minting until the contract status shows `SUCCEEDED` and you have a valid contract address.
+</Warning>

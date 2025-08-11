@@ -1,0 +1,912 @@
+---
+title: "Retrieve Contract Metadata"
+description: "Comprehensive guide to retrieving and managing NFT contract metadata with validation, caching, and analytics capabilities"
+icon: "tags"
+---
+
+<Info>
+**Contract Metadata:** Access detailed metadata information for NFT contracts including names, descriptions, images, social media links, and custom properties.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Contract Metadata?
+
+Contract metadata contains descriptive information about your NFT collection, including the collection name, symbol, description, images, external links, and social media connections. This metadata is crucial for how your NFT collection appears in marketplaces, wallets, and other applications, providing context and branding for your digital assets.
+
+<CardGroup cols={2}>
+  <Card title="Collection Branding" icon="palette">
+    Names, symbols, descriptions, and visual assets
+  </Card>
+  <Card title="External Links" icon="link">
+    Website URLs and social media connections
+  </Card>
+  <Card title="Media Assets" icon="image">
+    Collection images, logos, and promotional media
+  </Card>
+  <Card title="Custom Properties" icon="gear">
+    Additional metadata fields and attributes
+  </Card>
+</CardGroup>
+
+## Metadata Components
+
+<Tabs>
+  <Tab title="Basic Information">
+    **Core Metadata Fields:**
+    - **Name**: Collection display name
+    - **Symbol**: Short identifier (e.g., "VNFT")
+    - **Description**: Detailed collection description
+    - **External URL**: Primary website or landing page
+    
+    **Use Cases:**
+    - Marketplace listings and displays
+    - Wallet integration and identification
+    - SEO and discoverability
+    - Brand consistency across platforms
+  </Tab>
+  <Tab title="Visual Assets">
+    **Image and Media:**
+    - **Collection Image**: Primary visual representation
+    - **Banner Images**: Promotional and header images
+    - **Logo Variants**: Different sizes and formats
+    - **Media Gallery**: Additional promotional content
+    
+    **Use Cases:**
+    - Marketplace thumbnails and headers
+    - Social media sharing
+    - Marketing and promotional materials
+    - Brand recognition and consistency
+  </Tab>
+  <Tab title="Social Media">
+    **External Connections:**
+    - **Social Media Links**: Twitter, Instagram, Discord
+    - **Community Links**: Telegram, Reddit, forums
+    - **Documentation**: Whitepapers, roadmaps
+    - **Marketplace Links**: OpenSea, Rarible profiles
+    
+    **Use Cases:**
+    - Community building and engagement
+    - Cross-platform promotion
+    - Verification and authenticity
+    - User acquisition and retention
+  </Tab>
+</Tabs>
+
+## Retrieve Contract Metadata
+
+<Steps>
+  <Step title="Identify Contract" icon="search">
+    Locate the contract using blockchain and contract address
+    
+    ```javascript
+    const contractInfo = {
+      chain: 'MATIC',
+      contractAddress: '0xfc5500094af58ded18e92da5ff1dd7cc84b74633'
+    };
+    ```
+  </Step>
+  <Step title="Make API Request" icon="code">
+    Call the metadata endpoint to retrieve contract information
+  </Step>
+  <Step title="Process Metadata" icon="gear">
+    Parse and validate the returned metadata structure
+  </Step>
+  <Step title="Implement Display" icon="eye">
+    Use metadata in your application's user interface
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve contract metadata
+const getContractMetadata = async (chain, contractAddress) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/metadata`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Contract metadata retrieved successfully');
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve contract metadata');
+    }
+  } catch (error) {
+    console.error('Error retrieving contract metadata:', error);
+    throw error;
+  }
+};
+
+// Enhanced metadata manager with caching and validation
+class ContractMetadataManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = 10 * 60 * 1000; // 10 minutes
+  }
+
+  async getMetadata(chain, contractAddress, useCache = true) {
+    const cacheKey = `${chain}:${contractAddress}`;
+    
+    // Check cache first
+    if (useCache && this.cache.has(cacheKey)) {
+      const cached = this.cache.get(cacheKey);
+      if (Date.now() - cached.timestamp < this.cacheExpiry) {
+        console.log('Returning cached metadata');
+        return cached.data;
+      }
+    }
+
+    try {
+      const metadata = await getContractMetadata(chain, contractAddress);
+      
+      // Validate metadata structure
+      const validatedMetadata = this.validateMetadata(metadata);
+      
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, {
+          data: validatedMetadata,
+          timestamp: Date.now()
+        });
+      }
+
+      return validatedMetadata;
+    } catch (error) {
+      console.error(`Failed to retrieve metadata for ${contractAddress}:`, error);
+      throw error;
+    }
+  }
+
+  validateMetadata(metadata) {
+    const validated = {
+      name: metadata.name || 'Unnamed Collection',
+      symbol: metadata.symbol || 'UNKNOWN',
+      description: metadata.description || '',
+      externalUrl: this.validateUrl(metadata.externalUrl),
+      image: this.validateUrl(metadata.image),
+      media: this.validateMediaArray(metadata.media || []),
+      external_link: this.validateUrl(metadata.external_link),
+      isComplete: this.assessCompleteness(metadata)
+    };
+
+    return validated;
+  }
+
+  validateUrl(url) {
+    if (!url) return null;
+    
+    try {
+      new URL(url);
+      return url;
+    } catch {
+      console.warn(`Invalid URL detected: ${url}`);
+      return null;
+    }
+  }
+
+  validateMediaArray(media) {
+    if (!Array.isArray(media)) return [];
+    
+    return media.filter(item => {
+      return item && 
+             typeof item.type === 'string' && 
+             typeof item.value === 'string' &&
+             this.validateUrl(item.value);
+    });
+  }
+
+  assessCompleteness(metadata) {
+    const requiredFields = ['name', 'symbol', 'description', 'image'];
+    const optionalFields = ['externalUrl', 'media', 'external_link'];
+    
+    const hasRequired = requiredFields.every(field => 
+      metadata[field] && metadata[field].toString().trim().length > 0
+    );
+    
+    const optionalCount = optionalFields.filter(field => 
+      metadata[field] && 
+      (typeof metadata[field] === 'string' ? metadata[field].trim().length > 0 : 
+       Array.isArray(metadata[field]) ? metadata[field].length > 0 : true)
+    ).length;
+
+    return {
+      hasRequired,
+      completenessScore: ((requiredFields.length + optionalCount) / (requiredFields.length + optionalFields.length) * 100).toFixed(1),
+      missingRequired: requiredFields.filter(field => !metadata[field] || metadata[field].toString().trim().length === 0),
+      suggestions: this.generateSuggestions(metadata)
+    };
+  }
+
+  generateSuggestions(metadata) {
+    const suggestions = [];
+
+    if (!metadata.description || metadata.description.length < 50) {
+      suggestions.push('Add a detailed description (50+ characters) to improve discoverability');
+    }
+
+    if (!metadata.image) {
+      suggestions.push('Add a collection image to improve visual appeal');
+    }
+
+    if (!metadata.externalUrl) {
+      suggestions.push('Add an external URL to drive traffic to your website');
+    }
+
+    if (!metadata.media || metadata.media.length === 0) {
+      suggestions.push('Add social media links to build community engagement');
+    }
+
+    if (metadata.media && metadata.media.length < 3) {
+      suggestions.push('Consider adding more social media links (Twitter, Discord, Instagram)');
+    }
+
+    return suggestions;
+  }
+
+  async analyzeMetadataQuality(chain, contractAddress) {
+    const metadata = await this.getMetadata(chain, contractAddress);
+    
+    const analysis = {
+      contractAddress,
+      chain,
+      metadata,
+      quality: {
+        score: parseFloat(metadata.isComplete.completenessScore),
+        grade: this.getQualityGrade(parseFloat(metadata.isComplete.completenessScore)),
+        hasImage: !!metadata.image,
+        hasDescription: !!metadata.description && metadata.description.length > 0,
+        hasSocialMedia: metadata.media.length > 0,
+        hasExternalUrl: !!metadata.externalUrl
+      },
+      recommendations: metadata.isComplete.suggestions,
+      seoAnalysis: this.analyzeSEO(metadata)
+    };
+
+    return analysis;
+  }
+
+  getQualityGrade(score) {
+    if (score >= 90) return 'A+';
+    if (score >= 80) return 'A';
+    if (score >= 70) return 'B';
+    if (score >= 60) return 'C';
+    if (score >= 50) return 'D';
+    return 'F';
+  }
+
+  analyzeSEO(metadata) {
+    const seo = {
+      titleLength: metadata.name ? metadata.name.length : 0,
+      descriptionLength: metadata.description ? metadata.description.length : 0,
+      hasKeywords: false,
+      readabilityScore: 0,
+      suggestions: []
+    };
+
+    // Title analysis
+    if (seo.titleLength < 10) {
+      seo.suggestions.push('Collection name is too short for optimal SEO');
+    } else if (seo.titleLength > 60) {
+      seo.suggestions.push('Collection name may be too long for search results');
+    }
+
+    // Description analysis
+    if (seo.descriptionLength < 120) {
+      seo.suggestions.push('Description should be at least 120 characters for better SEO');
+    } else if (seo.descriptionLength > 300) {
+      seo.suggestions.push('Description may be too long for optimal engagement');
+    }
+
+    // Keyword analysis (basic)
+    const commonNFTKeywords = ['nft', 'collection', 'digital', 'art', 'token', 'blockchain', 'crypto'];
+    const description = (metadata.description || '').toLowerCase();
+    seo.hasKeywords = commonNFTKeywords.some(keyword => description.includes(keyword));
+
+    if (!seo.hasKeywords) {
+      seo.suggestions.push('Consider including relevant NFT keywords in the description');
+    }
+
+    return seo;
+  }
+
+  clearCache() {
+    this.cache.clear();
+  }
+}
+
+// Usage examples
+const metadataManager = new ContractMetadataManager('YOUR_API_KEY');
+
+// Basic metadata retrieval
+const metadata = await metadataManager.getMetadata('MATIC', '0xfc5500094af58ded18e92da5ff1dd7cc84b74633');
+console.log('Contract metadata:', metadata);
+
+// Quality analysis
+const analysis = await metadataManager.analyzeMetadataQuality('MATIC', '0xfc5500094af58ded18e92da5ff1dd7cc84b74633');
+console.log('Metadata quality analysis:', analysis);
+```
+
+```python Python
+import requests
+import re
+from typing import Dict, List, Any, Optional
+from urllib.parse import urlparse
+from datetime import datetime, timedelta
+
+class ContractMetadataManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.cache = {}
+        self.cache_expiry = timedelta(minutes=10)
+    
+    def get_metadata(self, chain: str, contract_address: str, use_cache: bool = True) -> Dict[str, Any]:
+        """Retrieve contract metadata with caching and validation"""
+        cache_key = f"{chain}:{contract_address}"
+        
+        # Check cache
+        if use_cache and cache_key in self.cache:
+            cached_data, timestamp = self.cache[cache_key]
+            if datetime.now() - timestamp < self.cache_expiry:
+                print('Returning cached metadata')
+                return cached_data
+        
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/metadata'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                metadata = data['result']
+                validated_metadata = self.validate_metadata(metadata)
+                
+                # Cache the result
+                if use_cache:
+                    self.cache[cache_key] = (validated_metadata, datetime.now())
+                
+                return validated_metadata
+            else:
+                raise Exception('Failed to retrieve contract metadata')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving contract metadata: {error}')
+            raise error
+    
+    def validate_metadata(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate and enhance metadata structure"""
+        validated = {
+            'name': metadata.get('name', 'Unnamed Collection'),
+            'symbol': metadata.get('symbol', 'UNKNOWN'),
+            'description': metadata.get('description', ''),
+            'externalUrl': self.validate_url(metadata.get('externalUrl')),
+            'image': self.validate_url(metadata.get('image')),
+            'media': self.validate_media_array(metadata.get('media', [])),
+            'external_link': self.validate_url(metadata.get('external_link')),
+            'isComplete': self.assess_completeness(metadata)
+        }
+        
+        return validated
+    
+    def validate_url(self, url: Optional[str]) -> Optional[str]:
+        """Validate URL format"""
+        if not url:
+            return None
+        
+        try:
+            result = urlparse(url)
+            if all([result.scheme, result.netloc]):
+                return url
+            else:
+                print(f'Invalid URL detected: {url}')
+                return None
+        except Exception:
+            print(f'Invalid URL detected: {url}')
+            return None
+    
+    def validate_media_array(self, media: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Validate media array structure"""
+        if not isinstance(media, list):
+            return []
+        
+        validated_media = []
+        for item in media:
+            if (isinstance(item, dict) and 
+                'type' in item and 
+                'value' in item and 
+                isinstance(item['type'], str) and 
+                isinstance(item['value'], str) and
+                self.validate_url(item['value'])):
+                validated_media.append(item)
+        
+        return validated_media
+    
+    def assess_completeness(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """Assess metadata completeness and generate suggestions"""
+        required_fields = ['name', 'symbol', 'description', 'image']
+        optional_fields = ['externalUrl', 'media', 'external_link']
+        
+        has_required = all(
+            metadata.get(field) and str(metadata[field]).strip()
+            for field in required_fields
+        )
+        
+        optional_count = sum(1 for field in optional_fields if self._has_optional_field(metadata, field))
+        
+        completeness_score = ((len(required_fields) + optional_count) / 
+                            (len(required_fields) + len(optional_fields)) * 100)
+        
+        missing_required = [
+            field for field in required_fields 
+            if not metadata.get(field) or not str(metadata[field]).strip()
+        ]
+        
+        return {
+            'hasRequired': has_required,
+            'completenessScore': round(completeness_score, 1),
+            'missingRequired': missing_required,
+            'suggestions': self.generate_suggestions(metadata)
+        }
+    
+    def _has_optional_field(self, metadata: Dict[str, Any], field: str) -> bool:
+        """Check if optional field has meaningful content"""
+        value = metadata.get(field)
+        if not value:
+            return False
+        
+        if isinstance(value, str):
+            return bool(value.strip())
+        elif isinstance(value, list):
+            return len(value) > 0
+        
+        return True
+    
+    def generate_suggestions(self, metadata: Dict[str, Any]) -> List[str]:
+        """Generate improvement suggestions for metadata"""
+        suggestions = []
+        
+        description = metadata.get('description', '')
+        if not description or len(description) < 50:
+            suggestions.append('Add a detailed description (50+ characters) to improve discoverability')
+        
+        if not metadata.get('image'):
+            suggestions.append('Add a collection image to improve visual appeal')
+        
+        if not metadata.get('externalUrl'):
+            suggestions.append('Add an external URL to drive traffic to your website')
+        
+        media = metadata.get('media', [])
+        if not media:
+            suggestions.append('Add social media links to build community engagement')
+        elif len(media) < 3:
+            suggestions.append('Consider adding more social media links (Twitter, Discord, Instagram)')
+        
+        return suggestions
+    
+    def analyze_metadata_quality(self, chain: str, contract_address: str) -> Dict[str, Any]:
+        """Perform comprehensive metadata quality analysis"""
+        metadata = self.get_metadata(chain, contract_address)
+        
+        completeness_score = metadata['isComplete']['completenessScore']
+        
+        analysis = {
+            'contractAddress': contract_address,
+            'chain': chain,
+            'metadata': metadata,
+            'quality': {
+                'score': completeness_score,
+                'grade': self.get_quality_grade(completeness_score),
+                'hasImage': bool(metadata['image']),
+                'hasDescription': bool(metadata['description']),
+                'hasSocialMedia': len(metadata['media']) > 0,
+                'hasExternalUrl': bool(metadata['externalUrl'])
+            },
+            'recommendations': metadata['isComplete']['suggestions'],
+            'seoAnalysis': self.analyze_seo(metadata)
+        }
+        
+        return analysis
+    
+    def get_quality_grade(self, score: float) -> str:
+        """Convert quality score to letter grade"""
+        if score >= 90:
+            return 'A+'
+        elif score >= 80:
+            return 'A'
+        elif score >= 70:
+            return 'B'
+        elif score >= 60:
+            return 'C'
+        elif score >= 50:
+            return 'D'
+        else:
+            return 'F'
+    
+    def analyze_seo(self, metadata: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze SEO aspects of metadata"""
+        name = metadata.get('name', '')
+        description = metadata.get('description', '')
+        
+        seo = {
+            'titleLength': len(name),
+            'descriptionLength': len(description),
+            'hasKeywords': False,
+            'suggestions': []
+        }
+        
+        # Title analysis
+        if len(name) < 10:
+            seo['suggestions'].append('Collection name is too short for optimal SEO')
+        elif len(name) > 60:
+            seo['suggestions'].append('Collection name may be too long for search results')
+        
+        # Description analysis
+        if len(description) < 120:
+            seo['suggestions'].append('Description should be at least 120 characters for better SEO')
+        elif len(description) > 300:
+            seo['suggestions'].append('Description may be too long for optimal engagement')
+        
+        # Keyword analysis
+        common_nft_keywords = ['nft', 'collection', 'digital', 'art', 'token', 'blockchain', 'crypto']
+        description_lower = description.lower()
+        seo['hasKeywords'] = any(keyword in description_lower for keyword in common_nft_keywords)
+        
+        if not seo['hasKeywords']:
+            seo['suggestions'].append('Consider including relevant NFT keywords in the description')
+        
+        return seo
+    
+    def clear_cache(self):
+        """Clear the metadata cache"""
+        self.cache.clear()
+
+# Usage
+metadata_manager = ContractMetadataManager('YOUR_API_KEY')
+
+# Get metadata
+metadata = metadata_manager.get_metadata('MATIC', '0xfc5500094af58ded18e92da5ff1dd7cc84b74633')
+print('Contract metadata:', metadata)
+
+# Analyze quality
+analysis = metadata_manager.analyze_metadata_quality('MATIC', '0xfc5500094af58ded18e92da5ff1dd7cc84b74633')
+print('Quality analysis:', analysis)
+```
+
+```bash cURL
+# Retrieve contract metadata
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0xfc5500094af58ded18e92da5ff1dd7cc84b74633/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# With formatted output
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0xfc5500094af58ded18e92da5ff1dd7cc84b74633/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -s | jq '.'
+
+# Multiple contracts metadata retrieval script
+#!/bin/bash
+CONTRACTS=("0xcontract1" "0xcontract2" "0xcontract3")
+CHAIN="MATIC"
+
+for contract in "${CONTRACTS[@]}"; do
+  echo "Retrieving metadata for $contract..."
+  curl -X GET "/api/v3/erc1155/contracts/$CHAIN/$contract/metadata" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result' > "${contract}_metadata.json"
+  echo "Saved to ${contract}_metadata.json"
+done
+```
+
+```php PHP
+<?php
+class ContractMetadataManager {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = 600; // 10 minutes
+    }
+    
+    public function getMetadata($chain, $contractAddress, $useCache = true) {
+        $cacheKey = "{$chain}:{$contractAddress}";
+        
+        // Check cache
+        if ($useCache && isset($this->cache[$cacheKey])) {
+            $cached = $this->cache[$cacheKey];
+            if (time() - $cached['timestamp'] < $this->cacheExpiry) {
+                echo "Returning cached metadata\n";
+                return $cached['data'];
+            }
+        }
+        
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/metadata";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            "Content-Type: application/json"
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve contract metadata");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve contract metadata');
+        }
+        
+        $metadata = $this->validateMetadata($data['result']);
+        
+        // Cache the result
+        if ($useCache) {
+            $this->cache[$cacheKey] = [
+                'data' => $metadata,
+                'timestamp' => time()
+            ];
+        }
+        
+        return $metadata;
+    }
+    
+    private function validateMetadata($metadata) {
+        return [
+            'name' => $metadata['name'] ?? 'Unnamed Collection',
+            'symbol' => $metadata['symbol'] ?? 'UNKNOWN',
+            'description' => $metadata['description'] ?? '',
+            'externalUrl' => $this->validateUrl($metadata['externalUrl'] ?? null),
+            'image' => $this->validateUrl($metadata['image'] ?? null),
+            'media' => $this->validateMediaArray($metadata['media'] ?? []),
+            'external_link' => $this->validateUrl($metadata['external_link'] ?? null),
+            'isComplete' => $this->assessCompleteness($metadata)
+        ];
+    }
+    
+    private function validateUrl($url) {
+        if (!$url) return null;
+        
+        if (filter_var($url, FILTER_VALIDATE_URL)) {
+            return $url;
+        }
+        
+        echo "Invalid URL detected: {$url}\n";
+        return null;
+    }
+    
+    private function validateMediaArray($media) {
+        if (!is_array($media)) return [];
+        
+        $validated = [];
+        foreach ($media as $item) {
+            if (is_array($item) && 
+                isset($item['type']) && 
+                isset($item['value']) && 
+                is_string($item['type']) && 
+                is_string($item['value']) &&
+                $this->validateUrl($item['value'])) {
+                $validated[] = $item;
+            }
+        }
+        
+        return $validated;
+    }
+    
+    private function assessCompleteness($metadata) {
+        $requiredFields = ['name', 'symbol', 'description', 'image'];
+        $optionalFields = ['externalUrl', 'media', 'external_link'];
+        
+        $hasRequired = true;
+        $missingRequired = [];
+        
+        foreach ($requiredFields as $field) {
+            if (!isset($metadata[$field]) || empty(trim($metadata[$field]))) {
+                $hasRequired = false;
+                $missingRequired[] = $field;
+            }
+        }
+        
+        $optionalCount = 0;
+        foreach ($optionalFields as $field) {
+            if (isset($metadata[$field]) && !empty($metadata[$field])) {
+                $optionalCount++;
+            }
+        }
+        
+        $completenessScore = ((count($requiredFields) + $optionalCount) / 
+                            (count($requiredFields) + count($optionalFields))) * 100;
+        
+        return [
+            'hasRequired' => $hasRequired,
+            'completenessScore' => round($completenessScore, 1),
+            'missingRequired' => $missingRequired,
+            'suggestions' => $this->generateSuggestions($metadata)
+        ];
+    }
+    
+    private function generateSuggestions($metadata) {
+        $suggestions = [];
+        
+        $description = $metadata['description'] ?? '';
+        if (empty($description) || strlen($description) < 50) {
+            $suggestions[] = 'Add a detailed description (50+ characters) to improve discoverability';
+        }
+        
+        if (empty($metadata['image'])) {
+            $suggestions[] = 'Add a collection image to improve visual appeal';
+        }
+        
+        if (empty($metadata['externalUrl'])) {
+            $suggestions[] = 'Add an external URL to drive traffic to your website';
+        }
+        
+        $media = $metadata['media'] ?? [];
+        if (empty($media)) {
+            $suggestions[] = 'Add social media links to build community engagement';
+        } elseif (count($media) < 3) {
+            $suggestions[] = 'Consider adding more social media links (Twitter, Discord, Instagram)';
+        }
+        
+        return $suggestions;
+    }
+    
+    public function analyzeMetadataQuality($chain, $contractAddress) {
+        $metadata = $this->getMetadata($chain, $contractAddress);
+        
+        $completenessScore = $metadata['isComplete']['completenessScore'];
+        
+        return [
+            'contractAddress' => $contractAddress,
+            'chain' => $chain,
+            'metadata' => $metadata,
+            'quality' => [
+                'score' => $completenessScore,
+                'grade' => $this->getQualityGrade($completenessScore),
+                'hasImage' => !empty($metadata['image']),
+                'hasDescription' => !empty($metadata['description']),
+                'hasSocialMedia' => count($metadata['media']) > 0,
+                'hasExternalUrl' => !empty($metadata['externalUrl'])
+            ],
+            'recommendations' => $metadata['isComplete']['suggestions'],
+            'seoAnalysis' => $this->analyzeSEO($metadata)
+        ];
+    }
+    
+    private function getQualityGrade($score) {
+        if ($score >= 90) return 'A+';
+        if ($score >= 80) return 'A';
+        if ($score >= 70) return 'B';
+        if ($score >= 60) return 'C';
+        if ($score >= 50) return 'D';
+        return 'F';
+    }
+    
+    private function analyzeSEO($metadata) {
+        $name = $metadata['name'] ?? '';
+        $description = $metadata['description'] ?? '';
+        
+        $seo = [
+            'titleLength' => strlen($name),
+            'descriptionLength' => strlen($description),
+            'hasKeywords' => false,
+            'suggestions' => []
+        ];
+        
+        // Title analysis
+        if (strlen($name) < 10) {
+            $seo['suggestions'][] = 'Collection name is too short for optimal SEO';
+        } elseif (strlen($name) > 60) {
+            $seo['suggestions'][] = 'Collection name may be too long for search results';
+        }
+        
+        // Description analysis
+        if (strlen($description) < 120) {
+            $seo['suggestions'][] = 'Description should be at least 120 characters for better SEO';
+        } elseif (strlen($description) > 300) {
+            $seo['suggestions'][] = 'Description may be too long for optimal engagement';
+        }
+        
+        // Keyword analysis
+        $commonNFTKeywords = ['nft', 'collection', 'digital', 'art', 'token', 'blockchain', 'crypto'];
+        $descriptionLower = strtolower($description);
+        
+        foreach ($commonNFTKeywords as $keyword) {
+            if (strpos($descriptionLower, $keyword) !== false) {
+                $seo['hasKeywords'] = true;
+                break;
+            }
+        }
+        
+        if (!$seo['hasKeywords']) {
+            $seo['suggestions'][] = 'Consider including relevant NFT keywords in the description';
+        }
+        
+        return $seo;
+    }
+    
+    public function clearCache() {
+        $this->cache = [];
+    }
+}
+
+// Usage
+$metadataManager = new ContractMetadataManager('YOUR_API_KEY');
+
+try {
+    $metadata = $metadataManager->getMetadata('MATIC', '0xfc5500094af58ded18e92da5ff1dd7cc84b74633');
+    echo "Contract metadata: " . json_encode($metadata, JSON_PRETTY_PRINT) . "\n";
+    
+    $analysis = $metadataManager->analyzeMetadataQuality('MATIC', '0xfc5500094af58ded18e92da5ff1dd7cc84b74633');
+    echo "Quality analysis: " . json_encode($analysis, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Contract Metadata Best Practices:**
+
+1. **Complete Information** - Fill all required fields (name, symbol, description, image)
+2. **Quality Images** - Use high-resolution images for better visual appeal
+3. **SEO Optimization** - Write descriptive content with relevant keywords
+4. **Social Media Links** - Include community links to build engagement
+5. **Regular Updates** - Keep metadata current and accurate
+6. **Consistent Branding** - Maintain visual and messaging consistency
+7. **Mobile Optimization** - Ensure images and content work well on mobile
+8. **Accessibility** - Use clear, readable descriptions and alt text
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Update Metadata" href="/guides/nft-api/metadata/update-contract-metadata" icon="edit">
+    Learn how to update contract metadata
+  </Card>
+  <Card title="Token Metadata" href="/guides/nft-api/metadata/retrieve-nft-metadata" icon="file-text">
+    Retrieve individual NFT metadata
+  </Card>
+  <Card title="Contract Management" href="/guides/nft-api/contracts/retrieve-contract" icon="folder">
+    Comprehensive contract management
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract-metadata/get-contract-metadata" icon="book">
+    Explore the complete metadata API documentation
+  </Card>
+</CardGroup>

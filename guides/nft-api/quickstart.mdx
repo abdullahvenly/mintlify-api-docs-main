@@ -1,0 +1,1306 @@
+---
+title: "NFT API Quick Start"
+description: "Complete step-by-step guide to create your first NFT using Venly's NFT API - from authentication to minting"
+icon: "rocket"
+---
+
+<Info>
+**Quick Start Guide:** Follow this comprehensive tutorial to authenticate with the NFT API and create your first NFT in just a few steps.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What We Cover in This Guide
+
+In this guide, we will explain how to authenticate to our API service and create your first NFT. We will walk you through several endpoints to help you get started:
+
+<Steps>
+  <Step title="Authentication" icon="key">
+    Set up API credentials and get your bearer token
+  </Step>
+  <Step title="Creating a Contract" icon="file-contract">
+    Deploy your first NFT collection smart contract
+  </Step>
+  <Step title="Checking Contract Status" icon="magnifying-glass">
+    Monitor the deployment status of your contract
+  </Step>
+  <Step title="Creating Token-type" icon="shapes">
+    Define an NFT template for your collection
+  </Step>
+  <Step title="Checking Token-type Status" icon="clock">
+    Verify your NFT template creation
+  </Step>
+  <Step title="Minting NFT" icon="coins">
+    Create and distribute your first NFT
+  </Step>
+  <Step title="Checking NFT Mint Status" icon="check">
+    Confirm successful NFT creation and delivery
+  </Step>
+</Steps>
+
+## Getting Started Flow
+
+
+## Prerequisites
+
+<Warning>
+**Before You Start:**
+1. You need a Venly business account - [Register here](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)
+2. Get your **Client ID** and **Client Secret** from the [Developer Portal](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)
+</Warning>
+
+### Get Your API Credentials
+
+
+<Note>
+**Sandbox Environment:** All API calls in this guide run on a sandbox environment. You can test and experiment without affecting actual blockchain data.
+
+**Base URL:** `https://nft-api-sandbox.venly.io`
+</Note>
+
+## 1. Authentication
+
+You will need your access credentials (**Client ID** and **Client Secret**) to obtain a `bearer token` and authorize all API calls.
+
+### Get Bearer Token
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=YOUR_CLIENT_ID' \
+  -d 'client_secret=YOUR_CLIENT_SECRET'
+```
+
+```javascript JavaScript
+const getAccessToken = async () => {
+  const response = await fetch('https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      'grant_type': 'client_credentials',
+      'client_id': 'YOUR_CLIENT_ID',
+      'client_secret': 'YOUR_CLIENT_SECRET'
+    })
+  });
+  
+  const data = await response.json();
+  return data.access_token;
+};
+```
+
+```python Python
+import requests
+
+def get_access_token():
+    url = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token'
+    
+    data = {
+        'grant_type': 'client_credentials',
+        'client_id': 'YOUR_CLIENT_ID',
+        'client_secret': 'YOUR_CLIENT_SECRET'
+    }
+    
+    response = requests.post(url, data=data)
+    return response.json()['access_token']
+```
+</CodeGroup>
+
+<Tip>
+Save the `access_token` from the response - you'll need it for all subsequent API calls as a Bearer token.
+</Tip>
+
+## 2. Creating a Contract
+
+Let's create your first NFT contract (collection) on the **Polygon** (_MATIC_) testnet chain.
+
+### API Endpoint
+```http
+POST /api/v3/erc1155/contracts/deployments
+```
+
+### Request Parameters
+
+| Parameter | Description | Type | Required |
+|-----------|-------------|------|----------|
+| `name` | The name of your NFT collection/contract | String | ✅ |
+| `description` | The description of your NFT collection/contract | String | ✅ |
+| `image` | The image URL for your NFT collection/contract | String | ✅ |
+| `externalUrl` | Link to your website, landing page, etc. | String | ✅ |
+| `chain` | The blockchain to create the contract on | String | ✅ |
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://nft-api-sandbox.venly.io/api/v3/erc1155/contracts/deployments' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Venly NFT Collection",
+    "description": "This collection contains Venly NFTs.",
+    "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+    "externalUrl": "https://www.venly.io/",
+    "chain": "MATIC"
+  }'
+```
+
+```javascript JavaScript
+const createContract = async (accessToken) => {
+  const response = await fetch('https://nft-api-sandbox.venly.io/api/v3/erc1155/contracts/deployments', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: "Venly NFT Collection",
+      description: "This collection contains Venly NFTs.",
+      image: "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+      externalUrl: "https://www.venly.io/",
+      chain: "MATIC"
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+import requests
+import json
+
+def create_contract(access_token):
+    url = 'https://nft-api-sandbox.venly.io/api/v3/erc1155/contracts/deployments'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "name": "Venly NFT Collection",
+        "description": "This collection contains Venly NFTs.",
+        "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+        "externalUrl": "https://www.venly.io/",
+        "chain": "MATIC"
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Tip>
+**Important:** Save the `result.id` from the response body. This is the **Deployment ID** used to track the contract creation status.
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": {
+        "name": "Venly NFT Collection",
+        "description": "This collection contains Venly NFTs.",
+        "id": "5ad5b26d-77d0-46ee-aa4d-569878b74b58",
+        "chain": "MATIC",
+        "symbol": "VENFCO",
+        "externalUrl": "https://www.venly.io/",
+        "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+        "media": [],
+        "transactionHash": "0xa0b413f2584a38bab757f7a25def86efcf43eb19adf3dba529b646f2811f8a96",
+        "status": "PENDING",
+        "storage": {
+            "type": "cloud",
+            "location": "https://metadata-staging.venly.io/metadata/contracts/67822"
+        },
+        "contractUri": "https://metadata-staging.venly.io/metadata/contracts/67822",
+        "royalties": {},
+        "external_link": "https://www.venly.io/"
+    }
+}
+```
+
+## 3. Check Contract Status
+
+Monitor the deployment status of your contract using the deployment ID.
+
+### API Endpoint
+```http
+GET /api/v3/erc1155/contracts/deployments/{deploymentId}
+```
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://nft-api-sandbox.venly.io/api/v3/erc1155/contracts/deployments/5ad5b26d-77d0-46ee-aa4d-569878b74b58' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN'
+```
+
+```javascript JavaScript
+const checkContractStatus = async (accessToken, deploymentId) => {
+  const response = await fetch(`https://nft-api-sandbox.venly.io/api/v3/erc1155/contracts/deployments/${deploymentId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def check_contract_status(access_token, deployment_id):
+    url = f'https://nft-api-sandbox.venly.io/api/v3/erc1155/contracts/deployments/{deployment_id}'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Note>
+**Status Values:** The `result.status` parameter can be:
+- `SUCCEEDED` - Contract deployed successfully
+- `PENDING` - Deployment in progress
+- `FAILED` - Deployment failed
+</Note>
+
+```json
+{
+    "success": true,
+    "result": {
+        "name": "Venly NFT Collection",
+        "description": "This collection contains Venly NFTs.",
+        "address": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+        "id": "5ad5b26d-77d0-46ee-aa4d-569878b74b58",
+        "chain": "MATIC",
+        "symbol": "VENFCO",
+        "externalUrl": "https://www.venly.io/",
+        "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+        "media": [],
+        "transactionHash": "0xa0b413f2584a38bab757f7a25def86efcf43eb19adf3dba529b646f2811f8a96",
+        "status": "SUCCEEDED",
+        "storage": {
+            "type": "cloud",
+            "location": "https://metadata-staging.venly.io/metadata/contracts/67822"
+        },
+        "contractUri": "https://metadata-staging.venly.io/metadata/contracts/67822",
+        "external_link": "https://www.venly.io/"
+    }
+}
+```
+
+## 4. Creating Token-type (NFT Template)
+
+Create a token-type which serves as a template for minting NFTs. This template defines the NFT's metadata, attributes, and properties.
+
+### API Endpoint
+```http
+POST /api/v3/erc1155/token-types/creations
+```
+
+### Request Parameters
+
+| Parameter | Description | Type | Required |
+|-----------|-------------|------|----------|
+| `chain` | The blockchain of the contract | String | ✅ |
+| `contractAddress` | The contract address to create the token-type under | String | ✅ |
+| `creations` | Array of token-type details | Array | ✅ |
+| `creations.name` | The name of the token-type | String | ✅ |
+| `creations.description` | The description of the token-type | String | ❌ |
+| `creations.image` | The image URL for the token-type | String | ❌ |
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://nft-api-sandbox.venly.io/api/v3/erc1155/token-types/creations' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "contractAddress": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+    "creations": [
+        {
+            "name": "Zap Village",
+            "description": "Enter the Venly Zap Village!",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg"
+        }
+    ]
+  }'
+```
+
+```javascript JavaScript
+const createTokenType = async (accessToken, contractAddress) => {
+  const response = await fetch('https://nft-api-sandbox.venly.io/api/v3/erc1155/token-types/creations', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chain: "MATIC",
+      contractAddress: contractAddress,
+      creations: [
+        {
+          name: "Zap Village",
+          description: "Enter the Venly Zap Village!",
+          image: "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg"
+        }
+      ]
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def create_token_type(access_token, contract_address):
+    url = 'https://nft-api-sandbox.venly.io/api/v3/erc1155/token-types/creations'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "chain": "MATIC",
+        "contractAddress": contract_address,
+        "creations": [
+            {
+                "name": "Zap Village",
+                "description": "Enter the Venly Zap Village!",
+                "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg"
+            }
+        ]
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Tip>
+**Important:** Save the `result.creations[0].id` from the response body. This is the **Creation ID** used to track the token-type creation status.
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": {
+        "creations": [
+            {
+                "id": "92ebfbb7-df9a-4228-9b57-6614315fc896",
+                "status": "PENDING",
+                "tokenTypeId": 1,
+                "metadata": {
+                    "name": "Zap Village",
+                    "description": "Enter the Venly Zap Village!",
+                    "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+                    "imagePreview": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+                    "imageThumbnail": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+                    "animationUrls": [],
+                    "attributes": [
+                        {
+                            "type": "system",
+                            "name": "tokenTypeId",
+                            "value": "1",
+                            "traitType": "Token Type ID",
+                            "trait_type": "Token Type ID"
+                        }
+                    ],
+                    "contract": {
+                        "address": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+                        "name": "Venly NFT Collection",
+                        "symbol": "VENFCO",
+                        "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                        "imageUrl": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                        "image_url": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                        "description": "This collection contains Venly NFTs.",
+                        "externalLink": "https://www.venly.io/",
+                        "external_link": "https://www.venly.io/",
+                        "externalUrl": "https://www.venly.io/",
+                        "external_url": "https://www.venly.io/",
+                        "media": [],
+                        "type": "ERC_1155"
+                    },
+                    "fungible": false
+                }
+            }
+        ]
+    }
+}
+```
+
+## 5. Check Token-type Status
+
+Monitor the status of your token-type creation using the creation ID.
+
+### API Endpoint
+```http
+GET /api/v3/erc1155/token-types/creations/{creationId}
+```
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://nft-api-sandbox.venly.io/api/v3/erc1155/token-types/creations/92ebfbb7-df9a-4228-9b57-6614315fc896' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN'
+```
+
+```javascript JavaScript
+const checkTokenTypeStatus = async (accessToken, creationId) => {
+  const response = await fetch(`https://nft-api-sandbox.venly.io/api/v3/erc1155/token-types/creations/${creationId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def check_token_type_status(access_token, creation_id):
+    url = f'https://nft-api-sandbox.venly.io/api/v3/erc1155/token-types/creations/{creation_id}'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Note>
+**Status Values:** The `result.status` parameter can be:
+- `SUCCEEDED` - Token-type created successfully
+- `PENDING` - Creation in progress
+- `FAILED` - Creation failed
+</Note>
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "ff81e5e5-68eb-4ba1-949d-b82d9adf30ad",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x892a5740a0a2ae77a79218beb4891411b3f9e12fb54c59f0e044b6157e22ba66",
+        "tokenTypeId": 2,
+        "mints": [],
+        "metadata": {
+            "name": "Zap Village",
+            "description": "Enter the Venly Zap Village!",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "imagePreview": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "imageThumbnail": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "animationUrls": [],
+            "attributes": [
+                {
+                    "type": "system",
+                    "name": "tokenTypeId",
+                    "value": "2",
+                    "traitType": "Token Type ID",
+                    "trait_type": "Token Type ID"
+                }
+            ],
+            "contract": {
+                "address": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+                "name": "Venly NFT Collection",
+                "symbol": "VENFCO",
+                "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "imageUrl": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "image_url": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "description": "This collection contains Venly NFTs.",
+                "externalLink": "https://www.venly.io/",
+                "external_link": "https://www.venly.io/",
+                "externalUrl": "https://www.venly.io/",
+                "external_url": "https://www.venly.io/",
+                "media": [],
+                "type": "ERC_1155"
+            },
+            "fungible": false
+        }
+    }
+}
+```
+
+## 6. Minting an NFT
+
+Now let's mint your first NFT using the token-type template you created!
+
+### API Endpoint
+```http
+POST /api/v3/erc1155/tokens/mints
+```
+
+### Request Parameters
+
+| Parameter | Description | Type | Required |
+|-----------|-------------|------|----------|
+| `contractAddress` | The contract address | String | ✅ |
+| `chain` | The blockchain of the contract | String | ✅ |
+| `tokenTypeId` | The ID of the token-type template | String | ✅ |
+| `destinations` | Array of wallet addresses and amounts | Array | ✅ |
+| `destinations.address` | Wallet address to mint and send the NFT | String | ✅ |
+| `destinations.amount` | Number of NFTs to mint and send | Integer | ✅ |
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://nft-api-sandbox.venly.io/api/v3/erc1155/tokens/mints' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "contractAddress": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+    "chain": "MATIC",
+    "tokenTypeId": "2",
+    "destinations": [
+        {
+            "address": "0x9A9F6A560bBdCFbbb014303fc817D1e5EeaA3AE2",
+            "amount": 1
+        }
+    ]
+  }'
+```
+
+```javascript JavaScript
+const mintNFT = async (accessToken, contractAddress, tokenTypeId, walletAddress) => {
+  const response = await fetch('https://nft-api-sandbox.venly.io/api/v3/erc1155/tokens/mints', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      contractAddress: contractAddress,
+      chain: "MATIC",
+      tokenTypeId: tokenTypeId,
+      destinations: [
+        {
+          address: walletAddress,
+          amount: 1
+        }
+      ]
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def mint_nft(access_token, contract_address, token_type_id, wallet_address):
+    url = 'https://nft-api-sandbox.venly.io/api/v3/erc1155/tokens/mints'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "contractAddress": contract_address,
+        "chain": "MATIC",
+        "tokenTypeId": token_type_id,
+        "destinations": [
+            {
+                "address": wallet_address,
+                "amount": 1
+            }
+        ]
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+<Tip>
+**Flexible Destinations:** The `destinations.address` can be either a **wallet address** or an **email address**. If you use an email, Venly will automatically create a wallet for the recipient.
+</Tip>
+
+### Response
+
+<Tip>
+**Important:** Save the `result.mints[0].id` from the response body. This is the **Mint ID** used to track the NFT minting status.
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": {
+        "mints": [
+            {
+                "id": "e9943c23-25bb-4de1-9679-9b1a880c31df",
+                "createdOn": "2024-09-25T11:10:32.393465624",
+                "status": "PENDING",
+                "destination": {
+                    "address": "0x9A9F6A560bBdCFbbb014303fc817D1e5EeaA3AE2",
+                    "amount": 1
+                }
+            }
+        ],
+        "metadata": {
+            "name": "Zap Village",
+            "description": "Enter the Venly Zap Village!",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "imagePreview": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "imageThumbnail": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "animationUrls": [],
+            "attributes": [
+                {
+                    "type": "system",
+                    "name": "tokenTypeId",
+                    "value": "2",
+                    "traitType": "Token Type ID",
+                    "trait_type": "Token Type ID"
+                }
+            ],
+            "contract": {
+                "address": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+                "name": "Venly NFT Collection",
+                "symbol": "VENFCO",
+                "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "imageUrl": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "image_url": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "description": "This collection contains Venly NFTs.",
+                "externalLink": "https://www.venly.io/",
+                "external_link": "https://www.venly.io/",
+                "externalUrl": "https://www.venly.io/",
+                "external_url": "https://www.venly.io/",
+                "media": [],
+                "type": "ERC_1155"
+            },
+            "fungible": false
+        }
+    }
+}
+```
+
+## 7. Check NFT Mint Status
+
+Finally, let's check the status of your NFT minting operation using the mint ID.
+
+### API Endpoint
+```http
+GET /api/v3/erc1155/tokens/mints/{mintId}
+```
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://nft-api-sandbox.venly.io/api/v3/erc1155/tokens/mints/e9943c23-25bb-4de1-9679-9b1a880c31df' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN'
+```
+
+```javascript JavaScript
+const checkMintStatus = async (accessToken, mintId) => {
+  const response = await fetch(`https://nft-api-sandbox.venly.io/api/v3/erc1155/tokens/mints/${mintId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def check_mint_status(access_token, mint_id):
+    url = f'https://nft-api-sandbox.venly.io/api/v3/erc1155/tokens/mints/{mint_id}'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Note>
+**Status Values:** The `result.status` parameter can be:
+- `SUCCEEDED` - NFT minted and delivered successfully
+- `PENDING` - Minting in progress
+- `FAILED` - Minting failed
+</Note>
+
+<Tip>
+**Token ID:** You can get the `tokenId` from the response body once the status is `SUCCEEDED`.
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "e9943c23-25bb-4de1-9679-9b1a880c31df",
+        "tokenId": 3,
+        "createdOn": "2024-09-25T11:10:32.393466",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x0f0070ffa177822a164fad8d9d6d3a0268ed1b717975e3901d02a8bb3623981a",
+        "destination": {
+            "address": "0x9A9F6A560bBdCFbbb014303fc817D1e5EeaA3AE2",
+            "amount": 1
+        },
+        "metadata": {
+            "name": "Zap Village",
+            "description": "Enter the Venly Zap Village!",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "imagePreview": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "imageThumbnail": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "animationUrls": [],
+            "attributes": [
+                {
+                    "type": "system",
+                    "name": "tokenTypeId",
+                    "value": "2",
+                    "traitType": "Token Type ID",
+                    "trait_type": "Token Type ID"
+                },
+                {
+                    "type": "property",
+                    "name": "mintNumber",
+                    "value": "1",
+                    "traitType": "Mint Number",
+                    "trait_type": "Mint Number"
+                }
+            ],
+            "contract": {
+                "address": "0xf0b30ec3720e9be1452b64d2ee476f57c2f535d3",
+                "name": "Venly NFT Collection",
+                "symbol": "VENFCO",
+                "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "imageUrl": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "image_url": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "description": "This collection contains Venly NFTs.",
+                "externalLink": "https://www.venly.io/",
+                "external_link": "https://www.venly.io/",
+                "externalUrl": "https://www.venly.io/",
+                "external_url": "https://www.venly.io/",
+                "media": [],
+                "type": "ERC_1155"
+            },
+            "fungible": false
+        }
+    }
+}
+```
+
+## 🎉 Congratulations!
+
+You've successfully created your first NFT using the Venly NFT API! Here's what you accomplished:
+
+<CardGroup cols={2}>
+  <Card title="✅ Contract Deployed" icon="file-contract">
+    Created and deployed your NFT collection smart contract
+  </Card>
+  <Card title="✅ Template Created" icon="shapes">
+    Defined an NFT template with metadata and properties
+  </Card>
+  <Card title="✅ NFT Minted" icon="coins">
+    Successfully minted your first NFT
+  </Card>
+  <Card title="✅ NFT Delivered" icon="paper-plane">
+    NFT delivered to the specified wallet address
+  </Card>
+</CardGroup>
+
+## View Your NFT on Testnet
+
+<Tip>
+Learn how to [view your NFT on sandbox/testnet](https://docs.venly.io/docs/view-nft-on-sandboxtestnet) to see your creation in action!
+</Tip>
+
+## Complete Example Code
+
+Here's a complete example that combines all the steps:
+
+<CodeGroup>
+```javascript Complete JavaScript Example
+class VenlyNFTQuickStart {
+  constructor(clientId, clientSecret) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.baseUrl = 'https://nft-api-sandbox.venly.io';
+    this.authUrl = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token';
+    this.accessToken = null;
+  }
+
+  async authenticate() {
+    const response = await fetch(this.authUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        'grant_type': 'client_credentials',
+        'client_id': this.clientId,
+        'client_secret': this.clientSecret
+      })
+    });
+    
+    const data = await response.json();
+    this.accessToken = data.access_token;
+    return this.accessToken;
+  }
+
+  async createCompleteNFT(walletAddress) {
+    console.log('🚀 Starting NFT creation process...');
+    
+    // Step 1: Authenticate
+    console.log('🔐 Authenticating...');
+    await this.authenticate();
+    
+    // Step 2: Create Contract
+    console.log('📄 Creating contract...');
+    const contract = await this.createContract();
+    console.log(`✅ Contract created with ID: ${contract.id}`);
+    
+    // Step 3: Wait for contract deployment
+    console.log('⏳ Waiting for contract deployment...');
+    const deployedContract = await this.waitForContractDeployment(contract.id);
+    console.log(`✅ Contract deployed at: ${deployedContract.address}`);
+    
+    // Step 4: Create Token Type
+    console.log('🎨 Creating token type...');
+    const tokenType = await this.createTokenType(deployedContract.address);
+    console.log(`✅ Token type created with ID: ${tokenType.creations[0].id}`);
+    
+    // Step 5: Wait for token type creation
+    console.log('⏳ Waiting for token type creation...');
+    const createdTokenType = await this.waitForTokenTypeCreation(tokenType.creations[0].id);
+    console.log(`✅ Token type ready with ID: ${createdTokenType.tokenTypeId}`);
+    
+    // Step 6: Mint NFT
+    console.log('🪙 Minting NFT...');
+    const mint = await this.mintNFT(deployedContract.address, createdTokenType.tokenTypeId, walletAddress);
+    console.log(`✅ NFT mint initiated with ID: ${mint.mints[0].id}`);
+    
+    // Step 7: Wait for mint completion
+    console.log('⏳ Waiting for NFT minting...');
+    const mintedNFT = await this.waitForMintCompletion(mint.mints[0].id);
+    console.log(`🎉 NFT successfully minted with Token ID: ${mintedNFT.tokenId}`);
+    
+    return {
+      contractAddress: deployedContract.address,
+      tokenTypeId: createdTokenType.tokenTypeId,
+      tokenId: mintedNFT.tokenId,
+      transactionHash: mintedNFT.transactionHash,
+      walletAddress: walletAddress
+    };
+  }
+
+  async createContract() {
+    const response = await fetch(`${this.baseUrl}/api/v3/erc1155/contracts/deployments`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: "My First NFT Collection",
+        description: "Created with Venly NFT API Quick Start",
+        image: "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+        externalUrl: "https://www.venly.io/",
+        chain: "MATIC"
+      })
+    });
+    
+    const data = await response.json();
+    return data.result;
+  }
+
+  async waitForContractDeployment(deploymentId, maxAttempts = 30) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`${this.baseUrl}/api/v3/erc1155/contracts/deployments/${deploymentId}`, {
+        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+      });
+      
+      const data = await response.json();
+      
+      if (data.result.status === 'SUCCEEDED') {
+        return data.result;
+      } else if (data.result.status === 'FAILED') {
+        throw new Error('Contract deployment failed');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    }
+    
+    throw new Error('Contract deployment timeout');
+  }
+
+  async createTokenType(contractAddress) {
+    const response = await fetch(`${this.baseUrl}/api/v3/erc1155/token-types/creations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chain: "MATIC",
+        contractAddress: contractAddress,
+        creations: [{
+          name: "My First NFT",
+          description: "This is my first NFT created with Venly!",
+          image: "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg"
+        }]
+      })
+    });
+    
+    const data = await response.json();
+    return data.result;
+  }
+
+  async waitForTokenTypeCreation(creationId, maxAttempts = 30) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`${this.baseUrl}/api/v3/erc1155/token-types/creations/${creationId}`, {
+        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+      });
+      
+      const data = await response.json();
+      
+      if (data.result.status === 'SUCCEEDED') {
+        return data.result;
+      } else if (data.result.status === 'FAILED') {
+        throw new Error('Token type creation failed');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    }
+    
+    throw new Error('Token type creation timeout');
+  }
+
+  async mintNFT(contractAddress, tokenTypeId, walletAddress) {
+    const response = await fetch(`${this.baseUrl}/api/v3/erc1155/tokens/mints`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contractAddress: contractAddress,
+        chain: "MATIC",
+        tokenTypeId: tokenTypeId.toString(),
+        destinations: [{
+          address: walletAddress,
+          amount: 1
+        }]
+      })
+    });
+    
+    const data = await response.json();
+    return data.result;
+  }
+
+  async waitForMintCompletion(mintId, maxAttempts = 30) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`${this.baseUrl}/api/v3/erc1155/tokens/mints/${mintId}`, {
+        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+      });
+      
+      const data = await response.json();
+      
+      if (data.result.status === 'SUCCEEDED') {
+        return data.result;
+      } else if (data.result.status === 'FAILED') {
+        throw new Error('NFT minting failed');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    }
+    
+    throw new Error('NFT minting timeout');
+  }
+}
+
+// Usage
+const quickStart = new VenlyNFTQuickStart('YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET');
+
+quickStart.createCompleteNFT('0x9A9F6A560bBdCFbbb014303fc817D1e5EeaA3AE2')
+  .then(result => {
+    console.log('🎉 NFT Creation Complete!', result);
+  })
+  .catch(error => {
+    console.error('❌ Error:', error);
+  });
+```
+
+```python Complete Python Example
+import requests
+import time
+import json
+
+class VenlyNFTQuickStart:
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.base_url = 'https://nft-api-sandbox.venly.io'
+        self.auth_url = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token'
+        self.access_token = None
+    
+    def authenticate(self):
+        data = {
+            'grant_type': 'client_credentials',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        
+        response = requests.post(self.auth_url, data=data)
+        result = response.json()
+        self.access_token = result['access_token']
+        return self.access_token
+    
+    def create_complete_nft(self, wallet_address):
+        print('🚀 Starting NFT creation process...')
+        
+        # Step 1: Authenticate
+        print('🔐 Authenticating...')
+        self.authenticate()
+        
+        # Step 2: Create Contract
+        print('📄 Creating contract...')
+        contract = self.create_contract()
+        print(f'✅ Contract created with ID: {contract["id"]}')
+        
+        # Step 3: Wait for contract deployment
+        print('⏳ Waiting for contract deployment...')
+        deployed_contract = self.wait_for_contract_deployment(contract['id'])
+        print(f'✅ Contract deployed at: {deployed_contract["address"]}')
+        
+        # Step 4: Create Token Type
+        print('🎨 Creating token type...')
+        token_type = self.create_token_type(deployed_contract['address'])
+        print(f'✅ Token type created with ID: {token_type["creations"][0]["id"]}')
+        
+        # Step 5: Wait for token type creation
+        print('⏳ Waiting for token type creation...')
+        created_token_type = self.wait_for_token_type_creation(token_type['creations'][0]['id'])
+        print(f'✅ Token type ready with ID: {created_token_type["tokenTypeId"]}')
+        
+        # Step 6: Mint NFT
+        print('🪙 Minting NFT...')
+        mint = self.mint_nft(deployed_contract['address'], created_token_type['tokenTypeId'], wallet_address)
+        print(f'✅ NFT mint initiated with ID: {mint["mints"][0]["id"]}')
+        
+        # Step 7: Wait for mint completion
+        print('⏳ Waiting for NFT minting...')
+        minted_nft = self.wait_for_mint_completion(mint['mints'][0]['id'])
+        print(f'🎉 NFT successfully minted with Token ID: {minted_nft["tokenId"]}')
+        
+        return {
+            'contract_address': deployed_contract['address'],
+            'token_type_id': created_token_type['tokenTypeId'],
+            'token_id': minted_nft['tokenId'],
+            'transaction_hash': minted_nft['transactionHash'],
+            'wallet_address': wallet_address
+        }
+    
+    def create_contract(self):
+        url = f'{self.base_url}/api/v3/erc1155/contracts/deployments'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "name": "My First NFT Collection",
+            "description": "Created with Venly NFT API Quick Start",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+            "externalUrl": "https://www.venly.io/",
+            "chain": "MATIC"
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()['result']
+    
+    def wait_for_contract_deployment(self, deployment_id, max_attempts=30):
+        for i in range(max_attempts):
+            url = f'{self.base_url}/api/v3/erc1155/contracts/deployments/{deployment_id}'
+            headers = {'Authorization': f'Bearer {self.access_token}'}
+            
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            
+            if data['result']['status'] == 'SUCCEEDED':
+                return data['result']
+            elif data['result']['status'] == 'FAILED':
+                raise Exception('Contract deployment failed')
+            
+            time.sleep(2)  # Wait 2 seconds
+        
+        raise Exception('Contract deployment timeout')
+    
+    def create_token_type(self, contract_address):
+        url = f'{self.base_url}/api/v3/erc1155/token-types/creations'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "chain": "MATIC",
+            "contractAddress": contract_address,
+            "creations": [{
+                "name": "My First NFT",
+                "description": "This is my first NFT created with Venly!",
+                "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg"
+            }]
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()['result']
+    
+    def wait_for_token_type_creation(self, creation_id, max_attempts=30):
+        for i in range(max_attempts):
+            url = f'{self.base_url}/api/v3/erc1155/token-types/creations/{creation_id}'
+            headers = {'Authorization': f'Bearer {self.access_token}'}
+            
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            
+            if data['result']['status'] == 'SUCCEEDED':
+                return data['result']
+            elif data['result']['status'] == 'FAILED':
+                raise Exception('Token type creation failed')
+            
+            time.sleep(2)  # Wait 2 seconds
+        
+        raise Exception('Token type creation timeout')
+    
+    def mint_nft(self, contract_address, token_type_id, wallet_address):
+        url = f'{self.base_url}/api/v3/erc1155/tokens/mints'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "contractAddress": contract_address,
+            "chain": "MATIC",
+            "tokenTypeId": str(token_type_id),
+            "destinations": [{
+                "address": wallet_address,
+                "amount": 1
+            }]
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()['result']
+    
+    def wait_for_mint_completion(self, mint_id, max_attempts=30):
+        for i in range(max_attempts):
+            url = f'{self.base_url}/api/v3/erc1155/tokens/mints/{mint_id}'
+            headers = {'Authorization': f'Bearer {self.access_token}'}
+            
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            
+            if data['result']['status'] == 'SUCCEEDED':
+                return data['result']
+            elif data['result']['status'] == 'FAILED':
+                raise Exception('NFT minting failed')
+            
+            time.sleep(2)  # Wait 2 seconds
+        
+        raise Exception('NFT minting timeout')
+
+# Usage
+if __name__ == "__main__":
+    quick_start = VenlyNFTQuickStart('YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET')
+    
+    try:
+        result = quick_start.create_complete_nft('0x9A9F6A560bBdCFbbb014303fc817D1e5EeaA3AE2')
+        print('🎉 NFT Creation Complete!', result)
+    except Exception as error:
+        print('❌ Error:', error)
+```
+</CodeGroup>
+
+## Next Steps
+
+Now that you've created your first NFT, explore these advanced features:
+
+<CardGroup cols={2}>
+  <Card title="Batch Minting" href="/guides/nft-api/minting/how-to-batch-mint-nfts-to-multiple-destinations" icon="layer-group">
+    Learn how to mint multiple NFTs efficiently
+  </Card>
+  <Card title="Dynamic NFTs" href="/guides/nft-api/metadata/update-nft-metadata" icon="arrows-rotate">
+    Create NFTs that evolve and change over time
+  </Card>
+  <Card title="Add Media" href="/guides/nft-api/media/store-nft-image-and-media" icon="image">
+    Upload and manage images, videos, and audio
+  </Card>
+  <Card title="Query NFTs" href="/guides/nft-api/querying/retrieve-nfts-by-wallet" icon="magnifying-glass">
+    Discover and analyze NFT collections
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Authentication Issues" icon="key">
+    **Common Problems:**
+    - Invalid Client ID or Client Secret
+    - Expired access token
+    - Wrong authentication endpoint
+    
+    **Solutions:**
+    - Verify credentials in the Developer Portal
+    - Refresh your access token regularly
+    - Use the correct sandbox/production endpoints
+  </Accordion>
+  
+  <Accordion title="Contract Deployment Fails" icon="file-contract">
+    **Common Problems:**
+    - Invalid chain parameter
+    - Missing required fields
+    - Network congestion
+    
+    **Solutions:**
+    - Check supported chains (MATIC, ETH, BSC, AVAX, ARB, HBAR)
+    - Ensure all required fields are provided
+    - Wait and retry during network congestion
+  </Accordion>
+  
+  <Accordion title="Minting Issues" icon="coins">
+    **Common Problems:**
+    - Invalid wallet address
+    - Token type not ready
+    - Insufficient gas
+    
+    **Solutions:**
+    - Validate wallet addresses before minting
+    - Wait for token type status to be SUCCEEDED
+    - Check network status and gas prices
+  </Accordion>
+</AccordionGroup>
+
+---
+

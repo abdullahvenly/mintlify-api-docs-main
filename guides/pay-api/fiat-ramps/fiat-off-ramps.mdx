@@ -1,0 +1,881 @@
+---
+title: "Fiat Off-Ramps"
+description: "Create offramp URLs for users to sell cryptocurrency for fiat currency using Transak, Moonpay, and Ramp Network"
+icon: "arrow-down"
+---
+
+<Info>
+**Cryptocurrency Selling:** Enable users to sell cryptocurrency for fiat currency through integrated off-ramp providers.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What are Fiat Off-Ramps?
+
+Fiat off-ramps allow users to sell cryptocurrency and receive traditional fiat currencies (USD, EUR, GBP, etc.) in return. Venly integrates with three leading providers to offer flexible options for your users to cash out their crypto holdings.
+
+<CardGroup cols={2}>
+  <Card title="Multiple Providers" icon="building">
+    Choose from Transak, Moonpay, and Ramp Network
+  </Card>
+  <Card title="Global Coverage" icon="globe">
+    Support for multiple fiat currencies and regions
+  </Card>
+  <Card title="Seamless Integration" icon="plug">
+    Generate URLs with pre-filled user information
+  </Card>
+  <Card title="Flexible Configuration" icon="gear">
+    Customize amounts, currencies, and destinations
+  </Card>
+</CardGroup>
+
+## Why Use Off-Ramps?
+
+<Tabs>
+  <Tab title="User Benefits">
+    **Cash Out Options**
+    - Convert crypto to fiat easily
+    - Access to traditional banking
+    - Realize investment gains
+    - Pay bills and expenses
+  </Tab>
+  <Tab title="Business Benefits">
+    **Platform Advantages**
+    - Complete user journey
+    - Increased user retention
+    - Revenue opportunities
+    - Competitive differentiation
+  </Tab>
+  <Tab title="Use Cases">
+    **Common Scenarios**
+    - Gaming reward cashouts
+    - Investment portfolio management
+    - Freelancer payments
+    - Emergency fund access
+  </Tab>
+</Tabs>
+
+## Supported Providers
+
+<Tabs>
+  <Tab title="Transak">
+    **Global Reach**
+    - 100+ countries supported
+    - 60+ fiat currencies
+    - Bank transfers and cards
+    - Competitive exchange rates
+  </Tab>
+  <Tab title="Moonpay">
+    **User-Friendly**
+    - Intuitive selling interface
+    - Fast processing times
+    - Mobile-optimized experience
+    - Strong compliance framework
+  </Tab>
+  <Tab title="Ramp Network">
+    **European Focus**
+    - Strong European presence
+    - SEPA instant transfers
+    - Low fees for EU users
+    - Quick settlement
+  </Tab>
+</Tabs>
+
+## Transak Off-Ramp
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/fiat-ramp/transak/off', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fiatCurrency: "USD",
+    cryptoAmount: "0.15",
+    cryptoCurrency: {
+      network: "mainnet",
+      symbol: "BTC"
+    },
+    redirectUrl: "https://www.venly.io/",
+    email: "user@example.com"
+  })
+});
+
+const data = await response.json();
+console.log('Transak off-ramp URL:', data.result.url);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/fiat-ramp/transak/off',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fiatCurrency': 'USD',
+        'cryptoAmount': '0.15',
+        'cryptoCurrency': {
+            'network': 'mainnet',
+            'symbol': 'BTC'
+        },
+        'redirectUrl': 'https://www.venly.io/',
+        'email': 'user@example.com'
+    }
+)
+
+data = response.json()
+print('Transak off-ramp URL:', data['result']['url'])
+```
+
+```bash cURL
+curl -X POST '/fiat-ramp/transak/off' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fiatCurrency": "USD",
+    "cryptoAmount": "0.15",
+    "cryptoCurrency": {
+      "network": "mainnet",
+      "symbol": "BTC"
+    },
+    "redirectUrl": "https://www.venly.io/",
+    "email": "user@example.com"
+  }'
+```
+</CodeGroup>
+
+### Transak Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fiatCurrency` | string | ❌ | Fiat currency code for payout (USD, EUR, GBP, etc.) |
+| `cryptoAmount` | number | ❌ | Amount of crypto user wants to sell |
+| `cryptoCurrency.network` | string | ❌ | Blockchain network (bitcoin, ethereum, etc.) |
+| `cryptoCurrency.symbol` | string | ❌ | Cryptocurrency symbol (BTC, ETH, etc.) |
+| `redirectUrl` | string | ❌ | URL to redirect after sale completion |
+| `email` | string | ❌ | User's email address |
+| `isFeeCalculationHidden` | boolean | ❌ | Hide detailed fee breakdown |
+| `hideMenu` | boolean | ❌ | Hide menu options completely |
+
+<Tip>
+**Transak Features:**
+- If `cryptoAmount` is passed, users can't change it later
+- Pre-filling email improves user experience
+- Network parameter determines which blockchain to use
+</Tip>
+
+## Moonpay Off-Ramp
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/fiat-ramp/moonpay/off', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fiatCurrency: "EUR",
+    cryptoAmount: "3000",
+    cryptoCurrency: {
+      symbol: "usdc"
+    },
+    redirectUrl: "https://www.venly.io/",
+    email: "user@example.com",
+    refundWalletAddress: "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E"
+  })
+});
+
+const data = await response.json();
+console.log('Moonpay off-ramp URL:', data.result.url);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/fiat-ramp/moonpay/off',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fiatCurrency': 'EUR',
+        'cryptoAmount': '3000',
+        'cryptoCurrency': {
+            'symbol': 'usdc'
+        },
+        'redirectUrl': 'https://www.venly.io/',
+        'email': 'user@example.com',
+        'refundWalletAddress': '0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E'
+    }
+)
+
+data = response.json()
+print('Moonpay off-ramp URL:', data['result']['url'])
+```
+
+```bash cURL
+curl -X POST '/fiat-ramp/moonpay/off' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fiatCurrency": "EUR",
+    "cryptoAmount": "3000",
+    "cryptoCurrency": {
+      "symbol": "usdc"
+    },
+    "redirectUrl": "https://www.venly.io/",
+    "email": "user@example.com",
+    "refundWalletAddress": "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E"
+  }'
+```
+</CodeGroup>
+
+### Moonpay Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fiatCurrency` | string | ❌ | Fiat currency code for payout (USD, EUR, GBP, etc.) |
+| `cryptoAmount` | number | ❌ | Amount of crypto user wants to sell |
+| `cryptoCurrency.symbol` | string | ❌ | Cryptocurrency symbol (required if cryptoAmount is passed) |
+| `redirectUrl` | string | ❌ | Redirect URL after sale completion |
+| `email` | string | ❌ | User's email address |
+| `refundWalletAddress` | string | ❌ | Wallet address for refunds (required if cryptoCurrency.symbol is passed) |
+
+<Note>
+**Moonpay Refunds:** The `refundWalletAddress` is crucial for handling failed transactions or refunds. Always provide this when specifying a cryptocurrency.
+</Note>
+
+## Ramp Network Off-Ramp
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/fiat-ramp/ramp-network/off', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    fiatCurrency: "USD",
+    fiatAmount: "1000",
+    cryptoCurrency: {
+      network: "MATIC",
+      symbol: "MATIC"
+    },
+    redirectUrl: "https://www.venly.io/",
+    email: "user@example.com",
+    userAddress: "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E",
+    selectedCountryCode: "US"
+  })
+});
+
+const data = await response.json();
+console.log('Ramp Network off-ramp URL:', data.result.url);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/fiat-ramp/ramp-network/off',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'fiatCurrency': 'USD',
+        'fiatAmount': '1000',
+        'cryptoCurrency': {
+            'network': 'MATIC',
+            'symbol': 'MATIC'
+        },
+        'redirectUrl': 'https://www.venly.io/',
+        'email': 'user@example.com',
+        'userAddress': '0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E',
+        'selectedCountryCode': 'US'
+    }
+)
+
+data = response.json()
+print('Ramp Network off-ramp URL:', data['result']['url'])
+```
+
+```bash cURL
+curl -X POST '/fiat-ramp/ramp-network/off' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "fiatCurrency": "USD",
+    "fiatAmount": "1000",
+    "cryptoCurrency": {
+      "network": "MATIC",
+      "symbol": "MATIC"
+    },
+    "redirectUrl": "https://www.venly.io/",
+    "email": "user@example.com",
+    "userAddress": "0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E",
+    "selectedCountryCode": "US"
+  }'
+```
+</CodeGroup>
+
+### Ramp Network Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fiatCurrency` | string | ❌ | Fiat currency code (required if fiatAmount is passed) |
+| `fiatAmount` | number | ❌ | Amount of fiat user wants to receive |
+| `cryptoCurrency.network` | string | ❌ | Blockchain network (required if symbol is passed) |
+| `cryptoCurrency.symbol` | string | ❌ | Cryptocurrency symbol |
+| `redirectUrl` | string | ❌ | Redirect URL after completion |
+| `email` | string | ❌ | User's email address |
+| `userAddress` | string | ❌ | User's wallet address for crypto source |
+| `selectedCountryCode` | string | ❌ | Two-letter country code (ISO 3166-1 alpha-2) |
+
+<Check>
+**Ramp Network Advantage:** Pre-selecting country code with `selectedCountryCode` shows relevant payment methods and improves user experience.
+</Check>
+
+## Response Examples
+
+<Tabs>
+  <Tab title="Transak Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "url": "https://global-stg.transak.com?apiKey=9d45e3b1-9b6b-4ed6-94aa-a093693ef7c0&productsAvailed=SELL&cryptoAmount=0.15&fiatCurrency=USD&redirectUrl=https%3A%2F%2Fwww.venly.io%2F&email=user%40example.com&network=mainnet&cryptoCurrencyCode=BTC"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Moonpay Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "url": "https://sell-sandbox.moonpay.com?apiKey=pk_test_uHJf0DO1w0yfpJxhh7xkLaejUmjeY0&quoteCurrencyCode=EUR&baseCurrencyAmount=3000&refundWalletAddress=0x3FE9a7D68C6a4a2d6575A6C803E4CDF9340E370E&redirectURL=https%3A%2F%2Fwww.venly.io%2F&email=user%40example.com&baseCurrencyCode=usdc&signature=E6rrGWrGpf%2FTNyZRenULguG6lF4NacD%2F0PiaQk4WhzY%3D"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Ramp Network Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "url": "https://app.demo.ramp.network?hostApiKey=unkvxgqfdpbpzet33gqnpnf2at7p7rytq458avkc&enabledFlows=OFFRAMP&fiatValue=1000&fiatCurrency=USD&finalUrl=https%3A%2F%2Fwww.venly.io%2F&userEmailAddress=user%40example.com&selectedCountryCode=US&swapAsset=MATIC_MATIC"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Integration Workflow
+
+<Steps>
+  <Step title="Choose Provider" icon="building">
+    Select the most suitable provider based on user location and preferences
+  </Step>
+  <Step title="Generate URL" icon="link">
+    Call the appropriate API endpoint with user parameters
+  </Step>
+  <Step title="Redirect User" icon="arrow-right">
+    Direct the user to the generated URL for the selling flow
+  </Step>
+  <Step title="Handle Callback" icon="arrow-left">
+    Process the redirect callback with transaction information
+  </Step>
+  <Step title="Confirm Sale" icon="check">
+    Verify the transaction and update your application state
+  </Step>
+</Steps>
+
+## Advanced Off-Ramp Strategies
+
+<AccordionGroup>
+  <Accordion title="Dynamic Provider Selection" icon="magic">
+    **Choose the best provider automatically:**
+    
+    ```javascript
+    async function selectBestProvider(userLocation, cryptoType, amount) {
+      const providerRules = {
+        'US': ['transak', 'moonpay'],
+        'EU': ['ramp-network', 'transak'],
+        'UK': ['moonpay', 'transak'],
+        'default': ['transak', 'moonpay', 'ramp-network']
+      };
+      
+      const providers = providerRules[userLocation] || providerRules.default;
+      
+      // Check availability for specific crypto
+      const availableProviders = await checkProviderAvailability(providers, cryptoType);
+      
+      // Select based on fees or other criteria
+      return selectOptimalProvider(availableProviders, amount);
+    }
+    
+    async function createOptimalOfframp(userData) {
+      const bestProvider = await selectBestProvider(
+        userData.country,
+        userData.cryptoType,
+        userData.amount
+      );
+      
+      switch (bestProvider) {
+        case 'transak':
+          return createTransakOfframp(userData);
+        case 'moonpay':
+          return createMoonpayOfframp(userData);
+        case 'ramp-network':
+          return createRampOfframp(userData);
+        default:
+          throw new Error('No suitable provider found');
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Portfolio Liquidation" icon="chart-pie">
+    **Help users liquidate entire portfolios:**
+    
+    ```javascript
+    class PortfolioLiquidator {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+      }
+    
+      async liquidatePortfolio(portfolio, targetFiat = 'USD') {
+        const liquidationPlan = [];
+        
+        for (const holding of portfolio) {
+          const provider = await this.selectBestProvider(holding);
+          const offrampUrl = await this.createOfframp(holding, provider, targetFiat);
+          
+          liquidationPlan.push({
+            crypto: holding.symbol,
+            amount: holding.amount,
+            estimatedFiat: holding.estimatedValue,
+            provider: provider,
+            url: offrampUrl
+          });
+        }
+        
+        return liquidationPlan;
+      }
+    
+      async selectBestProvider(holding) {
+        // Logic to select best provider based on:
+        // - Crypto type support
+        // - Amount thresholds
+        // - Fee structures
+        // - Processing times
+        
+        const providers = ['transak', 'moonpay', 'ramp-network'];
+        
+        for (const provider of providers) {
+          if (await this.supportsAsset(provider, holding.symbol)) {
+            return provider;
+          }
+        }
+        
+        throw new Error(`No provider supports ${holding.symbol}`);
+      }
+    
+      async createOfframp(holding, provider, targetFiat) {
+        const baseParams = {
+          fiatCurrency: targetFiat,
+          cryptoAmount: holding.amount,
+          email: holding.userEmail,
+          redirectUrl: 'https://app.example.com/liquidation-complete'
+        };
+    
+        switch (provider) {
+          case 'transak':
+            return this.createTransakOfframp({
+              ...baseParams,
+              cryptoCurrency: {
+                network: holding.network,
+                symbol: holding.symbol
+              }
+            });
+          case 'moonpay':
+            return this.createMoonpayOfframp({
+              ...baseParams,
+              cryptoCurrency: { symbol: holding.symbol },
+              refundWalletAddress: holding.walletAddress
+            });
+          case 'ramp-network':
+            return this.createRampOfframp({
+              ...baseParams,
+              cryptoCurrency: {
+                network: holding.network,
+                symbol: holding.symbol
+              },
+              userAddress: holding.walletAddress
+            });
+        }
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Scheduled Selling" icon="calendar">
+    **Implement dollar-cost averaging for selling:**
+    
+    ```javascript
+    class ScheduledSeller {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.schedules = new Map();
+      }
+    
+      createSellingSchedule(userId, config) {
+        const schedule = {
+          userId,
+          cryptoAsset: config.cryptoAsset,
+          totalAmount: config.totalAmount,
+          frequency: config.frequency, // 'daily', 'weekly', 'monthly'
+          duration: config.duration, // number of periods
+          targetFiat: config.targetFiat,
+          provider: config.provider,
+          nextSale: this.calculateNextSale(config.frequency),
+          amountPerSale: config.totalAmount / config.duration,
+          salesCompleted: 0
+        };
+        
+        this.schedules.set(userId, schedule);
+        this.scheduleNextSale(schedule);
+        
+        return schedule;
+      }
+    
+      async executeScheduledSale(schedule) {
+        try {
+          const offrampUrl = await this.createOfframp({
+            fiatCurrency: schedule.targetFiat,
+            cryptoAmount: schedule.amountPerSale,
+            cryptoCurrency: {
+              symbol: schedule.cryptoAsset.symbol,
+              network: schedule.cryptoAsset.network
+            },
+            email: schedule.userEmail,
+            redirectUrl: `https://app.example.com/scheduled-sale/${schedule.userId}`
+          }, schedule.provider);
+          
+          // Notify user about scheduled sale
+          await this.notifyUser(schedule.userId, {
+            type: 'scheduled_sale_ready',
+            amount: schedule.amountPerSale,
+            asset: schedule.cryptoAsset.symbol,
+            url: offrampUrl
+          });
+          
+          schedule.salesCompleted++;
+          schedule.nextSale = this.calculateNextSale(schedule.frequency);
+          
+          if (schedule.salesCompleted < schedule.duration) {
+            this.scheduleNextSale(schedule);
+          } else {
+            this.completeSchedule(schedule);
+          }
+          
+        } catch (error) {
+          console.error('Scheduled sale failed:', error);
+          await this.handleSaleError(schedule, error);
+        }
+      }
+    
+      calculateNextSale(frequency) {
+        const now = new Date();
+        switch (frequency) {
+          case 'daily':
+            return new Date(now.getTime() + 24 * 60 * 60 * 1000);
+          case 'weekly':
+            return new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+          case 'monthly':
+            const nextMonth = new Date(now);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            return nextMonth;
+          default:
+            throw new Error('Invalid frequency');
+        }
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Tax Optimization" icon="calculator">
+    **Help users optimize tax implications:**
+    
+    ```javascript
+    class TaxOptimizedSelling {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+      }
+    
+      async optimizeSaleForTaxes(holdings, targetAmount, taxYear) {
+        // Sort holdings by tax efficiency (FIFO, LIFO, specific identification)
+        const optimizedSales = this.calculateOptimalSales(holdings, targetAmount, taxYear);
+        
+        const salesPlan = [];
+        
+        for (const sale of optimizedSales) {
+          const offrampUrl = await this.createOfframp(sale);
+          
+          salesPlan.push({
+            ...sale,
+            url: offrampUrl,
+            taxImplications: {
+              capitalGain: sale.salePrice - sale.costBasis,
+              holdingPeriod: sale.holdingPeriod,
+              taxTreatment: sale.holdingPeriod > 365 ? 'long-term' : 'short-term'
+            }
+          });
+        }
+        
+        return {
+          salesPlan,
+          totalTaxLiability: this.calculateTotalTax(salesPlan),
+          recommendations: this.generateTaxRecommendations(salesPlan)
+        };
+      }
+    
+      calculateOptimalSales(holdings, targetAmount, taxYear) {
+        // Implement tax-loss harvesting logic
+        // Consider holding periods for capital gains treatment
+        // Optimize for minimal tax impact
+        
+        const sortedHoldings = holdings.sort((a, b) => {
+          // Prioritize tax-efficient sales
+          const aTaxEfficiency = this.calculateTaxEfficiency(a, taxYear);
+          const bTaxEfficiency = this.calculateTaxEfficiency(b, taxYear);
+          return bTaxEfficiency - aTaxEfficiency;
+        });
+        
+        const sales = [];
+        let remainingTarget = targetAmount;
+        
+        for (const holding of sortedHoldings) {
+          if (remainingTarget <= 0) break;
+          
+          const saleAmount = Math.min(holding.amount, remainingTarget);
+          sales.push({
+            ...holding,
+            saleAmount,
+            salePrice: saleAmount * holding.currentPrice,
+            costBasis: saleAmount * holding.averageCostBasis
+          });
+          
+          remainingTarget -= saleAmount;
+        }
+        
+        return sales;
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<Tabs>
+  <Tab title="Gaming Platform">
+    ```javascript
+    // Gaming platform reward cashout
+    async function createRewardCashout(userId, rewardAmount, cryptoType) {
+      const user = await getUserProfile(userId);
+      
+      const offrampUrl = await fetch('/fiat-ramp/transak/off', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer YOUR_API_KEY',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fiatCurrency: user.preferredCurrency || 'USD',
+          cryptoAmount: rewardAmount,
+          cryptoCurrency: {
+            network: cryptoType.network,
+            symbol: cryptoType.symbol
+          },
+          email: user.email,
+          redirectUrl: `https://game.com/cashout-complete/${userId}`
+        })
+      });
+      
+      const data = await offrampUrl.json();
+      
+      // Log the cashout attempt
+      await logCashoutAttempt(userId, rewardAmount, cryptoType, data.result.url);
+      
+      return data.result.url;
+    }
+    ```
+  </Tab>
+  <Tab title="Investment Platform">
+    ```javascript
+    // Investment platform portfolio liquidation
+    async function liquidateInvestment(portfolioId, percentage) {
+      const portfolio = await getPortfolio(portfolioId);
+      const liquidationAmount = portfolio.totalValue * (percentage / 100);
+      
+      // Select assets to liquidate (prioritize by liquidity, fees, etc.)
+      const assetsToLiquidate = selectAssetsForLiquidation(portfolio.holdings, liquidationAmount);
+      
+      const liquidationUrls = [];
+      
+      for (const asset of assetsToLiquidate) {
+        const provider = selectBestProvider(asset.symbol, asset.amount);
+        
+        const offrampUrl = await createOfframpUrl(provider, {
+          fiatCurrency: portfolio.baseCurrency,
+          cryptoAmount: asset.liquidationAmount,
+          cryptoCurrency: {
+            symbol: asset.symbol,
+            network: asset.network
+          },
+          email: portfolio.ownerEmail,
+          redirectUrl: `https://invest.com/liquidation/${portfolioId}`
+        });
+        
+        liquidationUrls.push({
+          asset: asset.symbol,
+          amount: asset.liquidationAmount,
+          url: offrampUrl
+        });
+      }
+      
+      return liquidationUrls;
+    }
+    ```
+  </Tab>
+  <Tab title="DeFi Platform">
+    ```javascript
+    // DeFi platform yield harvesting
+    async function harvestAndCashout(farmingPositions, targetFiat = 'USDC') {
+      const harvestResults = [];
+      
+      for (const position of farmingPositions) {
+        // Harvest rewards
+        const rewards = await harvestFarmRewards(position.farmId);
+        
+        if (rewards.amount > 0) {
+          // Create off-ramp for rewards
+          const offrampUrl = await fetch('/fiat-ramp/moonpay/off', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Bearer YOUR_API_KEY',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              fiatCurrency: targetFiat,
+              cryptoAmount: rewards.amount,
+              cryptoCurrency: {
+                symbol: rewards.token
+              },
+              email: position.userEmail,
+              refundWalletAddress: position.walletAddress,
+              redirectUrl: 'https://defi.com/harvest-complete'
+            })
+          });
+          
+          const data = await offrampUrl.json();
+          
+          harvestResults.push({
+            farm: position.farmName,
+            rewardToken: rewards.token,
+            amount: rewards.amount,
+            cashoutUrl: data.result.url
+          });
+        }
+      }
+      
+      return harvestResults;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Off-Ramp Optimization:**
+
+1. **Provider Selection** - Choose based on user geography and crypto type
+2. **Pre-fill Information** - Use known user data to reduce friction
+3. **Clear Communication** - Explain the process and expected timeframes
+4. **Fallback Options** - Offer multiple providers for better success rates
+5. **Tax Considerations** - Provide tax information and documentation
+6. **Compliance** - Understand KYC/AML requirements for each provider
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invalid currency combination">
+    **Common issues:**
+    - Unsupported crypto/fiat pair
+    - Wrong network for cryptocurrency
+    - Currency not available in user's region
+    
+    **Solution:** Use the [supported currencies endpoint](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies) to verify valid combinations.
+  </Accordion>
+  
+  <Accordion title="User verification failed">
+    **Possible causes:**
+    - Incomplete KYC documentation
+    - Restricted jurisdiction
+    - Payment method not supported
+    
+    **Solution:** Provide clear guidance on verification requirements and offer alternative providers.
+  </Accordion>
+  
+  <Accordion title="Transaction timeout">
+    **Common scenarios:**
+    - User abandoned the flow
+    - Payment processing delays
+    - Network congestion
+    
+    **Solution:** Implement proper timeout handling and provide status updates to users.
+  </Accordion>
+  
+  <Accordion title="Refund issues">
+    **Problems:**
+    - Missing refund wallet address
+    - Invalid wallet address format
+    - Network mismatch
+    
+    **Solution:** Always provide valid refund addresses and ensure network compatibility.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Fiat On-Ramps" href="/guides/pay-api/fiat-ramps/fiat-on-ramps" icon="arrow-up">
+    Enable users to purchase cryptocurrency with fiat
+  </Card>
+  <Card title="Supported Currencies" href="/PAY-API-Basic-Guides/on-ramp-off-ramp-supported-fiat-crypto-currencies" icon="list">
+    View all supported fiat and crypto currencies
+  </Card>
+  <Card title="Configuration Guide" href="/guides/pay-api/fiat-ramps/fiat-on-off-ramps-configuration" icon="gear">
+    Set up and configure fiat ramp providers
+  </Card>
+  <Card title="Testing Guide" href="/guides/pay-api/testing/testing-pay" icon="flask">
+    Test your fiat ramp integration thoroughly
+  </Card>
+</CardGroup>

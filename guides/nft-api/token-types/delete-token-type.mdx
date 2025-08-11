@@ -1,0 +1,1310 @@
+---
+title: "Delete Token Type"
+description: "Comprehensive guide to safely deleting NFT token types with backup systems, dependency checking, and recovery mechanisms"
+icon: "trash"
+---
+
+<Warning>
+**Irreversible Action:** Deleting a token type permanently removes it from all API responses and prevents future minting. This action cannot be undone.
+</Warning>
+
+<Info>
+**Token Type Deletion:** Safely remove NFT token types with proper validation, backup systems, and comprehensive impact analysis.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is Token Type Deletion?
+
+Token type deletion permanently removes an NFT template from your contract, making it inaccessible through API calls and preventing any future minting operations. This is a critical operation that should be performed with careful consideration of existing NFTs, dependencies, and business requirements.
+
+<CardGroup cols={2}>
+  <Card title="Permanent Removal" icon="ban">
+    Complete removal from all API responses and systems
+  </Card>
+  <Card title="Minting Prevention" icon="stop">
+    Blocks all future minting operations for this type
+  </Card>
+  <Card title="Dependency Analysis" icon="network-wired">
+    Check for existing NFTs and related dependencies
+  </Card>
+  <Card title="Backup & Recovery" icon="shield">
+    Create backups before deletion for potential recovery
+  </Card>
+</CardGroup>
+
+## When to Delete Token Types
+
+<Tabs>
+  <Tab title="Business Reasons">
+    **Strategic Decisions:**
+    - Discontinued product lines or collections
+    - Rebranding or collection restructuring
+    - Quality control and template cleanup
+    - Legal or compliance requirements
+    
+    **Considerations:**
+    - Impact on existing NFT holders
+    - Community communication requirements
+    - Alternative migration strategies
+    - Documentation and record keeping
+  </Tab>
+  <Tab title="Technical Cleanup">
+    **Maintenance Operations:**
+    - Removing test or development templates
+    - Cleaning up unused or duplicate types
+    - Optimizing contract storage and gas costs
+    - Preparing for system migrations
+    
+    **Best Practices:**
+    - Verify no production dependencies
+    - Backup metadata and configurations
+    - Update documentation and references
+    - Notify development teams
+  </Tab>
+  <Tab title="Error Recovery">
+    **Corrective Actions:**
+    - Removing incorrectly configured types
+    - Fixing metadata or attribute errors
+    - Addressing security vulnerabilities
+    - Resolving deployment issues
+    
+    **Recovery Steps:**
+    - Analyze the root cause
+    - Create corrected replacement types
+    - Migrate existing NFTs if possible
+    - Update applications and integrations
+  </Tab>
+</Tabs>
+
+## Delete Token Type Process
+
+<Steps>
+  <Step title="Analyze Impact" icon="magnifying-glass">
+    Assess the impact of deleting the token type
+    
+    ```javascript
+    const tokenTypeInfo = {
+      chain: 'MATIC',
+      contractAddress: '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+      tokenTypeId: 1
+    };
+    
+    // Check for existing NFTs
+    const existingNFTs = await checkExistingNFTs(tokenTypeInfo);
+    console.log(`Found ${existingNFTs.length} existing NFTs of this type`);
+    ```
+  </Step>
+  <Step title="Create Backup" icon="copy">
+    Backup token type metadata and configuration
+  </Step>
+  <Step title="Verify Dependencies" icon="check">
+    Ensure no critical dependencies exist
+  </Step>
+  <Step title="Execute Deletion" icon="trash">
+    Perform the deletion operation with confirmation
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Delete token type
+const deleteTokenType = async (chain, contractAddress, tokenTypeId) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/token-types/${tokenTypeId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    console.log('Token type deleted successfully');
+    return { success: true, status: response.status };
+  } catch (error) {
+    console.error('Error deleting token type:', error);
+    throw error;
+  }
+};
+
+// Enhanced token type deletion manager
+class TokenTypeDeletionManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.deletionHistory = new Map();
+    this.backups = new Map();
+  }
+
+  async safeDelete(chain, contractAddress, tokenTypeId, options = {}) {
+    const {
+      createBackup = true,
+      checkDependencies = true,
+      requireConfirmation = true,
+      notifyStakeholders = false
+    } = options;
+
+    try {
+      // Step 1: Get token type details for backup
+      let tokenTypeDetails = null;
+      if (createBackup) {
+        tokenTypeDetails = await this.getTokenTypeDetails(chain, contractAddress, tokenTypeId);
+        this.createBackup(chain, contractAddress, tokenTypeId, tokenTypeDetails);
+      }
+
+      // Step 2: Check dependencies
+      let dependencyAnalysis = null;
+      if (checkDependencies) {
+        dependencyAnalysis = await this.analyzeDependencies(chain, contractAddress, tokenTypeId);
+        
+        if (dependencyAnalysis.hasBlockingDependencies) {
+          throw new Error(`Cannot delete: ${dependencyAnalysis.blockingReasons.join(', ')}`);
+        }
+      }
+
+      // Step 3: Require confirmation for critical operation
+      if (requireConfirmation) {
+        const confirmed = await this.requestDeletionConfirmation(
+          chain, 
+          contractAddress, 
+          tokenTypeId, 
+          tokenTypeDetails,
+          dependencyAnalysis
+        );
+        
+        if (!confirmed) {
+          throw new Error('Deletion cancelled by user');
+        }
+      }
+
+      // Step 4: Execute deletion
+      const result = await deleteTokenType(chain, contractAddress, tokenTypeId);
+
+      // Step 5: Record deletion
+      this.recordDeletion(chain, contractAddress, tokenTypeId, {
+        timestamp: new Date().toISOString(),
+        tokenTypeDetails,
+        dependencyAnalysis,
+        backup: createBackup
+      });
+
+      // Step 6: Notify stakeholders
+      if (notifyStakeholders) {
+        await this.notifyDeletion(chain, contractAddress, tokenTypeId, tokenTypeDetails);
+      }
+
+      console.log('Token type deletion completed successfully');
+      return result;
+
+    } catch (error) {
+      console.error('Token type deletion failed:', error);
+      throw error;
+    }
+  }
+
+  async getTokenTypeDetails(chain, contractAddress, tokenTypeId) {
+    try {
+      // This would typically call a get token type endpoint
+      // For now, we'll simulate the response structure
+      return {
+        id: tokenTypeId,
+        name: `Token Type ${tokenTypeId}`,
+        metadata: {
+          // Token type metadata would be here
+        },
+        contract: {
+          chain,
+          address: contractAddress
+        },
+        createdAt: new Date().toISOString()
+      };
+    } catch (error) {
+      console.warn('Could not fetch token type details for backup:', error);
+      return null;
+    }
+  }
+
+  async analyzeDependencies(chain, contractAddress, tokenTypeId) {
+    const analysis = {
+      hasBlockingDependencies: false,
+      blockingReasons: [],
+      warnings: [],
+      existingNFTs: 0,
+      activeListings: 0,
+      pendingTransactions: 0
+    };
+
+    try {
+      // Check for existing NFTs (simulated)
+      // In reality, this would query the blockchain or database
+      const existingNFTs = await this.checkExistingNFTs(chain, contractAddress, tokenTypeId);
+      analysis.existingNFTs = existingNFTs.length;
+
+      if (existingNFTs.length > 0) {
+        analysis.warnings.push(`${existingNFTs.length} NFTs exist for this token type`);
+      }
+
+      // Check for active marketplace listings (simulated)
+      const activeListings = await this.checkActiveListings(chain, contractAddress, tokenTypeId);
+      analysis.activeListings = activeListings.length;
+
+      if (activeListings.length > 0) {
+        analysis.warnings.push(`${activeListings.length} active marketplace listings`);
+      }
+
+      // Check for pending mint transactions (simulated)
+      const pendingMints = await this.checkPendingMints(chain, contractAddress, tokenTypeId);
+      analysis.pendingTransactions = pendingMints.length;
+
+      if (pendingMints.length > 0) {
+        analysis.hasBlockingDependencies = true;
+        analysis.blockingReasons.push(`${pendingMints.length} pending mint transactions`);
+      }
+
+    } catch (error) {
+      console.warn('Error during dependency analysis:', error);
+      analysis.warnings.push('Could not complete full dependency analysis');
+    }
+
+    return analysis;
+  }
+
+  async checkExistingNFTs(chain, contractAddress, tokenTypeId) {
+    // Simulated NFT check - in reality, this would query the blockchain
+    return []; // Return empty array for simulation
+  }
+
+  async checkActiveListings(chain, contractAddress, tokenTypeId) {
+    // Simulated marketplace listing check
+    return []; // Return empty array for simulation
+  }
+
+  async checkPendingMints(chain, contractAddress, tokenTypeId) {
+    // Simulated pending transaction check
+    return []; // Return empty array for simulation
+  }
+
+  createBackup(chain, contractAddress, tokenTypeId, tokenTypeDetails) {
+    const backupKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    
+    this.backups.set(backupKey, {
+      timestamp: new Date().toISOString(),
+      tokenTypeDetails,
+      chain,
+      contractAddress,
+      tokenTypeId
+    });
+
+    console.log(`Backup created for token type ${tokenTypeId}`);
+  }
+
+  async requestDeletionConfirmation(chain, contractAddress, tokenTypeId, details, analysis) {
+    console.log('\n=== TOKEN TYPE DELETION CONFIRMATION ===');
+    console.log(`Chain: ${chain}`);
+    console.log(`Contract: ${contractAddress}`);
+    console.log(`Token Type ID: ${tokenTypeId}`);
+    
+    if (details) {
+      console.log(`Name: ${details.name || 'Unknown'}`);
+    }
+    
+    if (analysis) {
+      console.log(`Existing NFTs: ${analysis.existingNFTs}`);
+      console.log(`Active Listings: ${analysis.activeListings}`);
+      console.log(`Pending Transactions: ${analysis.pendingTransactions}`);
+      
+      if (analysis.warnings.length > 0) {
+        console.log('Warnings:');
+        analysis.warnings.forEach(warning => console.log(`  - ${warning}`));
+      }
+    }
+    
+    console.log('\n⚠️  This action cannot be undone!');
+    console.log('==========================================\n');
+
+    // In a real implementation, this would show a UI confirmation dialog
+    return true; // Assume confirmation for demo
+  }
+
+  recordDeletion(chain, contractAddress, tokenTypeId, deletionData) {
+    const historyKey = `${chain}:${contractAddress}`;
+    
+    if (!this.deletionHistory.has(historyKey)) {
+      this.deletionHistory.set(historyKey, []);
+    }
+    
+    const history = this.deletionHistory.get(historyKey);
+    history.push({
+      tokenTypeId,
+      ...deletionData
+    });
+  }
+
+  async batchDelete(deletions, options = {}) {
+    const results = [];
+    const errors = [];
+
+    for (const deletion of deletions) {
+      try {
+        const result = await this.safeDelete(
+          deletion.chain,
+          deletion.contractAddress,
+          deletion.tokenTypeId,
+          { ...options, ...deletion.options }
+        );
+        
+        results.push({
+          chain: deletion.chain,
+          contractAddress: deletion.contractAddress,
+          tokenTypeId: deletion.tokenTypeId,
+          success: true,
+          result
+        });
+      } catch (error) {
+        errors.push({
+          chain: deletion.chain,
+          contractAddress: deletion.contractAddress,
+          tokenTypeId: deletion.tokenTypeId,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  async notifyDeletion(chain, contractAddress, tokenTypeId, details) {
+    const notification = {
+      type: 'token_type_deletion',
+      chain,
+      contractAddress,
+      tokenTypeId,
+      details,
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('Sending deletion notification:', notification);
+    
+    // Implementation would depend on your notification system
+    // await sendNotification(notification);
+  }
+
+  getBackup(chain, contractAddress, tokenTypeId) {
+    const backupKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    return this.backups.get(backupKey);
+  }
+
+  getDeletionHistory(chain, contractAddress) {
+    const historyKey = `${chain}:${contractAddress}`;
+    return this.deletionHistory.get(historyKey) || [];
+  }
+
+  generateDeletionReport(chain, contractAddress) {
+    const history = this.getDeletionHistory(chain, contractAddress);
+    const backupCount = Array.from(this.backups.keys())
+      .filter(key => key.startsWith(`${chain}:${contractAddress}:`)).length;
+
+    return {
+      contractAddress,
+      chain,
+      totalDeletions: history.length,
+      backupsCreated: backupCount,
+      lastDeletion: history.length > 0 ? history[history.length - 1].timestamp : null,
+      deletedTokenTypes: history.map(h => ({
+        tokenTypeId: h.tokenTypeId,
+        timestamp: h.timestamp,
+        hadBackup: h.backup,
+        existingNFTs: h.dependencyAnalysis?.existingNFTs || 0
+      }))
+    };
+  }
+
+  // Recovery method to recreate from backup
+  async recoverFromBackup(chain, contractAddress, tokenTypeId) {
+    const backup = this.getBackup(chain, contractAddress, tokenTypeId);
+    
+    if (!backup) {
+      throw new Error('No backup found for the specified token type');
+    }
+
+    console.log('Recovery would recreate token type from backup:', backup);
+    
+    // In a real implementation, this would call the create token type endpoint
+    // with the backed up metadata and configuration
+    
+    return {
+      message: 'Recovery simulation - would recreate token type from backup',
+      backup
+    };
+  }
+}
+
+// Usage examples
+const deletionManager = new TokenTypeDeletionManager('YOUR_API_KEY');
+
+// Safe deletion with all checks
+try {
+  const result = await deletionManager.safeDelete(
+    'MATIC',
+    '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+    1,
+    {
+      createBackup: true,
+      checkDependencies: true,
+      requireConfirmation: true,
+      notifyStakeholders: true
+    }
+  );
+  
+  console.log('Deletion successful:', result);
+} catch (error) {
+  console.error('Deletion failed:', error.message);
+}
+
+// Batch deletion
+const batchDeletions = [
+  {
+    chain: 'MATIC',
+    contractAddress: '0xcontract1',
+    tokenTypeId: 1
+  },
+  {
+    chain: 'MATIC',
+    contractAddress: '0xcontract1',
+    tokenTypeId: 2
+  }
+];
+
+const batchResult = await deletionManager.batchDelete(batchDeletions);
+console.log('Batch deletion result:', batchResult);
+
+// Generate deletion report
+const report = deletionManager.generateDeletionReport(
+  'MATIC',
+  '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a'
+);
+console.log('Deletion report:', report);
+```
+
+```python Python
+import requests
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+
+class TokenTypeDeletionManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.deletion_history = {}
+        self.backups = {}
+    
+    def delete_token_type(self, chain: str, contract_address: str, token_type_id: int) -> Dict[str, Any]:
+        """Delete token type"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/token-types/{token_type_id}'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.delete(url, headers=headers)
+            response.raise_for_status()
+            
+            print('Token type deleted successfully')
+            return {'success': True, 'status': response.status_code}
+            
+        except requests.exceptions.RequestException as error:
+            print(f'Error deleting token type: {error}')
+            raise error
+    
+    def safe_delete(self, chain: str, contract_address: str, token_type_id: int, 
+                   options: Dict[str, bool] = None) -> Dict[str, Any]:
+        """Safely delete token type with checks and backups"""
+        if options is None:
+            options = {}
+        
+        create_backup = options.get('create_backup', True)
+        check_dependencies = options.get('check_dependencies', True)
+        require_confirmation = options.get('require_confirmation', True)
+        notify_stakeholders = options.get('notify_stakeholders', False)
+        
+        try:
+            # Step 1: Get token type details for backup
+            token_type_details = None
+            if create_backup:
+                token_type_details = self._get_token_type_details(chain, contract_address, token_type_id)
+                self._create_backup(chain, contract_address, token_type_id, token_type_details)
+            
+            # Step 2: Check dependencies
+            dependency_analysis = None
+            if check_dependencies:
+                dependency_analysis = self._analyze_dependencies(chain, contract_address, token_type_id)
+                
+                if dependency_analysis['has_blocking_dependencies']:
+                    raise Exception(f"Cannot delete: {', '.join(dependency_analysis['blocking_reasons'])}")
+            
+            # Step 3: Require confirmation
+            if require_confirmation:
+                confirmed = self._request_deletion_confirmation(
+                    chain, contract_address, token_type_id, token_type_details, dependency_analysis
+                )
+                
+                if not confirmed:
+                    raise Exception('Deletion cancelled by user')
+            
+            # Step 4: Execute deletion
+            result = self.delete_token_type(chain, contract_address, token_type_id)
+            
+            # Step 5: Record deletion
+            self._record_deletion(chain, contract_address, token_type_id, {
+                'timestamp': datetime.now().isoformat(),
+                'token_type_details': token_type_details,
+                'dependency_analysis': dependency_analysis,
+                'backup': create_backup
+            })
+            
+            # Step 6: Notify stakeholders
+            if notify_stakeholders:
+                self._notify_deletion(chain, contract_address, token_type_id, token_type_details)
+            
+            print('Token type deletion completed successfully')
+            return result
+            
+        except Exception as error:
+            print(f'Token type deletion failed: {error}')
+            raise error
+    
+    def _get_token_type_details(self, chain: str, contract_address: str, token_type_id: int) -> Optional[Dict[str, Any]]:
+        """Get token type details for backup"""
+        try:
+            # Simulated token type details
+            return {
+                'id': token_type_id,
+                'name': f'Token Type {token_type_id}',
+                'metadata': {},
+                'contract': {
+                    'chain': chain,
+                    'address': contract_address
+                },
+                'created_at': datetime.now().isoformat()
+            }
+        except Exception as error:
+            print(f'Could not fetch token type details for backup: {error}')
+            return None
+    
+    def _analyze_dependencies(self, chain: str, contract_address: str, token_type_id: int) -> Dict[str, Any]:
+        """Analyze dependencies before deletion"""
+        analysis = {
+            'has_blocking_dependencies': False,
+            'blocking_reasons': [],
+            'warnings': [],
+            'existing_nfts': 0,
+            'active_listings': 0,
+            'pending_transactions': 0
+        }
+        
+        try:
+            # Check for existing NFTs (simulated)
+            existing_nfts = self._check_existing_nfts(chain, contract_address, token_type_id)
+            analysis['existing_nfts'] = len(existing_nfts)
+            
+            if existing_nfts:
+                analysis['warnings'].append(f'{len(existing_nfts)} NFTs exist for this token type')
+            
+            # Check for active listings (simulated)
+            active_listings = self._check_active_listings(chain, contract_address, token_type_id)
+            analysis['active_listings'] = len(active_listings)
+            
+            if active_listings:
+                analysis['warnings'].append(f'{len(active_listings)} active marketplace listings')
+            
+            # Check for pending transactions (simulated)
+            pending_mints = self._check_pending_mints(chain, contract_address, token_type_id)
+            analysis['pending_transactions'] = len(pending_mints)
+            
+            if pending_mints:
+                analysis['has_blocking_dependencies'] = True
+                analysis['blocking_reasons'].append(f'{len(pending_mints)} pending mint transactions')
+                
+        except Exception as error:
+            print(f'Error during dependency analysis: {error}')
+            analysis['warnings'].append('Could not complete full dependency analysis')
+        
+        return analysis
+    
+    def _check_existing_nfts(self, chain: str, contract_address: str, token_type_id: int) -> List[Dict[str, Any]]:
+        """Check for existing NFTs (simulated)"""
+        return []  # Return empty list for simulation
+    
+    def _check_active_listings(self, chain: str, contract_address: str, token_type_id: int) -> List[Dict[str, Any]]:
+        """Check for active marketplace listings (simulated)"""
+        return []  # Return empty list for simulation
+    
+    def _check_pending_mints(self, chain: str, contract_address: str, token_type_id: int) -> List[Dict[str, Any]]:
+        """Check for pending mint transactions (simulated)"""
+        return []  # Return empty list for simulation
+    
+    def _create_backup(self, chain: str, contract_address: str, token_type_id: int, token_type_details: Dict[str, Any]):
+        """Create backup of token type"""
+        backup_key = f"{chain}:{contract_address}:{token_type_id}"
+        
+        self.backups[backup_key] = {
+            'timestamp': datetime.now().isoformat(),
+            'token_type_details': token_type_details,
+            'chain': chain,
+            'contract_address': contract_address,
+            'token_type_id': token_type_id
+        }
+        
+        print(f'Backup created for token type {token_type_id}')
+    
+    def _request_deletion_confirmation(self, chain: str, contract_address: str, token_type_id: int,
+                                     details: Dict[str, Any], analysis: Dict[str, Any]) -> bool:
+        """Request confirmation for deletion"""
+        print('\n=== TOKEN TYPE DELETION CONFIRMATION ===')
+        print(f'Chain: {chain}')
+        print(f'Contract: {contract_address}')
+        print(f'Token Type ID: {token_type_id}')
+        
+        if details:
+            print(f'Name: {details.get("name", "Unknown")}')
+        
+        if analysis:
+            print(f'Existing NFTs: {analysis["existing_nfts"]}')
+            print(f'Active Listings: {analysis["active_listings"]}')
+            print(f'Pending Transactions: {analysis["pending_transactions"]}')
+            
+            if analysis['warnings']:
+                print('Warnings:')
+                for warning in analysis['warnings']:
+                    print(f'  - {warning}')
+        
+        print('\n⚠️  This action cannot be undone!')
+        print('==========================================\n')
+        
+        # In a real implementation, this would show a UI confirmation dialog
+        return True  # Assume confirmation for demo
+    
+    def _record_deletion(self, chain: str, contract_address: str, token_type_id: int, deletion_data: Dict[str, Any]):
+        """Record deletion in history"""
+        history_key = f"{chain}:{contract_address}"
+        
+        if history_key not in self.deletion_history:
+            self.deletion_history[history_key] = []
+        
+        self.deletion_history[history_key].append({
+            'token_type_id': token_type_id,
+            **deletion_data
+        })
+    
+    def _notify_deletion(self, chain: str, contract_address: str, token_type_id: int, details: Dict[str, Any]):
+        """Notify stakeholders of deletion"""
+        notification = {
+            'type': 'token_type_deletion',
+            'chain': chain,
+            'contract_address': contract_address,
+            'token_type_id': token_type_id,
+            'details': details,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        print('Sending deletion notification:', notification)
+        # Implementation would depend on your notification system
+    
+    def batch_delete(self, deletions: List[Dict[str, Any]], options: Dict[str, bool] = None) -> Dict[str, Any]:
+        """Delete multiple token types in batch"""
+        if options is None:
+            options = {}
+        
+        results = []
+        errors = []
+        
+        for deletion in deletions:
+            try:
+                result = self.safe_delete(
+                    deletion['chain'],
+                    deletion['contract_address'],
+                    deletion['token_type_id'],
+                    {**options, **deletion.get('options', {})}
+                )
+                
+                results.append({
+                    'chain': deletion['chain'],
+                    'contract_address': deletion['contract_address'],
+                    'token_type_id': deletion['token_type_id'],
+                    'success': True,
+                    'result': result
+                })
+                
+            except Exception as error:
+                errors.append({
+                    'chain': deletion['chain'],
+                    'contract_address': deletion['contract_address'],
+                    'token_type_id': deletion['token_type_id'],
+                    'success': False,
+                    'error': str(error)
+                })
+        
+        return {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+    
+    def get_backup(self, chain: str, contract_address: str, token_type_id: int) -> Optional[Dict[str, Any]]:
+        """Get backup for a token type"""
+        backup_key = f"{chain}:{contract_address}:{token_type_id}"
+        return self.backups.get(backup_key)
+    
+    def get_deletion_history(self, chain: str, contract_address: str) -> List[Dict[str, Any]]:
+        """Get deletion history for a contract"""
+        history_key = f"{chain}:{contract_address}"
+        return self.deletion_history.get(history_key, [])
+    
+    def generate_deletion_report(self, chain: str, contract_address: str) -> Dict[str, Any]:
+        """Generate comprehensive deletion report"""
+        history = self.get_deletion_history(chain, contract_address)
+        backup_count = len([k for k in self.backups.keys() if k.startswith(f"{chain}:{contract_address}:")])
+        
+        return {
+            'contract_address': contract_address,
+            'chain': chain,
+            'total_deletions': len(history),
+            'backups_created': backup_count,
+            'last_deletion': history[-1]['timestamp'] if history else None,
+            'deleted_token_types': [
+                {
+                    'token_type_id': h['token_type_id'],
+                    'timestamp': h['timestamp'],
+                    'had_backup': h['backup'],
+                    'existing_nfts': h.get('dependency_analysis', {}).get('existing_nfts', 0)
+                }
+                for h in history
+            ]
+        }
+
+# Usage
+deletion_manager = TokenTypeDeletionManager('YOUR_API_KEY')
+
+# Safe deletion with all checks
+try:
+    result = deletion_manager.safe_delete(
+        'MATIC',
+        '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+        1,
+        {
+            'create_backup': True,
+            'check_dependencies': True,
+            'require_confirmation': True,
+            'notify_stakeholders': True
+        }
+    )
+    
+    print('Deletion successful:', result)
+except Exception as error:
+    print('Deletion failed:', error)
+
+# Generate deletion report
+report = deletion_manager.generate_deletion_report(
+    'MATIC',
+    '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a'
+)
+print('Deletion report:', report)
+```
+
+```bash cURL
+# Delete token type
+curl -X DELETE '/api/v3/erc1155/contracts/MATIC/0x8b92df864bc1cdd103d92cba3c18b3f7492d815a/token-types/1' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Batch deletion script with safety checks
+#!/bin/bash
+API_KEY="YOUR_API_KEY"
+CHAIN="MATIC"
+CONTRACT_ADDRESS="0x8b92df864bc1cdd103d92cba3c18b3f7492d815a"
+TOKEN_TYPES=(1 2 3)
+
+echo "Starting batch token type deletion..."
+echo "Contract: $CONTRACT_ADDRESS on $CHAIN"
+echo "Token Types: ${TOKEN_TYPES[*]}"
+echo ""
+
+# Confirmation prompt
+read -p "⚠️  This will permanently delete ${#TOKEN_TYPES[@]} token types. Continue? (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Deletion cancelled."
+    exit 1
+fi
+
+successful=0
+failed=0
+
+for token_type_id in "${TOKEN_TYPES[@]}"; do
+    echo "Deleting token type $token_type_id..."
+    
+    response=$(curl -s -w "%{http_code}" -X DELETE \
+        "/api/v3/erc1155/contracts/$CHAIN/$CONTRACT_ADDRESS/token-types/$token_type_id" \
+        -H "Authorization: Bearer $API_KEY" \
+        -H 'Content-Type: application/json')
+    
+    http_code="${response: -3}"
+    
+    if [ "$http_code" = "200" ]; then
+        echo "✓ Token type $token_type_id deleted successfully"
+        ((successful++))
+    else
+        echo "✗ Failed to delete token type $token_type_id (HTTP $http_code)"
+        ((failed++))
+    fi
+    
+    sleep 1  # Rate limiting
+done
+
+echo ""
+echo "Batch deletion completed:"
+echo "Successful: $successful"
+echo "Failed: $failed"
+
+if [ $failed -gt 0 ]; then
+    exit 1
+fi
+```
+
+```php PHP
+<?php
+class TokenTypeDeletionManager {
+    private $apiKey;
+    private $baseUrl;
+    private $deletionHistory;
+    private $backups;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->deletionHistory = [];
+        $this->backups = [];
+    }
+    
+    public function deleteTokenType($chain, $contractAddress, $tokenTypeId) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/token-types/{$tokenTypeId}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to delete token type");
+        }
+        
+        echo "Token type deleted successfully\n";
+        return ['success' => true, 'status' => $httpCode];
+    }
+    
+    public function safeDelete($chain, $contractAddress, $tokenTypeId, $options = []) {
+        $createBackup = $options['createBackup'] ?? true;
+        $checkDependencies = $options['checkDependencies'] ?? true;
+        $requireConfirmation = $options['requireConfirmation'] ?? true;
+        $notifyStakeholders = $options['notifyStakeholders'] ?? false;
+        
+        try {
+            // Step 1: Get token type details for backup
+            $tokenTypeDetails = null;
+            if ($createBackup) {
+                $tokenTypeDetails = $this->getTokenTypeDetails($chain, $contractAddress, $tokenTypeId);
+                $this->createBackup($chain, $contractAddress, $tokenTypeId, $tokenTypeDetails);
+            }
+            
+            // Step 2: Check dependencies
+            $dependencyAnalysis = null;
+            if ($checkDependencies) {
+                $dependencyAnalysis = $this->analyzeDependencies($chain, $contractAddress, $tokenTypeId);
+                
+                if ($dependencyAnalysis['hasBlockingDependencies']) {
+                    throw new Exception("Cannot delete: " . implode(', ', $dependencyAnalysis['blockingReasons']));
+                }
+            }
+            
+            // Step 3: Require confirmation
+            if ($requireConfirmation) {
+                $confirmed = $this->requestDeletionConfirmation(
+                    $chain, $contractAddress, $tokenTypeId, $tokenTypeDetails, $dependencyAnalysis
+                );
+                
+                if (!$confirmed) {
+                    throw new Exception('Deletion cancelled by user');
+                }
+            }
+            
+            // Step 4: Execute deletion
+            $result = $this->deleteTokenType($chain, $contractAddress, $tokenTypeId);
+            
+            // Step 5: Record deletion
+            $this->recordDeletion($chain, $contractAddress, $tokenTypeId, [
+                'timestamp' => date('c'),
+                'tokenTypeDetails' => $tokenTypeDetails,
+                'dependencyAnalysis' => $dependencyAnalysis,
+                'backup' => $createBackup
+            ]);
+            
+            // Step 6: Notify stakeholders
+            if ($notifyStakeholders) {
+                $this->notifyDeletion($chain, $contractAddress, $tokenTypeId, $tokenTypeDetails);
+            }
+            
+            echo "Token type deletion completed successfully\n";
+            return $result;
+            
+        } catch (Exception $error) {
+            echo "Token type deletion failed: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function getTokenTypeDetails($chain, $contractAddress, $tokenTypeId) {
+        try {
+            // Simulated token type details
+            return [
+                'id' => $tokenTypeId,
+                'name' => "Token Type {$tokenTypeId}",
+                'metadata' => [],
+                'contract' => [
+                    'chain' => $chain,
+                    'address' => $contractAddress
+                ],
+                'createdAt' => date('c')
+            ];
+        } catch (Exception $error) {
+            echo "Could not fetch token type details for backup: " . $error->getMessage() . "\n";
+            return null;
+        }
+    }
+    
+    private function analyzeDependencies($chain, $contractAddress, $tokenTypeId) {
+        $analysis = [
+            'hasBlockingDependencies' => false,
+            'blockingReasons' => [],
+            'warnings' => [],
+            'existingNFTs' => 0,
+            'activeListings' => 0,
+            'pendingTransactions' => 0
+        ];
+        
+        try {
+            // Check for existing NFTs (simulated)
+            $existingNFTs = $this->checkExistingNFTs($chain, $contractAddress, $tokenTypeId);
+            $analysis['existingNFTs'] = count($existingNFTs);
+            
+            if (!empty($existingNFTs)) {
+                $analysis['warnings'][] = count($existingNFTs) . ' NFTs exist for this token type';
+            }
+            
+            // Check for active listings (simulated)
+            $activeListings = $this->checkActiveListings($chain, $contractAddress, $tokenTypeId);
+            $analysis['activeListings'] = count($activeListings);
+            
+            if (!empty($activeListings)) {
+                $analysis['warnings'][] = count($activeListings) . ' active marketplace listings';
+            }
+            
+            // Check for pending transactions (simulated)
+            $pendingMints = $this->checkPendingMints($chain, $contractAddress, $tokenTypeId);
+            $analysis['pendingTransactions'] = count($pendingMints);
+            
+            if (!empty($pendingMints)) {
+                $analysis['hasBlockingDependencies'] = true;
+                $analysis['blockingReasons'][] = count($pendingMints) . ' pending mint transactions';
+            }
+            
+        } catch (Exception $error) {
+            echo "Error during dependency analysis: " . $error->getMessage() . "\n";
+            $analysis['warnings'][] = 'Could not complete full dependency analysis';
+        }
+        
+        return $analysis;
+    }
+    
+    private function checkExistingNFTs($chain, $contractAddress, $tokenTypeId) {
+        // Simulated NFT check
+        return []; // Return empty array for simulation
+    }
+    
+    private function checkActiveListings($chain, $contractAddress, $tokenTypeId) {
+        // Simulated marketplace listing check
+        return []; // Return empty array for simulation
+    }
+    
+    private function checkPendingMints($chain, $contractAddress, $tokenTypeId) {
+        // Simulated pending transaction check
+        return []; // Return empty array for simulation
+    }
+    
+    private function createBackup($chain, $contractAddress, $tokenTypeId, $tokenTypeDetails) {
+        $backupKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        
+        $this->backups[$backupKey] = [
+            'timestamp' => date('c'),
+            'tokenTypeDetails' => $tokenTypeDetails,
+            'chain' => $chain,
+            'contractAddress' => $contractAddress,
+            'tokenTypeId' => $tokenTypeId
+        ];
+        
+        echo "Backup created for token type {$tokenTypeId}\n";
+    }
+    
+    private function requestDeletionConfirmation($chain, $contractAddress, $tokenTypeId, $details, $analysis) {
+        echo "\n=== TOKEN TYPE DELETION CONFIRMATION ===\n";
+        echo "Chain: {$chain}\n";
+        echo "Contract: {$contractAddress}\n";
+        echo "Token Type ID: {$tokenTypeId}\n";
+        
+        if ($details) {
+            echo "Name: " . ($details['name'] ?? 'Unknown') . "\n";
+        }
+        
+        if ($analysis) {
+            echo "Existing NFTs: {$analysis['existingNFTs']}\n";
+            echo "Active Listings: {$analysis['activeListings']}\n";
+            echo "Pending Transactions: {$analysis['pendingTransactions']}\n";
+            
+            if (!empty($analysis['warnings'])) {
+                echo "Warnings:\n";
+                foreach ($analysis['warnings'] as $warning) {
+                    echo "  - {$warning}\n";
+                }
+            }
+        }
+        
+        echo "\n⚠️  This action cannot be undone!\n";
+        echo "==========================================\n\n";
+        
+        // In a real implementation, this would show a UI confirmation dialog
+        return true; // Assume confirmation for demo
+    }
+    
+    private function recordDeletion($chain, $contractAddress, $tokenTypeId, $deletionData) {
+        $historyKey = "{$chain}:{$contractAddress}";
+        
+        if (!isset($this->deletionHistory[$historyKey])) {
+            $this->deletionHistory[$historyKey] = [];
+        }
+        
+        $this->deletionHistory[$historyKey][] = array_merge([
+            'tokenTypeId' => $tokenTypeId
+        ], $deletionData);
+    }
+    
+    private function notifyDeletion($chain, $contractAddress, $tokenTypeId, $details) {
+        $notification = [
+            'type' => 'token_type_deletion',
+            'chain' => $chain,
+            'contractAddress' => $contractAddress,
+            'tokenTypeId' => $tokenTypeId,
+            'details' => $details,
+            'timestamp' => date('c')
+        ];
+        
+        echo "Sending deletion notification: " . json_encode($notification) . "\n";
+        // Implementation would depend on your notification system
+    }
+    
+    public function batchDelete($deletions, $options = []) {
+        $results = [];
+        $errors = [];
+        
+        foreach ($deletions as $deletion) {
+            try {
+                $result = $this->safeDelete(
+                    $deletion['chain'],
+                    $deletion['contractAddress'],
+                    $deletion['tokenTypeId'],
+                    array_merge($options, $deletion['options'] ?? [])
+                );
+                
+                $results[] = [
+                    'chain' => $deletion['chain'],
+                    'contractAddress' => $deletion['contractAddress'],
+                    'tokenTypeId' => $deletion['tokenTypeId'],
+                    'success' => true,
+                    'result' => $result
+                ];
+                
+            } catch (Exception $error) {
+                $errors[] = [
+                    'chain' => $deletion['chain'],
+                    'contractAddress' => $deletion['contractAddress'],
+                    'tokenTypeId' => $deletion['tokenTypeId'],
+                    'success' => false,
+                    'error' => $error->getMessage()
+                ];
+            }
+        }
+        
+        return [
+            'successful' => count($results),
+            'failed' => count($errors),
+            'results' => $results,
+            'errors' => $errors
+        ];
+    }
+    
+    public function getBackup($chain, $contractAddress, $tokenTypeId) {
+        $backupKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        return $this->backups[$backupKey] ?? null;
+    }
+    
+    public function getDeletionHistory($chain, $contractAddress) {
+        $historyKey = "{$chain}:{$contractAddress}";
+        return $this->deletionHistory[$historyKey] ?? [];
+    }
+    
+    public function generateDeletionReport($chain, $contractAddress) {
+        $history = $this->getDeletionHistory($chain, $contractAddress);
+        $backupCount = count(array_filter(array_keys($this->backups), function($key) use ($chain, $contractAddress) {
+            return strpos($key, "{$chain}:{$contractAddress}:") === 0;
+        }));
+        
+        return [
+            'contractAddress' => $contractAddress,
+            'chain' => $chain,
+            'totalDeletions' => count($history),
+            'backupsCreated' => $backupCount,
+            'lastDeletion' => !empty($history) ? end($history)['timestamp'] : null,
+            'deletedTokenTypes' => array_map(function($h) {
+                return [
+                    'tokenTypeId' => $h['tokenTypeId'],
+                    'timestamp' => $h['timestamp'],
+                    'hadBackup' => $h['backup'],
+                    'existingNFTs' => $h['dependencyAnalysis']['existingNFTs'] ?? 0
+                ];
+            }, $history)
+        ];
+    }
+    
+    public function recoverFromBackup($chain, $contractAddress, $tokenTypeId) {
+        $backup = $this->getBackup($chain, $contractAddress, $tokenTypeId);
+        
+        if (!$backup) {
+            throw new Exception('No backup found for the specified token type');
+        }
+        
+        echo "Recovery would recreate token type from backup: " . json_encode($backup) . "\n";
+        
+        // In a real implementation, this would call the create token type endpoint
+        // with the backed up metadata and configuration
+        
+        return [
+            'message' => 'Recovery simulation - would recreate token type from backup',
+            'backup' => $backup
+        ];
+    }
+}
+
+// Usage
+$deletionManager = new TokenTypeDeletionManager('YOUR_API_KEY');
+
+try {
+    // Safe deletion with all checks
+    $result = $deletionManager->safeDelete(
+        'MATIC',
+        '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a',
+        1,
+        [
+            'createBackup' => true,
+            'checkDependencies' => true,
+            'requireConfirmation' => true,
+            'notifyStakeholders' => true
+        ]
+    );
+    
+    echo "Deletion successful: " . json_encode($result) . "\n";
+    
+    // Generate deletion report
+    $report = $deletionManager->generateDeletionReport(
+        'MATIC',
+        '0x8b92df864bc1cdd103d92cba3c18b3f7492d815a'
+    );
+    echo "Deletion report: " . json_encode($report, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Token Type Deletion Best Practices:**
+
+1. **Always Create Backups** - Store complete token type metadata before deletion
+2. **Dependency Analysis** - Check for existing NFTs, active listings, and pending transactions
+3. **Confirmation Process** - Implement multi-step confirmation for critical deletions
+4. **Stakeholder Notification** - Inform relevant parties before and after deletion
+5. **Batch Operations** - Use batch deletion for efficiency when removing multiple types
+6. **Recovery Planning** - Maintain recovery procedures and backup systems
+7. **Documentation** - Keep detailed records of all deletion operations
+8. **Testing Environment** - Test deletion procedures in development environments first
+</Tip>
+
+## Recovery Options
+
+<Warning>
+**Limited Recovery:** Once a token type is deleted, it cannot be restored through the API. Recovery requires recreating the token type with backed-up metadata.
+</Warning>
+
+<Accordion title="Recovery Strategies">
+If you need to recover a deleted token type:
+
+1. **Use Backup Data** - Recreate the token type using backed-up metadata
+2. **Update References** - Update all applications and integrations with the new token type ID
+3. **Migrate Existing NFTs** - If possible, migrate existing NFTs to the new token type
+4. **Communicate Changes** - Notify users and stakeholders about the recovery process
+
+**Prevention is Better:**
+- Always test deletions in development environments
+- Implement approval workflows for production deletions
+- Maintain comprehensive backups of all token type configurations
+- Use soft deletion flags in your application layer when possible
+</Accordion>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create NFT Template" href="/guides/nft-api/token-types/create-nft-template" icon="plus">
+    Learn how to create new NFT token types
+  </Card>
+  <Card title="Check Token Type Status" href="/guides/nft-api/token-types/check-token-type-status" icon="clock">
+    Monitor token type creation progress
+  </Card>
+  <Card title="Retrieve Token Types" href="/guides/nft-api/token-types/retrieve-token-types" icon="list">
+    Get all your created token types
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/token-types/archive-token-type" icon="book">
+    Explore the complete token type deletion API documentation
+  </Card>
+</CardGroup>

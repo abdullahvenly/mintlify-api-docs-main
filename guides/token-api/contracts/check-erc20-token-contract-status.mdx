@@ -1,0 +1,522 @@
+---
+title: "Check ERC20 Contract Status"
+description: "Monitor the deployment status of your ERC20 token contracts and retrieve contract details"
+icon: "magnifying-glass"
+---
+
+<Info>
+**Contract Status Monitoring:** Track the on-chain deployment progress of your ERC20 token contracts in real-time.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Contract Status Checking?
+
+After creating an ERC20 token contract, the deployment process is asynchronous. This endpoint allows you to monitor the deployment progress and retrieve the final contract address once deployment is complete.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Tracking" icon="chart-line">
+    Monitor deployment progress from pending to success
+  </Card>
+  <Card title="Contract Details" icon="file-contract">
+    Get complete contract information once deployed
+  </Card>
+  <Card title="Error Detection" icon="exclamation-triangle">
+    Identify and troubleshoot failed deployments
+  </Card>
+  <Card title="Address Retrieval" icon="link">
+    Obtain the final contract address for interactions
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Contract Creation" icon="plus">
+    You need to have created a contract using the [create ERC20 contract](https://docs.venly.io/docs/create-erc20-token-contract) endpoint
+  </Step>
+  <Step title="Deployment ID" icon="key">
+    Save the `result.id` from the contract creation response
+  </Step>
+  <Step title="API Access" icon="shield">
+    Ensure you have valid API credentials
+  </Step>
+</Steps>
+
+<Note>
+The deployment ID is returned as `result.id` in the response when you create an ERC20 token contract. This ID is required to check the deployment status.
+</Note>
+
+## Check Contract Status
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const deploymentId = "7eae57cb-6769-4a2a-84c8-32e72f0aaee7";
+
+const response = await fetch(`/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Contract status:', data.result.status);
+console.log('Contract address:', data.result.address);
+```
+
+```python Python
+import requests
+
+deployment_id = "7eae57cb-6769-4a2a-84c8-32e72f0aaee7"
+
+response = requests.get(
+    f'/api/v3/erc20/contracts/deployments/{deployment_id}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Contract status:', data['result']['status'])
+print('Contract address:', data['result']['address'])
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc20/contracts/deployments/7eae57cb-6769-4a2a-84c8-32e72f0aaee7' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `deploymentId` | string | ✅ | The deployment ID from contract creation response |
+
+<Tip>
+**Finding Deployment ID:** The deployment ID is the `result.id` field returned when you create an ERC20 contract. Always save this value for status tracking.
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "id": "7eae57cb-6769-4a2a-84c8-32e72f0aaee7",
+        "chain": "MATIC",
+        "address": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+        "name": "Infinity Token",
+        "symbol": "IFT",
+        "maxSupply": 100,
+        "burnable": true,
+        "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+        "transactionHash": "0x7dd053caa4a77f84d70c38478bc14dd25766765d018740b0633eabf3b1307c6d",
+        "status": "SUCCEEDED"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Key response fields:**
+    - **`id`** - Deployment ID for tracking
+    - **`chain`** - Blockchain where contract is deployed
+    - **`address`** - Contract address (available when SUCCEEDED)
+    - **`name`** - Token name
+    - **`symbol`** - Token symbol
+    - **`maxSupply`** - Maximum token supply
+    - **`burnable`** - Whether tokens can be burned
+    - **`owner`** - Contract owner address
+    - **`transactionHash`** - Deployment transaction hash
+    - **`status`** - Current deployment status
+  </Tab>
+</Tabs>
+
+## Status Values
+
+<Tabs>
+  <Tab title="Status Types">
+    | Status | Description | Next Steps |
+    |--------|-------------|------------|
+    | `PENDING` | Contract deployment in progress | Wait and check again |
+    | `SUCCEEDED` | Contract successfully deployed | Use contract address |
+    | `FAILED` | Contract deployment failed | Check error details |
+  </Tab>
+  <Tab title="Status Workflow">
+    ```mermaid
+    graph LR
+        A[Contract Created] --> B[PENDING]
+        B --> C{Deployment}
+        C -->|Success| D[SUCCEEDED]
+        C -->|Error| E[FAILED]
+        D --> F[Contract Ready]
+        E --> G[Retry/Debug]
+    ```
+  </Tab>
+</Tabs>
+
+<Check>
+**Contract Address:** Once status is `SUCCEEDED`, the `address` field contains your contract's on-chain address. Save this for all future interactions with your token contract.
+</Check>
+
+## Polling for Status Updates
+
+Implement polling to automatically check status until deployment completes:
+
+<CodeGroup>
+```javascript JavaScript
+async function waitForContractDeployment(deploymentId, maxAttempts = 30) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch(`/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+        headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+      });
+      
+      const data = await response.json();
+      const status = data.result.status;
+      
+      console.log(`Attempt ${attempt}: Status is ${status}`);
+      
+      if (status === 'SUCCEEDED') {
+        console.log('Contract deployed successfully!');
+        console.log('Contract address:', data.result.address);
+        return data.result;
+      }
+      
+      if (status === 'FAILED') {
+        throw new Error('Contract deployment failed');
+      }
+      
+      // Wait 10 seconds before next check
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      
+    } catch (error) {
+      console.error(`Error checking status: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  throw new Error('Deployment timeout - max attempts reached');
+}
+
+// Usage
+const deploymentId = "7eae57cb-6769-4a2a-84c8-32e72f0aaee7";
+const contract = await waitForContractDeployment(deploymentId);
+```
+
+```python Python
+import requests
+import time
+
+def wait_for_contract_deployment(deployment_id, max_attempts=30):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.get(
+                f'/api/v3/erc20/contracts/deployments/{deployment_id}',
+                headers={'Authorization': 'Bearer YOUR_API_KEY'}
+            )
+            
+            data = response.json()
+            status = data['result']['status']
+            
+            print(f'Attempt {attempt}: Status is {status}')
+            
+            if status == 'SUCCEEDED':
+                print('Contract deployed successfully!')
+                print('Contract address:', data['result']['address'])
+                return data['result']
+            
+            if status == 'FAILED':
+                raise Exception('Contract deployment failed')
+            
+            # Wait 10 seconds before next check
+            time.sleep(10)
+            
+        except Exception as error:
+            print(f'Error checking status: {error}')
+            raise error
+    
+    raise Exception('Deployment timeout - max attempts reached')
+
+# Usage
+deployment_id = "7eae57cb-6769-4a2a-84c8-32e72f0aaee7"
+contract = wait_for_contract_deployment(deployment_id)
+```
+</CodeGroup>
+
+## Status Monitoring Strategies
+
+<AccordionGroup>
+  <Accordion title="Polling Intervals" icon="clock">
+    **Recommended polling strategies:**
+    
+    ```javascript
+    // Conservative approach (recommended)
+    const pollInterval = 10000; // 10 seconds
+    
+    // Aggressive approach (for urgent deployments)
+    const pollInterval = 5000; // 5 seconds
+    
+    // Exponential backoff
+    let pollInterval = 5000;
+    const maxInterval = 30000;
+    
+    function increasePollInterval() {
+      pollInterval = Math.min(pollInterval * 1.5, maxInterval);
+    }
+    ```
+    
+    **Guidelines:**
+    - Start with 10-second intervals
+    - Increase interval if deployment takes longer
+    - Set maximum attempts to avoid infinite loops
+  </Accordion>
+  
+  <Accordion title="Error Handling" icon="exclamation-triangle">
+    **Handle different failure scenarios:**
+    
+    ```javascript
+    async function checkContractStatus(deploymentId) {
+      try {
+        const response = await fetch(`/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.success) {
+          throw new Error('API request failed');
+        }
+        
+        return data.result;
+        
+      } catch (error) {
+        console.error('Status check failed:', error.message);
+        throw error;
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Webhook Alternative" icon="webhook">
+    **Use webhooks for real-time updates:**
+    
+    Instead of polling, consider setting up [webhooks](https://docs.venly.io/docs/webhooks-token-api) to receive automatic notifications when contract deployment completes.
+    
+    ```javascript
+    // Webhook payload example
+    {
+      "type": "CONTRACT_DEPLOYED",
+      "data": {
+        "deploymentId": "7eae57cb-6769-4a2a-84c8-32e72f0aaee7",
+        "contractAddress": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+        "status": "SUCCEEDED"
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Batch Status Checking" icon="list">
+    **Check multiple contracts simultaneously:**
+    
+    ```javascript
+    async function checkMultipleContracts(deploymentIds) {
+      const promises = deploymentIds.map(id => 
+        checkContractStatus(id).catch(error => ({ id, error }))
+      );
+      
+      const results = await Promise.all(promises);
+      
+      const succeeded = results.filter(r => r.status === 'SUCCEEDED');
+      const pending = results.filter(r => r.status === 'PENDING');
+      const failed = results.filter(r => r.status === 'FAILED' || r.error);
+      
+      return { succeeded, pending, failed };
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<Tabs>
+  <Tab title="React Component">
+    ```javascript
+    import React, { useState, useEffect } from 'react';
+    
+    function ContractDeploymentStatus({ deploymentId }) {
+      const [status, setStatus] = useState('PENDING');
+      const [contractData, setContractData] = useState(null);
+      const [error, setError] = useState(null);
+    
+      useEffect(() => {
+        const checkStatus = async () => {
+          try {
+            const response = await fetch(`/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+              headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+            });
+            
+            const data = await response.json();
+            setStatus(data.result.status);
+            setContractData(data.result);
+            
+            if (data.result.status === 'PENDING') {
+              setTimeout(checkStatus, 10000); // Check again in 10 seconds
+            }
+          } catch (err) {
+            setError(err.message);
+          }
+        };
+    
+        checkStatus();
+      }, [deploymentId]);
+    
+      return (
+        <div>
+          <h3>Contract Deployment Status</h3>
+          <p>Status: <strong>{status}</strong></p>
+          {contractData?.address && (
+            <p>Contract Address: <code>{contractData.address}</code></p>
+          )}
+          {error && <p style={{color: 'red'}}>Error: {error}</p>}
+        </div>
+      );
+    }
+    ```
+  </Tab>
+  <Tab title="Node.js Service">
+    ```javascript
+    class ContractDeploymentTracker {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.deployments = new Map();
+      }
+    
+      async trackDeployment(deploymentId, callback) {
+        this.deployments.set(deploymentId, { callback, attempts: 0 });
+        await this.checkDeployment(deploymentId);
+      }
+    
+      async checkDeployment(deploymentId) {
+        const deployment = this.deployments.get(deploymentId);
+        if (!deployment) return;
+    
+        try {
+          const response = await fetch(`/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+    
+          const data = await response.json();
+          const status = data.result.status;
+    
+          if (status === 'SUCCEEDED' || status === 'FAILED') {
+            deployment.callback(data.result);
+            this.deployments.delete(deploymentId);
+          } else if (deployment.attempts < 30) {
+            deployment.attempts++;
+            setTimeout(() => this.checkDeployment(deploymentId), 10000);
+          } else {
+            deployment.callback({ error: 'Timeout' });
+            this.deployments.delete(deploymentId);
+          }
+        } catch (error) {
+          deployment.callback({ error: error.message });
+          this.deployments.delete(deploymentId);
+        }
+      }
+    }
+    
+    // Usage
+    const tracker = new ContractDeploymentTracker('YOUR_API_KEY');
+    tracker.trackDeployment('deployment-id', (result) => {
+      if (result.error) {
+        console.error('Deployment failed:', result.error);
+      } else {
+        console.log('Contract deployed:', result.address);
+      }
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Deployment ID not found">
+    **Error:** Invalid or non-existent deployment ID
+    
+    **Causes:**
+    - Incorrect deployment ID format
+    - Deployment ID from different environment
+    - Typo in deployment ID
+    
+    **Solution:** Verify the deployment ID from your contract creation response and ensure you're using the correct environment.
+  </Accordion>
+  
+  <Accordion title="Status stuck on PENDING">
+    **Common causes:**
+    - Network congestion
+    - Insufficient gas fees
+    - Blockchain connectivity issues
+    
+    **Solution:** Wait longer or check blockchain explorer using the transaction hash. Some networks may take several minutes during high congestion.
+  </Accordion>
+  
+  <Accordion title="Deployment failed">
+    **Possible reasons:**
+    - Invalid contract parameters
+    - Network issues during deployment
+    - Insufficient funds for gas fees
+    
+    **Solution:** Check the transaction hash on a blockchain explorer for detailed error information, then create a new contract with corrected parameters.
+  </Accordion>
+  
+  <Accordion title="Missing contract address">
+    **Issue:** Status is SUCCEEDED but no address field
+    
+    **Cause:** Response parsing error or API version mismatch
+    
+    **Solution:** Ensure you're using the latest API version and check the complete response structure.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Status Monitoring Best Practices:**
+
+1. **Save Deployment IDs** - Always store deployment IDs for future reference
+2. **Implement Timeouts** - Set maximum polling attempts to avoid infinite loops
+3. **Use Exponential Backoff** - Increase polling intervals for long-running deployments
+4. **Handle All States** - Account for PENDING, SUCCEEDED, and FAILED states
+5. **Store Contract Addresses** - Save the final contract address for future operations
+6. **Monitor Transaction Hash** - Use blockchain explorers for additional debugging
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Mint ERC20 Tokens" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Start minting tokens with your deployed contract
+  </Card>
+  <Card title="Manage Contracts" href="/Token-API-Basic-Guides/retrieve-erc20-token-contracts" icon="gear">
+    View and manage all your token contracts
+  </Card>
+  <Card title="Update Contract Owner" href="/Token-API-Basic-Guides/update-contract-owner-erc20" icon="crown">
+    Transfer ownership of your contract
+  </Card>
+  <Card title="Set Up Webhooks" href="/Token-API-Basic-Guides/webhooks-token-api" icon="webhook">
+    Get real-time notifications for contract events
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Always wait for `SUCCEEDED` status before attempting to interact with your contract. Using a contract address from a `PENDING` deployment will result in errors.
+</Warning>

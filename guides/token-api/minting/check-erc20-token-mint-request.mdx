@@ -1,0 +1,719 @@
+---
+title: "Check ERC20 Token Mint Status"
+description: "Monitor the status of your ERC20 token minting operations and track transaction progress"
+icon: "magnifying-glass"
+---
+
+<Info>
+**Mint Status Tracking:** Monitor individual token minting operations to ensure successful distribution to recipients.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Mint Status Checking?
+
+After initiating ERC20 token minting operations, each mint request is processed asynchronously on the blockchain. This endpoint allows you to track the progress of individual mint operations and verify successful token distribution.
+
+<CardGroup cols={2}>
+  <Card title="Individual Tracking" icon="crosshairs">
+    Monitor each mint operation separately
+  </Card>
+  <Card title="Transaction Details" icon="receipt">
+    Get blockchain transaction hash and details
+  </Card>
+  <Card title="Status Updates" icon="refresh">
+    Real-time progress from pending to completion
+  </Card>
+  <Card title="Error Detection" icon="exclamation-triangle">
+    Identify and troubleshoot failed mints
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Token Minting" icon="coins">
+    You need to have initiated token minting using the [mint ERC20 tokens](https://docs.venly.io/docs/mint-erc20-tokens) endpoint
+  </Step>
+  <Step title="Mint ID" icon="key">
+    Save the `result.mints[].id` from the minting response
+  </Step>
+  <Step title="API Access" icon="shield">
+    Ensure you have valid API credentials
+  </Step>
+</Steps>
+
+<Note>
+Each mint operation gets a unique mint ID returned as `result.mints[].id` in the minting response. This ID is required to check the individual mint status.
+</Note>
+
+## Check Mint Status
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const mintId = "7f78e6ed-d733-430c-83a4-5fc28032e667";
+
+const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Mint status:', data.result.status);
+console.log('Transaction hash:', data.result.transactionHash);
+```
+
+```python Python
+import requests
+
+mint_id = "7f78e6ed-d733-430c-83a4-5fc28032e667"
+
+response = requests.get(
+    f'/api/v3/erc20/tokens/mints/{mint_id}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Mint status:', data['result']['status'])
+print('Transaction hash:', data['result']['transactionHash'])
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc20/tokens/mints/7f78e6ed-d733-430c-83a4-5fc28032e667' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `mintId` | string | ✅ | The mint ID from the token minting response |
+
+<Tip>
+**Finding Mint ID:** The mint ID is found in the `result.mints[].id` field returned when you mint ERC20 tokens. Each destination gets its own unique mint ID.
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "id": "7f78e6ed-d733-430c-83a4-5fc28032e667",
+        "createdOn": "2024-09-23T09:28:49.562087",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x95dba6ba9c8bae1d3179486e00eeb778fb9d2435741226e4d98b59e38cf7e875",
+        "destination": {
+          "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+          "amount": 35
+        },
+        "contract": {
+          "address": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+          "name": "Infinity Token",
+          "symbol": "IFT",
+          "maxSupply": 100,
+          "burnable": true,
+          "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+          "type": "ERC_20"
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Key response fields:**
+    - **`id`** - Unique mint ID for tracking
+    - **`createdOn`** - Timestamp when mint was initiated
+    - **`status`** - Current mint status (PENDING/SUCCEEDED/FAILED)
+    - **`transactionHash`** - Blockchain transaction hash (when available)
+    - **`destination.address`** - Recipient wallet/email address
+    - **`destination.amount`** - Number of tokens minted
+    - **`contract`** - Complete contract information
+  </Tab>
+</Tabs>
+
+## Status Values
+
+<Tabs>
+  <Tab title="Status Types">
+    | Status | Description | Next Steps |
+    |--------|-------------|------------|
+    | `PENDING` | Mint is being processed on blockchain | Wait and check again |
+    | `SUCCEEDED` | Tokens successfully minted and transferred | Mint complete |
+    | `FAILED` | Mint operation failed | Check error details |
+  </Tab>
+  <Tab title="Status Workflow">
+    ```mermaid
+    graph LR
+        A[Mint Initiated] --> B[PENDING]
+        B --> C{Blockchain Processing}
+        C -->|Success| D[SUCCEEDED]
+        C -->|Error| E[FAILED]
+        D --> F[Tokens Transferred]
+        E --> G[Retry/Debug]
+    ```
+  </Tab>
+</Tabs>
+
+<Check>
+**Transaction Hash:** Once status is `SUCCEEDED`, the `transactionHash` field contains the blockchain transaction hash. Use this to verify the transaction on a blockchain explorer.
+</Check>
+
+## Batch Status Monitoring
+
+Monitor multiple mint operations simultaneously:
+
+<CodeGroup>
+```javascript JavaScript
+async function checkMultipleMints(mintIds) {
+  const promises = mintIds.map(async (mintId) => {
+    try {
+      const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+        headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+      });
+      
+      const data = await response.json();
+      return {
+        mintId,
+        status: data.result.status,
+        destination: data.result.destination,
+        transactionHash: data.result.transactionHash
+      };
+    } catch (error) {
+      return {
+        mintId,
+        error: error.message
+      };
+    }
+  });
+  
+  const results = await Promise.all(promises);
+  
+  const succeeded = results.filter(r => r.status === 'SUCCEEDED');
+  const pending = results.filter(r => r.status === 'PENDING');
+  const failed = results.filter(r => r.status === 'FAILED' || r.error);
+  
+  console.log(`✅ Succeeded: ${succeeded.length}`);
+  console.log(`⏳ Pending: ${pending.length}`);
+  console.log(`❌ Failed: ${failed.length}`);
+  
+  return { succeeded, pending, failed };
+}
+
+// Usage
+const mintIds = [
+  "7f78e6ed-d733-430c-83a4-5fc28032e667",
+  "d06ff454-b603-4279-8439-39d6949abf67"
+];
+
+const results = await checkMultipleMints(mintIds);
+```
+
+```python Python
+import requests
+import asyncio
+import aiohttp
+
+async def check_multiple_mints(mint_ids):
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        
+        for mint_id in mint_ids:
+            task = check_single_mint(session, mint_id)
+            tasks.append(task)
+        
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        succeeded = [r for r in results if r.get('status') == 'SUCCEEDED']
+        pending = [r for r in results if r.get('status') == 'PENDING']
+        failed = [r for r in results if r.get('status') == 'FAILED' or isinstance(r, Exception)]
+        
+        print(f"✅ Succeeded: {len(succeeded)}")
+        print(f"⏳ Pending: {len(pending)}")
+        print(f"❌ Failed: {len(failed)}")
+        
+        return {'succeeded': succeeded, 'pending': pending, 'failed': failed}
+
+async def check_single_mint(session, mint_id):
+    try:
+        async with session.get(
+            f'/api/v3/erc20/tokens/mints/{mint_id}',
+            headers={'Authorization': 'Bearer YOUR_API_KEY'}
+        ) as response:
+            data = await response.json()
+            return {
+                'mintId': mint_id,
+                'status': data['result']['status'],
+                'destination': data['result']['destination'],
+                'transactionHash': data['result'].get('transactionHash')
+            }
+    except Exception as error:
+        return {'mintId': mint_id, 'error': str(error)}
+
+# Usage
+mint_ids = [
+    "7f78e6ed-d733-430c-83a4-5fc28032e667",
+    "d06ff454-b603-4279-8439-39d6949abf67"
+]
+
+results = asyncio.run(check_multiple_mints(mint_ids))
+```
+</CodeGroup>
+
+## Polling for Status Updates
+
+Implement polling to wait for mint completion:
+
+<CodeGroup>
+```javascript JavaScript
+async function waitForMintCompletion(mintId, maxAttempts = 20) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+        headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+      });
+      
+      const data = await response.json();
+      const status = data.result.status;
+      
+      console.log(`Attempt ${attempt}: Mint ${mintId} status is ${status}`);
+      
+      if (status === 'SUCCEEDED') {
+        console.log('✅ Mint completed successfully!');
+        console.log('Transaction:', data.result.transactionHash);
+        console.log('Recipient:', data.result.destination.address);
+        console.log('Amount:', data.result.destination.amount);
+        return data.result;
+      }
+      
+      if (status === 'FAILED') {
+        throw new Error('Mint operation failed');
+      }
+      
+      // Wait 5 seconds before next check
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+    } catch (error) {
+      console.error(`Error checking mint status: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  throw new Error('Mint timeout - max attempts reached');
+}
+
+// Usage
+const mintId = "7f78e6ed-d733-430c-83a4-5fc28032e667";
+const result = await waitForMintCompletion(mintId);
+```
+
+```python Python
+import requests
+import time
+
+def wait_for_mint_completion(mint_id, max_attempts=20):
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.get(
+                f'/api/v3/erc20/tokens/mints/{mint_id}',
+                headers={'Authorization': 'Bearer YOUR_API_KEY'}
+            )
+            
+            data = response.json()
+            status = data['result']['status']
+            
+            print(f'Attempt {attempt}: Mint {mint_id} status is {status}')
+            
+            if status == 'SUCCEEDED':
+                print('✅ Mint completed successfully!')
+                print('Transaction:', data['result']['transactionHash'])
+                print('Recipient:', data['result']['destination']['address'])
+                print('Amount:', data['result']['destination']['amount'])
+                return data['result']
+            
+            if status == 'FAILED':
+                raise Exception('Mint operation failed')
+            
+            # Wait 5 seconds before next check
+            time.sleep(5)
+            
+        except Exception as error:
+            print(f'Error checking mint status: {error}')
+            raise error
+    
+    raise Exception('Mint timeout - max attempts reached')
+
+# Usage
+mint_id = "7f78e6ed-d733-430c-83a4-5fc28032e667"
+result = wait_for_mint_completion(mint_id)
+```
+</CodeGroup>
+
+## Monitoring Strategies
+
+<AccordionGroup>
+  <Accordion title="Real-time Dashboard" icon="chart-line">
+    **Create a mint monitoring dashboard:**
+    
+    ```javascript
+    class MintMonitor {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.activeMints = new Map();
+      }
+    
+      async addMint(mintId, metadata = {}) {
+        this.activeMints.set(mintId, {
+          ...metadata,
+          status: 'PENDING',
+          attempts: 0,
+          startTime: Date.now()
+        });
+        
+        this.checkMint(mintId);
+      }
+    
+      async checkMint(mintId) {
+        const mint = this.activeMints.get(mintId);
+        if (!mint || mint.attempts >= 20) return;
+    
+        try {
+          const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+    
+          const data = await response.json();
+          const status = data.result.status;
+    
+          mint.status = status;
+          mint.attempts++;
+          mint.lastCheck = Date.now();
+    
+          if (status === 'SUCCEEDED' || status === 'FAILED') {
+            mint.completedAt = Date.now();
+            mint.duration = mint.completedAt - mint.startTime;
+            mint.transactionHash = data.result.transactionHash;
+            
+            this.onMintComplete(mintId, data.result);
+          } else {
+            // Continue polling
+            setTimeout(() => this.checkMint(mintId), 5000);
+          }
+        } catch (error) {
+          mint.error = error.message;
+        }
+      }
+    
+      onMintComplete(mintId, result) {
+        console.log(`Mint ${mintId} completed:`, result.status);
+        // Emit event, update UI, send notification, etc.
+      }
+    
+      getStatus() {
+        const mints = Array.from(this.activeMints.entries());
+        return {
+          total: mints.length,
+          pending: mints.filter(([_, m]) => m.status === 'PENDING').length,
+          succeeded: mints.filter(([_, m]) => m.status === 'SUCCEEDED').length,
+          failed: mints.filter(([_, m]) => m.status === 'FAILED').length
+        };
+      }
+    }
+    
+    // Usage
+    const monitor = new MintMonitor('YOUR_API_KEY');
+    monitor.addMint('mint-id-1', { recipient: 'user@email.com', amount: 100 });
+    monitor.addMint('mint-id-2', { recipient: '0x123...', amount: 50 });
+    ```
+  </Accordion>
+  
+  <Accordion title="Webhook Integration" icon="webhook">
+    **Use webhooks for automatic updates:**
+    
+    Instead of polling, set up [webhooks](https://docs.venly.io/docs/webhooks-token-api) to receive real-time notifications:
+    
+    ```javascript
+    // Webhook payload example for mint completion
+    {
+      "type": "TOKEN_MINT_COMPLETED",
+      "data": {
+        "mintId": "7f78e6ed-d733-430c-83a4-5fc28032e667",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x95dba6ba9c8bae1d3179486e00eeb778fb9d2435741226e4d98b59e38cf7e875",
+        "destination": {
+          "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+          "amount": 35
+        }
+      }
+    }
+    
+    // Webhook handler
+    app.post('/webhooks/token-api', (req, res) => {
+      const { type, data } = req.body;
+      
+      if (type === 'TOKEN_MINT_COMPLETED') {
+        console.log('Mint completed:', data.mintId);
+        updateMintStatus(data.mintId, data.status);
+      }
+      
+      res.status(200).send('OK');
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Error Recovery" icon="refresh">
+    **Handle failed mints gracefully:**
+    
+    ```javascript
+    async function handleFailedMint(mintId) {
+      try {
+        const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.result.status === 'FAILED') {
+          console.log('Mint failed for:', data.result.destination.address);
+          console.log('Amount:', data.result.destination.amount);
+          
+          // Option 1: Retry the mint
+          await retryMint(data.result.destination);
+          
+          // Option 2: Log for manual review
+          await logFailedMint(data.result);
+          
+          // Option 3: Notify user
+          await notifyUser(data.result.destination.address, 'mint_failed');
+        }
+      } catch (error) {
+        console.error('Error handling failed mint:', error);
+      }
+    }
+    
+    async function retryMint(destination) {
+      // Retry the mint operation
+      const retryResponse = await fetch('/api/v3/erc20/tokens/mints', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer YOUR_API_KEY',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chain: "MATIC",
+          contractAddress: "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+          destinations: [destination]
+        })
+      });
+      
+      const retryData = await retryResponse.json();
+      console.log('Retry mint initiated:', retryData.result.mints[0].id);
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<Tabs>
+  <Tab title="React Hook">
+    ```javascript
+    import { useState, useEffect } from 'react';
+    
+    function useMintStatus(mintId) {
+      const [status, setStatus] = useState('PENDING');
+      const [mintData, setMintData] = useState(null);
+      const [error, setError] = useState(null);
+      const [loading, setLoading] = useState(true);
+    
+      useEffect(() => {
+        if (!mintId) return;
+    
+        const checkStatus = async () => {
+          try {
+            const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+              headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+            });
+            
+            const data = await response.json();
+            setStatus(data.result.status);
+            setMintData(data.result);
+            setLoading(false);
+            
+            if (data.result.status === 'PENDING') {
+              setTimeout(checkStatus, 5000);
+            }
+          } catch (err) {
+            setError(err.message);
+            setLoading(false);
+          }
+        };
+    
+        checkStatus();
+      }, [mintId]);
+    
+      return { status, mintData, error, loading };
+    }
+    
+    // Usage in component
+    function MintStatusDisplay({ mintId }) {
+      const { status, mintData, error, loading } = useMintStatus(mintId);
+    
+      if (loading) return <div>Checking mint status...</div>;
+      if (error) return <div>Error: {error}</div>;
+    
+      return (
+        <div>
+          <h3>Mint Status: {status}</h3>
+          {mintData && (
+            <>
+              <p>Recipient: {mintData.destination.address}</p>
+              <p>Amount: {mintData.destination.amount} tokens</p>
+              {mintData.transactionHash && (
+                <p>Transaction: {mintData.transactionHash}</p>
+              )}
+            </>
+          )}
+        </div>
+      );
+    }
+    ```
+  </Tab>
+  <Tab title="Express.js API">
+    ```javascript
+    const express = require('express');
+    const app = express();
+    
+    // Get mint status endpoint
+    app.get('/api/mints/:mintId/status', async (req, res) => {
+      try {
+        const { mintId } = req.params;
+        
+        const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+        });
+        
+        const data = await response.json();
+        
+        res.json({
+          mintId,
+          status: data.result.status,
+          destination: data.result.destination,
+          transactionHash: data.result.transactionHash,
+          createdOn: data.result.createdOn
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    // Batch status check endpoint
+    app.post('/api/mints/status/batch', async (req, res) => {
+      try {
+        const { mintIds } = req.body;
+        
+        const promises = mintIds.map(async (mintId) => {
+          const response = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+            headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+          });
+          const data = await response.json();
+          return {
+            mintId,
+            status: data.result.status,
+            destination: data.result.destination
+          };
+        });
+        
+        const results = await Promise.all(promises);
+        res.json({ results });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Mint ID not found">
+    **Error:** Invalid or non-existent mint ID
+    
+    **Causes:**
+    - Incorrect mint ID format
+    - Mint ID from different environment
+    - Typo in mint ID
+    
+    **Solution:** Verify the mint ID from your token minting response and ensure you're using the correct environment.
+  </Accordion>
+  
+  <Accordion title="Status stuck on PENDING">
+    **Common causes:**
+    - Network congestion
+    - Insufficient gas fees
+    - Blockchain connectivity issues
+    - Large batch processing delays
+    
+    **Solution:** Wait longer or check the blockchain explorer. Some networks may take several minutes during high congestion.
+  </Accordion>
+  
+  <Accordion title="Mint failed">
+    **Possible reasons:**
+    - Insufficient contract supply
+    - Invalid recipient address
+    - Network issues during processing
+    - Contract permissions problem
+    
+    **Solution:** Check the contract supply, verify recipient addresses, and consider retrying the mint operation.
+  </Accordion>
+  
+  <Accordion title="Missing transaction hash">
+    **Issue:** Status is SUCCEEDED but no transaction hash
+    
+    **Cause:** Response timing or API version issue
+    
+    **Solution:** The transaction hash may appear shortly after status changes to SUCCEEDED. Check again or use blockchain explorer with contract address.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Mint Status Monitoring Best Practices:**
+
+1. **Track All Mint IDs** - Save all mint IDs from batch operations
+2. **Implement Reasonable Timeouts** - Set appropriate polling limits
+3. **Handle Partial Failures** - Some mints may succeed while others fail
+4. **Use Webhooks When Possible** - Reduce API calls with real-time notifications
+5. **Monitor Transaction Hashes** - Verify on blockchain explorers for additional confirmation
+6. **Implement Retry Logic** - Handle failed mints gracefully with retry mechanisms
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="View All Mints" href="/Token-API-Basic-Guides/get-all-erc20-token-mints" icon="list">
+    Get overview of all your token minting operations
+  </Card>
+  <Card title="Mint More Tokens" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Create additional token minting operations
+  </Card>
+  <Card title="Manage Contracts" href="/Token-API-Basic-Guides/retrieve-erc20-token-contracts" icon="gear">
+    View and manage your token contracts
+  </Card>
+  <Card title="Set Up Webhooks" href="/Token-API-Basic-Guides/webhooks-token-api" icon="webhook">
+    Get real-time notifications for mint events
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Always verify the final status before considering a mint operation complete. Failed mints should be retried or handled according to your application's requirements.
+</Warning>

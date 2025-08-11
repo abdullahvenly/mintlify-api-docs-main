@@ -1,0 +1,296 @@
+---
+title: "Create Your First NFT Contract"
+description: "Learn how to deploy a smart contract for your NFT collection on the blockchain"
+icon: "file-contract"
+---
+
+<Info>
+**What you'll learn:** How to create and deploy an NFT smart contract, understand contract parameters, and check deployment status.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is an NFT Contract?
+
+An NFT contract is a smart contract that manages your NFT collection on the blockchain. Think of it as the foundation that:
+
+<CardGroup cols={2}>
+  <Card title="Governs NFT Creation" icon="hammer">
+    Controls how NFTs are minted and distributed
+  </Card>
+  <Card title="Manages Ownership" icon="shield">
+    Handles transfers and ownership verification
+  </Card>
+  <Card title="Stores Collection Data" icon="database">
+    Contains metadata and collection information
+  </Card>
+  <Card title="Enables Trading" icon="handshake">
+    Allows NFTs to be bought, sold, and traded
+  </Card>
+</CardGroup>
+
+<Note>
+The creation of an NFT contract is essentially deploying a new smart contract on a specific blockchain. Think of it as creating the blueprint for your entire NFT collection.
+</Note>
+
+## Prerequisites
+
+<Steps>
+  <Step title="API Authentication" icon="key">
+    Ensure you have valid Venly API credentials from the [Portal](https://portal.venly.io)
+  </Step>
+  <Step title="Choose Blockchain" icon="link">
+    Decide which blockchain to deploy on (we'll use Polygon testnet)
+  </Step>
+  <Step title="Prepare Assets" icon="image">
+    Have your collection name, description, and cover image ready
+  </Step>
+</Steps>
+
+<Warning>
+We recommend starting with **Polygon Mumbai testnet** for development. It's free and perfect for testing!
+</Warning>
+
+## Deploy Your Contract
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/api/v3/erc1155/contracts/deployments', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: "My First Collection",
+    description: "A sample NFT collection for learning",
+    image: "https://img.freepik.com/free-vector/nft-non-fungible-token-concept-with-neon-light-effect_1017-36944.jpg",
+    chain: "MATIC",
+    externalUrl: "https://www.venly.io"
+  })
+});
+
+const data = await response.json();
+console.log('Contract deployment:', data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/api/v3/erc1155/contracts/deployments',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'name': 'My First Collection',
+        'description': 'A sample NFT collection for learning',
+        'image': 'https://img.freepik.com/free-vector/nft-non-fungible-token-concept-with-neon-light-effect_1017-36944.jpg',
+        'chain': 'MATIC',
+        'externalUrl': 'https://www.venly.io'
+    }
+)
+
+data = response.json()
+print('Contract deployment:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc1155/contracts/deployments' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "My First Collection",
+    "description": "A sample NFT collection for learning",
+    "image": "https://img.freepik.com/free-vector/nft-non-fungible-token-concept-with-neon-light-effect_1017-36944.jpg",
+    "chain": "MATIC",
+    "externalUrl": "https://www.venly.io"
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | ✅ | The name of your NFT collection/contract |
+| `description` | string | ✅ | The description of your NFT collection/contract |
+| `image` | string | ✅ | The image URL for your collection that will be displayed |
+| `chain` | string | ✅ | The blockchain to deploy on (e.g., "MATIC" for Polygon) |
+| `externalUrl` | string | ✅ | Link to your website, landing page, etc. |
+
+<Tip>
+**Image recommendations:** Use a high-quality image (at least 400x400px) that represents your collection. IPFS URLs are recommended for decentralization.
+</Tip>
+
+## Handle the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "name": "My First Collection",
+        "description": "A sample NFT collection for learning",
+        "id": "4e38e929-fcbc-4a14-a801-4e768f5a1e76",
+        "chain": "MATIC",
+        "symbol": "MYFICO",
+        "externalUrl": "https://www.venly.io",
+        "image": "https://img.freepik.com/free-vector/nft-non-fungible-token-concept-with-neon-light-effect_1017-36944.jpg",
+        "media": [],
+        "transactionHash": "0xe87906003cecfa933dcdf8d9679fa6cf7f8013ea248e818d4c15cd28fa684e32",
+        "status": "PENDING",
+        "storage": {
+          "type": "cloud",
+          "location": "https://metadata-staging.arkane.network/metadata/contracts/64260"
+        },
+        "contractUri": "https://metadata-staging.arkane.network/metadata/contracts/64260",
+        "external_link": "https://www.venly.io"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Error Response">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "INVALID_CHAIN",
+        "message": "The specified chain is not supported",
+        "details": "Supported chains: ETHEREUM, MATIC, BSC, AVAX, ARBITRUM"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Check>
+**Important Response Fields:**
+- **`result.id`** - This is your **deployment ID**. Save it to check deployment status!
+- **`transactionHash`** - The blockchain transaction that created your contract
+- **`status`** - Current deployment status (PENDING → SUCCESS)
+</Check>
+
+## Check Deployment Status
+
+Contract deployment is asynchronous. Use the deployment ID to monitor progress:
+
+<CodeGroup>
+```javascript JavaScript
+const deploymentId = "4e38e929-fcbc-4a14-a801-4e768f5a1e76";
+
+const statusResponse = await fetch(`/api/v3/erc1155/contracts/deployments/${deploymentId}`, {
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const status = await statusResponse.json();
+console.log('Deployment status:', status.result.status);
+```
+
+```python Python
+deployment_id = "4e38e929-fcbc-4a14-a801-4e768f5a1e76"
+
+status_response = requests.get(
+    f'/api/v3/erc1155/contracts/deployments/{deployment_id}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+status = status_response.json()
+print('Deployment status:', status['result']['status'])
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc1155/contracts/deployments/4e38e929-fcbc-4a14-a801-4e768f5a1e76' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+## Deployment Status Types
+
+| Status | Description |
+|--------|-------------|
+| `PENDING` | Contract deployment is in progress |
+| `SUCCESS` | Contract successfully deployed and ready to use |
+| `FAILED` | Deployment failed - check error details |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Contract deployment failed">
+    **Common causes:**
+    - Insufficient API key permissions
+    - Invalid blockchain specified
+    - Network congestion (try again later)
+    - Malformed image URL
+    
+    **Solution:** Check your API key permissions and ensure all parameters are valid.
+  </Accordion>
+  
+  <Accordion title="Invalid chain error">
+    **Supported chains:**
+    - `ETHEREUM` - Ethereum Mainnet
+    - `MATIC` - Polygon
+    - `BSC` - Binance Smart Chain
+    - `AVAX` - Avalanche
+    - `ARBITRUM` - Arbitrum One
+    
+    **Solution:** Use one of the supported chain identifiers.
+  </Accordion>
+  
+  <Accordion title="Image URL not accessible">
+    **Requirements:**
+    - URL must be publicly accessible
+    - Must use HTTPS protocol
+    - Recommended formats: JPG, PNG, GIF
+    - Maximum size: 10MB
+    
+    **Solution:** Test your image URL in a browser to ensure it loads correctly.
+  </Accordion>
+  
+  <Accordion title="Deployment taking too long">
+    **Normal timeframes:**
+    - Testnets: 1-5 minutes
+    - Mainnets: 2-15 minutes (depending on network congestion)
+    
+    **Solution:** Be patient with mainnet deployments during high network activity.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Pro Tips for Contract Creation:**
+
+1. **Use descriptive names** - Make your collection easily identifiable
+2. **Optimize images** - Use IPFS for permanent storage
+3. **Test first** - Always deploy on testnets before mainnet
+4. **Monitor gas fees** - Deploy during low network activity for cheaper fees
+5. **Keep records** - Save deployment IDs and contract addresses
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Check Contract Status" href="/guides/nft-api/contracts/check-contract-status" icon="magnifying-glass">
+    Learn how to monitor your contract deployment
+  </Card>
+  <Card title="Create Token Types" href="/guides/nft-api/token-types/create-nft-template" icon="shapes">
+    Define the different NFT types in your collection
+  </Card>
+  <Card title="Mint Your First NFT" href="/guides/nft-api/minting/how-to-mint-an-nft" icon="coins">
+    Create your first NFT using the deployed contract
+  </Card>
+  <Card title="Manage Contract Metadata" href="/guides/nft-api/contracts/contract-metadata" icon="database">
+    Update and manage your contract's metadata
+  </Card>
+</CardGroup>
+
+<Warning>
+**Remember:** Contract deployment on mainnet costs real money in gas fees. Always test thoroughly on testnets first!
+</Warning>

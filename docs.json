@@ -11,6 +11,112 @@
   "navigation": {
     "tabs": [
       {
+        "tab": "User Guides",
+        "groups": [
+          {
+            "group": "NFT-API Basic Guides",
+            "pages": [
+              "guides/nft-api/overview",
+              "guides/nft-api/quickstart",
+              "guides/nft-api/contracts/create-contract",
+              "guides/nft-api/contracts/check-contract-status",
+              "guides/nft-api/contracts/delete-contract",
+              "guides/nft-api/contracts/retrieve-contract",
+              "guides/nft-api/contracts/update-contract-owner",
+              "guides/nft-api/contracts/update-contract-royalties",
+              "guides/nft-api/metadata/retrieve-contract-metadata",
+              "guides/nft-api/metadata/update-contract-metadata",
+              "guides/nft-api/token-types/create-nft-template",
+              "guides/nft-api/token-types/check-token-type-status",
+              "guides/nft-api/token-types/delete-token-type",
+              "guides/nft-api/token-types/retrieve-token-types",
+              "guides/nft-api/metadata/retrieve-token-type-metadata",
+              "guides/nft-api/metadata/update-token-type-metadata",
+              "guides/nft-api/metadata/retrieve-nft-metadata",
+              "guides/nft-api/metadata/update-nft-metadata",
+              "guides/nft-api/minting/how-to-mint-an-nft",
+              "guides/nft-api/minting/how-to-batch-mint-nfts-to-multiple-destinations",
+              "guides/nft-api/media/store-nft-image-and-media",
+              "guides/nft-api/media/add-audio-to-nfts",
+              "guides/nft-api/media/add-video-to-nfts",
+              "guides/nft-api/querying/retrieve-nfts-by-wallet",
+              "guides/nft-api/querying/retrieve-wallets-by-nft",
+              "guides/nft-api/querying/retrieve-nft-contract-info",
+              "guides/nft-api/querying/retrieve-nft-details",
+              "guides/nft-api/advanced/webhooks-nft-api"
+            ]
+          },
+          {
+            "group": "Token-API Basic Guides",
+            "pages": [
+              "guides/token-api/overview",
+              "guides/token-api/quickstart",
+              "guides/token-api/contracts/create-erc20-token-contract",
+              "guides/token-api/contracts/check-erc20-token-contract-status",
+              "guides/token-api/contracts/delete-token-contract",
+              "guides/token-api/contracts/retrieve-erc20-token-contracts",
+              "guides/token-api/contracts/update-contract-owner-erc20",
+              "guides/token-api/minting/mint-erc20-tokens",
+              "guides/token-api/minting/check-erc20-token-mint-request",
+              "guides/token-api/minting/get-all-erc20-token-mints",
+              "guides/token-api/advanced/webhooks-token-api"
+            ]
+          },
+          {
+            "group": "PAY-API Basic Guides",
+            "pages": [
+              "guides/pay-api/overview",
+              "guides/pay-api/quickstart",
+              "guides/pay-api/checkout/checkout-link-management",
+              "guides/pay-api/checkout/checkout-link-branding",
+              "guides/pay-api/fiat-ramps/fiat-on-ramps",
+              "guides/pay-api/fiat-ramps/fiat-off-ramps",
+              "guides/pay-api/fiat-ramps/fiat-on-off-ramps-configuration",
+              "guides/pay-api/fiat-ramps/supported-fiat-crypto-currencies",
+              "guides/pay-api/stripe-dashboard/fetch-stripe-dashboard",
+              "guides/pay-api/webhooks/configuring-webhooks-notifications",
+              "guides/pay-api/webhooks/webhooks-pay-api",
+              "guides/pay-api/testing/testing-pay"
+            ]
+          },
+          {
+            "group": "Wallet-API Basic Guides",
+            "pages": [
+              "guides/wallet-api/overview",
+              "guides/wallet-api/quickstart",
+              "guides/wallet-api/create-a-user",
+              "guides/wallet-api/create-a-wallet",
+              "guides/wallet-api/create-users-signing-method",
+              "guides/wallet-api/delete-a-user",
+              "guides/wallet-api/delete-users-signing-method",
+              "guides/wallet-api/execute-contract-call",
+              "guides/wallet-api/export-a-wallet",
+              "guides/wallet-api/get-fees-for-a-specific-transaction",
+              "guides/wallet-api/get-fees",
+              "guides/wallet-api/get-transaction-status",
+              "guides/wallet-api/get-wallet-events-by-walletid",
+              "guides/wallet-api/import-a-wallet",
+              "guides/wallet-api/read-contract",
+              "guides/wallet-api/resubmit-transaction-1",
+              "guides/wallet-api/retrieve-a-user",
+              "guides/wallet-api/retrieve-a-wallet",
+              "guides/wallet-api/retrieve-erc20-token-balance",
+              "guides/wallet-api/retrieve-native-wallet-balance",
+              "guides/wallet-api/retrieve-non-fungible-tokens-1",
+              "guides/wallet-api/signatures",
+              "guides/wallet-api/transfer-a-fungible-token-1",
+              "guides/wallet-api/transfer-a-native-token-1",
+              "guides/wallet-api/transfer-a-non-fungible-token-1",
+              "guides/wallet-api/transfer-an-erc20-token",
+              "guides/wallet-api/unarchive-a-wallet",
+              "guides/wallet-api/update-users-reference",
+              "guides/wallet-api/update-users-signing-method",
+              "guides/wallet-api/webhooks-wallet-api"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "NFT-API Reference",
         "groups": [
           {
@@ -103,46 +209,213 @@
         ]
       },
       {
-        "tab": "Wallet-API Reference",
+        "tab": "Token-API Reference",
         "groups": [
           {
-            "group": "Balance",
+            "group": "Token-API Health",
             "pages": [
-              "api-reference/Wallet-API/balance/get-all-erc20-token-balance-by-walletid",
-              "api-reference/Wallet-API/balance/get-erc20-balance-by-chain-and-wallet-address",
-              "api-reference/Wallet-API/balance/get-native-balance-by-chain-and-wallet-address",
-              "api-reference/Wallet-API/balance/get-native-balance-by-walletid",
-              "api-reference/Wallet-API/balance/get-specific-erc20-token-balance-by-chain-wallet-address-and-token-address",
-              "api-reference/Wallet-API/balance/get-specific-erc20-token-balance-by-walletid-and-token-address",
-              "api-reference/Wallet-API/balance/get-token-associations-for-hedera-wallet"
+              "api-reference/Token-API/token-api-health/check-health"
             ]
           },
           {
-            "group": "Chain",
+            "group": "Get Supported Chains",
             "pages": [
-              "api-reference/Wallet-API/chain/get-all-supported-chains",
-              "api-reference/Wallet-API/chain/get-block-information-by-chain"
+              "api-reference/Token-API/get-supported-chains/get-supported-chains"
+            ]
+          },
+          {
+            "group": "ERC20 Contract",
+            "pages": [
+              "api-reference/Token-API/erc20-contract/create-contract",
+              "api-reference/Token-API/erc20-contract/check-token-contract-status",
+              "api-reference/Token-API/erc20-contract/get-all-contracts",
+              "api-reference/Token-API/erc20-contract/get-contracts-by-chain-and-contract-address",
+              "api-reference/Token-API/erc20-contract/archive-contract",
+              "api-reference/Token-API/erc20-contract/update-token-contract-owner"
+            ]
+          },
+          {
+            "group": "Mint ERC20 Tokens",
+            "pages": [
+              "api-reference/Token-API/mint-erc20-tokens/get-all-erc20-token-mints",
+              "api-reference/Token-API/mint-erc20-tokens/mint-erc20-tokens",
+              "api-reference/Token-API/mint-erc20-tokens/check-token-mint-status"
+            ]
+          },
+          {
+            "group": "Company Wallets",
+            "pages": [
+              "api-reference/Token-API/company-wallets/get-all-company-wallets",
+              "api-reference/Token-API/company-wallets/get-company-wallets-by-chain",
+              "api-reference/Token-API/company-wallets/delete-company-wallet"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "PAY-API Reference",
+        "groups": [
+          {
+            "group": "PAY-API Health",
+            "pages": [
+              "api-reference/PAY-API/pay-api-health/check-health"
+            ]
+          },
+          {
+            "group": "Fiat On/Off Ramp",
+            "pages": [
+              "api-reference/PAY-API/fiat-onoff-ramp/get-supported-fiat-and-crypto-currencies",
+              "api-reference/PAY-API/fiat-onoff-ramp/transak-onramp",
+              "api-reference/PAY-API/fiat-onoff-ramp/transak-offramp",
+              "api-reference/PAY-API/fiat-onoff-ramp/ramp-network-onramp",
+              "api-reference/PAY-API/fiat-onoff-ramp/ramp-network-offramp",
+              "api-reference/PAY-API/fiat-onoff-ramp/moonpay-onramp",
+              "api-reference/PAY-API/fiat-onoff-ramp/moonpay-offramp"
+            ]
+          },
+          {
+            "group": "Checkout",
+            "pages": [
+              "api-reference/PAY-API/checkout/create-checkout-link",
+              "api-reference/PAY-API/checkout/get-checkout-status",
+              "api-reference/PAY-API/checkout/get-line-items"
+            ]
+          },
+          {
+            "group": "Checkout Branding",
+            "pages": [
+              "api-reference/PAY-API/checkout-branding/upload-icon",
+              "api-reference/PAY-API/checkout-branding/customize-checkout-page"
+            ]
+          },
+          {
+            "group": "Stripe Dashboard",
+            "pages": [
+              "api-reference/PAY-API/stripe-dashboard/get-stripe-dashboard-login-link"
+            ]
+          },
+          {
+            "group": "Webhooks",
+            "pages": [
+              "api-reference/PAY-API/webhooks/get-webhooks",
+              "api-reference/PAY-API/webhooks/create-a-webhook",
+              "api-reference/PAY-API/webhooks/update-a-webhook",
+              "api-reference/PAY-API/webhooks/delete-a-webhook"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Wallet-API Reference",
+        "groups": [
+          {
+            "group": "Wallet-API Health",
+            "pages": [
+              "api-reference/Wallet-API/wallet-api-health/check-health"
+            ]
+          },
+          {
+            "group": "User",
+            "pages": [
+              "api-reference/Wallet-API/user/get-all-users",
+              "api-reference/Wallet-API/user/create-user",
+              "api-reference/Wallet-API/user/get-user-by-id",
+              "api-reference/Wallet-API/user/update-user-reference",
+              "api-reference/Wallet-API/user/delete-user",
+              "api-reference/Wallet-API/user/create-user-signing-method",
+              "api-reference/Wallet-API/user/update-user-signing-method",
+              "api-reference/Wallet-API/user/delete-user-signing-method"
+            ]
+          },
+          {
+            "group": "Wallet",
+            "pages": [
+              "api-reference/Wallet-API/wallet/get-wallet",
+              "api-reference/Wallet-API/wallet/update-wallet",
+              "api-reference/Wallet-API/wallet/get-all-wallets",
+              "api-reference/Wallet-API/wallet/create-wallet",
+              "api-reference/Wallet-API/wallet/export-wallet",
+              "api-reference/Wallet-API/wallet/import-wallet",
+              "api-reference/Wallet-API/wallet/validate-wallet-address",
+              "api-reference/Wallet-API/wallet/get-all-wallet-events",
+              "api-reference/Wallet-API/wallet/link-wallet-to-user",
+              "api-reference/Wallet-API/wallet/update-wallet-pin-code"
+            ]
+          },
+          {
+            "group": "Balance",
+            "pages": [
+              "api-reference/Wallet-API/balance/get-native-balance-by-walletid",
+              "api-reference/Wallet-API/balance/get-all-erc20-token-balance-by-walletid",
+              "api-reference/Wallet-API/balance/get-specific-erc20-token-balance-by-walletid-and-token-address",
+              "api-reference/Wallet-API/balance/get-token-associations-for-hedera-wallet",
+              "api-reference/Wallet-API/balance/get-native-balance-by-chain-and-wallet-address",
+              "api-reference/Wallet-API/balance/get-erc20-balance-by-chain-and-wallet-address",
+              "api-reference/Wallet-API/balance/get-specific-erc20-token-balance-by-chain-wallet-address-and-token-address"
+            ]
+          },
+          {
+            "group": "Transactions",
+            "pages": [
+              "api-reference/Wallet-API/transactions/get-all-transactions",
+              "api-reference/Wallet-API/transactions/create-transaction",
+              "api-reference/Wallet-API/transactions/confirm-transaction-request",
+              "api-reference/Wallet-API/transactions/execute-transaction-request",
+              "api-reference/Wallet-API/transactions/execute-transaction",
+              "api-reference/Wallet-API/transactions/build-transaction-request",
+              "api-reference/Wallet-API/transactions/get-transaction-status",
+              "api-reference/Wallet-API/transactions/get-gas-price-for-a-chain",
+              "api-reference/Wallet-API/transactions/resubmit-transaction",
+              "api-reference/Wallet-API/transactions/cancel-transaction"
+            ]
+          },
+          {
+            "group": "Signatures",
+            "pages": [
+              "api-reference/Wallet-API/signatures/get-signature-request-by-userid",
+              "api-reference/Wallet-API/signatures/create-or-sign-signature",
+              "api-reference/Wallet-API/signatures/confirm-signature",
+              "api-reference/Wallet-API/signatures/sign-signature",
+              "api-reference/Wallet-API/signatures/build-signature-request",
+              "api-reference/Wallet-API/signatures/verify-signed-signature",
+              "api-reference/Wallet-API/signatures/get-signature-request-by-id",
+              "api-reference/Wallet-API/signatures/cancel-signature-request"
             ]
           },
           {
             "group": "Contract",
             "pages": [
-              "api-reference/Wallet-API/contract/decode-inputs",
+              "api-reference/Wallet-API/contract/read-contract",
               "api-reference/Wallet-API/contract/encode-inputs",
-              "api-reference/Wallet-API/contract/read-contract"
+              "api-reference/Wallet-API/contract/decode-inputs"
             ]
           },
           {
             "group": "Non-Fungibles",
             "pages": [
+              "api-reference/Wallet-API/non-fungibles/get-nfts-by-walletid",
+              "api-reference/Wallet-API/non-fungibles/get-nfts-by-chain",
+              "api-reference/Wallet-API/non-fungibles/get-nfts-by-chain-and-wallet-address",
               "api-reference/Wallet-API/non-fungibles/get-nft-contract",
               "api-reference/Wallet-API/non-fungibles/get-nft-information",
-              "api-reference/Wallet-API/non-fungibles/get-nfts-by-chain-and-wallet-address",
-              "api-reference/Wallet-API/non-fungibles/get-nfts-by-chain",
-              "api-reference/Wallet-API/non-fungibles/get-nfts-by-walletid",
+              "api-reference/Wallet-API/non-fungibles/get-wallets-that-contain-specific-nfts",
               "api-reference/Wallet-API/non-fungibles/get-token-allowances-for-hedera-nfts",
-              "api-reference/Wallet-API/non-fungibles/get-wallets-that-contain-nft-from-a-specific-contract",
-              "api-reference/Wallet-API/non-fungibles/get-wallets-that-contain-specific-nfts"
+              "api-reference/Wallet-API/non-fungibles/get-wallets-that-contain-nft-from-a-specific-contract"
+            ]
+          },
+          {
+            "group": "Token Swapping",
+            "pages": [
+              "api-reference/Wallet-API/token-swapping/get-token-pairs",
+              "api-reference/Wallet-API/token-swapping/get-exchange-rate",
+              "api-reference/Wallet-API/token-swapping/build-swap"
+            ]
+          },
+          {
+            "group": "Chain",
+            "pages": [
+              "api-reference/Wallet-API/chain/get-chain-information",
+              "api-reference/Wallet-API/chain/get-all-supported-chains"
             ]
           },
           {
@@ -150,132 +423,20 @@
             "pages": [
               "api-reference/Wallet-API/security-endpoint/get-venly-public-key"
             ]
-          },
-          {
-            "group": "Signatures",
-            "pages": [
-              "api-reference/Wallet-API/signatures/build-signature-request",
-              "api-reference/Wallet-API/signatures/confirm-signature",
-              "api-reference/Wallet-API/signatures/create-and-sign-signature",
-              "api-reference/Wallet-API/signatures/delete-signature-request-by-id",
-              "api-reference/Wallet-API/signatures/get-signature-request-by-id",
-              "api-reference/Wallet-API/signatures/get-signature-request-by-userid",
-              "api-reference/Wallet-API/signatures/prepare-signature",
-              "api-reference/Wallet-API/signatures/sign-signature",
-              "api-reference/Wallet-API/signatures/verify-signed-signature"
-            ]
-          },
-          {
-            "group": "Token Swapping",
-            "pages": [
-              "api-reference/Wallet-API/token-swapping/build-swap",
-              "api-reference/Wallet-API/token-swapping/get-exchange-rate",
-              "api-reference/Wallet-API/token-swapping/get-token-pairs"
-            ]
-          },
-          {
-            "group": "Transactions",
-            "pages": [
-              "api-reference/Wallet-API/transactions/cancel-transaction",
-              "api-reference/Wallet-API/transactions/execute-transaction",
-              "api-reference/Wallet-API/transactions/get-all-transactions",
-              "api-reference/Wallet-API/transactions/get-gas-fee-for-a-specific-tx",
-              "api-reference/Wallet-API/transactions/get-gas-price-for-a-chain",
-              "api-reference/Wallet-API/transactions/get-transaction-status",
-              "api-reference/Wallet-API/transactions/prepare-transaction-for-specific-chain",
-              "api-reference/Wallet-API/transactions/resubmit-transaction"
-            ]
-          },
-          {
-            "group": "User",
-            "pages": [
-              "api-reference/Wallet-API/user/create-user",
-              "api-reference/Wallet-API/user/create-user-signing-method",
-              "api-reference/Wallet-API/user/delete-user",
-              "api-reference/Wallet-API/user/delete-user-signing-method",
-              "api-reference/Wallet-API/user/get-all-users",
-              "api-reference/Wallet-API/user/get-user-by-id",
-              "api-reference/Wallet-API/user/update-user-reference",
-              "api-reference/Wallet-API/user/update-user-signing-method"
-            ]
-          },
-          {
-            "group": "Wallet",
-            "pages": [
-              "api-reference/Wallet-API/wallet/create-wallet",
-              "api-reference/Wallet-API/wallet/export-wallet",
-              "api-reference/Wallet-API/wallet/get-all-wallet-events",
-              "api-reference/Wallet-API/wallet/get-all-wallets",
-              "api-reference/Wallet-API/wallet/get-wallet",
-              "api-reference/Wallet-API/wallet/import-wallet",
-              "api-reference/Wallet-API/wallet/link-wallet-to-user",
-              "api-reference/Wallet-API/wallet/update-wallet-pin-code",
-              "api-reference/Wallet-API/wallet/update-wallet",
-              "api-reference/Wallet-API/wallet/validate-wallet-address"
-            ]
-          },
-          {
-            "group": "Wallet API Health",
-            "pages": [
-              "api-reference/Wallet-API/wallet-api-health/check-health"
-            ]
           }
         ]
-      },
-      {
-        "tab": "Wallet-API Guides",
-        "groups": [
-       {
-            "group": "Basic Guides",
-            "pages": [
-              "Wallet-API-Basic-Guides/create-a-user",
-              "Wallet-API-Basic-Guides/create-a-wallet",
-              "Wallet-API-Basic-Guides/create-users-signing-method",
-              "Wallet-API-Basic-Guides/delete-a-user",
-              "Wallet-API-Basic-Guides/delete-users-signing-method",
-              "Wallet-API-Basic-Guides/execute-contract-call",
-              "Wallet-API-Basic-Guides/export-a-wallet",
-              "Wallet-API-Basic-Guides/get-fees-for-a-specific-transaction",
-              "Wallet-API-Basic-Guides/get-fees",
-              "Wallet-API-Basic-Guides/get-transaction-status",
-              "Wallet-API-Basic-Guides/get-wallet-events-by-walletid",
-              "Wallet-API-Basic-Guides/import-a-wallet",
-              "Wallet-API-Basic-Guides/read-contract",
-              "Wallet-API-Basic-Guides/resubmit-transaction-1",
-              "Wallet-API-Basic-Guides/retrieve-a-user",
-              "Wallet-API-Basic-Guides/retrieve-a-wallet",
-              "Wallet-API-Basic-Guides/retrieve-erc20-token-balance",
-              "Wallet-API-Basic-Guides/retrieve-native-wallet-balance",
-              "Wallet-API-Basic-Guides/retrieve-non-fungible-tokens-1",
-              "Wallet-API-Basic-Guides/signatures",
-              "Wallet-API-Basic-Guides/transfer-a-fungible-token-1",
-              "Wallet-API-Basic-Guides/transfer-a-native-token-1",
-              "Wallet-API-Basic-Guides/transfer-a-non-fungible-token-1",
-              "Wallet-API-Basic-Guides/transfer-an-erc20-token",
-              "Wallet-API-Basic-Guides/unarchive-a-wallet",
-              "Wallet-API-Basic-Guides/update-users-reference",
-              "Wallet-API-Basic-Guides/update-users-signing-method",
-              "Wallet-API-Basic-Guides/webhooks-wallet-api"
-            ]
-          }
-        ]
-        }
+      }
     ],
     "global": {
       "anchors": [
         {
           "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
+          "href": "https://docs.venly.io/",
           "icon": "book-open-cover"
         },
         {
-          "anchor": "Community",
-          "href": "https://mintlify.com/community",
-          "icon": "slack"
-        },
-        {
           "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
+          "href": "https://www.venly.io/blog",
           "icon": "newspaper"
         }
       ]
@@ -289,20 +450,19 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "https://portal.venly.io/"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "href": "https://portal.venly.io/"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "x": "https://x.com/venly_io",
+      "linkedin": "https://be.linkedin.com/company/venly-io"
     }
   }
 }

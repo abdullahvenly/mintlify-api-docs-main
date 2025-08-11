@@ -1,0 +1,1018 @@
+---
+title: "Token API Quick Start"
+description: "Complete step-by-step guide to create your first ERC20 token using Venly's Token API - from authentication to minting"
+icon: "rocket"
+---
+
+<Info>
+**Quick Start Guide:** Follow this comprehensive tutorial to authenticate with the Token API and create your first ERC20 token in just a few steps.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What We Cover in This Guide
+
+In this guide, we will explain how to authenticate to our API service, as well as mint your first ERC20 token. We will walk you through several endpoints to help you get started:
+
+<Steps>
+  <Step title="Authentication" icon="key">
+    Set up API credentials and get your bearer token
+  </Step>
+  <Step title="Creating a Token Contract" icon="file-contract">
+    Deploy your first ERC20 token contract
+  </Step>
+  <Step title="Checking Token Contract Status" icon="magnifying-glass">
+    Monitor the deployment status of your contract
+  </Step>
+  <Step title="Minting ERC20 Token" icon="coins">
+    Create and distribute your first tokens
+  </Step>
+  <Step title="Checking Token Mint Status" icon="check">
+    Confirm successful token creation and delivery
+  </Step>
+</Steps>
+
+
+## Getting Started Flow
+
+
+## Prerequisites
+
+<Warning>
+**Before You Start:**
+1. You need a Venly business account - [Register here](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)
+2. Get your **Client ID** and **Client Secret** from the [Developer Portal](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)
+</Warning>
+
+### Get Your API Credentials
+
+
+<Note>
+**Sandbox Environment:** All API calls in this guide run on a sandbox environment. You can test and experiment without affecting actual blockchain data.
+
+**Base URL:** `https://token-api-sandbox.venly.io`
+</Note>
+
+There are several ways to run API calls, but for this guide, you can use the [API-Reference](https://docs.venly.io/reference) or [Postman](https://www.postman.com/) to execute the different endpoints.
+
+## 1. Authentication
+
+You will need your access credentials (**Client ID** and **Client Secret**) to obtain a `bearer token` and authorize all API calls. These credentials are necessary for authentication purposes.
+
+### Get Bearer Token
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=YOUR_CLIENT_ID' \
+  -d 'client_secret=YOUR_CLIENT_SECRET'
+```
+
+```javascript JavaScript
+const getAccessToken = async () => {
+  const response = await fetch('https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      'grant_type': 'client_credentials',
+      'client_id': 'YOUR_CLIENT_ID',
+      'client_secret': 'YOUR_CLIENT_SECRET'
+    })
+  });
+  
+  const data = await response.json();
+  return data.access_token;
+};
+```
+
+```python Python
+import requests
+
+def get_access_token():
+    url = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token'
+    
+    data = {
+        'grant_type': 'client_credentials',
+        'client_id': 'YOUR_CLIENT_ID',
+        'client_secret': 'YOUR_CLIENT_SECRET'
+    }
+    
+    response = requests.post(url, data=data)
+    return response.json()['access_token']
+```
+</CodeGroup>
+
+<Tip>
+- Learn how to [retrieve a bearer token](https://docs.venly.io/reference/how-to-get-bearer-token) and authenticate API calls
+- Save the `access_token` from the response - you'll need it for all subsequent API calls as a Bearer token
+</Tip>
+
+## 2. Create Token Contract
+
+Let's start by defining your first contract. We will create a contract on the **MATIC** testnet chain.
+
+### API Endpoint
+```http
+POST /api/v3/erc20/contracts/deployments
+```
+
+### Request Parameters
+
+| Parameter | Description | Type | Required |
+|-----------|-------------|------|----------|
+| `chain` | The blockchain to create the token contract on | String | ✅ |
+| `name` | The name of your token contract | String | ✅ |
+| `symbol` | The symbol for your token contract | String | ❌ |
+| `maxSupply` | The maximum amount of tokens allowed to be minted | Integer | ❌ |
+| `burnable` | Whether tokens can be burned (permanently destroyed) | Boolean | ❌ |
+| `owner` | The wallet address that will own this token contract | String | ❌ |
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://token-api-sandbox.venly.io/api/v3/erc20/contracts/deployments' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "name": "Venly Test Token",
+    "symbol": "VTT",
+    "maxSupply": "150",
+    "burnable": "true",
+    "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+  }'
+```
+
+```javascript JavaScript
+const createTokenContract = async (accessToken) => {
+  const response = await fetch('https://token-api-sandbox.venly.io/api/v3/erc20/contracts/deployments', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chain: "MATIC",
+      name: "Venly Test Token",
+      symbol: "VTT",
+      maxSupply: "150",
+      burnable: "true",
+      owner: "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+import requests
+import json
+
+def create_token_contract(access_token):
+    url = 'https://token-api-sandbox.venly.io/api/v3/erc20/contracts/deployments'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "chain": "MATIC",
+        "name": "Venly Test Token",
+        "symbol": "VTT",
+        "maxSupply": "150",
+        "burnable": "true",
+        "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Tip>
+**Important:** 
+- Save the `result.id` from the response body. This is the **deployment ID** used to check the status of the contract creation request
+- The `transactionHash` is the transaction that created the contract on-chain
+- The `status` attribute indicates if the transaction has been mined yet
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "22fa9617-4630-49c1-8cd2-a0145980cd21",
+        "chain": "MATIC",
+        "name": "Venly Test Token",
+        "symbol": "VTT",
+        "maxSupply": 150,
+        "burnable": true,
+        "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+        "transactionHash": "0xdaae9385afe8a9e91d2f771e1bcb3597eb563fe0ab48cd75d381ac4798ad1359",
+        "status": "PENDING"
+    }
+}
+```
+
+## 3. Check Token Contract Deployment Status
+
+Next, we will check the deployment status of the token contract using the deployment ID.
+
+### API Endpoint
+```http
+GET /api/v3/erc20/contracts/deployments/{deploymentId}
+```
+
+### Path Variable
+`{deploymentId}`: This can be found in the response of the create token contract endpoint as the `result.id` parameter.
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://token-api-sandbox.venly.io/api/v3/erc20/contracts/deployments/22fa9617-4630-49c1-8cd2-a0145980cd21' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN'
+```
+
+```javascript JavaScript
+const checkContractStatus = async (accessToken, deploymentId) => {
+  const response = await fetch(`https://token-api-sandbox.venly.io/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def check_contract_status(access_token, deployment_id):
+    url = f'https://token-api-sandbox.venly.io/api/v3/erc20/contracts/deployments/{deployment_id}'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Note>
+**Status Values:** The `result.status` parameter can be:
+- `SUCCEEDED` - Contract deployed successfully
+- `PENDING` - Deployment in progress
+- `FAILED` - Deployment failed
+</Note>
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "22fa9617-4630-49c1-8cd2-a0145980cd21",
+        "chain": "MATIC",
+        "address": "0x44b1dc2b16e315e846e9f00c11282d19265be983",
+        "name": "Venly Test Token",
+        "symbol": "VTT",
+        "maxSupply": 150,
+        "burnable": true,
+        "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+        "transactionHash": "0xdaae9385afe8a9e91d2f771e1bcb3597eb563fe0ab48cd75d381ac4798ad1359",
+        "status": "SUCCEEDED"
+    }
+}
+```
+
+## 4. Mint ERC20 Tokens
+
+Now we have successfully deployed the token contract, we can start to mint ERC20 tokens. Use this endpoint to mint ERC20 tokens by supplying the token contract address and destination wallet address.
+
+### API Endpoint
+```http
+POST /api/v3/erc20/tokens/mints
+```
+
+### Request Parameters
+
+| Parameter | Description | Type | Required |
+|-----------|-------------|------|----------|
+| `chain` | The blockchain of the token contract | String | ✅ |
+| `contractAddress` | The token contract address | String | ✅ |
+| `destinations` | Array of wallet addresses and amounts to mint | Array | ✅ |
+| `destinations.address` | The wallet address to mint and send tokens to | String | ✅ |
+| `destinations.amount` | The number of tokens to mint and send | Number | ✅ |
+
+### Example Request
+
+In this example, we will mint and send ERC20 tokens to two wallet addresses. The first wallet will get five ERC20 tokens and the second wallet will get twenty-five tokens.
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://token-api-sandbox.venly.io/api/v3/erc20/tokens/mints' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "contractAddress": "0x44b1dc2b16e315e846e9f00c11282d19265be983",
+    "destinations": [
+        {
+            "address": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+            "amount": "5"
+        },
+        {
+            "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+            "amount": "25"
+        }
+    ]
+  }'
+```
+
+```javascript JavaScript
+const mintTokens = async (accessToken, contractAddress) => {
+  const response = await fetch('https://token-api-sandbox.venly.io/api/v3/erc20/tokens/mints', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      chain: "MATIC",
+      contractAddress: contractAddress,
+      destinations: [
+        {
+          address: "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+          amount: "5"
+        },
+        {
+          address: "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+          amount: "25"
+        }
+      ]
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def mint_tokens(access_token, contract_address):
+    url = 'https://token-api-sandbox.venly.io/api/v3/erc20/tokens/mints'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "chain": "MATIC",
+        "contractAddress": contract_address,
+        "destinations": [
+            {
+                "address": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+                "amount": "5"
+            },
+            {
+                "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+                "amount": "25"
+            }
+        ]
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Tip>
+**Important:** 
+- The `result.mints[].id` parameter is the **mint ID**
+- Use the mint ID to track the token mint request status
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": {
+        "mints": [
+            {
+                "id": "273e6ecb-fb1b-44f0-a9ff-a19bbf92099a",
+                "createdOn": "2024-09-23T09:34:21.973064048",
+                "status": "PENDING",
+                "destination": {
+                    "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+                    "amount": 25
+                }
+            },
+            {
+                "id": "8a4a03ac-e1e8-4468-bdce-1e57e809d89f",
+                "createdOn": "2024-09-23T09:34:21.977695915",
+                "status": "PENDING",
+                "destination": {
+                    "address": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+                    "amount": 5
+                }
+            }
+        ],
+        "contract": {
+            "address": "0x44b1dc2b16e315e846e9f00c11282d19265be983",
+            "name": "Venly Test Token",
+            "symbol": "VTT",
+            "maxSupply": 150,
+            "burnable": true,
+            "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+            "type": "ERC_20"
+        }
+    }
+}
+```
+
+## 5. Check Token Mint Status
+
+Finally, we will check the token mint request using the mint ID.
+
+### API Endpoint
+```http
+GET /api/v3/erc20/tokens/mints/{mintId}
+```
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://token-api-sandbox.venly.io/api/v3/erc20/tokens/mints/273e6ecb-fb1b-44f0-a9ff-a19bbf92099a' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN'
+```
+
+```javascript JavaScript
+const checkMintStatus = async (accessToken, mintId) => {
+  const response = await fetch(`https://token-api-sandbox.venly.io/api/v3/erc20/tokens/mints/${mintId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def check_mint_status(access_token, mint_id):
+    url = f'https://token-api-sandbox.venly.io/api/v3/erc20/tokens/mints/{mint_id}'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Note>
+**Status Values:** The `result.status` parameter can be:
+- `SUCCEEDED` - Tokens minted and delivered successfully
+- `PENDING` - Minting in progress
+- `FAILED` - Minting failed
+</Note>
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "273e6ecb-fb1b-44f0-a9ff-a19bbf92099a",
+        "createdOn": "2024-09-23T09:34:21.973064",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x2196af03642bf02a6ba6f416098ee50d03fba9343edb5938eaa7969e13bef2c2",
+        "destination": {
+            "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+            "amount": 25
+        },
+        "contract": {
+            "address": "0x44b1dc2b16e315e846e9f00c11282d19265be983",
+            "name": "Venly Test Token",
+            "symbol": "VTT",
+            "maxSupply": 150,
+            "burnable": true,
+            "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+            "type": "ERC_20"
+        }
+    }
+}
+```
+
+<Check>
+The response shows `"status": "SUCCEEDED"`, indicating the ERC20 token mint was successful on-chain.
+</Check>
+
+## 🎉 Congratulations!
+
+You've successfully created your first ERC20 token using the Venly Token API! Here's what you accomplished:
+
+<CardGroup cols={2}>
+  <Card title="✅ Contract Deployed" icon="file-contract">
+    Created and deployed your ERC20 token contract
+  </Card>
+  <Card title="✅ Tokens Minted" icon="coins">
+    Successfully minted tokens to multiple addresses
+  </Card>
+  <Card title="✅ Status Monitored" icon="magnifying-glass">
+    Tracked deployment and minting progress
+  </Card>
+  <Card title="✅ Tokens Delivered" icon="paper-plane">
+    Tokens delivered to specified wallet addresses
+  </Card>
+</CardGroup>
+
+## Complete Example Code
+
+Here's a complete example that combines all the steps:
+
+<CodeGroup>
+```javascript Complete JavaScript Example
+class VenlyTokenQuickStart {
+  constructor(clientId, clientSecret) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.baseUrl = 'https://token-api-sandbox.venly.io';
+    this.authUrl = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token';
+    this.accessToken = null;
+  }
+
+  async authenticate() {
+    const response = await fetch(this.authUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        'grant_type': 'client_credentials',
+        'client_id': this.clientId,
+        'client_secret': this.clientSecret
+      })
+    });
+    
+    const data = await response.json();
+    this.accessToken = data.access_token;
+    return this.accessToken;
+  }
+
+  async createCompleteToken(destinations) {
+    console.log('🚀 Starting token creation process...');
+    
+    // Step 1: Authenticate
+    console.log('🔐 Authenticating...');
+    await this.authenticate();
+    
+    // Step 2: Create Contract
+    console.log('📄 Creating token contract...');
+    const contract = await this.createTokenContract();
+    console.log(`✅ Contract created with ID: ${contract.id}`);
+    
+    // Step 3: Wait for contract deployment
+    console.log('⏳ Waiting for contract deployment...');
+    const deployedContract = await this.waitForContractDeployment(contract.id);
+    console.log(`✅ Contract deployed at: ${deployedContract.address}`);
+    
+    // Step 4: Mint Tokens
+    console.log('🪙 Minting tokens...');
+    const mint = await this.mintTokens(deployedContract.address, destinations);
+    console.log(`✅ Token minting initiated for ${mint.mints.length} destinations`);
+    
+    // Step 5: Wait for mint completion
+    console.log('⏳ Waiting for token minting...');
+    const results = await Promise.all(
+      mint.mints.map(m => this.waitForMintCompletion(m.id))
+    );
+    console.log(`🎉 All tokens successfully minted!`);
+    
+    return {
+      contractAddress: deployedContract.address,
+      contractName: deployedContract.name,
+      contractSymbol: deployedContract.symbol,
+      mints: results,
+      totalMinted: results.reduce((sum, r) => sum + r.destination.amount, 0)
+    };
+  }
+
+  async createTokenContract() {
+    const response = await fetch(`${this.baseUrl}/api/v3/erc20/contracts/deployments`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chain: "MATIC",
+        name: "My First Token",
+        symbol: "MFT",
+        maxSupply: "1000000",
+        burnable: true,
+        owner: "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+      })
+    });
+    
+    const data = await response.json();
+    return data.result;
+  }
+
+  async waitForContractDeployment(deploymentId, maxAttempts = 30) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`${this.baseUrl}/api/v3/erc20/contracts/deployments/${deploymentId}`, {
+        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+      });
+      
+      const data = await response.json();
+      
+      if (data.result.status === 'SUCCEEDED') {
+        return data.result;
+      } else if (data.result.status === 'FAILED') {
+        throw new Error('Contract deployment failed');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    }
+    
+    throw new Error('Contract deployment timeout');
+  }
+
+  async mintTokens(contractAddress, destinations) {
+    const response = await fetch(`${this.baseUrl}/api/v3/erc20/tokens/mints`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chain: "MATIC",
+        contractAddress: contractAddress,
+        destinations: destinations
+      })
+    });
+    
+    const data = await response.json();
+    return data.result;
+  }
+
+  async waitForMintCompletion(mintId, maxAttempts = 30) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`${this.baseUrl}/api/v3/erc20/tokens/mints/${mintId}`, {
+        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+      });
+      
+      const data = await response.json();
+      
+      if (data.result.status === 'SUCCEEDED') {
+        return data.result;
+      } else if (data.result.status === 'FAILED') {
+        throw new Error('Token minting failed');
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+    }
+    
+    throw new Error('Token minting timeout');
+  }
+}
+
+// Usage
+const quickStart = new VenlyTokenQuickStart('YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET');
+
+const destinations = [
+  { address: "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5", amount: "100" },
+  { address: "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7", amount: "250" }
+];
+
+quickStart.createCompleteToken(destinations)
+  .then(result => {
+    console.log('🎉 Token Creation Complete!', result);
+  })
+  .catch(error => {
+    console.error('❌ Error:', error);
+  });
+```
+
+```python Complete Python Example
+import requests
+import time
+import json
+
+class VenlyTokenQuickStart:
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.base_url = 'https://token-api-sandbox.venly.io'
+        self.auth_url = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token'
+        self.access_token = None
+    
+    def authenticate(self):
+        data = {
+            'grant_type': 'client_credentials',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        
+        response = requests.post(self.auth_url, data=data)
+        result = response.json()
+        self.access_token = result['access_token']
+        return self.access_token
+    
+    def create_complete_token(self, destinations):
+        print('🚀 Starting token creation process...')
+        
+        # Step 1: Authenticate
+        print('🔐 Authenticating...')
+        self.authenticate()
+        
+        # Step 2: Create Contract
+        print('📄 Creating token contract...')
+        contract = self.create_token_contract()
+        print(f'✅ Contract created with ID: {contract["id"]}')
+        
+        # Step 3: Wait for contract deployment
+        print('⏳ Waiting for contract deployment...')
+        deployed_contract = self.wait_for_contract_deployment(contract['id'])
+        print(f'✅ Contract deployed at: {deployed_contract["address"]}')
+        
+        # Step 4: Mint Tokens
+        print('🪙 Minting tokens...')
+        mint = self.mint_tokens(deployed_contract['address'], destinations)
+        print(f'✅ Token minting initiated for {len(mint["mints"])} destinations')
+        
+        # Step 5: Wait for mint completion
+        print('⏳ Waiting for token minting...')
+        results = []
+        for m in mint['mints']:
+            result = self.wait_for_mint_completion(m['id'])
+            results.append(result)
+        print('🎉 All tokens successfully minted!')
+        
+        return {
+            'contract_address': deployed_contract['address'],
+            'contract_name': deployed_contract['name'],
+            'contract_symbol': deployed_contract['symbol'],
+            'mints': results,
+            'total_minted': sum(r['destination']['amount'] for r in results)
+        }
+    
+    def create_token_contract(self):
+        url = f'{self.base_url}/api/v3/erc20/contracts/deployments'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "chain": "MATIC",
+            "name": "My First Token",
+            "symbol": "MFT",
+            "maxSupply": "1000000",
+            "burnable": True,
+            "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()['result']
+    
+    def wait_for_contract_deployment(self, deployment_id, max_attempts=30):
+        for i in range(max_attempts):
+            url = f'{self.base_url}/api/v3/erc20/contracts/deployments/{deployment_id}'
+            headers = {'Authorization': f'Bearer {self.access_token}'}
+            
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            
+            if data['result']['status'] == 'SUCCEEDED':
+                return data['result']
+            elif data['result']['status'] == 'FAILED':
+                raise Exception('Contract deployment failed')
+            
+            time.sleep(2)  # Wait 2 seconds
+        
+        raise Exception('Contract deployment timeout')
+    
+    def mint_tokens(self, contract_address, destinations):
+        url = f'{self.base_url}/api/v3/erc20/tokens/mints'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "chain": "MATIC",
+            "contractAddress": contract_address,
+            "destinations": destinations
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()['result']
+    
+    def wait_for_mint_completion(self, mint_id, max_attempts=30):
+        for i in range(max_attempts):
+            url = f'{self.base_url}/api/v3/erc20/tokens/mints/{mint_id}'
+            headers = {'Authorization': f'Bearer {self.access_token}'}
+            
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            
+            if data['result']['status'] == 'SUCCEEDED':
+                return data['result']
+            elif data['result']['status'] == 'FAILED':
+                raise Exception('Token minting failed')
+            
+            time.sleep(2)  # Wait 2 seconds
+        
+        raise Exception('Token minting timeout')
+
+# Usage
+if __name__ == "__main__":
+    quick_start = VenlyTokenQuickStart('YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET')
+    
+    destinations = [
+        {"address": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5", "amount": "100"},
+        {"address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7", "amount": "250"}
+    ]
+    
+    try:
+        result = quick_start.create_complete_token(destinations)
+        print('🎉 Token Creation Complete!', result)
+    except Exception as error:
+        print('❌ Error:', error)
+```
+</CodeGroup>
+
+## Next Steps
+
+Now that you've created your first ERC20 token, explore these advanced features:
+
+<CardGroup cols={2}>
+  <Card title="Contract Management" href="/guides/token-api/contracts/retrieve-erc20-token-contracts" icon="gear">
+    Learn how to manage your deployed contracts
+  </Card>
+  <Card title="Advanced Minting" href="/guides/token-api/minting/get-all-erc20-token-mints" icon="layer-group">
+    Explore batch minting and advanced distribution
+  </Card>
+  <Card title="Contract Updates" href="/guides/token-api/contracts/update-contract-owner-erc20" icon="arrows-rotate">
+    Update contract ownership and parameters
+  </Card>
+  <Card title="Webhooks" href="/guides/token-api/advanced/webhooks-token-api" icon="webhook">
+    Set up real-time notifications for token events
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Authentication Issues" icon="key">
+    **Common Problems:**
+    - Invalid Client ID or Client Secret
+    - Expired access token
+    - Wrong authentication endpoint
+    
+    **Solutions:**
+    - Verify credentials in the Developer Portal
+    - Refresh your access token regularly
+    - Use the correct sandbox/production endpoints
+  </Accordion>
+  
+  <Accordion title="Contract Deployment Fails" icon="file-contract">
+    **Common Problems:**
+    - Invalid chain parameter
+    - Missing required fields
+    - Network congestion
+    - Invalid owner address format
+    
+    **Solutions:**
+    - Check supported chains (MATIC, ETHEREUM, BSC, AVAX, ARB)
+    - Ensure all required fields are provided
+    - Verify owner address format
+    - Wait and retry during network congestion
+  </Accordion>
+  
+  <Accordion title="Token Minting Issues" icon="coins">
+    **Common Problems:**
+    - Invalid contract address
+    - Contract not ready
+    - Exceeding max supply
+    - Invalid destination addresses
+    
+    **Solutions:**
+    - Wait for contract status to be SUCCEEDED
+    - Verify contract address is correct
+    - Check remaining supply before minting
+    - Validate all destination wallet addresses
+  </Accordion>
+  
+  <Accordion title="Status Monitoring" icon="magnifying-glass">
+    **Common Problems:**
+    - Status stuck in PENDING
+    - Timeout errors
+    - Network delays
+    
+    **Solutions:**
+    - Allow sufficient time for blockchain confirmation
+    - Check network status and gas prices
+    - Implement proper retry logic with delays
+    - Monitor transaction hashes on block explorers
+  </Accordion>
+</AccordionGroup>
+
+## Token Configuration Examples
+
+<Tabs>
+  <Tab title="Utility Token">
+    ```json
+    {
+      "chain": "MATIC",
+      "name": "Platform Utility Token",
+      "symbol": "PUT",
+      "maxSupply": "10000000",
+      "burnable": true,
+      "owner": "0x..."
+    }
+    ```
+    Perfect for platform access and services.
+  </Tab>
+  <Tab title="Reward Token">
+    ```json
+    {
+      "chain": "MATIC",
+      "name": "Loyalty Reward Points",
+      "symbol": "LRP",
+      "maxSupply": "50000000",
+      "burnable": false,
+      "owner": "0x..."
+    }
+    ```
+    Ideal for customer loyalty programs.
+  </Tab>
+  <Tab title="Governance Token">
+    ```json
+    {
+      "chain": "ETHEREUM",
+      "name": "DAO Governance Token",
+      "symbol": "GOV",
+      "maxSupply": "1000000",
+      "burnable": true,
+      "owner": "0x..."
+    }
+    ```
+    Great for decentralized governance.
+  </Tab>
+  <Tab title="Gaming Token">
+    ```json
+    {
+      "chain": "MATIC",
+      "name": "Game Currency",
+      "symbol": "GAME",
+      "maxSupply": null,
+      "burnable": true,
+      "owner": "0x..."
+    }
+    ```
+    Perfect for in-game economies.
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Token Development Best Practices:**
+
+1. **Planning** - Define clear tokenomics and utility before deployment
+2. **Testing** - Always test on testnets before mainnet deployment
+3. **Security** - Use secure owner addresses and implement proper access controls
+4. **Supply Management** - Carefully consider max supply and inflation mechanisms
+5. **Distribution** - Plan fair and transparent token distribution
+6. **Compliance** - Ensure regulatory compliance in your jurisdiction
+7. **Documentation** - Maintain clear documentation of token mechanics
+8. **Community** - Build community engagement around your token's utility
+</Tip>
+
+<Warning>
+**Important Considerations:**
+- Contract parameters like max supply and burnable status cannot be changed after deployment
+- Test thoroughly on testnets before mainnet deployment
+- Ensure you control the owner wallet address
+- Consider gas costs when planning large-scale minting operations
+- Implement proper error handling and monitoring in production
+</Warning>
+
+---

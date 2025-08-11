@@ -1,0 +1,2162 @@
+---
+title: "Retrieve NFT Contract Information"
+description: "Comprehensive guide to retrieving detailed NFT contract information with advanced analysis, verification status, and contract insights"
+icon: "file-contract"
+---
+
+<Info>
+**Contract Information Retrieval:** Get detailed information about any NFT contract with comprehensive analysis, verification status, and contract insights.
+
+**Time required:** ~3 minutes
+</Info>
+
+## What is NFT Contract Information Retrieval?
+
+NFT contract information retrieval allows you to access detailed data about any NFT contract on the blockchain. This includes contract metadata, verification status, type information, and comprehensive contract analysis. Essential for contract verification, due diligence, and integration planning.
+
+<CardGroup cols={2}>
+  <Card title="Contract Verification" icon="shield-check">
+    Verify contract authenticity and status
+  </Card>
+  <Card title="Detailed Analysis" icon="magnifying-glass">
+    Get comprehensive contract information
+  </Card>
+  <Card title="Multi-Chain Support" icon="link">
+    Query contracts across different blockchains
+  </Card>
+  <Card title="Real-time Data" icon="clock">
+    Access up-to-date contract information
+  </Card>
+</CardGroup>
+
+## Contract Information Capabilities
+
+<Tabs>
+  <Tab title="Contract Data">
+    **Available Information:**
+    - Contract name and symbol
+    - Contract address and type
+    - Verification status
+    - Description and metadata
+    - Media and image URLs
+    
+    **Use Cases:**
+    - Contract verification
+    - Due diligence research
+    - Integration planning
+    - Marketplace listings
+  </Tab>
+  <Tab title="Analysis Features">
+    **Contract Analysis:**
+    - Type classification
+    - Verification assessment
+    - Security evaluation
+    - Standard compliance
+    - Feature detection
+    
+    **Insights Provided:**
+    - Contract maturity
+    - Risk assessment
+    - Compatibility analysis
+    - Best practices compliance
+  </Tab>
+  <Tab title="Integration Options">
+    **Implementation Methods:**
+    - Single contract queries
+    - Batch contract analysis
+    - Real-time monitoring
+    - Historical tracking
+    
+    **Platform Integration:**
+    - Verification systems
+    - Marketplace platforms
+    - Analytics dashboards
+    - Security tools
+  </Tab>
+</Tabs>
+
+## Retrieve NFT Contract Information
+
+<Steps>
+  <Step title="Specify Contract" icon="file-contract">
+    Provide the blockchain network and contract address
+    
+    ```javascript
+    const contractQuery = {
+      secretType: 'HEDERA',
+      contractAddress: '0.0.2850147'
+    };
+    ```
+  </Step>
+  <Step title="Execute Query" icon="magnifying-glass">
+    Retrieve the contract information from the blockchain
+  </Step>
+  <Step title="Analyze Data" icon="chart-bar">
+    Process and analyze the contract information
+  </Step>
+  <Step title="Generate Insights" icon="lightbulb">
+    Create contract insights and recommendations
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve NFT contract information
+const getNFTContractInfo = async (secretType, contractAddress) => {
+  try {
+    const response = await fetch(`/api/nonfungibles/${secretType}/${contractAddress}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve NFT contract information');
+    }
+  } catch (error) {
+    console.error('Error retrieving NFT contract information:', error);
+    throw error;
+  }
+};
+
+// Enhanced NFT contract analysis system
+class NFTContractAnalyzer {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = new Map();
+    this.defaultCacheTTL = 600000; // 10 minutes (contracts change less frequently)
+    this.contractAnalytics = new Map();
+    this.verificationCache = new Map();
+  }
+
+  async analyzeContract(secretType, contractAddress, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      includeAnalytics = true,
+      performSecurityCheck = false,
+      validateStandards = true
+    } = options;
+
+    const cacheKey = `${secretType}:${contractAddress}`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached contract information');
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      // Retrieve contract information
+      const contractInfo = await getNFTContractInfo(secretType, contractAddress);
+
+      // Enhance contract data with analysis
+      const enhancedContract = this.enhanceContractData(contractInfo, secretType);
+
+      // Perform analytics if requested
+      const analytics = includeAnalytics ? 
+        await this.generateContractAnalytics(enhancedContract, secretType) : null;
+
+      // Security assessment if requested
+      const securityAssessment = performSecurityCheck ? 
+        await this.performSecurityAssessment(enhancedContract, secretType) : null;
+
+      // Standards validation if requested
+      const standardsCompliance = validateStandards ? 
+        this.validateStandardsCompliance(enhancedContract) : null;
+
+      const result = {
+        contract: enhancedContract,
+        analytics,
+        security: securityAssessment,
+        standards: standardsCompliance,
+        insights: this.generateContractInsights(enhancedContract),
+        summary: this.generateContractSummary(enhancedContract),
+        queriedAt: new Date().toISOString()
+      };
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, result);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      // Record analytics
+      this.recordContractQuery(secretType, contractAddress, enhancedContract);
+
+      return result;
+
+    } catch (error) {
+      console.error(`Failed to analyze contract ${contractAddress}:`, error);
+      throw error;
+    }
+  }
+
+  async batchAnalyzeContracts(contractQueries, options = {}) {
+    const {
+      concurrency = 3,
+      continueOnError = true,
+      includeComparison = false
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Process contracts in batches
+    for (let i = 0; i < contractQueries.length; i += concurrency) {
+      const batch = contractQueries.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (query) => {
+        try {
+          const result = await this.analyzeContract(
+            query.secretType,
+            query.contractAddress,
+            query.options
+          );
+          
+          return {
+            success: true,
+            query,
+            result
+          };
+        } catch (error) {
+          const errorResult = {
+            success: false,
+            query,
+            error: error.message
+          };
+          
+          if (!continueOnError) {
+            throw error;
+          }
+          
+          return errorResult;
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    const batchAnalysis = {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+
+    // Add comparison analysis if requested
+    if (includeComparison && results.length > 1) {
+      batchAnalysis.comparison = this.compareContracts(results.map(r => r.result));
+    }
+
+    return batchAnalysis;
+  }
+
+  enhanceContractData(contractInfo, secretType) {
+    const enhanced = {
+      ...contractInfo,
+      blockchain: secretType,
+      // Add computed fields
+      hasDescription: !!(contractInfo.description && contractInfo.description.trim()),
+      hasMedia: !!(contractInfo.media && contractInfo.media.length > 0),
+      hasImage: !!(contractInfo.imageUrl),
+      hasUrl: !!(contractInfo.url),
+      // Contract type analysis
+      contractStandard: this.determineContractStandard(contractInfo.type),
+      isVerified: contractInfo.verified || false,
+      isPremium: contractInfo.premium || false,
+      categoryCount: contractInfo.categories ? contractInfo.categories.length : 0,
+      // Add processing timestamp
+      analyzedAt: new Date().toISOString()
+    };
+
+    return enhanced;
+  }
+
+  async generateContractAnalytics(contract, secretType) {
+    const analytics = {
+      basic: {
+        hasCompleteMetadata: this.assessMetadataCompleteness(contract),
+        verificationStatus: this.analyzeVerificationStatus(contract),
+        mediaPresence: this.analyzeMediaPresence(contract),
+        categoryClassification: this.analyzeCategoryClassification(contract)
+      },
+      advanced: {
+        trustScore: this.calculateTrustScore(contract),
+        maturityLevel: this.assessContractMaturity(contract),
+        featureSet: this.analyzeFeatureSet(contract),
+        riskFactors: this.identifyRiskFactors(contract)
+      },
+      blockchain: {
+        network: secretType,
+        addressFormat: this.analyzeAddressFormat(contract.address, secretType),
+        networkSpecific: this.getNetworkSpecificInfo(secretType)
+      }
+    };
+
+    return analytics;
+  }
+
+  async performSecurityAssessment(contract, secretType) {
+    const assessment = {
+      verificationStatus: {
+        isVerified: contract.isVerified,
+        verificationSource: contract.isVerified ? 'platform' : null,
+        riskLevel: contract.isVerified ? 'low' : 'medium'
+      },
+      contractAnalysis: {
+        standardCompliance: this.checkStandardCompliance(contract),
+        addressValidation: this.validateContractAddress(contract.address, secretType),
+        metadataIntegrity: this.checkMetadataIntegrity(contract)
+      },
+      riskAssessment: {
+        overallRisk: this.calculateOverallRisk(contract),
+        riskFactors: this.identifySecurityRiskFactors(contract),
+        recommendations: this.generateSecurityRecommendations(contract)
+      }
+    };
+
+    return assessment;
+  }
+
+  validateStandardsCompliance(contract) {
+    const compliance = {
+      erc721: this.checkERC721Compliance(contract),
+      erc1155: this.checkERC1155Compliance(contract),
+      metadata: this.checkMetadataStandards(contract),
+      naming: this.checkNamingConventions(contract)
+    };
+
+    // Calculate overall compliance score
+    const scores = Object.values(compliance).map(c => c.score || 0);
+    const overallScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
+
+    return {
+      ...compliance,
+      overallScore: Math.round(overallScore * 100) / 100,
+      isCompliant: overallScore >= 0.8,
+      recommendations: this.generateComplianceRecommendations(compliance)
+    };
+  }
+
+  generateContractInsights(contract) {
+    const insights = [];
+
+    // Verification insights
+    if (contract.isVerified) {
+      insights.push({
+        type: 'verification',
+        severity: 'positive',
+        message: 'Contract is verified, indicating authenticity and trustworthiness',
+        data: { verified: true }
+      });
+    } else {
+      insights.push({
+        type: 'verification',
+        severity: 'warning',
+        message: 'Contract is not verified. Exercise caution when interacting',
+        data: { verified: false }
+      });
+    }
+
+    // Metadata completeness
+    const metadataScore = this.assessMetadataCompleteness(contract);
+    if (metadataScore >= 0.8) {
+      insights.push({
+        type: 'metadata',
+        severity: 'positive',
+        message: 'Contract has comprehensive metadata',
+        data: { completeness: metadataScore }
+      });
+    } else if (metadataScore < 0.5) {
+      insights.push({
+        type: 'metadata',
+        severity: 'warning',
+        message: 'Contract metadata is incomplete',
+        data: { completeness: metadataScore }
+      });
+    }
+
+    // Premium status
+    if (contract.isPremium) {
+      insights.push({
+        type: 'premium',
+        severity: 'info',
+        message: 'This is a premium contract with enhanced features',
+        data: { premium: true }
+      });
+    }
+
+    // Category analysis
+    if (contract.categoryCount === 0) {
+      insights.push({
+        type: 'categorization',
+        severity: 'info',
+        message: 'Contract has no assigned categories',
+        data: { categoryCount: 0 }
+      });
+    } else if (contract.categoryCount > 3) {
+      insights.push({
+        type: 'categorization',
+        severity: 'info',
+        message: `Contract is well-categorized with ${contract.categoryCount} categories`,
+        data: { categoryCount: contract.categoryCount }
+      });
+    }
+
+    return insights;
+  }
+
+  generateContractSummary(contract) {
+    return {
+      name: contract.name || 'Unnamed Contract',
+      symbol: contract.symbol || 'N/A',
+      address: contract.address,
+      blockchain: contract.blockchain,
+      type: contract.type,
+      isVerified: contract.isVerified,
+      isPremium: contract.isPremium,
+      hasCompleteMetadata: this.assessMetadataCompleteness(contract) >= 0.8,
+      trustScore: this.calculateTrustScore(contract),
+      lastAnalyzed: contract.analyzedAt
+    };
+  }
+
+  compareContracts(contractResults) {
+    const comparison = {
+      contracts: contractResults.map(result => ({
+        address: result.contract.address,
+        name: result.contract.name,
+        blockchain: result.contract.blockchain,
+        isVerified: result.contract.isVerified,
+        trustScore: result.analytics?.advanced?.trustScore || 0
+      })),
+      analysis: {
+        verifiedCount: contractResults.filter(r => r.contract.isVerified).length,
+        premiumCount: contractResults.filter(r => r.contract.isPremium).length,
+        averageTrustScore: 0,
+        commonFeatures: [],
+        riskDistribution: {}
+      }
+    };
+
+    // Calculate average trust score
+    const trustScores = contractResults
+      .map(r => r.analytics?.advanced?.trustScore || 0)
+      .filter(score => score > 0);
+    
+    if (trustScores.length > 0) {
+      comparison.analysis.averageTrustScore = 
+        trustScores.reduce((sum, score) => sum + score, 0) / trustScores.length;
+    }
+
+    // Identify common features
+    const allFeatures = contractResults.flatMap(r => 
+      r.analytics?.advanced?.featureSet?.features || []
+    );
+    const featureCounts = {};
+    allFeatures.forEach(feature => {
+      featureCounts[feature] = (featureCounts[feature] || 0) + 1;
+    });
+
+    comparison.analysis.commonFeatures = Object.entries(featureCounts)
+      .filter(([feature, count]) => count > 1)
+      .map(([feature, count]) => ({ feature, count }))
+      .sort((a, b) => b.count - a.count);
+
+    return comparison;
+  }
+
+  // Analysis helper methods
+  assessMetadataCompleteness(contract) {
+    let score = 0;
+    let maxScore = 0;
+
+    // Required fields
+    if (contract.name) { score += 2; maxScore += 2; } else { maxScore += 2; }
+    if (contract.symbol) { score += 1; maxScore += 1; } else { maxScore += 1; }
+    if (contract.address) { score += 1; maxScore += 1; } else { maxScore += 1; }
+
+    // Optional but valuable fields
+    if (contract.description) { score += 1; maxScore += 1; } else { maxScore += 1; }
+    if (contract.imageUrl) { score += 1; maxScore += 1; } else { maxScore += 1; }
+    if (contract.url) { score += 0.5; maxScore += 0.5; } else { maxScore += 0.5; }
+    if (contract.media && contract.media.length > 0) { score += 0.5; maxScore += 0.5; } else { maxScore += 0.5; }
+
+    return maxScore > 0 ? score / maxScore : 0;
+  }
+
+  calculateTrustScore(contract) {
+    let score = 0;
+
+    // Verification adds significant trust
+    if (contract.isVerified) score += 40;
+
+    // Complete metadata adds trust
+    const metadataScore = this.assessMetadataCompleteness(contract);
+    score += metadataScore * 30;
+
+    // Premium status adds trust
+    if (contract.isPremium) score += 20;
+
+    // Having categories adds trust
+    if (contract.categoryCount > 0) score += 10;
+
+    return Math.min(score, 100);
+  }
+
+  determineContractStandard(contractType) {
+    const typeMapping = {
+      'NON_FUNGIBLE_UNIQUE': 'ERC-721',
+      'NON_FUNGIBLE': 'ERC-1155',
+      'FUNGIBLE': 'ERC-20',
+      'ERC_721': 'ERC-721',
+      'ERC_1155': 'ERC-1155',
+      'ERC_20': 'ERC-20'
+    };
+
+    return typeMapping[contractType] || 'Unknown';
+  }
+
+  analyzeVerificationStatus(contract) {
+    return {
+      isVerified: contract.isVerified,
+      verificationImpact: contract.isVerified ? 'positive' : 'negative',
+      trustImplication: contract.isVerified ? 'high' : 'medium',
+      recommendation: contract.isVerified ? 
+        'Contract is verified and safe to interact with' : 
+        'Consider verifying contract authenticity before interaction'
+    };
+  }
+
+  analyzeMediaPresence(contract) {
+    const hasImage = !!contract.imageUrl;
+    const hasMedia = !!(contract.media && contract.media.length > 0);
+    const hasUrl = !!contract.url;
+
+    return {
+      hasImage,
+      hasMedia,
+      hasUrl,
+      mediaScore: (hasImage ? 1 : 0) + (hasMedia ? 1 : 0) + (hasUrl ? 0.5 : 0),
+      recommendation: !hasImage ? 'Consider adding a contract image for better visibility' : null
+    };
+  }
+
+  analyzeCategoryClassification(contract) {
+    const categories = contract.categories || [];
+    
+    return {
+      categoryCount: categories.length,
+      categories: categories,
+      isWellCategorized: categories.length >= 1,
+      recommendation: categories.length === 0 ? 
+        'Consider adding relevant categories for better discoverability' : null
+    };
+  }
+
+  // Utility methods
+  isCacheValid(key) {
+    if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
+      return false;
+    }
+    return Date.now() < this.cacheExpiry.get(key);
+  }
+
+  recordContractQuery(secretType, contractAddress, contract) {
+    const key = `${secretType}:${contractAddress}`;
+    
+    if (!this.contractAnalytics.has(key)) {
+      this.contractAnalytics.set(key, {
+        queryCount: 0,
+        firstQuery: new Date().toISOString(),
+        lastQuery: null,
+        contractName: contract.name
+      });
+    }
+    
+    const analytics = this.contractAnalytics.get(key);
+    analytics.queryCount++;
+    analytics.lastQuery = new Date().toISOString();
+  }
+
+  clearCache(pattern = null) {
+    if (pattern) {
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+          this.cacheExpiry.delete(key);
+        }
+      }
+    } else {
+      this.cache.clear();
+      this.cacheExpiry.clear();
+    }
+  }
+
+  generateContractReport(secretType, contractAddress) {
+    const key = `${secretType}:${contractAddress}`;
+    const analytics = this.contractAnalytics.get(key);
+    
+    return {
+      contract: { secretType, contractAddress },
+      analytics: analytics || { queryCount: 0 },
+      cacheStatus: this.isCacheValid(key) ? 'cached' : 'not_cached',
+      lastAnalyzed: new Date().toISOString()
+    };
+  }
+
+  // Placeholder methods for advanced features
+  assessContractMaturity(contract) {
+    // This would analyze contract age, activity, etc.
+    return 'mature'; // Placeholder
+  }
+
+  analyzeFeatureSet(contract) {
+    const features = [];
+    
+    if (contract.hasDescription) features.push('metadata');
+    if (contract.hasImage) features.push('imagery');
+    if (contract.hasMedia) features.push('rich_media');
+    if (contract.isVerified) features.push('verified');
+    if (contract.isPremium) features.push('premium');
+    
+    return {
+      features,
+      featureCount: features.length,
+      isFeatureRich: features.length >= 3
+    };
+  }
+
+  identifyRiskFactors(contract) {
+    const risks = [];
+    
+    if (!contract.isVerified) {
+      risks.push({
+        type: 'verification',
+        severity: 'medium',
+        description: 'Contract is not verified'
+      });
+    }
+    
+    if (!contract.hasDescription) {
+      risks.push({
+        type: 'metadata',
+        severity: 'low',
+        description: 'Missing contract description'
+      });
+    }
+    
+    return risks;
+  }
+
+  checkStandardCompliance(contract) {
+    // Placeholder for standard compliance checking
+    return {
+      isCompliant: true,
+      standard: this.determineContractStandard(contract.type),
+      issues: []
+    };
+  }
+
+  validateContractAddress(address, secretType) {
+    // Basic address format validation
+    const patterns = {
+      'ETHEREUM': /^0x[a-fA-F0-9]{40}$/,
+      'MATIC': /^0x[a-fA-F0-9]{40}$/,
+      'HEDERA': /^0\.0\.\d+$/,
+      'BSC': /^0x[a-fA-F0-9]{40}$/
+    };
+    
+    const pattern = patterns[secretType];
+    return {
+      isValid: pattern ? pattern.test(address) : true,
+      format: secretType,
+      pattern: pattern?.toString()
+    };
+  }
+
+  checkMetadataIntegrity(contract) {
+    return {
+      hasRequiredFields: !!(contract.name && contract.address),
+      hasOptionalFields: !!(contract.description && contract.imageUrl),
+      integrityScore: this.assessMetadataCompleteness(contract)
+    };
+  }
+
+  calculateOverallRisk(contract) {
+    let riskScore = 0;
+    
+    if (!contract.isVerified) riskScore += 30;
+    if (!contract.hasDescription) riskScore += 10;
+    if (!contract.hasImage) riskScore += 5;
+    
+    if (riskScore <= 10) return 'low';
+    if (riskScore <= 30) return 'medium';
+    return 'high';
+  }
+
+  identifySecurityRiskFactors(contract) {
+    return this.identifyRiskFactors(contract);
+  }
+
+  generateSecurityRecommendations(contract) {
+    const recommendations = [];
+    
+    if (!contract.isVerified) {
+      recommendations.push('Verify contract authenticity through official channels');
+    }
+    
+    if (!contract.hasDescription) {
+      recommendations.push('Request detailed contract documentation');
+    }
+    
+    return recommendations;
+  }
+
+  // Standards compliance checking methods
+  checkERC721Compliance(contract) {
+    const isERC721 = contract.contractStandard === 'ERC-721';
+    return {
+      applicable: isERC721,
+      score: isERC721 ? 1 : 0,
+      issues: []
+    };
+  }
+
+  checkERC1155Compliance(contract) {
+    const isERC1155 = contract.contractStandard === 'ERC-1155';
+    return {
+      applicable: isERC1155,
+      score: isERC1155 ? 1 : 0,
+      issues: []
+    };
+  }
+
+  checkMetadataStandards(contract) {
+    const score = this.assessMetadataCompleteness(contract);
+    return {
+      applicable: true,
+      score,
+      issues: score < 0.8 ? ['Incomplete metadata'] : []
+    };
+  }
+
+  checkNamingConventions(contract) {
+    const hasName = !!contract.name;
+    const hasSymbol = !!contract.symbol;
+    const score = (hasName ? 0.6 : 0) + (hasSymbol ? 0.4 : 0);
+    
+    return {
+      applicable: true,
+      score,
+      issues: !hasName ? ['Missing contract name'] : !hasSymbol ? ['Missing contract symbol'] : []
+    };
+  }
+
+  generateComplianceRecommendations(compliance) {
+    const recommendations = [];
+    
+    Object.values(compliance).forEach(check => {
+      if (check.issues && check.issues.length > 0) {
+        recommendations.push(...check.issues);
+      }
+    });
+    
+    return [...new Set(recommendations)]; // Remove duplicates
+  }
+
+  analyzeAddressFormat(address, secretType) {
+    const validation = this.validateContractAddress(address, secretType);
+    return {
+      format: secretType,
+      isValid: validation.isValid,
+      length: address.length,
+      pattern: validation.pattern
+    };
+  }
+
+  getNetworkSpecificInfo(secretType) {
+    const networkInfo = {
+      'ETHEREUM': { name: 'Ethereum', nativeCurrency: 'ETH', chainId: 1 },
+      'MATIC': { name: 'Polygon', nativeCurrency: 'MATIC', chainId: 137 },
+      'HEDERA': { name: 'Hedera', nativeCurrency: 'HBAR', chainId: null },
+      'BSC': { name: 'Binance Smart Chain', nativeCurrency: 'BNB', chainId: 56 }
+    };
+    
+    return networkInfo[secretType] || { name: secretType, nativeCurrency: 'Unknown', chainId: null };
+  }
+}
+
+// Usage examples
+const contractAnalyzer = new NFTContractAnalyzer('YOUR_API_KEY');
+
+// Simple contract query
+const contractInfo = await contractAnalyzer.analyzeContract(
+  'HEDERA',
+  '0.0.2850147',
+  {
+    includeAnalytics: true,
+    performSecurityCheck: true,
+    validateStandards: true
+  }
+);
+
+console.log('Contract Information:', contractInfo);
+console.log('Contract Analytics:', contractInfo.analytics);
+console.log('Security Assessment:', contractInfo.security);
+console.log('Standards Compliance:', contractInfo.standards);
+
+// Batch contract analysis
+const contractQueries = [
+  {
+    secretType: 'HEDERA',
+    contractAddress: '0.0.2850147',
+    options: { includeAnalytics: true }
+  },
+  {
+    secretType: 'MATIC',
+    contractAddress: '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+    options: { includeAnalytics: true }
+  }
+];
+
+const batchResults = await contractAnalyzer.batchAnalyzeContracts(contractQueries, {
+  includeComparison: true
+});
+
+console.log('Batch Analysis:', batchResults);
+console.log('Contract Comparison:', batchResults.comparison);
+
+// Generate contract report
+const report = contractAnalyzer.generateContractReport('HEDERA', '0.0.2850147');
+console.log('Contract Report:', report);
+```
+
+```python Python
+import requests
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+import re
+
+class NFTContractAnalyzer:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/nonfungibles'
+        self.cache = {}
+        self.cache_expiry = {}
+        self.default_cache_ttl = 600  # 10 minutes
+        self.contract_analytics = {}
+    
+    def get_nft_contract_info(self, secret_type: str, contract_address: str) -> Dict[str, Any]:
+        """Retrieve NFT contract information"""
+        url = f'{self.base_url}/{secret_type}/{contract_address}'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to retrieve NFT contract information')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving NFT contract information: {error}')
+            raise error
+    
+    def analyze_contract(self, secret_type: str, contract_address: str,
+                        options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Analyze NFT contract with comprehensive insights"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        include_analytics = options.get('include_analytics', True)
+        perform_security_check = options.get('perform_security_check', False)
+        validate_standards = options.get('validate_standards', True)
+        
+        cache_key = f"{secret_type}:{contract_address}"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached contract information')
+            return self.cache[cache_key]
+        
+        try:
+            # Retrieve contract information
+            contract_info = self.get_nft_contract_info(secret_type, contract_address)
+            
+            # Enhance contract data
+            enhanced_contract = self._enhance_contract_data(contract_info, secret_type)
+            
+            # Generate analytics
+            analytics = self._generate_contract_analytics(enhanced_contract, secret_type) if include_analytics else None
+            
+            # Security assessment
+            security_assessment = self._perform_security_assessment(enhanced_contract, secret_type) if perform_security_check else None
+            
+            # Standards validation
+            standards_compliance = self._validate_standards_compliance(enhanced_contract) if validate_standards else None
+            
+            result = {
+                'contract': enhanced_contract,
+                'analytics': analytics,
+                'security': security_assessment,
+                'standards': standards_compliance,
+                'insights': self._generate_contract_insights(enhanced_contract),
+                'summary': self._generate_contract_summary(enhanced_contract),
+                'queried_at': datetime.now().isoformat()
+            }
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = result
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            # Record analytics
+            self._record_contract_query(secret_type, contract_address, enhanced_contract)
+            
+            return result
+            
+        except Exception as error:
+            print(f'Failed to analyze contract {contract_address}: {error}')
+            raise error
+    
+    def _enhance_contract_data(self, contract_info: Dict[str, Any], secret_type: str) -> Dict[str, Any]:
+        """Enhance contract data with computed fields"""
+        enhanced = {
+            **contract_info,
+            'blockchain': secret_type,
+            'has_description': bool(contract_info.get('description', '').strip()),
+            'has_media': bool(contract_info.get('media') and len(contract_info['media']) > 0),
+            'has_image': bool(contract_info.get('imageUrl')),
+            'has_url': bool(contract_info.get('url')),
+            'contract_standard': self._determine_contract_standard(contract_info.get('type')),
+            'is_verified': contract_info.get('verified', False),
+            'is_premium': contract_info.get('premium', False),
+            'category_count': len(contract_info.get('categories', [])),
+            'analyzed_at': datetime.now().isoformat()
+        }
+        
+        return enhanced
+    
+    def _generate_contract_analytics(self, contract: Dict[str, Any], secret_type: str) -> Dict[str, Any]:
+        """Generate comprehensive contract analytics"""
+        return {
+            'basic': {
+                'has_complete_metadata': self._assess_metadata_completeness(contract),
+                'verification_status': self._analyze_verification_status(contract),
+                'media_presence': self._analyze_media_presence(contract),
+                'category_classification': self._analyze_category_classification(contract)
+            },
+            'advanced': {
+                'trust_score': self._calculate_trust_score(contract),
+                'maturity_level': self._assess_contract_maturity(contract),
+                'feature_set': self._analyze_feature_set(contract),
+                'risk_factors': self._identify_risk_factors(contract)
+            },
+            'blockchain': {
+                'network': secret_type,
+                'address_format': self._analyze_address_format(contract.get('address'), secret_type),
+                'network_specific': self._get_network_specific_info(secret_type)
+            }
+        }
+    
+    def _perform_security_assessment(self, contract: Dict[str, Any], secret_type: str) -> Dict[str, Any]:
+        """Perform security assessment of the contract"""
+        return {
+            'verification_status': {
+                'is_verified': contract.get('is_verified', False),
+                'verification_source': 'platform' if contract.get('is_verified') else None,
+                'risk_level': 'low' if contract.get('is_verified') else 'medium'
+            },
+            'contract_analysis': {
+                'standard_compliance': self._check_standard_compliance(contract),
+                'address_validation': self._validate_contract_address(contract.get('address'), secret_type),
+                'metadata_integrity': self._check_metadata_integrity(contract)
+            },
+            'risk_assessment': {
+                'overall_risk': self._calculate_overall_risk(contract),
+                'risk_factors': self._identify_security_risk_factors(contract),
+                'recommendations': self._generate_security_recommendations(contract)
+            }
+        }
+    
+    def _validate_standards_compliance(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate contract standards compliance"""
+        compliance = {
+            'erc721': self._check_erc721_compliance(contract),
+            'erc1155': self._check_erc1155_compliance(contract),
+            'metadata': self._check_metadata_standards(contract),
+            'naming': self._check_naming_conventions(contract)
+        }
+        
+        # Calculate overall compliance score
+        scores = [c.get('score', 0) for c in compliance.values()]
+        overall_score = sum(scores) / len(scores) if scores else 0
+        
+        return {
+            **compliance,
+            'overall_score': round(overall_score, 2),
+            'is_compliant': overall_score >= 0.8,
+            'recommendations': self._generate_compliance_recommendations(compliance)
+        }
+    
+    def _generate_contract_insights(self, contract: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Generate insights about the contract"""
+        insights = []
+        
+        # Verification insights
+        if contract.get('is_verified'):
+            insights.append({
+                'type': 'verification',
+                'severity': 'positive',
+                'message': 'Contract is verified, indicating authenticity and trustworthiness',
+                'data': {'verified': True}
+            })
+        else:
+            insights.append({
+                'type': 'verification',
+                'severity': 'warning',
+                'message': 'Contract is not verified. Exercise caution when interacting',
+                'data': {'verified': False}
+            })
+        
+        # Metadata completeness
+        metadata_score = self._assess_metadata_completeness(contract)
+        if metadata_score >= 0.8:
+            insights.append({
+                'type': 'metadata',
+                'severity': 'positive',
+                'message': 'Contract has comprehensive metadata',
+                'data': {'completeness': metadata_score}
+            })
+        elif metadata_score < 0.5:
+            insights.append({
+                'type': 'metadata',
+                'severity': 'warning',
+                'message': 'Contract metadata is incomplete',
+                'data': {'completeness': metadata_score}
+            })
+        
+        return insights
+    
+    def _generate_contract_summary(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate contract summary"""
+        return {
+            'name': contract.get('name', 'Unnamed Contract'),
+            'symbol': contract.get('symbol', 'N/A'),
+            'address': contract.get('address'),
+            'blockchain': contract.get('blockchain'),
+            'type': contract.get('type'),
+            'is_verified': contract.get('is_verified', False),
+            'is_premium': contract.get('is_premium', False),
+            'has_complete_metadata': self._assess_metadata_completeness(contract) >= 0.8,
+            'trust_score': self._calculate_trust_score(contract),
+            'last_analyzed': contract.get('analyzed_at')
+        }
+    
+    # Helper methods
+    def _assess_metadata_completeness(self, contract: Dict[str, Any]) -> float:
+        """Assess metadata completeness score"""
+        score = 0
+        max_score = 0
+        
+        # Required fields
+        if contract.get('name'): score += 2; max_score += 2
+        else: max_score += 2
+        if contract.get('symbol'): score += 1; max_score += 1
+        else: max_score += 1
+        if contract.get('address'): score += 1; max_score += 1
+        else: max_score += 1
+        
+        # Optional but valuable fields
+        if contract.get('description'): score += 1; max_score += 1
+        else: max_score += 1
+        if contract.get('imageUrl'): score += 1; max_score += 1
+        else: max_score += 1
+        if contract.get('url'): score += 0.5; max_score += 0.5
+        else: max_score += 0.5
+        if contract.get('media') and len(contract['media']) > 0: score += 0.5; max_score += 0.5
+        else: max_score += 0.5
+        
+        return score / max_score if max_score > 0 else 0
+    
+    def _calculate_trust_score(self, contract: Dict[str, Any]) -> int:
+        """Calculate trust score for the contract"""
+        score = 0
+        
+        # Verification adds significant trust
+        if contract.get('is_verified'): score += 40
+        
+        # Complete metadata adds trust
+        metadata_score = self._assess_metadata_completeness(contract)
+        score += metadata_score * 30
+        
+        # Premium status adds trust
+        if contract.get('is_premium'): score += 20
+        
+        # Having categories adds trust
+        if contract.get('category_count', 0) > 0: score += 10
+        
+        return min(int(score), 100)
+    
+    def _determine_contract_standard(self, contract_type: str) -> str:
+        """Determine contract standard from type"""
+        type_mapping = {
+            'NON_FUNGIBLE_UNIQUE': 'ERC-721',
+            'NON_FUNGIBLE': 'ERC-1155',
+            'FUNGIBLE': 'ERC-20',
+            'ERC_721': 'ERC-721',
+            'ERC_1155': 'ERC-1155',
+            'ERC_20': 'ERC-20'
+        }
+        
+        return type_mapping.get(contract_type, 'Unknown')
+    
+    def _analyze_verification_status(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze verification status"""
+        is_verified = contract.get('is_verified', False)
+        return {
+            'is_verified': is_verified,
+            'verification_impact': 'positive' if is_verified else 'negative',
+            'trust_implication': 'high' if is_verified else 'medium',
+            'recommendation': 'Contract is verified and safe to interact with' if is_verified else 'Consider verifying contract authenticity before interaction'
+        }
+    
+    def _analyze_media_presence(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze media presence"""
+        has_image = bool(contract.get('imageUrl'))
+        has_media = bool(contract.get('media') and len(contract['media']) > 0)
+        has_url = bool(contract.get('url'))
+        
+        return {
+            'has_image': has_image,
+            'has_media': has_media,
+            'has_url': has_url,
+            'media_score': (1 if has_image else 0) + (1 if has_media else 0) + (0.5 if has_url else 0),
+            'recommendation': 'Consider adding a contract image for better visibility' if not has_image else None
+        }
+    
+    def _analyze_category_classification(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze category classification"""
+        categories = contract.get('categories', [])
+        
+        return {
+            'category_count': len(categories),
+            'categories': categories,
+            'is_well_categorized': len(categories) >= 1,
+            'recommendation': 'Consider adding relevant categories for better discoverability' if len(categories) == 0 else None
+        }
+    
+    def _assess_contract_maturity(self, contract: Dict[str, Any]) -> str:
+        """Assess contract maturity level"""
+        # This would analyze contract age, activity, etc.
+        return 'mature'  # Placeholder
+    
+    def _analyze_feature_set(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze contract feature set"""
+        features = []
+        
+        if contract.get('has_description'): features.append('metadata')
+        if contract.get('has_image'): features.append('imagery')
+        if contract.get('has_media'): features.append('rich_media')
+        if contract.get('is_verified'): features.append('verified')
+        if contract.get('is_premium'): features.append('premium')
+        
+        return {
+            'features': features,
+            'feature_count': len(features),
+            'is_feature_rich': len(features) >= 3
+        }
+    
+    def _identify_risk_factors(self, contract: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Identify risk factors"""
+        risks = []
+        
+        if not contract.get('is_verified'):
+            risks.append({
+                'type': 'verification',
+                'severity': 'medium',
+                'description': 'Contract is not verified'
+            })
+        
+        if not contract.get('has_description'):
+            risks.append({
+                'type': 'metadata',
+                'severity': 'low',
+                'description': 'Missing contract description'
+            })
+        
+        return risks
+    
+    def _check_standard_compliance(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Check standard compliance"""
+        return {
+            'is_compliant': True,
+            'standard': self._determine_contract_standard(contract.get('type')),
+            'issues': []
+        }
+    
+    def _validate_contract_address(self, address: str, secret_type: str) -> Dict[str, Any]:
+        """Validate contract address format"""
+        patterns = {
+            'ETHEREUM': r'^0x[a-fA-F0-9]{40}$',
+            'MATIC': r'^0x[a-fA-F0-9]{40}$',
+            'HEDERA': r'^0\.0\.\d+$',
+            'BSC': r'^0x[a-fA-F0-9]{40}$'
+        }
+        
+        pattern = patterns.get(secret_type)
+        is_valid = bool(pattern and re.match(pattern, address)) if address else False
+        
+        return {
+            'is_valid': is_valid,
+            'format': secret_type,
+            'pattern': pattern
+        }
+    
+    def _check_metadata_integrity(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Check metadata integrity"""
+        return {
+            'has_required_fields': bool(contract.get('name') and contract.get('address')),
+            'has_optional_fields': bool(contract.get('description') and contract.get('imageUrl')),
+            'integrity_score': self._assess_metadata_completeness(contract)
+        }
+    
+    def _calculate_overall_risk(self, contract: Dict[str, Any]) -> str:
+        """Calculate overall risk level"""
+        risk_score = 0
+        
+        if not contract.get('is_verified'): risk_score += 30
+        if not contract.get('has_description'): risk_score += 10
+        if not contract.get('has_image'): risk_score += 5
+        
+        if risk_score <= 10: return 'low'
+        if risk_score <= 30: return 'medium'
+        return 'high'
+    
+    def _identify_security_risk_factors(self, contract: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Identify security risk factors"""
+        return self._identify_risk_factors(contract)
+    
+    def _generate_security_recommendations(self, contract: Dict[str, Any]) -> List[str]:
+        """Generate security recommendations"""
+        recommendations = []
+        
+        if not contract.get('is_verified'):
+            recommendations.append('Verify contract authenticity through official channels')
+        
+        if not contract.get('has_description'):
+            recommendations.append('Request detailed contract documentation')
+        
+        return recommendations
+    
+    def _check_erc721_compliance(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Check ERC-721 compliance"""
+        is_erc721 = contract.get('contract_standard') == 'ERC-721'
+        return {
+            'applicable': is_erc721,
+            'score': 1 if is_erc721 else 0,
+            'issues': []
+        }
+    
+    def _check_erc1155_compliance(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Check ERC-1155 compliance"""
+        is_erc1155 = contract.get('contract_standard') == 'ERC-1155'
+        return {
+            'applicable': is_erc1155,
+            'score': 1 if is_erc1155 else 0,
+            'issues': []
+        }
+    
+    def _check_metadata_standards(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Check metadata standards"""
+        score = self._assess_metadata_completeness(contract)
+        return {
+            'applicable': True,
+            'score': score,
+            'issues': ['Incomplete metadata'] if score < 0.8 else []
+        }
+    
+    def _check_naming_conventions(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Check naming conventions"""
+        has_name = bool(contract.get('name'))
+        has_symbol = bool(contract.get('symbol'))
+        score = (0.6 if has_name else 0) + (0.4 if has_symbol else 0)
+        
+        issues = []
+        if not has_name: issues.append('Missing contract name')
+        if not has_symbol: issues.append('Missing contract symbol')
+        
+        return {
+            'applicable': True,
+            'score': score,
+            'issues': issues
+        }
+    
+    def _generate_compliance_recommendations(self, compliance: Dict[str, Any]) -> List[str]:
+        """Generate compliance recommendations"""
+        recommendations = []
+        
+        for check in compliance.values():
+            if isinstance(check, dict) and check.get('issues'):
+                recommendations.extend(check['issues'])
+        
+        return list(set(recommendations))  # Remove duplicates
+    
+    def _analyze_address_format(self, address: str, secret_type: str) -> Dict[str, Any]:
+        """Analyze address format"""
+        validation = self._validate_contract_address(address, secret_type)
+        return {
+            'format': secret_type,
+            'is_valid': validation['is_valid'],
+            'length': len(address) if address else 0,
+            'pattern': validation['pattern']
+        }
+    
+    def _get_network_specific_info(self, secret_type: str) -> Dict[str, Any]:
+        """Get network-specific information"""
+        network_info = {
+            'ETHEREUM': {'name': 'Ethereum', 'native_currency': 'ETH', 'chain_id': 1},
+            'MATIC': {'name': 'Polygon', 'native_currency': 'MATIC', 'chain_id': 137},
+            'HEDERA': {'name': 'Hedera', 'native_currency': 'HBAR', 'chain_id': None},
+            'BSC': {'name': 'Binance Smart Chain', 'native_currency': 'BNB', 'chain_id': 56}
+        }
+        
+        return network_info.get(secret_type, {'name': secret_type, 'native_currency': 'Unknown', 'chain_id': None})
+    
+    def _record_contract_query(self, secret_type: str, contract_address: str, contract: Dict[str, Any]):
+        """Record contract query analytics"""
+        key = f"{secret_type}:{contract_address}"
+        
+        if key not in self.contract_analytics:
+            self.contract_analytics[key] = {
+                'query_count': 0,
+                'first_query': datetime.now().isoformat(),
+                'last_query': None,
+                'contract_name': contract.get('name')
+            }
+        
+        analytics = self.contract_analytics[key]
+        analytics['query_count'] += 1
+        analytics['last_query'] = datetime.now().isoformat()
+    
+    def _is_cache_valid(self, key: str) -> bool:
+        """Check if cache entry is valid"""
+        if key not in self.cache or key not in self.cache_expiry:
+            return False
+        return datetime.now() < self.cache_expiry[key]
+
+# Usage
+contract_analyzer = NFTContractAnalyzer('YOUR_API_KEY')
+
+# Simple contract analysis
+contract_info = contract_analyzer.analyze_contract(
+    'HEDERA',
+    '0.0.2850147',
+    {
+        'include_analytics': True,
+        'perform_security_check': True,
+        'validate_standards': True
+    }
+)
+
+print('Contract Information:', contract_info)
+```
+
+```bash cURL
+# Get NFT contract information
+curl -X GET '/api/nonfungibles/HEDERA/0.0.2850147' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get contract information with formatted output
+curl -X GET '/api/nonfungibles/HEDERA/0.0.2850147' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -s | jq '.'
+
+# Batch analyze multiple contracts
+#!/bin/bash
+CONTRACTS=(
+  "HEDERA:0.0.2850147"
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e"
+  "ETHEREUM:0x742d35Cc6634C0532925a3b8D0C9e3e0C0c0e0c0"
+)
+
+for contract in "${CONTRACTS[@]}"; do
+  IFS=':' read -r chain address <<< "$contract"
+  echo "Analyzing contract $address on $chain..."
+  
+  curl -X GET "/api/nonfungibles/$chain/$address" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result' > "contract_${address}_info.json"
+  
+  echo "Contract info saved to contract_${address}_info.json"
+  sleep 0.5  # Rate limiting
+done
+
+# Contract verification analysis
+#!/bin/bash
+analyze_contract_verification() {
+  local chain=$1
+  local address=$2
+  
+  echo "=== Contract Verification Analysis for $address ==="
+  
+  # Get contract info
+  contract_info=$(curl -X GET "/api/nonfungibles/$chain/$address" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result')
+  
+  # Extract verification status
+  is_verified=$(echo "$contract_info" | jq -r '.verified // false')
+  is_premium=$(echo "$contract_info" | jq -r '.premium // false')
+  contract_name=$(echo "$contract_info" | jq -r '.name // "Unknown"')
+  contract_symbol=$(echo "$contract_info" | jq -r '.symbol // "N/A"')
+  
+  echo "Contract Name: $contract_name"
+  echo "Contract Symbol: $contract_symbol"
+  echo "Verified: $is_verified"
+  echo "Premium: $is_premium"
+  
+  # Calculate trust score
+  trust_score=0
+  if [ "$is_verified" = "true" ]; then
+    trust_score=$((trust_score + 40))
+    echo "Trust Factor: +40 (Verified)"
+  fi
+  
+  if [ "$is_premium" = "true" ]; then
+    trust_score=$((trust_score + 20))
+    echo "Trust Factor: +20 (Premium)"
+  fi
+  
+  # Check metadata completeness
+  has_description=$(echo "$contract_info" | jq -r '.description != null and .description != ""')
+  has_image=$(echo "$contract_info" | jq -r '.imageUrl != null and .imageUrl != ""')
+  
+  if [ "$has_description" = "true" ]; then
+    trust_score=$((trust_score + 15))
+    echo "Trust Factor: +15 (Has Description)"
+  fi
+  
+  if [ "$has_image" = "true" ]; then
+    trust_score=$((trust_score + 15))
+    echo "Trust Factor: +15 (Has Image)"
+  fi
+  
+  echo "Overall Trust Score: $trust_score/100"
+  
+  # Risk assessment
+  if [ $trust_score -ge 70 ]; then
+    echo "Risk Level: Low"
+  elif [ $trust_score -ge 40 ]; then
+    echo "Risk Level: Medium"
+  else
+    echo "Risk Level: High"
+  fi
+  
+  echo ""
+}
+
+# Analyze specific contracts
+analyze_contract_verification "HEDERA" "0.0.2850147"
+
+# Contract comparison script
+#!/bin/bash
+compare_contracts() {
+  local contracts=("$@")
+  
+  echo "=== Contract Comparison ==="
+  echo "Address | Name | Verified | Premium | Trust Score"
+  echo "--------|------|----------|---------|------------"
+  
+  for contract in "${contracts[@]}"; do
+    IFS=':' read -r chain address <<< "$contract"
+    
+    contract_info=$(curl -X GET "/api/nonfungibles/$chain/$address" \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -s | jq '.result')
+    
+    name=$(echo "$contract_info" | jq -r '.name // "Unknown"' | cut -c1-15)
+    verified=$(echo "$contract_info" | jq -r '.verified // false')
+    premium=$(echo "$contract_info" | jq -r '.premium // false')
+    
+    # Calculate basic trust score
+    trust_score=0
+    if [ "$verified" = "true" ]; then trust_score=$((trust_score + 40)); fi
+    if [ "$premium" = "true" ]; then trust_score=$((trust_score + 20)); fi
+    
+    has_desc=$(echo "$contract_info" | jq -r '.description != null and .description != ""')
+    has_image=$(echo "$contract_info" | jq -r '.imageUrl != null and .imageUrl != ""')
+    
+    if [ "$has_desc" = "true" ]; then trust_score=$((trust_score + 15)); fi
+    if [ "$has_image" = "true" ]; then trust_score=$((trust_score + 15)); fi
+    
+    echo "$address | $name | $verified | $premium | $trust_score"
+    
+    sleep 0.5  # Rate limiting
+  done
+}
+
+# Compare multiple contracts
+COMPARISON_CONTRACTS=(
+  "HEDERA:0.0.2850147"
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e"
+)
+
+compare_contracts "${COMPARISON_CONTRACTS[@]}"
+```
+
+```php PHP
+<?php
+class NFTContractAnalyzer {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    private $defaultCacheTTL;
+    private $contractAnalytics;
+    
+    public function __construct($apiKey, $baseUrl = '/api/nonfungibles') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = [];
+        $this->defaultCacheTTL = 600; // 10 minutes
+        $this->contractAnalytics = [];
+    }
+    
+    public function analyzeContract($secretType, $contractAddress, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $includeAnalytics = $options['includeAnalytics'] ?? true;
+        $performSecurityCheck = $options['performSecurityCheck'] ?? false;
+        $validateStandards = $options['validateStandards'] ?? true;
+        
+        $cacheKey = "{$secretType}:{$contractAddress}";
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached contract information\n";
+            return $this->cache[$cacheKey];
+        }
+        
+        try {
+            // Retrieve contract information
+            $contractInfo = $this->getNFTContractInfo($secretType, $contractAddress);
+            
+            // Enhance contract data
+            $enhancedContract = $this->enhanceContractData($contractInfo, $secretType);
+            
+            // Generate analytics
+            $analytics = $includeAnalytics ? $this->generateContractAnalytics($enhancedContract, $secretType) : null;
+            
+            // Security assessment
+            $securityAssessment = $performSecurityCheck ? $this->performSecurityAssessment($enhancedContract, $secretType) : null;
+            
+            // Standards validation
+            $standardsCompliance = $validateStandards ? $this->validateStandardsCompliance($enhancedContract) : null;
+            
+            $result = [
+                'contract' => $enhancedContract,
+                'analytics' => $analytics,
+                'security' => $securityAssessment,
+                'standards' => $standardsCompliance,
+                'insights' => $this->generateContractInsights($enhancedContract),
+                'summary' => $this->generateContractSummary($enhancedContract),
+                'queriedAt' => date('c')
+            ];
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $result;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            // Record analytics
+            $this->recordContractQuery($secretType, $contractAddress, $enhancedContract);
+            
+            return $result;
+            
+        } catch (Exception $error) {
+            echo "Failed to analyze contract {$contractAddress}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function getNFTContractInfo($secretType, $contractAddress) {
+        $url = "{$this->baseUrl}/{$secretType}/{$contractAddress}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve NFT contract information");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve NFT contract information');
+        }
+        
+        return $data['result'];
+    }
+    
+    private function enhanceContractData($contractInfo, $secretType) {
+        return array_merge($contractInfo, [
+            'blockchain' => $secretType,
+            'hasDescription' => !empty(trim($contractInfo['description'] ?? '')),
+            'hasMedia' => !empty($contractInfo['media']),
+            'hasImage' => !empty($contractInfo['imageUrl']),
+            'hasUrl' => !empty($contractInfo['url']),
+            'contractStandard' => $this->determineContractStandard($contractInfo['type'] ?? ''),
+            'isVerified' => $contractInfo['verified'] ?? false,
+            'isPremium' => $contractInfo['premium'] ?? false,
+            'categoryCount' => count($contractInfo['categories'] ?? []),
+            'analyzedAt' => date('c')
+        ]);
+    }
+    
+    private function generateContractAnalytics($contract, $secretType) {
+        return [
+            'basic' => [
+                'hasCompleteMetadata' => $this->assessMetadataCompleteness($contract),
+                'verificationStatus' => $this->analyzeVerificationStatus($contract),
+                'mediaPresence' => $this->analyzeMediaPresence($contract),
+                'categoryClassification' => $this->analyzeCategoryClassification($contract)
+            ],
+            'advanced' => [
+                'trustScore' => $this->calculateTrustScore($contract),
+                'maturityLevel' => $this->assessContractMaturity($contract),
+                'featureSet' => $this->analyzeFeatureSet($contract),
+                'riskFactors' => $this->identifyRiskFactors($contract)
+            ],
+            'blockchain' => [
+                'network' => $secretType,
+                'addressFormat' => $this->analyzeAddressFormat($contract['address'] ?? '', $secretType),
+                'networkSpecific' => $this->getNetworkSpecificInfo($secretType)
+            ]
+        ];
+    }
+    
+    private function performSecurityAssessment($contract, $secretType) {
+        return [
+            'verificationStatus' => [
+                'isVerified' => $contract['isVerified'] ?? false,
+                'verificationSource' => ($contract['isVerified'] ?? false) ? 'platform' : null,
+                'riskLevel' => ($contract['isVerified'] ?? false) ? 'low' : 'medium'
+            ],
+            'contractAnalysis' => [
+                'standardCompliance' => $this->checkStandardCompliance($contract),
+                'addressValidation' => $this->validateContractAddress($contract['address'] ?? '', $secretType),
+                'metadataIntegrity' => $this->checkMetadataIntegrity($contract)
+            ],
+            'riskAssessment' => [
+                'overallRisk' => $this->calculateOverallRisk($contract),
+                'riskFactors' => $this->identifySecurityRiskFactors($contract),
+                'recommendations' => $this->generateSecurityRecommendations($contract)
+            ]
+        ];
+    }
+    
+    private function validateStandardsCompliance($contract) {
+        $compliance = [
+            'erc721' => $this->checkERC721Compliance($contract),
+            'erc1155' => $this->checkERC1155Compliance($contract),
+            'metadata' => $this->checkMetadataStandards($contract),
+            'naming' => $this->checkNamingConventions($contract)
+        ];
+        
+        $scores = array_column($compliance, 'score');
+        $overallScore = !empty($scores) ? array_sum($scores) / count($scores) : 0;
+        
+        return array_merge($compliance, [
+            'overallScore' => round($overallScore, 2),
+            'isCompliant' => $overallScore >= 0.8,
+            'recommendations' => $this->generateComplianceRecommendations($compliance)
+        ]);
+    }
+    
+    private function generateContractInsights($contract) {
+        $insights = [];
+        
+        if ($contract['isVerified'] ?? false) {
+            $insights[] = [
+                'type' => 'verification',
+                'severity' => 'positive',
+                'message' => 'Contract is verified, indicating authenticity and trustworthiness',
+                'data' => ['verified' => true]
+            ];
+        } else {
+            $insights[] = [
+                'type' => 'verification',
+                'severity' => 'warning',
+                'message' => 'Contract is not verified. Exercise caution when interacting',
+                'data' => ['verified' => false]
+            ];
+        }
+        
+        $metadataScore = $this->assessMetadataCompleteness($contract);
+        if ($metadataScore >= 0.8) {
+            $insights[] = [
+                'type' => 'metadata',
+                'severity' => 'positive',
+                'message' => 'Contract has comprehensive metadata',
+                'data' => ['completeness' => $metadataScore]
+            ];
+        } elseif ($metadataScore < 0.5) {
+            $insights[] = [
+                'type' => 'metadata',
+                'severity' => 'warning',
+                'message' => 'Contract metadata is incomplete',
+                'data' => ['completeness' => $metadataScore]
+            ];
+        }
+        
+        return $insights;
+    }
+    
+    private function generateContractSummary($contract) {
+        return [
+            'name' => $contract['name'] ?? 'Unnamed Contract',
+            'symbol' => $contract['symbol'] ?? 'N/A',
+            'address' => $contract['address'] ?? '',
+            'blockchain' => $contract['blockchain'] ?? '',
+            'type' => $contract['type'] ?? '',
+            'isVerified' => $contract['isVerified'] ?? false,
+            'isPremium' => $contract['isPremium'] ?? false,
+            'hasCompleteMetadata' => $this->assessMetadataCompleteness($contract) >= 0.8,
+            'trustScore' => $this->calculateTrustScore($contract),
+            'lastAnalyzed' => $contract['analyzedAt'] ?? ''
+        ];
+    }
+    
+    private function assessMetadataCompleteness($contract) {
+        $score = 0;
+        $maxScore = 0;
+        
+        // Required fields
+        if (!empty($contract['name'])) { $score += 2; $maxScore += 2; } else { $maxScore += 2; }
+        if (!empty($contract['symbol'])) { $score += 1; $maxScore += 1; } else { $maxScore += 1; }
+        if (!empty($contract['address'])) { $score += 1; $maxScore += 1; } else { $maxScore += 1; }
+        
+        // Optional fields
+        if (!empty($contract['description'])) { $score += 1; $maxScore += 1; } else { $maxScore += 1; }
+        if (!empty($contract['imageUrl'])) { $score += 1; $maxScore += 1; } else { $maxScore += 1; }
+        if (!empty($contract['url'])) { $score += 0.5; $maxScore += 0.5; } else { $maxScore += 0.5; }
+        if (!empty($contract['media'])) { $score += 0.5; $maxScore += 0.5; } else { $maxScore += 0.5; }
+        
+        return $maxScore > 0 ? $score / $maxScore : 0;
+    }
+    
+    private function calculateTrustScore($contract) {
+        $score = 0;
+        
+        if ($contract['isVerified'] ?? false) $score += 40;
+        
+        $metadataScore = $this->assessMetadataCompleteness($contract);
+        $score += $metadataScore * 30;
+        
+        if ($contract['isPremium'] ?? false) $score += 20;
+        if (($contract['categoryCount'] ?? 0) > 0) $score += 10;
+        
+        return min($score, 100);
+    }
+    
+    private function determineContractStandard($contractType) {
+        $typeMapping = [
+            'NON_FUNGIBLE_UNIQUE' => 'ERC-721',
+            'NON_FUNGIBLE' => 'ERC-1155',
+            'FUNGIBLE' => 'ERC-20',
+            'ERC_721' => 'ERC-721',
+            'ERC_1155' => 'ERC-1155',
+            'ERC_20' => 'ERC-20'
+        ];
+        
+        return $typeMapping[$contractType] ?? 'Unknown';
+    }
+    
+    private function analyzeVerificationStatus($contract) {
+        $isVerified = $contract['isVerified'] ?? false;
+        return [
+            'isVerified' => $isVerified,
+            'verificationImpact' => $isVerified ? 'positive' : 'negative',
+            'trustImplication' => $isVerified ? 'high' : 'medium',
+            'recommendation' => $isVerified ? 
+                'Contract is verified and safe to interact with' : 
+                'Consider verifying contract authenticity before interaction'
+        ];
+    }
+    
+    private function analyzeMediaPresence($contract) {
+        $hasImage = !empty($contract['imageUrl']);
+        $hasMedia = !empty($contract['media']);
+        $hasUrl = !empty($contract['url']);
+        
+        return [
+            'hasImage' => $hasImage,
+            'hasMedia' => $hasMedia,
+            'hasUrl' => $hasUrl,
+            'mediaScore' => ($hasImage ? 1 : 0) + ($hasMedia ? 1 : 0) + ($hasUrl ? 0.5 : 0),
+            'recommendation' => !$hasImage ? 'Consider adding a contract image for better visibility' : null
+        ];
+    }
+    
+    private function analyzeCategoryClassification($contract) {
+        $categories = $contract['categories'] ?? [];
+        
+        return [
+            'categoryCount' => count($categories),
+            'categories' => $categories,
+            'isWellCategorized' => count($categories) >= 1,
+            'recommendation' => count($categories) === 0 ? 
+                'Consider adding relevant categories for better discoverability' : null
+        ];
+    }
+    
+    private function assessContractMaturity($contract) {
+        return 'mature'; // Placeholder
+    }
+    
+    private function analyzeFeatureSet($contract) {
+        $features = [];
+        
+        if ($contract['hasDescription'] ?? false) $features[] = 'metadata';
+        if ($contract['hasImage'] ?? false) $features[] = 'imagery';
+        if ($contract['hasMedia'] ?? false) $features[] = 'rich_media';
+        if ($contract['isVerified'] ?? false) $features[] = 'verified';
+        if ($contract['isPremium'] ?? false) $features[] = 'premium';
+        
+        return [
+            'features' => $features,
+            'featureCount' => count($features),
+            'isFeatureRich' => count($features) >= 3
+        ];
+    }
+    
+    private function identifyRiskFactors($contract) {
+        $risks = [];
+        
+        if (!($contract['isVerified'] ?? false)) {
+            $risks[] = [
+                'type' => 'verification',
+                'severity' => 'medium',
+                'description' => 'Contract is not verified'
+            ];
+        }
+        
+        if (!($contract['hasDescription'] ?? false)) {
+            $risks[] = [
+                'type' => 'metadata',
+                'severity' => 'low',
+                'description' => 'Missing contract description'
+            ];
+        }
+        
+        return $risks;
+    }
+    
+    private function checkStandardCompliance($contract) {
+        return [
+            'isCompliant' => true,
+            'standard' => $this->determineContractStandard($contract['type'] ?? ''),
+            'issues' => []
+        ];
+    }
+    
+    private function validateContractAddress($address, $secretType) {
+        $patterns = [
+            'ETHEREUM' => '/^0x[a-fA-F0-9]{40}$/',
+            'MATIC' => '/^0x[a-fA-F0-9]{40}$/',
+            'HEDERA' => '/^0\.0\.\d+$/',
+            'BSC' => '/^0x[a-fA-F0-9]{40}$/'
+        ];
+        
+        $pattern = $patterns[$secretType] ?? null;
+        $isValid = $pattern ? preg_match($pattern, $address) : true;
+        
+        return [
+            'isValid' => (bool)$isValid,
+            'format' => $secretType,
+            'pattern' => $pattern
+        ];
+    }
+    
+    private function checkMetadataIntegrity($contract) {
+        return [
+            'hasRequiredFields' => !empty($contract['name']) && !empty($contract['address']),
+            'hasOptionalFields' => !empty($contract['description']) && !empty($contract['imageUrl']),
+            'integrityScore' => $this->assessMetadataCompleteness($contract)
+        ];
+    }
+    
+    private function calculateOverallRisk($contract) {
+        $riskScore = 0;
+        
+        if (!($contract['isVerified'] ?? false)) $riskScore += 30;
+        if (!($contract['hasDescription'] ?? false)) $riskScore += 10;
+        if (!($contract['hasImage'] ?? false)) $riskScore += 5;
+        
+        if ($riskScore <= 10) return 'low';
+        if ($riskScore <= 30) return 'medium';
+        return 'high';
+    }
+    
+    private function identifySecurityRiskFactors($contract) {
+        return $this->identifyRiskFactors($contract);
+    }
+    
+    private function generateSecurityRecommendations($contract) {
+        $recommendations = [];
+        
+        if (!($contract['isVerified'] ?? false)) {
+            $recommendations[] = 'Verify contract authenticity through official channels';
+        }
+        
+        if (!($contract['hasDescription'] ?? false)) {
+            $recommendations[] = 'Request detailed contract documentation';
+        }
+        
+        return $recommendations;
+    }
+    
+    private function checkERC721Compliance($contract) {
+        $isERC721 = ($contract['contractStandard'] ?? '') === 'ERC-721';
+        return [
+            'applicable' => $isERC721,
+            'score' => $isERC721 ? 1 : 0,
+            'issues' => []
+        ];
+    }
+    
+    private function checkERC1155Compliance($contract) {
+        $isERC1155 = ($contract['contractStandard'] ?? '') === 'ERC-1155';
+        return [
+            'applicable' => $isERC1155,
+            'score' => $isERC1155 ? 1 : 0,
+            'issues' => []
+        ];
+    }
+    
+    private function checkMetadataStandards($contract) {
+        $score = $this->assessMetadataCompleteness($contract);
+        return [
+            'applicable' => true,
+            'score' => $score,
+            'issues' => $score < 0.8 ? ['Incomplete metadata'] : []
+        ];
+    }
+    
+    private function checkNamingConventions($contract) {
+        $hasName = !empty($contract['name']);
+        $hasSymbol = !empty($contract['symbol']);
+        $score = ($hasName ? 0.6 : 0) + ($hasSymbol ? 0.4 : 0);
+        
+        $issues = [];
+        if (!$hasName) $issues[] = 'Missing contract name';
+        if (!$hasSymbol) $issues[] = 'Missing contract symbol';
+        
+        return [
+            'applicable' => true,
+            'score' => $score,
+            'issues' => $issues
+        ];
+    }
+    
+    private function generateComplianceRecommendations($compliance) {
+        $recommendations = [];
+        
+        foreach ($compliance as $check) {
+            if (isset($check['issues']) && !empty($check['issues'])) {
+                $recommendations = array_merge($recommendations, $check['issues']);
+            }
+        }
+        
+        return array_unique($recommendations);
+    }
+    
+    private function analyzeAddressFormat($address, $secretType) {
+        $validation = $this->validateContractAddress($address, $secretType);
+        return [
+            'format' => $secretType,
+            'isValid' => $validation['isValid'],
+            'length' => strlen($address),
+            'pattern' => $validation['pattern']
+        ];
+    }
+    
+    private function getNetworkSpecificInfo($secretType) {
+        $networkInfo = [
+            'ETHEREUM' => ['name' => 'Ethereum', 'nativeCurrency' => 'ETH', 'chainId' => 1],
+            'MATIC' => ['name' => 'Polygon', 'nativeCurrency' => 'MATIC', 'chainId' => 137],
+            'HEDERA' => ['name' => 'Hedera', 'nativeCurrency' => 'HBAR', 'chainId' => null],
+            'BSC' => ['name' => 'Binance Smart Chain', 'nativeCurrency' => 'BNB', 'chainId' => 56]
+        ];
+        
+        return $networkInfo[$secretType] ?? ['name' => $secretType, 'nativeCurrency' => 'Unknown', 'chainId' => null];
+    }
+    
+    private function recordContractQuery($secretType, $contractAddress, $contract) {
+        $key = "{$secretType}:{$contractAddress}";
+        
+        if (!isset($this->contractAnalytics[$key])) {
+            $this->contractAnalytics[$key] = [
+                'queryCount' => 0,
+                'firstQuery' => date('c'),
+                'lastQuery' => null,
+                'contractName' => $contract['name'] ?? null
+            ];
+        }
+        
+        $analytics = &$this->contractAnalytics[$key];
+        $analytics['queryCount']++;
+        $analytics['lastQuery'] = date('c');
+    }
+    
+    private function isCacheValid($key) {
+        return isset($this->cache[$key]) && 
+               isset($this->cacheExpiry[$key]) && 
+               time() < $this->cacheExpiry[$key];
+    }
+    
+    public function generateContractReport($secretType, $contractAddress) {
+        $key = "{$secretType}:{$contractAddress}";
+        $analytics = $this->contractAnalytics[$key] ?? ['queryCount' => 0];
+        
+        return [
+            'contract' => ['secretType' => $secretType, 'contractAddress' => $contractAddress],
+            'analytics' => $analytics,
+            'cacheStatus' => $this->isCacheValid($key) ? 'cached' : 'not_cached',
+            'lastAnalyzed' => date('c')
+        ];
+    }
+    
+    public function clearCache($pattern = null) {
+        if ($pattern) {
+            foreach (array_keys($this->cache) as $key) {
+                if (strpos($key, $pattern) !== false) {
+                    unset($this->cache[$key]);
+                    unset($this->cacheExpiry[$key]);
+                }
+            }
+        } else {
+            $this->cache = [];
+            $this->cacheExpiry = [];
+        }
+    }
+}
+
+// Usage
+$contractAnalyzer = new NFTContractAnalyzer('YOUR_API_KEY');
+
+try {
+    // Simple contract analysis
+    $contractInfo = $contractAnalyzer->analyzeContract(
+        'HEDERA',
+        '0.0.2850147',
+        [
+            'includeAnalytics' => true,
+            'performSecurityCheck' => true,
+            'validateStandards' => true
+        ]
+    );
+    
+    echo "Contract Analysis: " . json_encode($contractInfo, JSON_PRETTY_PRINT) . "\n";
+    echo "Contract Analytics: " . json_encode($contractInfo['analytics'], JSON_PRETTY_PRINT) . "\n";
+    echo "Security Assessment: " . json_encode($contractInfo['security'], JSON_PRETTY_PRINT) . "\n";
+    echo "Standards Compliance: " . json_encode($contractInfo['standards'], JSON_PRETTY_PRINT) . "\n";
+    
+    // Generate contract report
+    $report = $contractAnalyzer->generateContractReport('HEDERA', '0.0.2850147');
+    echo "Contract Report: " . json_encode($report, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**NFT Contract Information Best Practices:**
+
+1. **Verification Priority** - Always check contract verification status before interaction
+2. **Comprehensive Analysis** - Use analytics to understand contract completeness and trustworthiness
+3. **Security Assessment** - Perform security checks for high-value interactions
+4. **Standards Compliance** - Validate contract adherence to established standards
+5. **Caching Strategy** - Implement intelligent caching for frequently queried contracts
+6. **Multi-Chain Support** - Handle different address formats and network-specific requirements
+7. **Error Handling** - Implement robust error handling for network issues and invalid addresses
+8. **Trust Scoring** - Use trust scores to evaluate contract reliability and safety
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Retrieve NFT Details" href="/guides/nft-api/querying/retrieve-nft-details" icon="gem">
+    Get detailed information about specific NFTs
+  </Card>
+  <Card title="Retrieve NFTs by Wallet" href="/guides/nft-api/querying/retrieve-nfts-by-wallet" icon="wallet">
+    Find all NFTs owned by specific wallets
+  </Card>
+  <Card title="Retrieve Wallets by NFT" href="/guides/nft-api/querying/retrieve-wallets-by-nft" icon="users">
+    Find wallet owners of specific NFTs
+  </Card>
+  <Card title="API Reference" href="/api-reference/Wallet-API/non-fungibles/get-nft-contract" icon="book">
+    Explore the complete NFT contract information API documentation
+  </Card>
+</CardGroup>

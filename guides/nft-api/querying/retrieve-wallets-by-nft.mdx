@@ -1,0 +1,1822 @@
+---
+title: "Retrieve Wallets by NFT"
+description: "Comprehensive guide to finding wallet owners of specific NFTs with advanced ownership tracking, distribution analysis, and holder insights"
+icon: "users"
+---
+
+<Info>
+**NFT Ownership Discovery:** Find all wallet addresses that own a specific NFT with comprehensive ownership analysis, distribution tracking, and holder insights.
+
+**Time required:** ~4 minutes
+</Info>
+
+## What is NFT Ownership Querying?
+
+NFT ownership querying allows you to discover which wallet addresses hold a specific NFT token. This is essential for understanding token distribution, verifying ownership, and analyzing holder patterns. Particularly useful for fungible tokens that can be distributed across multiple wallets.
+
+<CardGroup cols={2}>
+  <Card title="Ownership Verification" icon="shield-check">
+    Verify who owns specific NFT tokens
+  </Card>
+  <Card title="Distribution Analysis" icon="chart-pie">
+    Analyze token distribution patterns
+  </Card>
+  <Card title="Holder Insights" icon="eye">
+    Get detailed holder information and balances
+  </Card>
+  <Card title="Multi-Chain Support" icon="link">
+    Query across different blockchain networks
+  </Card>
+</CardGroup>
+
+## NFT Ownership Capabilities
+
+<Tabs>
+  <Tab title="Query Types">
+    **Ownership Scenarios:**
+    - Single owner (true NFTs)
+    - Multiple owners (fungible tokens)
+    - Zero owners (burned tokens)
+    - Historical ownership tracking
+    
+    **Use Cases:**
+    - Ownership verification
+    - Airdrop distribution
+    - Holder analysis
+    - Community building
+  </Tab>
+  <Tab title="Data Insights">
+    **Ownership Information:**
+    - Wallet addresses
+    - Token balances
+    - Distribution percentages
+    - Holder concentration
+    - Ownership patterns
+    
+    **Analytics Features:**
+    - Holder diversity metrics
+    - Concentration analysis
+    - Distribution visualization
+    - Ownership trends
+  </Tab>
+  <Tab title="Integration Options">
+    **Implementation Methods:**
+    - Single token queries
+    - Batch ownership analysis
+    - Real-time monitoring
+    - Historical tracking
+    
+    **Platform Integration:**
+    - Ownership dashboards
+    - Community platforms
+    - Analytics tools
+    - Verification systems
+  </Tab>
+</Tabs>
+
+## Retrieve Wallets by NFT
+
+<Steps>
+  <Step title="Specify NFT" icon="fingerprint">
+    Provide the blockchain, contract address, and token ID
+    
+    ```javascript
+    const nftQuery = {
+      secretType: 'MATIC',
+      contractAddress: '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+      tokenId: '23'
+    };
+    ```
+  </Step>
+  <Step title="Execute Query" icon="magnifying-glass">
+    Retrieve the wallet addresses that own the NFT
+  </Step>
+  <Step title="Analyze Distribution" icon="chart-bar">
+    Process ownership data and analyze distribution patterns
+  </Step>
+  <Step title="Generate Insights" icon="lightbulb">
+    Create ownership insights and holder analytics
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve wallets that own a specific NFT
+const getWalletsByNFT = async (secretType, contractAddress, tokenId, options = {}) => {
+  try {
+    let url = `/api/nonfungibles/${secretType}/${contractAddress}/${tokenId}/wallets`;
+    
+    // Add pagination parameters if provided
+    if (options.pageNumber !== undefined || options.pageSize !== undefined) {
+      const params = new URLSearchParams();
+      if (options.pageNumber !== undefined) params.append('pageNumber', options.pageNumber);
+      if (options.pageSize !== undefined) params.append('pageSize', options.pageSize);
+      url += `?${params.toString()}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return {
+        wallets: data.result,
+        pagination: data.pagination
+      };
+    } else {
+      throw new Error('Failed to retrieve wallets for NFT');
+    }
+  } catch (error) {
+    console.error('Error retrieving wallets for NFT:', error);
+    throw error;
+  }
+};
+
+// Enhanced NFT ownership analysis system
+class NFTOwnershipAnalyzer {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = new Map();
+    this.defaultCacheTTL = 300000; // 5 minutes
+    this.ownershipHistory = new Map();
+    this.distributionMetrics = new Map();
+  }
+
+  async analyzeNFTOwnership(secretType, contractAddress, tokenId, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      includeAnalytics = true,
+      fetchAllPages = true,
+      trackHistory = false
+    } = options;
+
+    const cacheKey = `${secretType}:${contractAddress}:${tokenId}`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached ownership data');
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      // Fetch ownership data (potentially across multiple pages)
+      const ownershipData = await this.fetchCompleteOwnership(
+        secretType, 
+        contractAddress, 
+        tokenId, 
+        fetchAllPages
+      );
+
+      // Analyze ownership distribution
+      const distributionAnalysis = includeAnalytics ? 
+        this.analyzeDistribution(ownershipData.wallets) : null;
+
+      // Generate ownership insights
+      const insights = this.generateOwnershipInsights(ownershipData.wallets);
+
+      // Determine token type based on ownership pattern
+      const tokenType = this.determineTokenType(ownershipData.wallets);
+
+      const result = {
+        nft: {
+          secretType,
+          contractAddress,
+          tokenId,
+          tokenType,
+          totalHolders: ownershipData.wallets.length,
+          totalSupply: ownershipData.wallets.reduce((sum, wallet) => sum + wallet.tokenBalance, 0),
+          queriedAt: new Date().toISOString()
+        },
+        ownership: {
+          wallets: ownershipData.wallets,
+          pagination: ownershipData.pagination
+        },
+        distribution: distributionAnalysis,
+        insights,
+        summary: this.generateOwnershipSummary(ownershipData.wallets)
+      };
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, result);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      // Track ownership history if requested
+      if (trackHistory) {
+        this.recordOwnershipSnapshot(cacheKey, ownershipData.wallets);
+      }
+
+      return result;
+
+    } catch (error) {
+      console.error(`Failed to analyze NFT ownership for ${tokenId}:`, error);
+      throw error;
+    }
+  }
+
+  async batchAnalyzeNFTOwnership(nftQueries, options = {}) {
+    const {
+      concurrency = 3,
+      continueOnError = true,
+      includeComparison = false
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Process NFTs in batches
+    for (let i = 0; i < nftQueries.length; i += concurrency) {
+      const batch = nftQueries.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (query) => {
+        try {
+          const result = await this.analyzeNFTOwnership(
+            query.secretType,
+            query.contractAddress,
+            query.tokenId,
+            query.options
+          );
+          
+          return {
+            success: true,
+            query,
+            result
+          };
+        } catch (error) {
+          const errorResult = {
+            success: false,
+            query,
+            error: error.message
+          };
+          
+          if (!continueOnError) {
+            throw error;
+          }
+          
+          return errorResult;
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    const batchAnalysis = {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+
+    // Add comparison analysis if requested
+    if (includeComparison && results.length > 1) {
+      batchAnalysis.comparison = this.compareOwnershipPatterns(results.map(r => r.result));
+    }
+
+    return batchAnalysis;
+  }
+
+  async fetchCompleteOwnership(secretType, contractAddress, tokenId, fetchAllPages = true) {
+    let allWallets = [];
+    let currentPage = 0;
+    let hasNextPage = true;
+    let paginationInfo = null;
+
+    while (hasNextPage) {
+      const pageData = await getWalletsByNFT(secretType, contractAddress, tokenId, {
+        pageNumber: currentPage,
+        pageSize: 50 // Reasonable page size
+      });
+
+      allWallets = allWallets.concat(pageData.wallets);
+      paginationInfo = pageData.pagination;
+
+      if (!fetchAllPages || !pageData.pagination.hasNextPage) {
+        hasNextPage = false;
+      } else {
+        currentPage++;
+      }
+    }
+
+    return {
+      wallets: allWallets,
+      pagination: paginationInfo
+    };
+  }
+
+  analyzeDistribution(wallets) {
+    if (wallets.length === 0) {
+      return {
+        type: 'no_holders',
+        concentration: 0,
+        giniCoefficient: 0,
+        topHolders: [],
+        distributionTiers: {}
+      };
+    }
+
+    // Calculate total supply
+    const totalSupply = wallets.reduce((sum, wallet) => sum + wallet.tokenBalance, 0);
+
+    // Sort wallets by balance (descending)
+    const sortedWallets = [...wallets].sort((a, b) => b.tokenBalance - a.tokenBalance);
+
+    // Calculate concentration metrics
+    const top1Percentage = sortedWallets.length > 0 ? 
+      (sortedWallets[0].tokenBalance / totalSupply) * 100 : 0;
+    
+    const top5Count = Math.min(5, sortedWallets.length);
+    const top5Supply = sortedWallets.slice(0, top5Count)
+      .reduce((sum, wallet) => sum + wallet.tokenBalance, 0);
+    const top5Percentage = (top5Supply / totalSupply) * 100;
+
+    // Calculate Gini coefficient (simplified)
+    const giniCoefficient = this.calculateGiniCoefficient(
+      sortedWallets.map(w => w.tokenBalance)
+    );
+
+    // Categorize distribution
+    const distributionType = this.categorizeDistribution(
+      wallets.length, 
+      top1Percentage, 
+      giniCoefficient
+    );
+
+    // Create distribution tiers
+    const distributionTiers = this.createDistributionTiers(sortedWallets, totalSupply);
+
+    return {
+      type: distributionType,
+      totalHolders: wallets.length,
+      totalSupply,
+      concentration: {
+        top1Holder: {
+          percentage: top1Percentage,
+          balance: sortedWallets[0]?.tokenBalance || 0,
+          address: sortedWallets[0]?.walletAddress
+        },
+        top5Holders: {
+          percentage: top5Percentage,
+          totalBalance: top5Supply,
+          count: top5Count
+        }
+      },
+      giniCoefficient,
+      topHolders: sortedWallets.slice(0, 10).map((wallet, index) => ({
+        rank: index + 1,
+        walletAddress: wallet.walletAddress,
+        balance: wallet.tokenBalance,
+        percentage: (wallet.tokenBalance / totalSupply) * 100
+      })),
+      distributionTiers
+    };
+  }
+
+  generateOwnershipInsights(wallets) {
+    const insights = [];
+
+    if (wallets.length === 0) {
+      insights.push({
+        type: 'no_ownership',
+        severity: 'info',
+        message: 'This token has no current holders (may be burned or not yet minted)'
+      });
+      return insights;
+    }
+
+    if (wallets.length === 1) {
+      insights.push({
+        type: 'single_owner',
+        severity: 'info',
+        message: 'This is a true NFT with a single owner',
+        data: { owner: wallets[0].walletAddress, balance: wallets[0].tokenBalance }
+      });
+    } else {
+      insights.push({
+        type: 'multiple_owners',
+        severity: 'info',
+        message: `This token is distributed among ${wallets.length} holders`,
+        data: { holderCount: wallets.length }
+      });
+    }
+
+    // Analyze concentration
+    const totalSupply = wallets.reduce((sum, w) => sum + w.tokenBalance, 0);
+    const maxBalance = Math.max(...wallets.map(w => w.tokenBalance));
+    const concentrationRatio = (maxBalance / totalSupply) * 100;
+
+    if (concentrationRatio > 50) {
+      insights.push({
+        type: 'high_concentration',
+        severity: 'warning',
+        message: `High concentration: ${concentrationRatio.toFixed(1)}% held by single address`,
+        data: { concentrationRatio }
+      });
+    } else if (concentrationRatio < 10 && wallets.length > 5) {
+      insights.push({
+        type: 'well_distributed',
+        severity: 'positive',
+        message: 'Token is well distributed among holders',
+        data: { concentrationRatio }
+      });
+    }
+
+    // Check for unusual patterns
+    const uniqueBalances = new Set(wallets.map(w => w.tokenBalance));
+    if (uniqueBalances.size === 1 && wallets.length > 1) {
+      insights.push({
+        type: 'equal_distribution',
+        severity: 'info',
+        message: 'All holders have equal token amounts',
+        data: { balance: wallets[0].tokenBalance }
+      });
+    }
+
+    return insights;
+  }
+
+  generateOwnershipSummary(wallets) {
+    const totalSupply = wallets.reduce((sum, w) => sum + w.tokenBalance, 0);
+    const averageBalance = wallets.length > 0 ? totalSupply / wallets.length : 0;
+    
+    return {
+      totalHolders: wallets.length,
+      totalSupply,
+      averageBalance: Math.round(averageBalance * 100) / 100,
+      isNFT: wallets.length <= 1 && totalSupply <= 1,
+      isFungible: wallets.length > 1 || totalSupply > 1,
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  determineTokenType(wallets) {
+    const totalSupply = wallets.reduce((sum, w) => sum + w.tokenBalance, 0);
+    
+    if (wallets.length === 0) return 'burned_or_unminted';
+    if (wallets.length === 1 && totalSupply === 1) return 'true_nft';
+    if (wallets.length === 1 && totalSupply > 1) return 'single_holder_fungible';
+    if (wallets.length > 1) return 'multi_holder_fungible';
+    
+    return 'unknown';
+  }
+
+  createDistributionTiers(sortedWallets, totalSupply) {
+    const tiers = {
+      whales: { threshold: 0.1, holders: [], totalBalance: 0 }, // >10%
+      large: { threshold: 0.05, holders: [], totalBalance: 0 }, // 5-10%
+      medium: { threshold: 0.01, holders: [], totalBalance: 0 }, // 1-5%
+      small: { threshold: 0, holders: [], totalBalance: 0 } // <1%
+    };
+
+    sortedWallets.forEach(wallet => {
+      const percentage = (wallet.tokenBalance / totalSupply);
+      
+      if (percentage >= 0.1) {
+        tiers.whales.holders.push(wallet);
+        tiers.whales.totalBalance += wallet.tokenBalance;
+      } else if (percentage >= 0.05) {
+        tiers.large.holders.push(wallet);
+        tiers.large.totalBalance += wallet.tokenBalance;
+      } else if (percentage >= 0.01) {
+        tiers.medium.holders.push(wallet);
+        tiers.medium.totalBalance += wallet.tokenBalance;
+      } else {
+        tiers.small.holders.push(wallet);
+        tiers.small.totalBalance += wallet.tokenBalance;
+      }
+    });
+
+    // Add percentages
+    Object.keys(tiers).forEach(tier => {
+      tiers[tier].percentage = (tiers[tier].totalBalance / totalSupply) * 100;
+      tiers[tier].count = tiers[tier].holders.length;
+    });
+
+    return tiers;
+  }
+
+  calculateGiniCoefficient(balances) {
+    if (balances.length === 0) return 0;
+    if (balances.length === 1) return 0;
+
+    // Sort balances
+    const sorted = [...balances].sort((a, b) => a - b);
+    const n = sorted.length;
+    const sum = sorted.reduce((a, b) => a + b, 0);
+
+    if (sum === 0) return 0;
+
+    let numerator = 0;
+    for (let i = 0; i < n; i++) {
+      numerator += (2 * (i + 1) - n - 1) * sorted[i];
+    }
+
+    return numerator / (n * sum);
+  }
+
+  categorizeDistribution(holderCount, top1Percentage, giniCoefficient) {
+    if (holderCount === 0) return 'no_holders';
+    if (holderCount === 1) return 'single_holder';
+    
+    if (top1Percentage > 80) return 'highly_concentrated';
+    if (top1Percentage > 50) return 'concentrated';
+    if (giniCoefficient > 0.7) return 'unequal';
+    if (giniCoefficient < 0.3) return 'well_distributed';
+    
+    return 'moderately_distributed';
+  }
+
+  compareOwnershipPatterns(ownershipResults) {
+    const comparison = {
+      tokens: ownershipResults.map(result => ({
+        tokenId: result.nft.tokenId,
+        contractAddress: result.nft.contractAddress,
+        totalHolders: result.nft.totalHolders,
+        totalSupply: result.nft.totalSupply,
+        tokenType: result.nft.tokenType
+      })),
+      patterns: {
+        mostDistributed: null,
+        mostConcentrated: null,
+        averageHolders: 0,
+        commonPatterns: []
+      }
+    };
+
+    if (ownershipResults.length === 0) return comparison;
+
+    // Find most/least distributed
+    let maxHolders = 0;
+    let minConcentration = 100;
+    let maxConcentration = 0;
+
+    ownershipResults.forEach(result => {
+      const holders = result.nft.totalHolders;
+      const concentration = result.distribution?.concentration?.top1Holder?.percentage || 0;
+
+      if (holders > maxHolders) {
+        maxHolders = holders;
+        comparison.patterns.mostDistributed = {
+          tokenId: result.nft.tokenId,
+          holders,
+          concentration
+        };
+      }
+
+      if (concentration > maxConcentration) {
+        maxConcentration = concentration;
+        comparison.patterns.mostConcentrated = {
+          tokenId: result.nft.tokenId,
+          holders,
+          concentration
+        };
+      }
+    });
+
+    // Calculate averages
+    comparison.patterns.averageHolders = 
+      ownershipResults.reduce((sum, r) => sum + r.nft.totalHolders, 0) / ownershipResults.length;
+
+    // Identify common patterns
+    const tokenTypes = {};
+    ownershipResults.forEach(result => {
+      const type = result.nft.tokenType;
+      tokenTypes[type] = (tokenTypes[type] || 0) + 1;
+    });
+
+    comparison.patterns.commonPatterns = Object.entries(tokenTypes)
+      .map(([type, count]) => ({ type, count, percentage: (count / ownershipResults.length) * 100 }))
+      .sort((a, b) => b.count - a.count);
+
+    return comparison;
+  }
+
+  recordOwnershipSnapshot(nftKey, wallets) {
+    if (!this.ownershipHistory.has(nftKey)) {
+      this.ownershipHistory.set(nftKey, []);
+    }
+    
+    const history = this.ownershipHistory.get(nftKey);
+    history.push({
+      timestamp: new Date().toISOString(),
+      holderCount: wallets.length,
+      totalSupply: wallets.reduce((sum, w) => sum + w.tokenBalance, 0),
+      topHolder: wallets.length > 0 ? 
+        wallets.reduce((max, w) => w.tokenBalance > max.tokenBalance ? w : max) : null
+    });
+    
+    // Keep only last 50 snapshots
+    if (history.length > 50) {
+      history.shift();
+    }
+  }
+
+  getOwnershipHistory(secretType, contractAddress, tokenId) {
+    const nftKey = `${secretType}:${contractAddress}:${tokenId}`;
+    return this.ownershipHistory.get(nftKey) || [];
+  }
+
+  // Utility methods
+  isCacheValid(key) {
+    if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
+      return false;
+    }
+    return Date.now() < this.cacheExpiry.get(key);
+  }
+
+  clearCache(pattern = null) {
+    if (pattern) {
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+          this.cacheExpiry.delete(key);
+        }
+      }
+    } else {
+      this.cache.clear();
+      this.cacheExpiry.clear();
+    }
+  }
+
+  generateOwnershipReport(secretType, contractAddress, tokenId) {
+    const nftKey = `${secretType}:${contractAddress}:${tokenId}`;
+    const history = this.getOwnershipHistory(secretType, contractAddress, tokenId);
+    
+    return {
+      nft: { secretType, contractAddress, tokenId },
+      currentStatus: this.isCacheValid(nftKey) ? 'cached' : 'not_cached',
+      historyLength: history.length,
+      lastAnalyzed: history.length > 0 ? history[history.length - 1].timestamp : null,
+      trends: this.analyzeOwnershipTrends(history)
+    };
+  }
+
+  analyzeOwnershipTrends(history) {
+    if (history.length < 2) {
+      return { trend: 'insufficient_data' };
+    }
+
+    const recent = history[history.length - 1];
+    const previous = history[history.length - 2];
+
+    const holderChange = recent.holderCount - previous.holderCount;
+    const supplyChange = recent.totalSupply - previous.totalSupply;
+
+    return {
+      trend: holderChange > 0 ? 'increasing_holders' : 
+             holderChange < 0 ? 'decreasing_holders' : 'stable_holders',
+      holderChange,
+      supplyChange,
+      timespan: new Date(recent.timestamp).getTime() - new Date(previous.timestamp).getTime()
+    };
+  }
+}
+
+// Usage examples
+const ownershipAnalyzer = new NFTOwnershipAnalyzer('YOUR_API_KEY');
+
+// Simple ownership query
+const ownership = await ownershipAnalyzer.analyzeNFTOwnership(
+  'MATIC',
+  '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+  '23',
+  {
+    includeAnalytics: true,
+    fetchAllPages: true,
+    trackHistory: true
+  }
+);
+
+console.log('NFT Ownership:', ownership);
+console.log('Distribution Analysis:', ownership.distribution);
+console.log('Ownership Insights:', ownership.insights);
+
+// Batch ownership analysis
+const nftQueries = [
+  {
+    secretType: 'MATIC',
+    contractAddress: '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+    tokenId: '23',
+    options: { includeAnalytics: true }
+  },
+  {
+    secretType: 'MATIC',
+    contractAddress: '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+    tokenId: '24',
+    options: { includeAnalytics: true }
+  }
+];
+
+const batchResults = await ownershipAnalyzer.batchAnalyzeNFTOwnership(nftQueries, {
+  includeComparison: true
+});
+
+console.log('Batch Analysis:', batchResults);
+console.log('Ownership Comparison:', batchResults.comparison);
+
+// Get ownership history
+const history = ownershipAnalyzer.getOwnershipHistory(
+  'MATIC',
+  '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+  '23'
+);
+
+console.log('Ownership History:', history);
+
+// Generate ownership report
+const report = ownershipAnalyzer.generateOwnershipReport(
+  'MATIC',
+  '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+  '23'
+);
+
+console.log('Ownership Report:', report);
+```
+
+```python Python
+import requests
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+import statistics
+
+class NFTOwnershipAnalyzer:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/nonfungibles'
+        self.cache = {}
+        self.cache_expiry = {}
+        self.default_cache_ttl = 300  # 5 minutes
+        self.ownership_history = {}
+    
+    def get_wallets_by_nft(self, secret_type: str, contract_address: str, token_id: str,
+                          page_number: int = 0, page_size: int = 50) -> Dict[str, Any]:
+        """Retrieve wallets that own a specific NFT"""
+        url = f'{self.base_url}/{secret_type}/{contract_address}/{token_id}/wallets'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        params = {
+            'pageNumber': page_number,
+            'pageSize': page_size
+        }
+        
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return {
+                    'wallets': data['result'],
+                    'pagination': data['pagination']
+                }
+            else:
+                raise Exception('Failed to retrieve wallets for NFT')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving wallets for NFT: {error}')
+            raise error
+    
+    def analyze_nft_ownership(self, secret_type: str, contract_address: str, token_id: str,
+                             options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Analyze NFT ownership with comprehensive insights"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        include_analytics = options.get('include_analytics', True)
+        fetch_all_pages = options.get('fetch_all_pages', True)
+        track_history = options.get('track_history', False)
+        
+        cache_key = f"{secret_type}:{contract_address}:{token_id}"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached ownership data')
+            return self.cache[cache_key]
+        
+        try:
+            # Fetch complete ownership data
+            ownership_data = self._fetch_complete_ownership(
+                secret_type, contract_address, token_id, fetch_all_pages
+            )
+            
+            # Analyze distribution
+            distribution_analysis = self._analyze_distribution(ownership_data['wallets']) if include_analytics else None
+            
+            # Generate insights
+            insights = self._generate_ownership_insights(ownership_data['wallets'])
+            
+            # Determine token type
+            token_type = self._determine_token_type(ownership_data['wallets'])
+            
+            result = {
+                'nft': {
+                    'secret_type': secret_type,
+                    'contract_address': contract_address,
+                    'token_id': token_id,
+                    'token_type': token_type,
+                    'total_holders': len(ownership_data['wallets']),
+                    'total_supply': sum(w['tokenBalance'] for w in ownership_data['wallets']),
+                    'queried_at': datetime.now().isoformat()
+                },
+                'ownership': ownership_data,
+                'distribution': distribution_analysis,
+                'insights': insights,
+                'summary': self._generate_ownership_summary(ownership_data['wallets'])
+            }
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = result
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            # Track history if requested
+            if track_history:
+                self._record_ownership_snapshot(cache_key, ownership_data['wallets'])
+            
+            return result
+            
+        except Exception as error:
+            print(f'Failed to analyze NFT ownership for {token_id}: {error}')
+            raise error
+    
+    def _fetch_complete_ownership(self, secret_type: str, contract_address: str, 
+                                 token_id: str, fetch_all_pages: bool = True) -> Dict[str, Any]:
+        """Fetch complete ownership data across all pages"""
+        all_wallets = []
+        current_page = 0
+        has_next_page = True
+        pagination_info = None
+        
+        while has_next_page:
+            page_data = self.get_wallets_by_nft(
+                secret_type, contract_address, token_id,
+                current_page, 50
+            )
+            
+            all_wallets.extend(page_data['wallets'])
+            pagination_info = page_data['pagination']
+            
+            if not fetch_all_pages or not page_data['pagination'].get('hasNextPage', False):
+                has_next_page = False
+            else:
+                current_page += 1
+        
+        return {
+            'wallets': all_wallets,
+            'pagination': pagination_info
+        }
+    
+    def _analyze_distribution(self, wallets: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze token distribution among holders"""
+        if not wallets:
+            return {
+                'type': 'no_holders',
+                'concentration': 0,
+                'gini_coefficient': 0,
+                'top_holders': [],
+                'distribution_tiers': {}
+            }
+        
+        # Calculate total supply
+        total_supply = sum(w['tokenBalance'] for w in wallets)
+        
+        # Sort wallets by balance (descending)
+        sorted_wallets = sorted(wallets, key=lambda x: x['tokenBalance'], reverse=True)
+        
+        # Calculate concentration metrics
+        top1_percentage = (sorted_wallets[0]['tokenBalance'] / total_supply) * 100 if sorted_wallets else 0
+        
+        top5_count = min(5, len(sorted_wallets))
+        top5_supply = sum(w['tokenBalance'] for w in sorted_wallets[:top5_count])
+        top5_percentage = (top5_supply / total_supply) * 100
+        
+        # Calculate Gini coefficient
+        gini_coefficient = self._calculate_gini_coefficient([w['tokenBalance'] for w in sorted_wallets])
+        
+        # Categorize distribution
+        distribution_type = self._categorize_distribution(len(wallets), top1_percentage, gini_coefficient)
+        
+        # Create distribution tiers
+        distribution_tiers = self._create_distribution_tiers(sorted_wallets, total_supply)
+        
+        return {
+            'type': distribution_type,
+            'total_holders': len(wallets),
+            'total_supply': total_supply,
+            'concentration': {
+                'top1_holder': {
+                    'percentage': top1_percentage,
+                    'balance': sorted_wallets[0]['tokenBalance'] if sorted_wallets else 0,
+                    'address': sorted_wallets[0]['walletAddress'] if sorted_wallets else None
+                },
+                'top5_holders': {
+                    'percentage': top5_percentage,
+                    'total_balance': top5_supply,
+                    'count': top5_count
+                }
+            },
+            'gini_coefficient': gini_coefficient,
+            'top_holders': [
+                {
+                    'rank': i + 1,
+                    'wallet_address': wallet['walletAddress'],
+                    'balance': wallet['tokenBalance'],
+                    'percentage': (wallet['tokenBalance'] / total_supply) * 100
+                }
+                for i, wallet in enumerate(sorted_wallets[:10])
+            ],
+            'distribution_tiers': distribution_tiers
+        }
+    
+    def _generate_ownership_insights(self, wallets: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Generate insights about token ownership"""
+        insights = []
+        
+        if not wallets:
+            insights.append({
+                'type': 'no_ownership',
+                'severity': 'info',
+                'message': 'This token has no current holders (may be burned or not yet minted)'
+            })
+            return insights
+        
+        if len(wallets) == 1:
+            insights.append({
+                'type': 'single_owner',
+                'severity': 'info',
+                'message': 'This is a true NFT with a single owner',
+                'data': {
+                    'owner': wallets[0]['walletAddress'],
+                    'balance': wallets[0]['tokenBalance']
+                }
+            })
+        else:
+            insights.append({
+                'type': 'multiple_owners',
+                'severity': 'info',
+                'message': f'This token is distributed among {len(wallets)} holders',
+                'data': {'holder_count': len(wallets)}
+            })
+        
+        # Analyze concentration
+        total_supply = sum(w['tokenBalance'] for w in wallets)
+        max_balance = max(w['tokenBalance'] for w in wallets)
+        concentration_ratio = (max_balance / total_supply) * 100
+        
+        if concentration_ratio > 50:
+            insights.append({
+                'type': 'high_concentration',
+                'severity': 'warning',
+                'message': f'High concentration: {concentration_ratio:.1f}% held by single address',
+                'data': {'concentration_ratio': concentration_ratio}
+            })
+        elif concentration_ratio < 10 and len(wallets) > 5:
+            insights.append({
+                'type': 'well_distributed',
+                'severity': 'positive',
+                'message': 'Token is well distributed among holders',
+                'data': {'concentration_ratio': concentration_ratio}
+            })
+        
+        # Check for equal distribution
+        unique_balances = set(w['tokenBalance'] for w in wallets)
+        if len(unique_balances) == 1 and len(wallets) > 1:
+            insights.append({
+                'type': 'equal_distribution',
+                'severity': 'info',
+                'message': 'All holders have equal token amounts',
+                'data': {'balance': wallets[0]['tokenBalance']}
+            })
+        
+        return insights
+    
+    def _generate_ownership_summary(self, wallets: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate ownership summary"""
+        total_supply = sum(w['tokenBalance'] for w in wallets)
+        average_balance = total_supply / len(wallets) if wallets else 0
+        
+        return {
+            'total_holders': len(wallets),
+            'total_supply': total_supply,
+            'average_balance': round(average_balance, 2),
+            'is_nft': len(wallets) <= 1 and total_supply <= 1,
+            'is_fungible': len(wallets) > 1 or total_supply > 1,
+            'last_updated': datetime.now().isoformat()
+        }
+    
+    def _determine_token_type(self, wallets: List[Dict[str, Any]]) -> str:
+        """Determine token type based on ownership pattern"""
+        total_supply = sum(w['tokenBalance'] for w in wallets)
+        
+        if not wallets:
+            return 'burned_or_unminted'
+        elif len(wallets) == 1 and total_supply == 1:
+            return 'true_nft'
+        elif len(wallets) == 1 and total_supply > 1:
+            return 'single_holder_fungible'
+        elif len(wallets) > 1:
+            return 'multi_holder_fungible'
+        else:
+            return 'unknown'
+    
+    def _create_distribution_tiers(self, sorted_wallets: List[Dict[str, Any]], 
+                                  total_supply: int) -> Dict[str, Any]:
+        """Create distribution tiers"""
+        tiers = {
+            'whales': {'threshold': 0.1, 'holders': [], 'total_balance': 0},
+            'large': {'threshold': 0.05, 'holders': [], 'total_balance': 0},
+            'medium': {'threshold': 0.01, 'holders': [], 'total_balance': 0},
+            'small': {'threshold': 0, 'holders': [], 'total_balance': 0}
+        }
+        
+        for wallet in sorted_wallets:
+            percentage = wallet['tokenBalance'] / total_supply
+            
+            if percentage >= 0.1:
+                tiers['whales']['holders'].append(wallet)
+                tiers['whales']['total_balance'] += wallet['tokenBalance']
+            elif percentage >= 0.05:
+                tiers['large']['holders'].append(wallet)
+                tiers['large']['total_balance'] += wallet['tokenBalance']
+            elif percentage >= 0.01:
+                tiers['medium']['holders'].append(wallet)
+                tiers['medium']['total_balance'] += wallet['tokenBalance']
+            else:
+                tiers['small']['holders'].append(wallet)
+                tiers['small']['total_balance'] += wallet['tokenBalance']
+        
+        # Add percentages and counts
+        for tier in tiers.values():
+            tier['percentage'] = (tier['total_balance'] / total_supply) * 100 if total_supply > 0 else 0
+            tier['count'] = len(tier['holders'])
+        
+        return tiers
+    
+    def _calculate_gini_coefficient(self, balances: List[int]) -> float:
+        """Calculate Gini coefficient for distribution inequality"""
+        if not balances or len(balances) <= 1:
+            return 0.0
+        
+        sorted_balances = sorted(balances)
+        n = len(sorted_balances)
+        total = sum(sorted_balances)
+        
+        if total == 0:
+            return 0.0
+        
+        numerator = sum((2 * (i + 1) - n - 1) * balance for i, balance in enumerate(sorted_balances))
+        return numerator / (n * total)
+    
+    def _categorize_distribution(self, holder_count: int, top1_percentage: float, 
+                                gini_coefficient: float) -> str:
+        """Categorize distribution type"""
+        if holder_count == 0:
+            return 'no_holders'
+        elif holder_count == 1:
+            return 'single_holder'
+        elif top1_percentage > 80:
+            return 'highly_concentrated'
+        elif top1_percentage > 50:
+            return 'concentrated'
+        elif gini_coefficient > 0.7:
+            return 'unequal'
+        elif gini_coefficient < 0.3:
+            return 'well_distributed'
+        else:
+            return 'moderately_distributed'
+    
+    def _record_ownership_snapshot(self, nft_key: str, wallets: List[Dict[str, Any]]):
+        """Record ownership snapshot for historical tracking"""
+        if nft_key not in self.ownership_history:
+            self.ownership_history[nft_key] = []
+        
+        history = self.ownership_history[nft_key]
+        history.append({
+            'timestamp': datetime.now().isoformat(),
+            'holder_count': len(wallets),
+            'total_supply': sum(w['tokenBalance'] for w in wallets),
+            'top_holder': max(wallets, key=lambda x: x['tokenBalance']) if wallets else None
+        })
+        
+        # Keep only last 50 snapshots
+        if len(history) > 50:
+            history.pop(0)
+    
+    def _is_cache_valid(self, key: str) -> bool:
+        """Check if cache entry is valid"""
+        if key not in self.cache or key not in self.cache_expiry:
+            return False
+        return datetime.now() < self.cache_expiry[key]
+
+# Usage
+ownership_analyzer = NFTOwnershipAnalyzer('YOUR_API_KEY')
+
+# Simple ownership analysis
+ownership = ownership_analyzer.analyze_nft_ownership(
+    'MATIC',
+    '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+    '23',
+    {
+        'include_analytics': True,
+        'fetch_all_pages': True,
+        'track_history': True
+    }
+)
+
+print('NFT Ownership:', ownership)
+```
+
+```bash cURL
+# Get wallets that own a specific NFT
+curl -X GET '/api/nonfungibles/MATIC/0xb3ccba9310e123e1d5b15b76bbc0165e410f492e/23/wallets' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get wallets with pagination
+curl -X GET '/api/nonfungibles/MATIC/0xb3ccba9310e123e1d5b15b76bbc0165e410f492e/23/wallets?pageNumber=0&pageSize=10' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Batch analyze multiple NFT ownership patterns
+#!/bin/bash
+NFTS=(
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e:23"
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e:24"
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e:25"
+)
+
+for nft in "${NFTS[@]}"; do
+  IFS=':' read -r chain contract token_id <<< "$nft"
+  echo "Analyzing ownership for NFT $token_id..."
+  
+  curl -X GET "/api/nonfungibles/$chain/$contract/$token_id/wallets" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result | length' > "nft_${token_id}_holders.txt"
+  
+  echo "Holder count saved to nft_${token_id}_holders.txt"
+  sleep 0.5  # Rate limiting
+done
+
+# Ownership distribution analysis
+#!/bin/bash
+analyze_ownership_distribution() {
+  local chain=$1
+  local contract=$2
+  local token_id=$3
+  
+  echo "=== Ownership Distribution Analysis for NFT $token_id ==="
+  
+  # Get all holders
+  holders=$(curl -X GET "/api/nonfungibles/$chain/$contract/$token_id/wallets" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result')
+  
+  # Count total holders
+  total_holders=$(echo "$holders" | jq 'length')
+  echo "Total Holders: $total_holders"
+  
+  if [ $total_holders -eq 0 ]; then
+    echo "Status: No holders (burned or unminted)"
+    return
+  fi
+  
+  if [ $total_holders -eq 1 ]; then
+    echo "Status: Single owner (true NFT)"
+    owner=$(echo "$holders" | jq -r '.[0].walletAddress')
+    balance=$(echo "$holders" | jq -r '.[0].tokenBalance')
+    echo "Owner: $owner"
+    echo "Balance: $balance"
+    return
+  fi
+  
+  # Calculate total supply
+  total_supply=$(echo "$holders" | jq '[.[].tokenBalance] | add')
+  echo "Total Supply: $total_supply"
+  
+  # Find top holder
+  top_holder=$(echo "$holders" | jq -r 'sort_by(.tokenBalance) | reverse | .[0]')
+  top_address=$(echo "$top_holder" | jq -r '.walletAddress')
+  top_balance=$(echo "$top_holder" | jq -r '.tokenBalance')
+  top_percentage=$(echo "scale=2; ($top_balance / $total_supply) * 100" | bc)
+  
+  echo "Top Holder: $top_address"
+  echo "Top Balance: $top_balance ($top_percentage%)"
+  
+  # Distribution analysis
+  if (( $(echo "$top_percentage > 50" | bc -l) )); then
+    echo "Distribution: Highly Concentrated"
+  elif (( $(echo "$top_percentage > 25" | bc -l) )); then
+    echo "Distribution: Concentrated"
+  else
+    echo "Distribution: Well Distributed"
+  fi
+  
+  echo ""
+}
+
+# Analyze specific NFTs
+analyze_ownership_distribution "MATIC" "0xb3ccba9310e123e1d5b15b76bbc0165e410f492e" "23"
+
+# Ownership comparison script
+#!/bin/bash
+compare_ownership_patterns() {
+  local nfts=("$@")
+  
+  echo "=== NFT Ownership Pattern Comparison ==="
+  echo "Token ID | Holders | Total Supply | Top Holder %"
+  echo "---------|---------|--------------|-------------"
+  
+  for nft in "${nfts[@]}"; do
+    IFS=':' read -r chain contract token_id <<< "$nft"
+    
+    holders=$(curl -X GET "/api/nonfungibles/$chain/$contract/$token_id/wallets" \
+      -H 'Authorization: Bearer YOUR_API_KEY' \
+      -H 'Content-Type: application/json' \
+      -s | jq '.result')
+    
+    holder_count=$(echo "$holders" | jq 'length')
+    
+    if [ $holder_count -eq 0 ]; then
+      echo "$token_id | 0 | 0 | N/A"
+    elif [ $holder_count -eq 1 ]; then
+      balance=$(echo "$holders" | jq -r '.[0].tokenBalance')
+      echo "$token_id | 1 | $balance | 100%"
+    else
+      total_supply=$(echo "$holders" | jq '[.[].tokenBalance] | add')
+      top_balance=$(echo "$holders" | jq 'sort_by(.tokenBalance) | reverse | .[0].tokenBalance')
+      top_percentage=$(echo "scale=1; ($top_balance / $total_supply) * 100" | bc)
+      echo "$token_id | $holder_count | $total_supply | $top_percentage%"
+    fi
+    
+    sleep 0.5  # Rate limiting
+  done
+}
+
+# Compare multiple NFTs
+COMPARISON_NFTS=(
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e:23"
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e:24"
+  "MATIC:0xb3ccba9310e123e1d5b15b76bbc0165e410f492e:25"
+)
+
+compare_ownership_patterns "${COMPARISON_NFTS[@]}"
+```
+
+```php PHP
+<?php
+class NFTOwnershipAnalyzer {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    private $defaultCacheTTL;
+    private $ownershipHistory;
+    
+    public function __construct($apiKey, $baseUrl = '/api/nonfungibles') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = [];
+        $this->defaultCacheTTL = 300; // 5 minutes
+        $this->ownershipHistory = [];
+    }
+    
+    public function analyzeNFTOwnership($secretType, $contractAddress, $tokenId, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $includeAnalytics = $options['includeAnalytics'] ?? true;
+        $fetchAllPages = $options['fetchAllPages'] ?? true;
+        $trackHistory = $options['trackHistory'] ?? false;
+        
+        $cacheKey = "{$secretType}:{$contractAddress}:{$tokenId}";
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached ownership data\n";
+            return $this->cache[$cacheKey];
+        }
+        
+        try {
+            // Fetch complete ownership data
+            $ownershipData = $this->fetchCompleteOwnership($secretType, $contractAddress, $tokenId, $fetchAllPages);
+            
+            // Analyze distribution
+            $distributionAnalysis = $includeAnalytics ? $this->analyzeDistribution($ownershipData['wallets']) : null;
+            
+            // Generate insights
+            $insights = $this->generateOwnershipInsights($ownershipData['wallets']);
+            
+            // Determine token type
+            $tokenType = $this->determineTokenType($ownershipData['wallets']);
+            
+            $result = [
+                'nft' => [
+                    'secretType' => $secretType,
+                    'contractAddress' => $contractAddress,
+                    'tokenId' => $tokenId,
+                    'tokenType' => $tokenType,
+                    'totalHolders' => count($ownershipData['wallets']),
+                    'totalSupply' => array_sum(array_column($ownershipData['wallets'], 'tokenBalance')),
+                    'queriedAt' => date('c')
+                ],
+                'ownership' => $ownershipData,
+                'distribution' => $distributionAnalysis,
+                'insights' => $insights,
+                'summary' => $this->generateOwnershipSummary($ownershipData['wallets'])
+            ];
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $result;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            // Track history if requested
+            if ($trackHistory) {
+                $this->recordOwnershipSnapshot($cacheKey, $ownershipData['wallets']);
+            }
+            
+            return $result;
+            
+        } catch (Exception $error) {
+            echo "Failed to analyze NFT ownership for {$tokenId}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function getWalletsByNFT($secretType, $contractAddress, $tokenId, $pageNumber = 0, $pageSize = 50) {
+        $url = "{$this->baseUrl}/{$secretType}/{$contractAddress}/{$tokenId}/wallets";
+        $url .= "?pageNumber={$pageNumber}&pageSize={$pageSize}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve wallets for NFT");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve wallets for NFT');
+        }
+        
+        return [
+            'wallets' => $data['result'],
+            'pagination' => $data['pagination']
+        ];
+    }
+    
+    private function fetchCompleteOwnership($secretType, $contractAddress, $tokenId, $fetchAllPages = true) {
+        $allWallets = [];
+        $currentPage = 0;
+        $hasNextPage = true;
+        $paginationInfo = null;
+        
+        while ($hasNextPage) {
+            $pageData = $this->getWalletsByNFT($secretType, $contractAddress, $tokenId, $currentPage, 50);
+            
+            $allWallets = array_merge($allWallets, $pageData['wallets']);
+            $paginationInfo = $pageData['pagination'];
+            
+            if (!$fetchAllPages || !($pageData['pagination']['hasNextPage'] ?? false)) {
+                $hasNextPage = false;
+            } else {
+                $currentPage++;
+            }
+        }
+        
+        return [
+            'wallets' => $allWallets,
+            'pagination' => $paginationInfo
+        ];
+    }
+    
+    private function analyzeDistribution($wallets) {
+        if (empty($wallets)) {
+            return [
+                'type' => 'no_holders',
+                'concentration' => 0,
+                'giniCoefficient' => 0,
+                'topHolders' => [],
+                'distributionTiers' => []
+            ];
+        }
+        
+        // Calculate total supply
+        $totalSupply = array_sum(array_column($wallets, 'tokenBalance'));
+        
+        // Sort wallets by balance (descending)
+        usort($wallets, function($a, $b) {
+            return $b['tokenBalance'] - $a['tokenBalance'];
+        });
+        
+        // Calculate concentration metrics
+        $top1Percentage = $totalSupply > 0 ? ($wallets[0]['tokenBalance'] / $totalSupply) * 100 : 0;
+        
+        $top5Count = min(5, count($wallets));
+        $top5Supply = array_sum(array_slice(array_column($wallets, 'tokenBalance'), 0, $top5Count));
+        $top5Percentage = $totalSupply > 0 ? ($top5Supply / $totalSupply) * 100 : 0;
+        
+        // Calculate Gini coefficient
+        $giniCoefficient = $this->calculateGiniCoefficient(array_column($wallets, 'tokenBalance'));
+        
+        // Categorize distribution
+        $distributionType = $this->categorizeDistribution(count($wallets), $top1Percentage, $giniCoefficient);
+        
+        // Create distribution tiers
+        $distributionTiers = $this->createDistributionTiers($wallets, $totalSupply);
+        
+        return [
+            'type' => $distributionType,
+            'totalHolders' => count($wallets),
+            'totalSupply' => $totalSupply,
+            'concentration' => [
+                'top1Holder' => [
+                    'percentage' => $top1Percentage,
+                    'balance' => $wallets[0]['tokenBalance'] ?? 0,
+                    'address' => $wallets[0]['walletAddress'] ?? null
+                ],
+                'top5Holders' => [
+                    'percentage' => $top5Percentage,
+                    'totalBalance' => $top5Supply,
+                    'count' => $top5Count
+                ]
+            ],
+            'giniCoefficient' => $giniCoefficient,
+            'topHolders' => array_slice(array_map(function($wallet, $index) use ($totalSupply) {
+                return [
+                    'rank' => $index + 1,
+                    'walletAddress' => $wallet['walletAddress'],
+                    'balance' => $wallet['tokenBalance'],
+                    'percentage' => $totalSupply > 0 ? ($wallet['tokenBalance'] / $totalSupply) * 100 : 0
+                ];
+            }, $wallets, array_keys($wallets)), 0, 10),
+            'distributionTiers' => $distributionTiers
+        ];
+    }
+    
+    private function generateOwnershipInsights($wallets) {
+        $insights = [];
+        
+        if (empty($wallets)) {
+            $insights[] = [
+                'type' => 'no_ownership',
+                'severity' => 'info',
+                'message' => 'This token has no current holders (may be burned or not yet minted)'
+            ];
+            return $insights;
+        }
+        
+        if (count($wallets) === 1) {
+            $insights[] = [
+                'type' => 'single_owner',
+                'severity' => 'info',
+                'message' => 'This is a true NFT with a single owner',
+                'data' => [
+                    'owner' => $wallets[0]['walletAddress'],
+                    'balance' => $wallets[0]['tokenBalance']
+                ]
+            ];
+        } else {
+            $insights[] = [
+                'type' => 'multiple_owners',
+                'severity' => 'info',
+                'message' => "This token is distributed among " . count($wallets) . " holders",
+                'data' => ['holderCount' => count($wallets)]
+            ];
+        }
+        
+        // Analyze concentration
+        $totalSupply = array_sum(array_column($wallets, 'tokenBalance'));
+        $maxBalance = max(array_column($wallets, 'tokenBalance'));
+        $concentrationRatio = $totalSupply > 0 ? ($maxBalance / $totalSupply) * 100 : 0;
+        
+        if ($concentrationRatio > 50) {
+            $insights[] = [
+                'type' => 'high_concentration',
+                'severity' => 'warning',
+                'message' => "High concentration: " . round($concentrationRatio, 1) . "% held by single address",
+                'data' => ['concentrationRatio' => $concentrationRatio]
+            ];
+        } elseif ($concentrationRatio < 10 && count($wallets) > 5) {
+            $insights[] = [
+                'type' => 'well_distributed',
+                'severity' => 'positive',
+                'message' => 'Token is well distributed among holders',
+                'data' => ['concentrationRatio' => $concentrationRatio]
+            ];
+        }
+        
+        // Check for equal distribution
+        $uniqueBalances = array_unique(array_column($wallets, 'tokenBalance'));
+        if (count($uniqueBalances) === 1 && count($wallets) > 1) {
+            $insights[] = [
+                'type' => 'equal_distribution',
+                'severity' => 'info',
+                'message' => 'All holders have equal token amounts',
+                'data' => ['balance' => $wallets[0]['tokenBalance']]
+            ];
+        }
+        
+        return $insights;
+    }
+    
+    private function generateOwnershipSummary($wallets) {
+        $totalSupply = array_sum(array_column($wallets, 'tokenBalance'));
+        $averageBalance = count($wallets) > 0 ? $totalSupply / count($wallets) : 0;
+        
+        return [
+            'totalHolders' => count($wallets),
+            'totalSupply' => $totalSupply,
+            'averageBalance' => round($averageBalance, 2),
+            'isNFT' => count($wallets) <= 1 && $totalSupply <= 1,
+            'isFungible' => count($wallets) > 1 || $totalSupply > 1,
+            'lastUpdated' => date('c')
+        ];
+    }
+    
+    private function determineTokenType($wallets) {
+        $totalSupply = array_sum(array_column($wallets, 'tokenBalance'));
+        
+        if (empty($wallets)) return 'burned_or_unminted';
+        if (count($wallets) === 1 && $totalSupply === 1) return 'true_nft';
+        if (count($wallets) === 1 && $totalSupply > 1) return 'single_holder_fungible';
+        if (count($wallets) > 1) return 'multi_holder_fungible';
+        
+        return 'unknown';
+    }
+    
+    private function createDistributionTiers($sortedWallets, $totalSupply) {
+        $tiers = [
+            'whales' => ['threshold' => 0.1, 'holders' => [], 'totalBalance' => 0],
+            'large' => ['threshold' => 0.05, 'holders' => [], 'totalBalance' => 0],
+            'medium' => ['threshold' => 0.01, 'holders' => [], 'totalBalance' => 0],
+            'small' => ['threshold' => 0, 'holders' => [], 'totalBalance' => 0]
+        ];
+        
+        foreach ($sortedWallets as $wallet) {
+            $percentage = $wallet['tokenBalance'] / $totalSupply;
+            
+            if ($percentage >= 0.1) {
+                $tiers['whales']['holders'][] = $wallet;
+                $tiers['whales']['totalBalance'] += $wallet['tokenBalance'];
+            } elseif ($percentage >= 0.05) {
+                $tiers['large']['holders'][] = $wallet;
+                $tiers['large']['totalBalance'] += $wallet['tokenBalance'];
+            } elseif ($percentage >= 0.01) {
+                $tiers['medium']['holders'][] = $wallet;
+                $tiers['medium']['totalBalance'] += $wallet['tokenBalance'];
+            } else {
+                $tiers['small']['holders'][] = $wallet;
+                $tiers['small']['totalBalance'] += $wallet['tokenBalance'];
+            }
+        }
+        
+        // Add percentages and counts
+        foreach ($tiers as &$tier) {
+            $tier['percentage'] = $totalSupply > 0 ? ($tier['totalBalance'] / $totalSupply) * 100 : 0;
+            $tier['count'] = count($tier['holders']);
+        }
+        
+        return $tiers;
+    }
+    
+    private function calculateGiniCoefficient($balances) {
+        if (empty($balances) || count($balances) <= 1) {
+            return 0.0;
+        }
+        
+        sort($balances);
+        $n = count($balances);
+        $total = array_sum($balances);
+        
+        if ($total == 0) {
+            return 0.0;
+        }
+        
+        $numerator = 0;
+        for ($i = 0; $i < $n; $i++) {
+            $numerator += (2 * ($i + 1) - $n - 1) * $balances[$i];
+        }
+        
+        return $numerator / ($n * $total);
+    }
+    
+    private function categorizeDistribution($holderCount, $top1Percentage, $giniCoefficient) {
+        if ($holderCount == 0) return 'no_holders';
+        if ($holderCount == 1) return 'single_holder';
+        if ($top1Percentage > 80) return 'highly_concentrated';
+        if ($top1Percentage > 50) return 'concentrated';
+        if ($giniCoefficient > 0.7) return 'unequal';
+        if ($giniCoefficient < 0.3) return 'well_distributed';
+        return 'moderately_distributed';
+    }
+    
+    private function recordOwnershipSnapshot($nftKey, $wallets) {
+        if (!isset($this->ownershipHistory[$nftKey])) {
+            $this->ownershipHistory[$nftKey] = [];
+        }
+        
+        $history = &$this->ownershipHistory[$nftKey];
+        $history[] = [
+            'timestamp' => date('c'),
+            'holderCount' => count($wallets),
+            'totalSupply' => array_sum(array_column($wallets, 'tokenBalance')),
+            'topHolder' => !empty($wallets) ? 
+                array_reduce($wallets, function($max, $wallet) {
+                    return ($wallet['tokenBalance'] > $max['tokenBalance']) ? $wallet : $max;
+                }, $wallets[0]) : null
+        ];
+        
+        // Keep only last 50 snapshots
+        if (count($history) > 50) {
+            array_shift($history);
+        }
+    }
+    
+    private function isCacheValid($key) {
+        return isset($this->cache[$key]) && 
+               isset($this->cacheExpiry[$key]) && 
+               time() < $this->cacheExpiry[$key];
+    }
+    
+    public function getOwnershipHistory($secretType, $contractAddress, $tokenId) {
+        $nftKey = "{$secretType}:{$contractAddress}:{$tokenId}";
+        return $this->ownershipHistory[$nftKey] ?? [];
+    }
+    
+    public function generateOwnershipReport($secretType, $contractAddress, $tokenId) {
+        $nftKey = "{$secretType}:{$contractAddress}:{$tokenId}";
+        $history = $this->getOwnershipHistory($secretType, $contractAddress, $tokenId);
+        
+        return [
+            'nft' => [
+                'secretType' => $secretType,
+                'contractAddress' => $contractAddress,
+                'tokenId' => $tokenId
+            ],
+            'currentStatus' => $this->isCacheValid($nftKey) ? 'cached' : 'not_cached',
+            'historyLength' => count($history),
+            'lastAnalyzed' => !empty($history) ? end($history)['timestamp'] : null,
+            'trends' => $this->analyzeOwnershipTrends($history)
+        ];
+    }
+    
+    private function analyzeOwnershipTrends($history) {
+        if (count($history) < 2) {
+            return ['trend' => 'insufficient_data'];
+        }
+        
+        $recent = end($history);
+        $previous = $history[count($history) - 2];
+        
+        $holderChange = $recent['holderCount'] - $previous['holderCount'];
+        $supplyChange = $recent['totalSupply'] - $previous['totalSupply'];
+        
+        return [
+            'trend' => $holderChange > 0 ? 'increasing_holders' : 
+                      ($holderChange < 0 ? 'decreasing_holders' : 'stable_holders'),
+            'holderChange' => $holderChange,
+            'supplyChange' => $supplyChange,
+            'timespan' => strtotime($recent['timestamp']) - strtotime($previous['timestamp'])
+        ];
+    }
+    
+    public function clearCache($pattern = null) {
+        if ($pattern) {
+            foreach (array_keys($this->cache) as $key) {
+                if (strpos($key, $pattern) !== false) {
+                    unset($this->cache[$key]);
+                    unset($this->cacheExpiry[$key]);
+                }
+            }
+        } else {
+            $this->cache = [];
+            $this->cacheExpiry = [];
+        }
+    }
+}
+
+// Usage
+$ownershipAnalyzer = new NFTOwnershipAnalyzer('YOUR_API_KEY');
+
+try {
+    // Simple ownership analysis
+    $ownership = $ownershipAnalyzer->analyzeNFTOwnership(
+        'MATIC',
+        '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+        '23',
+        [
+            'includeAnalytics' => true,
+            'fetchAllPages' => true,
+            'trackHistory' => true
+        ]
+    );
+    
+    echo "NFT Ownership Analysis: " . json_encode($ownership, JSON_PRETTY_PRINT) . "\n";
+    echo "Distribution Analysis: " . json_encode($ownership['distribution'], JSON_PRETTY_PRINT) . "\n";
+    echo "Ownership Insights: " . json_encode($ownership['insights'], JSON_PRETTY_PRINT) . "\n";
+    
+    // Generate ownership report
+    $report = $ownershipAnalyzer->generateOwnershipReport(
+        'MATIC',
+        '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+        '23'
+    );
+    
+    echo "Ownership Report: " . json_encode($report, JSON_PRETTY_PRINT) . "\n";
+    
+    // Get ownership history
+    $history = $ownershipAnalyzer->getOwnershipHistory(
+        'MATIC',
+        '0xb3ccba9310e123e1d5b15b76bbc0165e410f492e',
+        '23'
+    );
+    
+    echo "Ownership History: " . json_encode($history, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**NFT Ownership Querying Best Practices:**
+
+1. **Pagination Handling** - Always handle pagination properly when fetching complete ownership data
+2. **Distribution Analysis** - Implement comprehensive distribution analysis to understand token economics
+3. **Caching Strategy** - Use intelligent caching to improve performance for frequently queried tokens
+4. **Historical Tracking** - Track ownership changes over time for trend analysis
+5. **Concentration Metrics** - Calculate concentration ratios and Gini coefficients for distribution insights
+6. **Error Handling** - Implement robust error handling for network issues and invalid token IDs
+7. **Batch Processing** - Process multiple tokens efficiently with proper concurrency controls
+8. **Insights Generation** - Generate actionable insights about ownership patterns and distribution health
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Retrieve NFT Details" href="/guides/nft-api/querying/retrieve-nft-details" icon="gem">
+    Get detailed information about specific NFTs
+  </Card>
+  <Card title="Retrieve NFTs by Wallet" href="/guides/nft-api/querying/retrieve-nfts-by-wallet" icon="wallet">
+    Find all NFTs owned by specific wallets
+  </Card>
+  <Card title="NFT Contract Information" href="/guides/nft-api/querying/retrieve-nft-contract-info" icon="file-contract">
+    Get detailed contract information and statistics
+  </Card>
+  <Card title="API Reference" href="/api-reference/Wallet-API/non-fungibles/get-wallets-that-contain-specific-nfts" icon="book">
+    Explore the complete NFT ownership querying API documentation
+  </Card>
+</CardGroup>

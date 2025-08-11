@@ -1,0 +1,2487 @@
+openapi: 3.1.0
+info:
+  title: Token API
+  description: Token API v3 Dcumentation.
+  contact:
+    name: Venly
+    url: https://venly.io
+    email: contact@venly.io
+  version: 0.33.0
+servers:
+  - url: https://token-api-sandbox.venly.io/
+    description: Sandbox Environment
+  - url: https://token-api.venly.io/
+    description: Production Environment
+paths:
+  /actuator/health:
+    get:
+      tags:
+        - Token-API Health
+      summary: Check Health
+      description: This endpoint is used to check the current health of the **NFT-API**. It returns the API health status as either **UP** or **DOWN**.
+      operationId: healthCheckTokenApiV3
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  status:
+                    type: string
+                    description: "Indicates the status of the API service as either `UP` or `DOWN`."
+                    example: "UP "
+      security:
+        - OAuth2: []
+  /api/v3/erc20/chains:
+    get:
+      tags:
+        - Get Supported Chains
+      summary: Get Supported Chains
+      description: This endpoint is used to retreive the supported chains for the Token API.
+      operationId: getSupportedChainsErc20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  result:
+                    type: array
+                    items:
+                      type: string
+                    examples:
+                      - ETHEREUM
+                      - MATIC
+                      - AVAC
+                      - BSC
+                      - ARBITRUM
+      security:
+        - OAuth2: []
+  /api/v3/erc20/contracts/deployments:
+    post:
+      tags:
+        - ERC20 Contract
+      summary: 'Create contract'
+      description: "This endpoint is used to create an ERC20 contract."
+      operationId: deployErc20Contract
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erc20DeployContractCommand'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/Erc20DeployedContractView'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - manage:contracts
+  /api/v3/erc20/contracts/deployments/{deploymentId}:
+    get:
+      tags:
+        - ERC20 Contract
+      summary: 'Check token contract status'
+      description: "This endpoint is used to check the status of the token contract creation request."
+      operationId: getErc20ContractDeployment
+      parameters:
+        - name: deploymentId
+          in: path
+          required: true
+          description: "To track the status of a token contract creation. It is in the response body of the create contract endpoint as `result.id`."
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/Erc20DeployedContractView'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - view:contracts
+  /api/v3/erc20/tokens/mints:
+    post:
+      tags:
+        - Mint ERC20 Tokens
+      summary: 'Mint ERC20 tokens'
+      description: "This endpoint is used to mint and send ERC20 tokens."
+      operationId: mintErc20Tokens
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Erc20MintTokensCommand'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/Erc20MintTokensView'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - manage:tokens
+    get:
+      tags:
+        - Mint ERC20 Tokens
+      summary: 'Get All ERC20 Token Mints'
+      description: 'This endpoint is used to retrieve all of your ERC20 token mint requests.'
+      operationId: getAllErc20Mints
+      parameters:
+        - name: mintIds
+          in: query
+          description: "Filter results by `mintId`. Multiple mintIds can be added"
+          required: false
+          schema:
+            uniqueItems: true
+            type: array
+            items:
+              type: string
+        - name: status
+          in: query
+          description: "Filter results by status of mints"
+          required: false
+          schema:
+            type: string
+            enum:
+              - SUCCEEDED
+              - PENDING
+              - FAILED
+        - name: contractAddress
+          in: query
+          description: "Filter results by contract address"
+          required: false
+          schema:
+            type: string
+        - name: destinationAddress
+          in: query
+          description: "Filter results by the destination wallet address. Partial match also works."
+          required: false
+          schema:
+            type: string
+        - name: companyId
+          in: query
+          description: "Query token mints linked to your company by specifying the company ID"
+          required: false
+          schema:
+            type: string
+        - name: createdOnFrom
+          in: query
+          description: "Filter results by the start time of the interval in which the token mint request was created"
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: createdOnTo
+          in: query
+          description: "Filter results by the end time of the interval in which the token mint request was created"
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: sortOn
+          in: query
+          description: "The name of the parameter that you want to sort on"
+          required: false
+          schema:
+            type: string
+            enum:
+              - createdOn
+        - name: sortOrder
+          in: query
+          description: "Indication to sort in ascending or descending order"
+          required: false
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: page
+          in: query
+          description: "The current page number"
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: size
+          in: query
+          description: "Number of items per page"
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllTokenMintsErc20'
+                
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - view:tokens
+  /api/v3/erc20/tokens/mints/{mintId}:
+    get:
+      tags:
+        - Mint ERC20 Tokens
+      summary: 'Check token mint status'
+      description: "This endpoint is used to check the status of a token mint request."
+      operationId: getErc20TokenMintStatus
+      parameters:
+        - name: mintId
+          in: path
+          required: true
+          description: "To track the status of token mint. It is in the response body of the mint tokens endpoint as `result.mints.id`."
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/Erc20TokenMintDetailedView'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - view:tokens
+  /api/v3/erc20/contracts:
+    get:
+      tags:
+        - ERC20 Contract
+      summary: 'Get all contracts'
+      description: "This endpoint fetches all of your token contracts."
+      operationId: getAllErc20Contracts
+      parameters:
+        - name: companyId
+          in: query
+          description: "Query contracts linked to your company by specifying the company ID"
+          required: false
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Erc20TokenContractView'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - view:contracts
+  /api/v3/erc20/contracts/{chain}/{contractAddress}:
+    get:
+      tags:
+        - ERC20 Contract
+      summary: 'Get contracts by chain and contract address'
+      description: "This endpoint is used to get a specific token contract by blockchain and contract address."
+      operationId: getErc20Contract
+      parameters:
+        - name: chain
+          in: path
+          description: "The blockchain of the token contract."
+          required: true
+          schema:
+            type: string
+            enum:
+              - MATIC
+              - ETHEREUM
+              - AVAC
+              - ARBITRUM
+              - BSC 
+        - name: contractAddress
+          in: path
+          description: "The token contract address whose details you want to fetch."
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/Erc20TokenContractView'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - view:contracts
+    delete:
+      tags:
+        - ERC20 Contract
+      summary: 'Archive Contract'
+      description: "This endpoint allows you to archive an ERC20 contract. When you archive an ERC20 contract, it will be removed from all API responses, rendering it inaccessible via any API calls. Furthermore, you cannot mint new tokens under the archived contract. All minted ERC20 tokens associated with the archived contract will also be archived and cannot be accessed via API calls. However, the ERC20 contract will remain on the blockchain."
+      operationId: archiveErc20TokenContract
+      parameters:
+        - name: chain
+          in: path
+          required: true
+          description: "The blockchain of the token contract."
+          schema:
+            type: string
+            enum:
+              - MATIC
+              - ETHEREUM
+              - AVAC
+              - ARBITRUM
+              - BSC 
+        - name: contractAddress
+          in: path
+          description: "The token contract address that you want to delete."
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Token contract deleted successfully.
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not a valid json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - manage:contracts
+  /api/v3/erc20/contracts/{chain}/{contractAddress}/owner:
+    put:
+      tags:
+        - ERC20 Contract
+      summary: "Update token contract owner"
+      description: "This endpoint is used to update the owner of a token contract."
+      operationId: updateOwner
+      parameters:
+        - name: chain
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - MATIC
+              - ETHEREUM
+              - AVAC
+              - ARBITRUM
+              - BSC 
+        - name: contractAddress
+          in: path
+          required: true
+          schema:
+            type: string
+            description: "The token contract address for which to update the owner."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContractOwnerCommand'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/TransactionHashResult'
+        '400':
+          description: When the request contains invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: validation-error
+                    message: A descriptive error message
+        '401':
+          description: When the user is not authorized to access the resource
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: UNAUTHORIZED
+                    message: Access is denied.
+        '403':
+          description: When a user doesn't have proper security authority
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: FORBIDDEN
+                    message: User doesn't have proper authority to access this resource
+        '404':
+          description: When a resource is not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: NOT_FOUND
+        '405':
+          description: When the HttpMethod is not supported
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: METHOD_NOT_SUPPORTED
+                    message: HttpMethod is not supported. Supported methods are [..]
+        '415':
+          description: Usually when the input is not valid JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INVALID_MEDIA_TYPE
+        '500':
+          description: When there's an unexpected error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ErrorBody'
+                  result:
+                    type: object
+              example:
+                success: false
+                errors:
+                  - code: INTERNAL_SERVER_ERROR
+                    message: A description of the error (optional)
+      security:
+        - OAuth2:
+            - manage:contracts
+  /api/v3/wallets:
+    get:
+      tags:
+        - Company Wallets
+      summary: 'Get All Company Wallets'
+      description: "This endpoint retrieves all company minter wallets."
+      operationId: getCompanyWallets
+      parameters:
+        - name: pageableDto
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/PageableDto'
+        - name: includeBalance
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                properties:
+                  success:
+                    type: boolean
+                    default: true
+                  result:
+                    $ref: '#/components/schemas/PageWalletBalanceDto'
+      security:
+        - OAuth2:
+            - manage:minter-wallet
+  /api/v3/wallets/{chain}:
+    get:
+      tags:
+        - Company Wallets
+      summary: 'Get Company Wallets by Chain'
+      description: "This endpoint retrieves company minter wallets by blockchain."
+      operationId: getCompanyWalletByChain_1
+      parameters:
+        - name: chain
+          in: path
+          required: true
+          description: "The blockchain to filter the result by"
+          schema:
+            type: string
+            enum:
+              - AVAC
+              - BSC
+              - ETHEREUM
+              - MATIC
+              - ARBITRUM
+        - name: pageableDto
+          in: query
+          required: true
+          description: "Pagination filter for the response"
+          schema:
+            $ref: '#/components/schemas/PageableDto'
+        - name: includeBalance
+          in: query
+          required: false
+          description: "This flag indicates to include the balance of company minter wallets in the response or not. Note that setting it to `true` will impact the endpoint's response time if you have too many company minter wallets."
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageWalletBalanceDto'
+      security:
+        - OAuth2:
+            - manage:minter-wallet
+  /api/v3/wallets/{chain}/{address}:
+    delete:
+      tags:
+        - Company Wallets
+      operationId: deleteMinterWallet
+      summary: "Delete Company Wallet"
+      description: "This endpoint deletes a company wallet by blockchain and wallet address."
+      parameters:
+        - name: chain
+          description: "The blockchain of the company wallet."
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - AVAC
+              - BSC
+              - ETHEREUM
+              - MATIC
+              - ARBITRUM
+        - name: address
+          description: "This is the wallet `address` of the company wallet."
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelope'
+      security:
+        - OAuth2:
+            - manage:minter-wallet
+components:
+  schemas:
+    PageWalletBalanceDto:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/WalletBalanceDto'
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: '#/components/schemas/Sort'
+        pageable:
+          $ref: '#/components/schemas/PageableObject'
+        numberOfElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: '#/components/schemas/SortObject'
+        unpaged:
+          type: boolean
+        paged:
+          type: boolean
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        unsorted:
+          type: boolean
+        sorted:
+          type: boolean
+    WalletBalanceDto:
+      type: object
+      properties:
+        chain:
+          type: string
+          enum:
+            - AVAC
+            - BSC
+            - ETHEREUM
+            - MATIC
+            - HEDERA
+            - ARBITRUM
+        address:
+          type: string
+        balance:
+          type: number
+        symbol:
+          type: string
+        rawBalance:
+          type: string
+        decimals:
+          type: integer
+          format: int32
+    PageableDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+    Erc20MintTokensCommand:
+      required:
+        - chain
+        - contractAddress
+      type: object
+      properties:
+        chain:
+          type: string
+          description: "The blockchain of the token contract."
+          enum:
+            - MATIC
+            - ETHEREUM
+            - AVAC
+            - ARBITRUM
+            - BSC 
+        contractAddress:
+          type: string
+          description: "The token contract address."
+        destinations:
+          type: array
+          description: "An array of objects which include the wallet addresses where token are to be sent and the amount of tokens to send. You can define multiple destinations."
+          items:
+            $ref: '#/components/schemas/Erc20TokenDestination'
+    Erc20TokenDestination:
+      required:
+        - address
+        - amount
+      type: object
+      properties:
+        address:
+          type: string
+          description: "Address of the destination wallet where minted ERC20 tokens will be sent."
+        amount:
+          type: integer
+          description: "Amount of ERC20 tokens to be minted and sent to specified wallet address."
+    Erc20MintTokensView:
+      type: object
+      properties:
+        mints:
+          type: array
+          description: "Details of the token mint request."
+          items:
+            $ref: '#/components/schemas/Erc20TokenMintView'
+        contract:
+          description: "Details of the token contract under which the token is minted."
+          $ref: '#/components/schemas/Erc20TokenContractData'
+    Erc20TokenContractData:
+      type: object
+      properties:
+        chain:
+          type: string
+          description: "The blockchain of the token contract"
+        address:
+          type: string
+          description: "The token contract address."
+        name:
+          type: string
+          description: "The token contract name."
+        symbol:
+          type: string
+          description: "The token contract symbol."
+        maxSupply:
+          type: integer
+          description: "The maximum number of tokens allowed to be minted under the token contract."
+        burnable:
+          type: boolean
+          description: "Indication if the token contract is set to burnable or not."
+        owner:
+          type: string
+          description: "The wallet address that has admin rights on the token contract."
+        type:
+          type: string
+          description: "The type of token contract."
+          enum:
+            - ERC_20
+            - ERC_1155
+    Erc20TokenMintView:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The mint UUID used to track the token mint request."
+        createdOn:
+          type: string
+          format: date-time
+          description: "The date-time when the token was minted."
+        status:
+          type: string
+          description: "The on-chain token mint status."
+          enum:
+            - PENDING
+            - SUCCEEDED
+            - FAILED
+        transactionHash:
+          type: string
+          description: "The transaction hash for the token mint."
+        destination:
+          $ref: '#/components/schemas/Erc20TokenDestination'
+    Erc20DeployContractCommand:
+      required:
+        - chain
+        - name
+      type: object
+      properties:
+        chain:
+          type: string
+          description: "The blockchain of the token contract."
+          enum:
+            - MATIC
+            - ETHEREUM
+            - AVAC
+            - ARBITRUM
+            - BSC 
+        name:
+          type: string
+          description: "The name of the token contract."
+        symbol:
+          type: string
+          description: "The symbol for your token contract. (generated based on name if empty)"
+          examples:
+            - "INFT"
+            - "MNM"
+            - "YEET"
+        maxSupply:
+          type: integer
+          description: "The maximum amount of tokens allowed to be minted."
+        burnable:
+          type: boolean
+          description: "Indication wether the tokens will be burnable or not. Burning tokens is the act of sending tokens to a wallet that cannot be accessed"
+        owner:
+          type: string
+          description: "The wallet address who will be the owner of this token contract. The owner will have admin rights on the token contract."
+        companyId:
+          type: string
+          description: "You can optionally provide the `companyId` to specify for which company the contract should be created."
+    Erc20DeployedContractView:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The deploment UUID of the token contract."
+        chain:
+          type: string
+          description: "The blockchain of the token contract."
+          enum:
+            - MATIC
+            - ETHEREUM
+            - AVAC
+            - ARBITRUM
+            - BSC 
+        address:
+          type: string
+          description: "The token contract address."
+        name:
+          type: string
+          description: "The token contract name."
+        symbol:
+          type: string
+          description: "The token contract symbol."
+        maxSupply:
+          type: integer
+          description: "The maximum number of tokens allowed to be minted."
+        burnable:
+          type: boolean
+          description: "Indication if the token contract is burnable or not."
+        owner:
+          type: string
+          description: "The owner wallet address that has admin right on the token contract."
+        transactionHash:
+          type: string
+          description: "The transaction hash of the token contract deployment."
+        status:
+          type: string
+          description: "The current status of the token contract deployment."
+          enum:
+            - PENDING
+            - SUCCEEDED
+            - FAILED
+    TokenContractMetadataView:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        symbol:
+          type: string
+        externalUrl:
+          type: string
+        image:
+          type: string
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeValueDto'
+        external_link:
+          type: string
+    TypeValueDto:
+      type: object
+      properties:
+        type:
+          type: string
+        value:
+          type: string
+    EvmMetadataDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        symbol:
+          type: string
+        image:
+          type: string
+        imagePreview:
+          type: string
+        imageThumbnail:
+          type: string
+        backgroundColor:
+          type: string
+        background_color:
+          type: string
+        animationUrl:
+          type: string
+        animation_url:
+          type: string
+        externalUrl:
+          type: string
+        external_url:
+          type: string
+        youtubeUrl:
+          type: string
+        youtube_url:
+          type: string
+        animationUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeValueDto'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataAttribute'
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataAttribute'
+        contract:
+          $ref: '#/components/schemas/MetadataContractDto'
+        asset_contract:
+          $ref: '#/components/schemas/MetadataContractDto'
+        fungible:
+          type: boolean
+    HederaMetadataDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        symbol:
+          type: string
+        image:
+          type: string
+        imagePreview:
+          type: string
+        imageThumbnail:
+          type: string
+        backgroundColor:
+          type: string
+        background_color:
+          type: string
+        animationUrl:
+          type: string
+        animation_url:
+          type: string
+        externalUrl:
+          type: string
+        external_url:
+          type: string
+        youtubeUrl:
+          type: string
+        youtube_url:
+          type: string
+        animationUrls:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeValueDto'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataAttribute'
+        properties:
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataAttribute'
+        contract:
+          $ref: '#/components/schemas/MetadataContractDto'
+        asset_contract:
+          $ref: '#/components/schemas/MetadataContractDto'
+        fungible:
+          type: boolean
+    ImxMetadataDto:
+      type: object
+      properties:
+        empty:
+          type: boolean
+      additionalProperties:
+        type: object
+    MetadataAttribute:
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        maxValue:
+          type: string
+        displayType:
+          type: string
+        display_type:
+          type: string
+        traitType:
+          type: string
+        trait_type:
+          type: string
+    MetadataContractDto:
+      type: object
+      properties:
+        address:
+          type: string
+        name:
+          type: string
+        symbol:
+          type: string
+        image:
+          type: string
+        imageUrl:
+          type: string
+        image_url:
+          type: string
+        description:
+          type: string
+        externalLink:
+          type: string
+        external_link:
+          type: string
+        externalUrl:
+          type: string
+        external_url:
+          type: string
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/TypeValueDto'
+        type:
+          type: string
+    MetadataDto:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/EvmMetadataDto'
+        - $ref: '#/components/schemas/HederaMetadataDto'
+        - $ref: '#/components/schemas/ImxMetadataDto'
+    Erc20TokenMintDetailedView:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "The mint UUID used to track the token mint request."
+        createdOn:
+          type: string
+          format: date-time
+          description: "The date-time the token mint was created."
+        status:
+          type: string
+          description: "The on-chain status of the token mint request."
+          enum:
+            - PENDING
+            - SUCCEEDED
+            - FAILED
+        transactionHash:
+          type: string
+          description: "The transaction hash of the token mint."
+        destination:
+          $ref: '#/components/schemas/Erc20TokenDestination'
+        contract:
+          $ref: '#/components/schemas/Erc20TokenContractData'
+    Erc20TokenContractView:
+      type: object
+      properties:
+        chain:
+          type: string
+          description: "The blockchain of the token contract."
+          enum:
+            - MATIC
+            - ETHEREUM
+            - AVAC
+            - ARBITRUM
+            - BSC 
+        address:
+          type: string
+          description: "The token contract address."
+        name:
+          type: string
+          description: "The token contract name."
+        symbol:
+          type: string
+          description: "The token contract symbol."
+        maxSupply:
+          type: integer
+          description: "The maximum number of token allowed to be minted under the token contract."
+        burnable:
+          type: boolean
+          description: "Indication if the token contract is set to burnable or not."
+        owner:
+          type: string
+          description: "The owner wallet address that has admin rights on the token contract."
+        onChainStatus:
+          type: string
+          description: "The current on-chain status of the deployed token contract."
+          enum:
+            - QUEUED
+            - PROCESSING
+            - PENDING
+            - MINT_PENDING
+            - MINT_SUCCEEDED
+            - SUCCEEDED
+            - MINT_FAILED
+            - FAILED
+    ResponseEnvelope:
+      type: object
+      properties:
+        success:
+          type: boolean
+        pagination:
+          $ref: '#/components/schemas/PaginationDto'
+        sort:
+          $ref: '#/components/schemas/SortDto'
+        result:
+          type: object
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorBody'
+    PaginationDto:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        numberOfPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int64
+        hasNextPage:
+          type: boolean
+        hasPreviousPage:
+          type: boolean
+    ErrorBody:
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+    SortDto:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/SortOrderDto'
+    SortOrderDto:
+      type: object
+      properties:
+        property:
+          type: string
+        direction:
+          type: string
+          enum:
+            - ASC
+            - DESC
+    UpdateContractOwnerCommand:
+      type: object
+      required:
+        - owner
+      properties:
+        owner:
+          type: string
+          description: "Wallet address of the new owner for the token contract."
+    TransactionHashResult:
+      type: object
+      properties:
+        transactionHash:
+          type: string
+          description: Hash of the blockchain transaction
+    AllTokenMintsErc20:
+      type: object
+      properties:
+        success:
+          type: boolean
+          default: true
+        pagination:
+          type: object
+          properties:
+            pageNumber:
+              type: integer
+              format: int32
+              description: "Current page number."
+            pageSize:
+              type: integer
+              format: int32
+              description: "Number of items per page."
+            numberOfPages:
+              type: integer
+              format: int32
+              description: "Total number of pages."
+            numberOfElements:
+              type: integer
+              format: int64
+              description: "Total number of items across all pages."
+            hasNextPage:
+              type: boolean
+              description: "Indicates if there is a next page."
+            hasPreviousPage:
+              type: boolean
+              description: "Indicates if there is a previous page."
+        sort:
+          type: object
+          properties:
+            orders:
+              type: array
+              items:
+                type: object
+                properties:
+                  property:
+                    type: string
+                    description: "The property by which results are sorted"
+                  direction:
+                    type: string
+                    description: "Sorting direction"
+                    enum:
+                      - ASC
+                      - DESC
+        result:
+          type: object
+          properties:
+            id:
+              type: string
+              description: "Unique identifier or Mint ID."
+            chain:
+              type: string
+              description: "Blockchain of the token mint"
+              enum:
+                - AVAC
+                - BSC
+                - ETHEREUM
+                - MATIC
+                - ARBITRUM
+            contractAddress:
+              type: string
+              description: "The contract address."
+            createdOn:
+              type: string
+              format: date-time
+              description: "Timestamp when the transaction was created."
+            status:
+              type: string
+              description: "Current status of the transaction."
+              enum:
+                - PENDING
+                - SUCCEEDED
+                - FAILED
+            transactionHash:
+              type: string
+              description: "The transaction hash."
+            destination:
+              type: object
+              properties:
+                address:
+                  type: string
+                  description: "Address of the destination wallet where minted ERC20 tokens are sent."
+                amount:
+                  type: integer
+                  description: "Amount of ERC20 tokens minted and sent to specified wallet address."
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: >-
+            https://login-staging.venly.io/auth/realms/Arkane/protocol/openid-connect/token
+          scopes:
+            openid: openid
