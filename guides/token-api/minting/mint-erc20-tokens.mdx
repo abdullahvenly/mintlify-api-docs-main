@@ -1,0 +1,564 @@
+---
+title: "Mint ERC20 Tokens"
+description: "Learn how to mint and distribute ERC20 tokens to multiple wallet addresses or email recipients"
+icon: "coins"
+---
+
+<Info>
+**Token Minting:** Create and distribute ERC20 tokens to wallet addresses or email recipients in batch operations.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is Token Minting?
+
+Token minting is the process of creating new ERC20 tokens and distributing them to specified wallet addresses or email recipients. This is essential for token distribution, rewards, payments, and building token economies.
+
+<CardGroup cols={2}>
+  <Card title="Batch Distribution" icon="users">
+    Mint tokens to multiple recipients simultaneously
+  </Card>
+  <Card title="Flexible Recipients" icon="envelope">
+    Send to wallet addresses or email addresses
+  </Card>
+  <Card title="Precise Amounts" icon="calculator">
+    Specify exact token amounts for each recipient
+  </Card>
+  <Card title="Real-time Tracking" icon="chart-line">
+    Monitor minting status and completion
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Deployed Contract" icon="file-contract">
+    You need a successfully deployed ERC20 token contract
+  </Step>
+  <Step title="Contract Address" icon="link">
+    Have your contract address from the deployment response
+  </Step>
+  <Step title="Sufficient Supply" icon="chart-bar">
+    Ensure your contract has enough remaining supply for minting
+  </Step>
+  <Step title="Recipient Addresses" icon="wallet">
+    Prepare wallet addresses or email addresses for token distribution
+  </Step>
+</Steps>
+
+<Note>
+Need a contract first? Learn how to [create an ERC20 token contract](https://docs.venly.io/docs/create-erc20-token-contract) before minting tokens.
+</Note>
+
+## Mint ERC20 Tokens
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/api/v3/erc20/tokens/mints', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    chain: "MATIC",
+    contractAddress: "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+    destinations: [
+      {
+        address: "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+        amount: "20"
+      },
+      {
+        address: "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+        amount: "35"
+      }
+    ]
+  })
+});
+
+const data = await response.json();
+console.log('Token minting:', data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/api/v3/erc20/tokens/mints',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'chain': 'MATIC',
+        'contractAddress': '0x1e857475040b732d5adf3f8b2e7cd712914cdd23',
+        'destinations': [
+            {
+                'address': '0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5',
+                'amount': '20'
+            },
+            {
+                'address': '0xf2b1cEB69E765469a80E8d4c8635B05269889fa7',
+                'amount': '35'
+            }
+        ]
+    }
+)
+
+data = response.json()
+print('Token minting:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc20/tokens/mints' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "contractAddress": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+    "destinations": [
+      {
+        "address": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+        "amount": "20"
+      },
+      {
+        "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+        "amount": "35"
+      }
+    ]
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | The blockchain of the token contract |
+| `contractAddress` | string | ✅ | The deployed token contract address |
+| `destinations` | array | ✅ | Array of recipient addresses and amounts |
+| `destinations.address` | string | ✅ | Wallet address or email address to receive tokens |
+| `destinations.amount` | string | ✅ | Number of tokens to mint and send |
+
+<Tip>
+**Minting Guidelines:**
+- Use string format for amounts to handle large numbers
+- You can mix wallet addresses and email addresses
+- Maximum recipients per batch varies by blockchain
+- Ensure contract has sufficient remaining supply
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "mints": [
+          {
+            "id": "7f78e6ed-d733-430c-83a4-5fc28032e667",
+            "createdOn": "2024-09-23T09:28:49.562087061",
+            "status": "PENDING",
+            "destination": {
+              "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+              "amount": 35
+            }
+          },
+          {
+            "id": "d06ff454-b603-4279-8439-39d6949abf67",
+            "createdOn": "2024-09-23T09:28:49.608913941",
+            "status": "PENDING",
+            "destination": {
+              "address": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+              "amount": 20
+            }
+          }
+        ],
+        "contract": {
+          "address": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+          "name": "Infinity Token",
+          "symbol": "IFT",
+          "maxSupply": 100,
+          "burnable": true,
+          "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+          "type": "ERC_20"
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields to track:**
+    - **`mints[].id`** - Unique mint ID for status tracking
+    - **`mints[].status`** - Current minting status (PENDING → SUCCESS)
+    - **`mints[].destination`** - Recipient and amount details
+    - **`contract`** - Complete contract information
+  </Tab>
+</Tabs>
+
+<Check>
+**Save Mint IDs:** Each mint operation gets a unique `id` that you can use to track the minting status and completion.
+</Check>
+
+## Minting Strategies
+
+<AccordionGroup>
+  <Accordion title="Equal Distribution" icon="balance-scale">
+    **Same amount to all recipients:**
+    ```json
+    {
+      "destinations": [
+        {"address": "0x123...", "amount": "100"},
+        {"address": "0x456...", "amount": "100"},
+        {"address": "0x789...", "amount": "100"}
+      ]
+    }
+    ```
+    Perfect for airdrops and equal rewards.
+  </Accordion>
+  
+  <Accordion title="Tiered Distribution" icon="layer-group">
+    **Different amounts based on tiers:**
+    ```json
+    {
+      "destinations": [
+        {"address": "0x123...", "amount": "1000"},  // VIP tier
+        {"address": "0x456...", "amount": "500"},   // Premium tier
+        {"address": "0x789...", "amount": "100"}    // Basic tier
+      ]
+    }
+    ```
+    Great for loyalty programs and membership levels.
+  </Accordion>
+  
+  <Accordion title="Email Distribution" icon="envelope">
+    **Send to email addresses:**
+    ```json
+    {
+      "destinations": [
+        {"address": "user1@example.com", "amount": "50"},
+        {"address": "user2@example.com", "amount": "75"},
+        {"address": "0x123...", "amount": "100"}
+      ]
+    }
+    ```
+    Mix wallet addresses and emails for broader reach.
+  </Accordion>
+  
+  <Accordion title="Large Scale Distribution" icon="users">
+    **Programmatic batch creation:**
+    ```javascript
+    const destinations = [];
+    const recipients = [
+      {address: "0x123...", amount: "100"},
+      {address: "user@email.com", amount: "50"},
+      // ... more recipients
+    ];
+    
+    recipients.forEach(recipient => {
+      destinations.push({
+        address: recipient.address,
+        amount: recipient.amount.toString()
+      });
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Monitor Minting Status
+
+Track individual mint operations:
+
+<CodeGroup>
+```javascript JavaScript
+// Track each mint individually
+const mintIds = data.result.mints.map(mint => mint.id);
+
+for (const mintId of mintIds) {
+  const statusResponse = await fetch(`/api/v3/erc20/tokens/mints/${mintId}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+  
+  const status = await statusResponse.json();
+  console.log(`Mint ${mintId}: ${status.result.status}`);
+}
+```
+
+```python Python
+# Track each mint individually
+mint_ids = [mint['id'] for mint in data['result']['mints']]
+
+for mint_id in mint_ids:
+    status_response = requests.get(
+        f'/api/v3/erc20/tokens/mints/{mint_id}',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'}
+    )
+    
+    status = status_response.json()
+    print(f"Mint {mint_id}: {status['result']['status']}")
+```
+</CodeGroup>
+
+### Status Values
+
+<Tabs>
+  <Tab title="Status Types">
+    | Status | Description |
+    |--------|-------------|
+    | `PENDING` | Mint is being processed on the blockchain |
+    | `SUCCESS` | Tokens successfully minted and transferred |
+    | `FAILED` | Mint failed - check error details |
+  </Tab>
+  <Tab title="Success Tracking">
+    ```javascript
+    const successfulMints = data.result.mints.filter(mint => 
+      mint.status === 'SUCCESS'
+    ).length;
+    
+    const totalMints = data.result.mints.length;
+    console.log(`${successfulMints}/${totalMints} mints completed`);
+    ```
+  </Tab>
+</Tabs>
+
+## Use Cases & Examples
+
+<Tabs>
+  <Tab title="Token Airdrop">
+    ```json
+    {
+      "chain": "MATIC",
+      "contractAddress": "0x...",
+      "destinations": [
+        {"address": "0x123...", "amount": "1000"},
+        {"address": "0x456...", "amount": "1000"},
+        {"address": "0x789...", "amount": "1000"}
+      ]
+    }
+    ```
+    Distribute tokens to community members.
+  </Tab>
+  <Tab title="Employee Rewards">
+    ```json
+    {
+      "chain": "MATIC",
+      "contractAddress": "0x...",
+      "destinations": [
+        {"address": "employee1@company.com", "amount": "500"},
+        {"address": "employee2@company.com", "amount": "750"},
+        {"address": "manager@company.com", "amount": "1000"}
+      ]
+    }
+    ```
+    Reward employees with company tokens.
+  </Tab>
+  <Tab title="Customer Loyalty">
+    ```json
+    {
+      "chain": "MATIC",
+      "contractAddress": "0x...",
+      "destinations": [
+        {"address": "customer1@email.com", "amount": "100"},
+        {"address": "customer2@email.com", "amount": "150"},
+        {"address": "vip@email.com", "amount": "500"}
+      ]
+    }
+    ```
+    Distribute loyalty points as tokens.
+  </Tab>
+  <Tab title="Gaming Rewards">
+    ```json
+    {
+      "chain": "MATIC",
+      "contractAddress": "0x...",
+      "destinations": [
+        {"address": "player1@game.com", "amount": "250"},
+        {"address": "player2@game.com", "amount": "300"},
+        {"address": "winner@game.com", "amount": "1000"}
+      ]
+    }
+    ```
+    Reward players with in-game currency.
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Token Minting Optimization:**
+
+1. **Supply Management** - Check remaining supply before large mints
+2. **Batch Sizing** - Use optimal batch sizes for your blockchain
+3. **Address Validation** - Verify all recipient addresses before minting
+4. **Amount Formatting** - Use string format for large token amounts
+5. **Status Monitoring** - Track mint progress for important distributions
+6. **Error Handling** - Implement retry logic for failed mints
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Insufficient supply">
+    **Error:** Not enough tokens remaining in contract supply
+    
+    **Causes:**
+    - Trying to mint more than max supply allows
+    - Contract supply already exhausted
+    - Previous mints consumed available supply
+    
+    **Solution:** Check contract supply limits and adjust mint amounts accordingly.
+  </Accordion>
+  
+  <Accordion title="Invalid recipient address">
+    **Common issues:**
+    - Malformed wallet address
+    - Wrong blockchain address format
+    - Invalid email address format
+    
+    **Solution:** Validate all addresses before submitting mint request.
+  </Accordion>
+  
+  <Accordion title="Mint transaction failed">
+    **Possible causes:**
+    - Network congestion
+    - Insufficient gas fees
+    - Contract permissions issue
+    - Blockchain connectivity problems
+    
+    **Solution:** Check mint status, verify contract permissions, and retry if necessary.
+  </Accordion>
+  
+  <Accordion title="Some mints succeeded, others failed">
+    **Batch processing behavior:**
+    - Each destination is processed individually
+    - Some can succeed while others fail
+    - Check individual mint statuses
+    
+    **Solution:** Review failed mint IDs and retry with corrected parameters.
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<CodeGroup>
+```javascript JavaScript
+// Complete minting workflow
+async function distributeTokens(contractAddress, recipients) {
+  try {
+    // Prepare destinations
+    const destinations = recipients.map(recipient => ({
+      address: recipient.address,
+      amount: recipient.amount.toString()
+    }));
+    
+    // Mint tokens
+    const response = await fetch('/api/v3/erc20/tokens/mints', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chain: "MATIC",
+        contractAddress,
+        destinations
+      })
+    });
+    
+    const data = await response.json();
+    
+    // Track minting progress
+    const mintIds = data.result.mints.map(mint => mint.id);
+    console.log(`Started ${mintIds.length} mint operations`);
+    
+    return mintIds;
+  } catch (error) {
+    console.error('Minting failed:', error);
+    throw error;
+  }
+}
+
+// Usage
+const recipients = [
+  { address: "0x123...", amount: 100 },
+  { address: "user@email.com", amount: 50 }
+];
+
+const mintIds = await distributeTokens("0xcontract...", recipients);
+```
+
+```python Python
+import requests
+import time
+
+def distribute_tokens(contract_address, recipients):
+    """Distribute tokens to multiple recipients"""
+    try:
+        # Prepare destinations
+        destinations = [
+            {
+                'address': recipient['address'],
+                'amount': str(recipient['amount'])
+            }
+            for recipient in recipients
+        ]
+        
+        # Mint tokens
+        response = requests.post(
+            '/api/v3/erc20/tokens/mints',
+            headers={
+                'Authorization': 'Bearer YOUR_API_KEY',
+                'Content-Type': 'application/json'
+            },
+            json={
+                'chain': 'MATIC',
+                'contractAddress': contract_address,
+                'destinations': destinations
+            }
+        )
+        
+        data = response.json()
+        
+        # Track minting progress
+        mint_ids = [mint['id'] for mint in data['result']['mints']]
+        print(f'Started {len(mint_ids)} mint operations')
+        
+        return mint_ids
+    except Exception as error:
+        print(f'Minting failed: {error}')
+        raise error
+
+# Usage
+recipients = [
+    {'address': '0x123...', 'amount': 100},
+    {'address': 'user@email.com', 'amount': 50}
+]
+
+mint_ids = distribute_tokens('0xcontract...', recipients)
+```
+</CodeGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Check Mint Status" href="/Token-API-Basic-Guides/check-erc20-token-mint-request" icon="magnifying-glass">
+    Monitor your token minting progress
+  </Card>
+  <Card title="View All Mints" href="/Token-API-Basic-Guides/get-all-erc20-token-mints" icon="list">
+    Get overview of all your token mints
+  </Card>
+  <Card title="Manage Contracts" href="/Token-API-Basic-Guides/retrieve-erc20-token-contracts" icon="gear">
+    View and manage your token contracts
+  </Card>
+  <Card title="Set Up Webhooks" href="/Token-API-Basic-Guides/webhooks-token-api" icon="webhook">
+    Get real-time notifications for mint events
+  </Card>
+</CardGroup>
+
+<Warning>
+**Supply Limits:** Ensure your contract has sufficient remaining supply before minting. Once max supply is reached, no additional tokens can be minted.
+</Warning>

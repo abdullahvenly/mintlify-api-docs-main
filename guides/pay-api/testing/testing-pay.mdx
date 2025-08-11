@@ -1,0 +1,1272 @@
+---
+title: "Testing PAY API Integration"
+description: "Comprehensive guide to testing PAY API integration using test cards, webhook simulation, and automated testing strategies"
+icon: "flask"
+---
+
+<Info>
+**Testing Environment:** Simulate real payment scenarios without processing actual money using Stripe's comprehensive test card system and webhook testing tools.
+
+**Time required:** ~20 minutes
+</Info>
+
+## What is PAY API Testing?
+
+PAY API testing allows you to simulate real payment scenarios in a safe environment without processing actual money. Using Stripe's comprehensive test card system, you can test successful payments, declined transactions, fraud scenarios, 3D Secure authentication, and webhook integrations to ensure your payment flow works correctly before going live.
+
+<CardGroup cols={2}>
+  <Card title="Test Cards" icon="credit-card">
+    Simulate various payment scenarios with test card numbers
+  </Card>
+  <Card title="Webhook Testing" icon="webhook">
+    Verify webhook endpoints receive correct event notifications
+  </Card>
+  <Card title="Error Scenarios" icon="exclamation-triangle">
+    Test declined payments, fraud detection, and error handling
+  </Card>
+  <Card title="Authentication" icon="shield">
+    Test 3D Secure and other authentication flows
+  </Card>
+</CardGroup>
+
+## Why Test Your Integration?
+
+<Tabs>
+  <Tab title="Payment Flows">
+    **Verify Core Functionality**
+    - Successful payment processing
+    - Checkout link generation
+    - Payment confirmation flows
+    - Receipt and confirmation emails
+  </Tab>
+  <Tab title="Error Handling">
+    **Test Failure Scenarios**
+    - Declined card handling
+    - Insufficient funds responses
+    - Network timeout recovery
+    - Invalid data validation
+  </Tab>
+  <Tab title="Webhook Integration">
+    **Event Processing**
+    - Real-time payment notifications
+    - Order fulfillment triggers
+    - Customer communication
+    - Analytics and reporting
+  </Tab>
+</Tabs>
+
+## Test Card Numbers
+
+<Tabs>
+  <Tab title="Successful Payments">
+    **Cards that will always succeed:**
+    
+    | Card Brand | Number | Description |
+    |------------|--------|-------------|
+    | Visa | `4242 4242 4242 4242` | Standard successful payment |
+    | Visa (debit) | `4000 0566 5566 5556` | Debit card with successful payment |
+    | Mastercard | `5555 5555 5555 4444` | Standard successful payment |
+    | Mastercard (debit) | `5200 8282 8282 8210` | Debit card with successful payment |
+    | American Express | `3782 822463 10005` | Amex successful payment |
+    | Discover | `6011 1111 1111 1117` | Discover successful payment |
+    | JCB | `3566 0020 2036 0505` | JCB successful payment |
+    | Diners Club | `3056 9300 0902 0004` | Diners Club successful payment |
+    
+    **Usage Example:**
+    ```javascript
+    // Test successful payment flow
+    const testPayment = {
+      cardNumber: '4242424242424242',
+      expMonth: 12,
+      expYear: 2030,
+      cvc: '123',
+      amount: 2000, // $20.00
+      currency: 'usd'
+    };
+    ```
+  </Tab>
+  <Tab title="Declined Payments">
+    **Cards that will be declined:**
+    
+    | Decline Reason | Number | Description |
+    |----------------|--------|-------------|
+    | Generic decline | `4000 0000 0000 0002` | General card decline |
+    | Insufficient funds | `4000 0000 0000 9995` | Not enough balance |
+    | Lost card | `4000 0000 0000 9987` | Card reported as lost |
+    | Stolen card | `4000 0000 0000 9979` | Card reported as stolen |
+    | Expired card | `4000 0000 0000 0069` | Card has expired |
+    | Processing error | `4000 0000 0000 0119` | Processing error occurred |
+    | Incorrect CVC | `4000 0000 0000 0127` | CVC verification failed |
+    
+    **Testing Decline Handling:**
+    ```javascript
+    async function testDeclineHandling() {
+      const declineCards = [
+        { number: '4000000000000002', reason: 'generic_decline' },
+        { number: '4000000000009995', reason: 'insufficient_funds' },
+        { number: '4000000000000119', reason: 'processing_error' }
+      ];
+      
+      for (const card of declineCards) {
+        try {
+          const result = await processTestPayment(card.number);
+          console.log(`Unexpected success for ${card.reason}`);
+        } catch (error) {
+          console.log(`Correctly handled ${card.reason}: ${error.message}`);
+          // Verify your error handling logic here
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Special Scenarios">
+    **Cards for specific testing scenarios:**
+    
+    | Scenario | Number | Description |
+    |----------|--------|-------------|
+    | Fraud prevention | `4100 0000 0000 0019` | Triggers fraud prevention |
+    | 3D Secure required | `4000 0000 0000 3220` | Requires 3D Secure authentication |
+    | 3D Secure optional | `4000 0000 0000 3063` | 3D Secure authentication optional |
+    | Always authenticate | `4000 0025 0000 3155` | Always requires authentication |
+    | Dispute (fraudulent) | `4000 0000 0000 0259` | Will be disputed as fraudulent |
+    | Dispute (unrecognized) | `4000 0000 0000 2685` | Will be disputed as unrecognized |
+    
+    **3D Secure Testing:**
+    ```javascript
+    async function test3DSecure() {
+      const threeDSCard = '4000000000003220';
+      
+      try {
+        const paymentIntent = await createPaymentIntent({
+          amount: 2000,
+          currency: 'usd',
+          payment_method_data: {
+            type: 'card',
+            card: { number: threeDSCard, exp_month: 12, exp_year: 2030, cvc: '123' }
+          }
+        });
+        
+        if (paymentIntent.status === 'requires_action') {
+          console.log('3D Secure authentication required');
+          // Handle 3D Secure flow
+          return handle3DSecureAuthentication(paymentIntent);
+        }
+      } catch (error) {
+        console.error('3D Secure test failed:', error);
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Testing Workflow
+
+<Steps>
+  <Step title="Create Test Checkout" icon="link">
+    Generate a checkout link using the PAY API with test mode enabled
+    
+    ```javascript
+    const checkoutData = {
+      lineItems: [{
+        name: "Test Product",
+        amount: 2000, // $20.00
+        currency: "usd",
+        quantity: 1
+      }],
+      successUrl: "https://yoursite.com/success",
+      cancelUrl: "https://yoursite.com/cancel",
+      metadata: {
+        testMode: "true",
+        orderId: "test_order_123"
+      }
+    };
+    
+    const checkout = await createCheckout(checkoutData);
+    console.log('Test checkout URL:', checkout.url);
+    ```
+  </Step>
+  <Step title="Use Test Cards" icon="credit-card">
+    Navigate to the checkout URL and use test card numbers to simulate different scenarios
+    
+    **Test Card Details:**
+    - **Card Number:** Use any test card from the tables above
+    - **Expiry Date:** Any valid future date (e.g., 12/30)
+    - **CVC:** Any 3-digit number (4 digits for Amex)
+    - **Name:** Any name
+    - **Address:** Any address details
+  </Step>
+  <Step title="Verify Webhooks" icon="webhook">
+    Check that your webhook endpoint receives the correct events
+    
+    ```javascript
+    // Expected webhook events for successful payment
+    const expectedEvents = [
+      'payment_intent.created',
+      'payment_intent.succeeded',
+      'charge.succeeded',
+      'checkout.session.completed'
+    ];
+    ```
+  </Step>
+  <Step title="Check Status" icon="check">
+    Verify the checkout status using the API
+    
+    ```javascript
+    const status = await getCheckoutStatus(checkout.sessionId);
+    console.log('Checkout status:', status);
+    ```
+  </Step>
+</Steps>
+
+## Automated Testing Implementation
+
+<CodeGroup>
+```javascript Jest Testing
+const { createCheckout, getCheckoutStatus } = require('./pay-api');
+
+describe('PAY API Integration Tests', () => {
+  const testCards = {
+    success: '4242424242424242',
+    decline: '4000000000000002',
+    insufficientFunds: '4000000000009995',
+    fraud: '4100000000000019',
+    threeDSecure: '4000000000003220'
+  };
+
+  describe('Successful Payments', () => {
+    test('should process successful Visa payment', async () => {
+      const checkout = await createTestCheckout({
+        amount: 2000,
+        currency: 'usd'
+      });
+
+      // Simulate payment with test card
+      const paymentResult = await simulateCardPayment(
+        checkout.url,
+        testCards.success
+      );
+
+      expect(paymentResult.status).toBe('succeeded');
+      
+      // Verify checkout status
+      const status = await getCheckoutStatus(checkout.sessionId);
+      expect(status.payment_status).toBe('paid');
+    });
+
+    test('should handle Mastercard payments', async () => {
+      const checkout = await createTestCheckout({
+        amount: 5000,
+        currency: 'eur'
+      });
+
+      const paymentResult = await simulateCardPayment(
+        checkout.url,
+        '5555555555554444'
+      );
+
+      expect(paymentResult.status).toBe('succeeded');
+    });
+  });
+
+  describe('Declined Payments', () => {
+    test('should handle generic decline', async () => {
+      const checkout = await createTestCheckout({
+        amount: 1000,
+        currency: 'usd'
+      });
+
+      const paymentResult = await simulateCardPayment(
+        checkout.url,
+        testCards.decline
+      );
+
+      expect(paymentResult.status).toBe('failed');
+      expect(paymentResult.error.code).toBe('card_declined');
+    });
+
+    test('should handle insufficient funds', async () => {
+      const checkout = await createTestCheckout({
+        amount: 10000,
+        currency: 'usd'
+      });
+
+      const paymentResult = await simulateCardPayment(
+        checkout.url,
+        testCards.insufficientFunds
+      );
+
+      expect(paymentResult.status).toBe('failed');
+      expect(paymentResult.error.decline_code).toBe('insufficient_funds');
+    });
+  });
+
+  describe('Webhook Integration', () => {
+    test('should receive payment success webhook', async () => {
+      const webhookReceiver = new WebhookTestReceiver();
+      
+      const checkout = await createTestCheckout({
+        amount: 2000,
+        currency: 'usd',
+        metadata: { testId: 'webhook_test_1' }
+      });
+
+      await simulateCardPayment(checkout.url, testCards.success);
+
+      // Wait for webhook
+      const webhookEvent = await webhookReceiver.waitForEvent(
+        'payment_intent.succeeded',
+        5000 // 5 second timeout
+      );
+
+      expect(webhookEvent).toBeDefined();
+      expect(webhookEvent.data.object.metadata.testId).toBe('webhook_test_1');
+    });
+
+    test('should receive checkout completion webhook', async () => {
+      const webhookReceiver = new WebhookTestReceiver();
+      
+      const checkout = await createTestCheckout({
+        amount: 3000,
+        currency: 'usd'
+      });
+
+      await simulateCardPayment(checkout.url, testCards.success);
+
+      const webhookEvent = await webhookReceiver.waitForEvent(
+        'checkout.session.completed',
+        5000
+      );
+
+      expect(webhookEvent).toBeDefined();
+      expect(webhookEvent.data.object.payment_status).toBe('paid');
+    });
+  });
+
+  describe('Error Handling', () => {
+    test('should handle fraud prevention', async () => {
+      const checkout = await createTestCheckout({
+        amount: 2000,
+        currency: 'usd'
+      });
+
+      const paymentResult = await simulateCardPayment(
+        checkout.url,
+        testCards.fraud
+      );
+
+      expect(paymentResult.status).toBe('failed');
+      expect(paymentResult.error.code).toBe('card_declined');
+      expect(paymentResult.error.decline_code).toBe('fraudulent');
+    });
+  });
+});
+
+// Helper functions
+async function createTestCheckout(options) {
+  return await createCheckout({
+    lineItems: [{
+      name: "Test Product",
+      amount: options.amount,
+      currency: options.currency,
+      quantity: 1
+    }],
+    successUrl: "https://test.example.com/success",
+    cancelUrl: "https://test.example.com/cancel",
+    metadata: options.metadata || {}
+  });
+}
+
+async function simulateCardPayment(checkoutUrl, cardNumber) {
+  // This would integrate with a browser automation tool
+  // or mock the payment process for testing
+  return mockPaymentSimulation(checkoutUrl, cardNumber);
+}
+
+class WebhookTestReceiver {
+  constructor() {
+    this.receivedEvents = [];
+    this.eventPromises = new Map();
+  }
+
+  waitForEvent(eventType, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+      const existingEvent = this.receivedEvents.find(e => e.type === eventType);
+      if (existingEvent) {
+        resolve(existingEvent);
+        return;
+      }
+
+      const timeoutId = setTimeout(() => {
+        reject(new Error(`Timeout waiting for ${eventType} event`));
+      }, timeout);
+
+      this.eventPromises.set(eventType, { resolve, reject, timeoutId });
+    });
+  }
+
+  receiveEvent(event) {
+    this.receivedEvents.push(event);
+    
+    const promise = this.eventPromises.get(event.type);
+    if (promise) {
+      clearTimeout(promise.timeoutId);
+      promise.resolve(event);
+      this.eventPromises.delete(event.type);
+    }
+  }
+}
+```
+
+```python Pytest Testing
+import pytest
+import asyncio
+from pay_api import create_checkout, get_checkout_status, simulate_card_payment
+
+class TestPAYAPIIntegration:
+    
+    @pytest.fixture
+    def test_cards(self):
+        return {
+            'success': '4242424242424242',
+            'decline': '4000000000000002',
+            'insufficient_funds': '4000000000009995',
+            'fraud': '4100000000000019',
+            'three_d_secure': '4000000000003220'
+        }
+    
+    @pytest.mark.asyncio
+    async def test_successful_visa_payment(self, test_cards):
+        """Test successful payment with Visa card"""
+        checkout = await create_checkout({
+            'line_items': [{
+                'name': 'Test Product',
+                'amount': 2000,
+                'currency': 'usd',
+                'quantity': 1
+            }],
+            'success_url': 'https://test.example.com/success',
+            'cancel_url': 'https://test.example.com/cancel'
+        })
+        
+        payment_result = await simulate_card_payment(
+            checkout['url'],
+            test_cards['success']
+        )
+        
+        assert payment_result['status'] == 'succeeded'
+        
+        # Verify checkout status
+        status = await get_checkout_status(checkout['session_id'])
+        assert status['payment_status'] == 'paid'
+    
+    @pytest.mark.asyncio
+    async def test_declined_payment(self, test_cards):
+        """Test handling of declined payments"""
+        checkout = await create_checkout({
+            'line_items': [{
+                'name': 'Test Product',
+                'amount': 1000,
+                'currency': 'usd',
+                'quantity': 1
+            }]
+        })
+        
+        payment_result = await simulate_card_payment(
+            checkout['url'],
+            test_cards['decline']
+        )
+        
+        assert payment_result['status'] == 'failed'
+        assert payment_result['error']['code'] == 'card_declined'
+    
+    @pytest.mark.asyncio
+    async def test_insufficient_funds(self, test_cards):
+        """Test insufficient funds scenario"""
+        checkout = await create_checkout({
+            'line_items': [{
+                'name': 'Expensive Product',
+                'amount': 10000,
+                'currency': 'usd',
+                'quantity': 1
+            }]
+        })
+        
+        payment_result = await simulate_card_payment(
+            checkout['url'],
+            test_cards['insufficient_funds']
+        )
+        
+        assert payment_result['status'] == 'failed'
+        assert payment_result['error']['decline_code'] == 'insufficient_funds'
+    
+    @pytest.mark.asyncio
+    async def test_webhook_integration(self, test_cards):
+        """Test webhook event reception"""
+        webhook_receiver = WebhookTestReceiver()
+        
+        checkout = await create_checkout({
+            'line_items': [{
+                'name': 'Test Product',
+                'amount': 2000,
+                'currency': 'usd',
+                'quantity': 1
+            }],
+            'metadata': {'test_id': 'webhook_test_1'}
+        })
+        
+        await simulate_card_payment(checkout['url'], test_cards['success'])
+        
+        # Wait for webhook event
+        webhook_event = await webhook_receiver.wait_for_event(
+            'payment_intent.succeeded',
+            timeout=5
+        )
+        
+        assert webhook_event is not None
+        assert webhook_event['data']['object']['metadata']['test_id'] == 'webhook_test_1'
+
+class WebhookTestReceiver:
+    def __init__(self):
+        self.received_events = []
+        self.event_futures = {}
+    
+    async def wait_for_event(self, event_type, timeout=5):
+        # Check if event already received
+        for event in self.received_events:
+            if event['type'] == event_type:
+                return event
+        
+        # Wait for event
+        future = asyncio.Future()
+        self.event_futures[event_type] = future
+        
+        try:
+            return await asyncio.wait_for(future, timeout=timeout)
+        except asyncio.TimeoutError:
+            raise AssertionError(f'Timeout waiting for {event_type} event')
+    
+    def receive_event(self, event):
+        self.received_events.append(event)
+        
+        event_type = event['type']
+        if event_type in self.event_futures:
+            future = self.event_futures.pop(event_type)
+            if not future.done():
+                future.set_result(event)
+```
+
+```bash Shell Testing
+#!/bin/bash
+
+# PAY API Integration Test Script
+
+API_BASE_URL="https://api.venly.io"
+API_KEY="your_test_api_key"
+
+# Test card numbers
+SUCCESS_CARD="4242424242424242"
+DECLINE_CARD="4000000000000002"
+FRAUD_CARD="4100000000000019"
+
+echo "Starting PAY API Integration Tests..."
+
+# Test 1: Create checkout and test successful payment
+echo "Test 1: Successful Payment"
+CHECKOUT_RESPONSE=$(curl -s -X POST "$API_BASE_URL/checkout" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "lineItems": [{
+      "name": "Test Product",
+      "amount": 2000,
+      "currency": "usd",
+      "quantity": 1
+    }],
+    "successUrl": "https://test.example.com/success",
+    "cancelUrl": "https://test.example.com/cancel"
+  }')
+
+SESSION_ID=$(echo $CHECKOUT_RESPONSE | jq -r '.result.sessionId')
+CHECKOUT_URL=$(echo $CHECKOUT_RESPONSE | jq -r '.result.url')
+
+echo "Created checkout: $SESSION_ID"
+echo "Checkout URL: $CHECKOUT_URL"
+
+# Simulate payment (this would typically be done through browser automation)
+echo "Simulating successful payment..."
+# In a real test, you would use tools like Selenium or Playwright
+# to navigate to the checkout URL and fill in the payment form
+
+# Test 2: Check checkout status
+echo "Test 2: Checking checkout status"
+STATUS_RESPONSE=$(curl -s -X GET "$API_BASE_URL/checkout/$SESSION_ID" \
+  -H "Authorization: Bearer $API_KEY")
+
+echo "Status response: $STATUS_RESPONSE"
+
+# Test 3: Test declined payment
+echo "Test 3: Declined Payment"
+DECLINE_CHECKOUT=$(curl -s -X POST "$API_BASE_URL/checkout" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "lineItems": [{
+      "name": "Test Product",
+      "amount": 1000,
+      "currency": "usd",
+      "quantity": 1
+    }]
+  }')
+
+DECLINE_SESSION_ID=$(echo $DECLINE_CHECKOUT | jq -r '.result.sessionId')
+echo "Created decline test checkout: $DECLINE_SESSION_ID"
+
+echo "All tests completed!"
+```
+</CodeGroup>
+
+## Advanced Testing Scenarios
+
+<AccordionGroup>
+  <Accordion title="3D Secure Authentication Testing" icon="shield">
+    **Test 3D Secure authentication flows:**
+    
+    ```javascript
+    class ThreeDSecureTestSuite {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.testCards = {
+          required: '4000000000003220',
+          optional: '4000000000003063',
+          always: '4000002500003155',
+          unavailable: '4242424242424242'
+        };
+      }
+    
+      async testRequiredAuthentication() {
+        console.log('Testing required 3D Secure authentication...');
+        
+        const checkout = await this.createTestCheckout(2000);
+        
+        try {
+          const paymentResult = await this.simulatePayment(
+            checkout.url,
+            this.testCards.required
+          );
+          
+          if (paymentResult.status === 'requires_action') {
+            console.log('✓ 3D Secure authentication correctly required');
+            
+            // Simulate successful authentication
+            const authenticatedResult = await this.simulate3DSecureAuth(
+              paymentResult.client_secret,
+              true // successful auth
+            );
+            
+            expect(authenticatedResult.status).toBe('succeeded');
+            console.log('✓ 3D Secure authentication flow completed');
+          } else {
+            throw new Error('Expected 3D Secure authentication to be required');
+          }
+        } catch (error) {
+          console.error('✗ 3D Secure test failed:', error);
+          throw error;
+        }
+      }
+    
+      async testFailedAuthentication() {
+        console.log('Testing failed 3D Secure authentication...');
+        
+        const checkout = await this.createTestCheckout(1500);
+        
+        const paymentResult = await this.simulatePayment(
+          checkout.url,
+          this.testCards.required
+        );
+        
+        if (paymentResult.status === 'requires_action') {
+          // Simulate failed authentication
+          const failedResult = await this.simulate3DSecureAuth(
+            paymentResult.client_secret,
+            false // failed auth
+          );
+          
+          expect(failedResult.status).toBe('requires_payment_method');
+          console.log('✓ Failed 3D Secure authentication handled correctly');
+        }
+      }
+    
+      async testOptionalAuthentication() {
+        console.log('Testing optional 3D Secure authentication...');
+        
+        const checkout = await this.createTestCheckout(1000);
+        
+        const paymentResult = await this.simulatePayment(
+          checkout.url,
+          this.testCards.optional
+        );
+        
+        // Optional 3DS may or may not trigger based on risk assessment
+        if (paymentResult.status === 'requires_action') {
+          console.log('✓ Optional 3D Secure triggered (risk-based)');
+        } else if (paymentResult.status === 'succeeded') {
+          console.log('✓ Optional 3D Secure not triggered (low risk)');
+        }
+      }
+    
+      async simulate3DSecureAuth(clientSecret, shouldSucceed) {
+        // This would integrate with Stripe's test authentication simulator
+        return {
+          status: shouldSucceed ? 'succeeded' : 'requires_payment_method',
+          client_secret: clientSecret
+        };
+      }
+    
+      async runAllTests() {
+        const tests = [
+          this.testRequiredAuthentication.bind(this),
+          this.testFailedAuthentication.bind(this),
+          this.testOptionalAuthentication.bind(this)
+        ];
+        
+        for (const test of tests) {
+          try {
+            await test();
+          } catch (error) {
+            console.error('Test failed:', error);
+          }
+        }
+      }
+    }
+    
+    // Usage
+    const threeDSTests = new ThreeDSecureTestSuite('your_test_api_key');
+    await threeDSTests.runAllTests();
+    ```
+  </Accordion>
+  
+  <Accordion title="Webhook Testing Framework" icon="webhook">
+    **Comprehensive webhook testing system:**
+    
+    ```javascript
+    class WebhookTestFramework {
+      constructor(webhookEndpoint, authConfig) {
+        this.webhookEndpoint = webhookEndpoint;
+        this.authConfig = authConfig;
+        this.receivedEvents = [];
+        this.expectedEvents = new Map();
+        this.testServer = null;
+      }
+    
+      async startTestServer(port = 3001) {
+        const express = require('express');
+        const app = express();
+        
+        app.use(express.json());
+        
+        // Webhook endpoint for testing
+        app.post('/webhook', (req, res) => {
+          const event = req.body;
+          
+          // Verify authentication
+          if (!this.verifyWebhookAuth(req)) {
+            return res.status(401).json({ error: 'Unauthorized' });
+          }
+          
+          console.log(`Received webhook: ${event.type} (${event.id})`);
+          this.receivedEvents.push({
+            ...event,
+            receivedAt: new Date().toISOString()
+          });
+          
+          // Check if this event was expected
+          const expectedEvent = this.expectedEvents.get(event.type);
+          if (expectedEvent) {
+            expectedEvent.resolve(event);
+            this.expectedEvents.delete(event.type);
+          }
+          
+          res.json({ received: true });
+        });
+        
+        // Health check endpoint
+        app.get('/health', (req, res) => {
+          res.json({ status: 'ok', eventsReceived: this.receivedEvents.length });
+        });
+        
+        this.testServer = app.listen(port, () => {
+          console.log(`Webhook test server running on port ${port}`);
+        });
+        
+        return `http://localhost:${port}/webhook`;
+      }
+    
+      async stopTestServer() {
+        if (this.testServer) {
+          this.testServer.close();
+          this.testServer = null;
+        }
+      }
+    
+      verifyWebhookAuth(req) {
+        if (this.authConfig.type === 'API_KEY') {
+          return req.headers[this.authConfig.headerName.toLowerCase()] === this.authConfig.apiKey;
+        } else if (this.authConfig.type === 'BASIC_AUTH') {
+          const auth = req.headers.authorization;
+          if (!auth || !auth.startsWith('Basic ')) return false;
+          
+          const credentials = Buffer.from(auth.slice(6), 'base64').toString();
+          const [username, password] = credentials.split(':');
+          
+          return username === this.authConfig.username && 
+                 password === this.authConfig.password;
+        }
+        
+        return false;
+      }
+    
+      expectEvent(eventType, timeout = 10000) {
+        return new Promise((resolve, reject) => {
+          // Check if event already received
+          const existingEvent = this.receivedEvents.find(e => e.type === eventType);
+          if (existingEvent) {
+            resolve(existingEvent);
+            return;
+          }
+          
+          // Set up expectation
+          const timeoutId = setTimeout(() => {
+            this.expectedEvents.delete(eventType);
+            reject(new Error(`Timeout waiting for ${eventType} event`));
+          }, timeout);
+          
+          this.expectedEvents.set(eventType, {
+            resolve: (event) => {
+              clearTimeout(timeoutId);
+              resolve(event);
+            },
+            reject,
+            timeoutId
+          });
+        });
+      }
+    
+      async testPaymentFlow(testCard, expectedAmount) {
+        console.log(`Testing payment flow with card: ${testCard}`);
+        
+        // Clear previous events
+        this.receivedEvents = [];
+        
+        // Create checkout
+        const checkout = await this.createTestCheckout(expectedAmount);
+        
+        // Set up event expectations
+        const paymentIntentCreated = this.expectEvent('payment_intent.created');
+        const paymentIntentSucceeded = this.expectEvent('payment_intent.succeeded');
+        const chargeSucceeded = this.expectEvent('charge.succeeded');
+        const checkoutCompleted = this.expectEvent('checkout.session.completed');
+        
+        // Simulate payment
+        await this.simulatePayment(checkout.url, testCard);
+        
+        // Wait for all expected events
+        const events = await Promise.all([
+          paymentIntentCreated,
+          paymentIntentSucceeded,
+          chargeSucceeded,
+          checkoutCompleted
+        ]);
+        
+        // Verify event data
+        this.verifyEventData(events, expectedAmount);
+        
+        return {
+          success: true,
+          eventsReceived: events.length,
+          events: events.map(e => ({ type: e.type, id: e.id }))
+        };
+      }
+    
+      verifyEventData(events, expectedAmount) {
+        const paymentIntent = events.find(e => e.type === 'payment_intent.succeeded');
+        const charge = events.find(e => e.type === 'charge.succeeded');
+        const checkout = events.find(e => e.type === 'checkout.session.completed');
+        
+        // Verify amounts match
+        if (paymentIntent.data.object.amount !== expectedAmount) {
+          throw new Error(`Payment intent amount mismatch: expected ${expectedAmount}, got ${paymentIntent.data.object.amount}`);
+        }
+        
+        if (charge.data.object.amount !== expectedAmount) {
+          throw new Error(`Charge amount mismatch: expected ${expectedAmount}, got ${charge.data.object.amount}`);
+        }
+        
+        // Verify status
+        if (paymentIntent.data.object.status !== 'succeeded') {
+          throw new Error(`Payment intent status should be 'succeeded', got '${paymentIntent.data.object.status}'`);
+        }
+        
+        if (checkout.data.object.payment_status !== 'paid') {
+          throw new Error(`Checkout payment status should be 'paid', got '${checkout.data.object.payment_status}'`);
+        }
+        
+        console.log('✓ All event data verified successfully');
+      }
+    
+      async runComprehensiveTests() {
+        const testCases = [
+          { card: '4242424242424242', amount: 2000, description: 'Successful Visa payment' },
+          { card: '5555555555554444', amount: 3000, description: 'Successful Mastercard payment' },
+          { card: '3782822463100005', amount: 1500, description: 'Successful Amex payment' }
+        ];
+        
+        const results = [];
+        
+        for (const testCase of testCases) {
+          try {
+            console.log(`Running test: ${testCase.description}`);
+            const result = await this.testPaymentFlow(testCase.card, testCase.amount);
+            results.push({ ...testCase, ...result });
+            console.log(`✓ ${testCase.description} passed`);
+          } catch (error) {
+            console.error(`✗ ${testCase.description} failed:`, error.message);
+            results.push({ ...testCase, success: false, error: error.message });
+          }
+        }
+        
+        return results;
+      }
+    
+      generateTestReport(results) {
+        const passed = results.filter(r => r.success).length;
+        const total = results.length;
+        
+        console.log('\n=== Webhook Test Report ===');
+        console.log(`Tests passed: ${passed}/${total}`);
+        console.log(`Success rate: ${((passed / total) * 100).toFixed(1)}%`);
+        
+        results.forEach(result => {
+          const status = result.success ? '✓' : '✗';
+          console.log(`${status} ${result.description}`);
+          if (result.eventsReceived) {
+            console.log(`  Events received: ${result.eventsReceived}`);
+          }
+          if (result.error) {
+            console.log(`  Error: ${result.error}`);
+          }
+        });
+        
+        return { passed, total, successRate: (passed / total) * 100 };
+      }
+    }
+    
+    // Usage
+    const webhookTester = new WebhookTestFramework(
+      'http://localhost:3001/webhook',
+      {
+        type: 'API_KEY',
+        headerName: 'X-API-Key',
+        apiKey: 'test_webhook_key_123'
+      }
+    );
+    
+    // Start test server and run tests
+    await webhookTester.startTestServer(3001);
+    const results = await webhookTester.runComprehensiveTests();
+    const report = webhookTester.generateTestReport(results);
+    await webhookTester.stopTestServer();
+    
+    console.log('Webhook testing completed!');
+    ```
+  </Accordion>
+  
+  <Accordion title="Performance Testing" icon="tachometer-alt">
+    **Load testing and performance validation:**
+    
+    ```javascript
+    class PaymentPerformanceTester {
+      constructor(apiKey, baseUrl) {
+        this.apiKey = apiKey;
+        this.baseUrl = baseUrl;
+        this.metrics = {
+          requests: [],
+          errors: [],
+          responseTimeStats: {}
+        };
+      }
+    
+      async runLoadTest(options = {}) {
+        const {
+          concurrentUsers = 10,
+          requestsPerUser = 5,
+          rampUpTime = 5000, // 5 seconds
+          testDuration = 30000 // 30 seconds
+        } = options;
+        
+        console.log(`Starting load test: ${concurrentUsers} users, ${requestsPerUser} requests each`);
+        
+        const startTime = Date.now();
+        const userPromises = [];
+        
+        // Ramp up users gradually
+        for (let i = 0; i < concurrentUsers; i++) {
+          const delay = (rampUpTime / concurrentUsers) * i;
+          
+          userPromises.push(
+            this.delayedUserSimulation(delay, requestsPerUser, startTime + testDuration)
+          );
+        }
+        
+        // Wait for all users to complete
+        const results = await Promise.allSettled(userPromises);
+        
+        // Analyze results
+        return this.analyzePerformanceResults(results);
+      }
+    
+      async delayedUserSimulation(delay, requestCount, endTime) {
+        await this.sleep(delay);
+        
+        const userResults = [];
+        
+        for (let i = 0; i < requestCount; i++) {
+          if (Date.now() > endTime) break;
+          
+          try {
+            const result = await this.simulateCheckoutCreation();
+            userResults.push(result);
+            
+            // Random delay between requests (0.5-2 seconds)
+            await this.sleep(500 + Math.random() * 1500);
+          } catch (error) {
+            this.metrics.errors.push({
+              timestamp: Date.now(),
+              error: error.message,
+              type: 'checkout_creation'
+            });
+          }
+        }
+        
+        return userResults;
+      }
+    
+      async simulateCheckoutCreation() {
+        const startTime = Date.now();
+        
+        try {
+          const response = await fetch(`${this.baseUrl}/checkout`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${this.apiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              lineItems: [{
+                name: `Load Test Product ${Math.random().toString(36).substr(2, 9)}`,
+                amount: Math.floor(Math.random() * 5000) + 1000, // $10-$50
+                currency: 'usd',
+                quantity: 1
+              }],
+              successUrl: 'https://test.example.com/success',
+              cancelUrl: 'https://test.example.com/cancel',
+              metadata: {
+                loadTest: 'true',
+                timestamp: Date.now().toString()
+              }
+            })
+          });
+          
+          const responseTime = Date.now() - startTime;
+          const data = await response.json();
+          
+          const result = {
+            timestamp: startTime,
+            responseTime,
+            status: response.status,
+            success: response.ok,
+            sessionId: data.result?.sessionId
+          };
+          
+          this.metrics.requests.push(result);
+          return result;
+          
+        } catch (error) {
+          const responseTime = Date.now() - startTime;
+          
+          const result = {
+            timestamp: startTime,
+            responseTime,
+            status: 0,
+            success: false,
+            error: error.message
+          };
+          
+          this.metrics.requests.push(result);
+          throw error;
+        }
+      }
+    
+      analyzePerformanceResults(results) {
+        const successfulRequests = this.metrics.requests.filter(r => r.success);
+        const failedRequests = this.metrics.requests.filter(r => !r.success);
+        
+        const responseTimes = successfulRequests.map(r => r.responseTime);
+        responseTimes.sort((a, b) => a - b);
+        
+        const stats = {
+          totalRequests: this.metrics.requests.length,
+          successfulRequests: successfulRequests.length,
+          failedRequests: failedRequests.length,
+          successRate: (successfulRequests.length / this.metrics.requests.length) * 100,
+          
+          responseTime: {
+            min: Math.min(...responseTimes),
+            max: Math.max(...responseTimes),
+            avg: responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length,
+            p50: this.percentile(responseTimes, 50),
+            p95: this.percentile(responseTimes, 95),
+            p99: this.percentile(responseTimes, 99)
+          },
+          
+          throughput: {
+            requestsPerSecond: this.calculateThroughput(),
+            avgConcurrency: this.calculateAverageConcurrency()
+          },
+          
+          errors: this.categorizeErrors()
+        };
+        
+        this.printPerformanceReport(stats);
+        return stats;
+      }
+    
+      percentile(sortedArray, percentile) {
+        const index = Math.ceil((percentile / 100) * sortedArray.length) - 1;
+        return sortedArray[index] || 0;
+      }
+    
+      calculateThroughput() {
+        if (this.metrics.requests.length === 0) return 0;
+        
+        const firstRequest = Math.min(...this.metrics.requests.map(r => r.timestamp));
+        const lastRequest = Math.max(...this.metrics.requests.map(r => r.timestamp));
+        const duration = (lastRequest - firstRequest) / 1000; // seconds
+        
+        return this.metrics.requests.length / duration;
+      }
+    
+      calculateAverageConcurrency() {
+        // Simplified concurrency calculation
+        const timeWindows = {};
+        const windowSize = 1000; // 1 second windows
+        
+        this.metrics.requests.forEach(request => {
+          const window = Math.floor(request.timestamp / windowSize) * windowSize;
+          timeWindows[window] = (timeWindows[window] || 0) + 1;
+        });
+        
+        const concurrencyValues = Object.values(timeWindows);
+        return concurrencyValues.reduce((a, b) => a + b, 0) / concurrencyValues.length;
+      }
+    
+      categorizeErrors() {
+        const errorCategories = {};
+        
+        this.metrics.errors.forEach(error => {
+          const category = this.categorizeError(error.error);
+          errorCategories[category] = (errorCategories[category] || 0) + 1;
+        });
+        
+        return errorCategories;
+      }
+    
+      categorizeError(errorMessage) {
+        if (errorMessage.includes('timeout')) return 'timeout';
+        if (errorMessage.includes('rate limit')) return 'rate_limit';
+        if (errorMessage.includes('network')) return 'network';
+        if (errorMessage.includes('500')) return 'server_error';
+        if (errorMessage.includes('400')) return 'client_error';
+        return 'unknown';
+      }
+    
+      printPerformanceReport(stats) {
+        console.log('\n=== Performance Test Report ===');
+        console.log(`Total Requests: ${stats.totalRequests}`);
+        console.log(`Successful: ${stats.successfulRequests} (${stats.successRate.toFixed(2)}%)`);
+        console.log(`Failed: ${stats.failedRequests}`);
+        
+        console.log('\nResponse Times (ms):');
+        console.log(`  Min: ${stats.responseTime.min}`);
+        console.log(`  Max: ${stats.responseTime.max}`);
+        console.log(`  Avg: ${stats.responseTime.avg.toFixed(2)}`);
+        console.log(`  P50: ${stats.responseTime.p50}`);
+        console.log(`  P95: ${stats.responseTime.p95}`);
+        console.log(`  P99: ${stats.responseTime.p99}`);
+        
+        console.log('\nThroughput:');
+        console.log(`  Requests/sec: ${stats.throughput.requestsPerSecond.toFixed(2)}`);
+        console.log(`  Avg Concurrency: ${stats.throughput.avgConcurrency.toFixed(2)}`);
+        
+        if (Object.keys(stats.errors).length > 0) {
+          console.log('\nError Categories:');
+          Object.entries(stats.errors).forEach(([category, count]) => {
+            console.log(`  ${category}: ${count}`);
+          });
+        }
+      }
+    
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Usage
+    const performanceTester = new PaymentPerformanceTester(
+      'your_test_api_key',
+      'https://api.venly.io'
+    );
+    
+    // Run load test
+    const performanceResults = await performanceTester.runLoadTest({
+      concurrentUsers: 20,
+      requestsPerUser: 10,
+      rampUpTime: 10000, // 10 seconds
+      testDuration: 60000  // 1 minute
+    });
+    
+    console.log('Performance testing completed!');
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Testing Best Practices:**
+
+1. **Use Test Mode** - Always use test API keys and test card numbers in development
+2. **Test All Scenarios** - Include success, failure, and edge cases in your test suite
+3. **Verify Webhooks** - Ensure your webhook endpoints handle all event types correctly
+4. **Automate Testing** - Set up automated tests that run on every deployment
+5. **Monitor Performance** - Test your integration under load to ensure scalability
+6. **Test 3D Secure** - Verify authentication flows work correctly
+7. **Error Handling** - Test how your application handles various error scenarios
+8. **Documentation** - Document your test cases and expected behaviors
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Webhook Configuration" href="/guides/pay-api/webhooks/configuring-webhooks-notifications" icon="webhook">
+    Set up webhook endpoints for real-time notifications
+  </Card>
+  <Card title="Checkout Customization" href="/guides/pay-api/checkout/checkout-link-branding" icon="palette">
+    Customize the appearance of your checkout pages
+  </Card>
+  <Card title="Production Deployment" href="/guides/pay-api/overview" icon="rocket">
+    Deploy your integration to production
+  </Card>
+  <Card title="API Reference" href="/api-reference/pay-api" icon="book">
+    Explore the complete PAY API documentation
+  </Card>
+</CardGroup>

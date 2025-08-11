@@ -1,0 +1,335 @@
+---
+title: "Token API Overview"
+description: "Comprehensive overview of Venly's Token API - create and manage custom ERC20 token contracts across EVM-compatible blockchains"
+icon: "coins"
+---
+
+
+<Info>
+**Venly Token API** empowers users to create and manage custom ERC20 token contracts across Ethereum and other EVM-compatible blockchains with enterprise-grade security and ease of use.
+</Info>
+
+## What is the Token API?
+
+Venly's Token-API empowers users to create and manage custom ERC20 token contracts across Ethereum and other EVM-compatible blockchains. The API allows businesses to deploy ERC20 contracts by defining parameters such as the token's name, symbol, supply cap, and owner.
+
+Once deployed, users can mint tokens to multiple wallets, track the status of token deployments and mints, and manage existing contracts. This API offers an accessible solution for businesses looking to launch cryptocurrencies, manage tokenized assets, or build blockchain-based applications.
+
+Venly's Token-API is a powerful tool that lowers the barriers to entry for businesses and developers looking to harness the potential of blockchain technology. With a focus on **ease of use**, **security**, and **flexibility**, this API empowers you to quickly create and mint ERC20 tokens, supporting various innovative blockchain use cases.
+
+<CardGroup cols={2}>
+  <Card title="Deploy Contracts" icon="file-contract">
+    Create custom ERC20 token contracts with configurable parameters
+  </Card>
+  <Card title="Mint Tokens" icon="coins">
+    Distribute tokens in bulk to multiple wallet addresses
+  </Card>
+  <Card title="Manage Assets" icon="chart-line">
+    Track and manage existing token contracts efficiently
+  </Card>
+  <Card title="Automate Distribution" icon="arrows-split-up-and-left">
+    Automate token distribution with single API calls
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<Tabs>
+  <Tab title="Core Capabilities">
+    | Feature | Description |
+    |---------|-------------|
+    | **Create ERC20 Contracts** | Deploy your own ERC20 token contract on EVM-compatible blockchains |
+    | **Mint ERC20 Tokens** | Mint tokens in bulk to specified wallet addresses |
+    | **Set Token Contract Parameters** | Define the name, symbol, blockchain, supply cap, and token contract owner |
+    | **Manage Contracts** | Track and manage existing token contracts efficiently |
+    | **Automate Token Distribution** | Automate the distribution of tokens to multiple wallets in one API call |
+    | **Track Status** | Monitor the deployment and minting status of tokens and contracts |
+  </Tab>
+  <Tab title="Technical Features">
+    | Feature | Description |
+    |---------|-------------|
+    | **ERC20 Standard** | Full compliance with ERC20 token standard for maximum compatibility |
+    | **Multi-chain Support** | Deploy on Ethereum, Polygon, BSC, Avalanche, and Arbitrum |
+    | **Batch Operations** | Mint to multiple addresses in single transactions for efficiency |
+    | **Supply Management** | Configure maximum supply limits and minting controls |
+    | **Ownership Control** | Set and transfer contract ownership with secure mechanisms |
+    | **Real-time Tracking** | Monitor deployment and minting status with detailed responses |
+  </Tab>
+</Tabs>
+
+## Use Cases & Applications
+
+<AccordionGroup>
+  <Accordion title="Launch Your Cryptocurrency" icon="rocket">
+    **Digital Currency Creation**
+    - Create your own branded cryptocurrency with custom parameters
+    - Set supply limits and distribution mechanisms
+    - Launch utility tokens for your platform or ecosystem
+    
+    **Implementation:**
+    - Deploy ERC20 contract with your token specifications
+    - Configure initial supply and maximum cap
+    - Distribute tokens to early adopters and stakeholders
+    - Implement tokenomics and governance mechanisms
+  </Accordion>
+  
+  <Accordion title="Reward Programs & Loyalty Points" icon="gift">
+    **Customer Incentive Systems**
+    - Issue tokens for customer rewards or loyalty points
+    - Create redeemable digital coupons and vouchers
+    - Build token-based unique user incentive programs
+    - Implement gamified reward mechanisms
+    
+    **Implementation:**
+    - Create reward tokens with specific utility
+    - Mint tokens based on customer actions
+    - Enable redemption mechanisms in your platform
+    - Track and analyze reward program effectiveness
+  </Accordion>
+  
+  <Accordion title="Digital Ownership of Real-World Assets" icon="building">
+    **Asset Tokenization**
+    - Convert real items (property, artwork, commodities) into digital tokens
+    - Enable fractional ownership of high-value assets
+    - Facilitate easy transfer and trading of tokenized assets
+    - Create transparent ownership records on blockchain
+    
+    **Implementation:**
+    - Deploy tokens representing asset shares
+    - Implement compliance and regulatory features
+    - Create marketplace for token trading
+    - Establish legal frameworks for asset backing
+  </Accordion>
+  
+  <Accordion title="In-Game Currency" icon="gamepad">
+    **Gaming Economy Tokens**
+    - Create virtual money or collectibles for players
+    - Ensure secure and transparent ownership of game assets
+    - Enable cross-game asset interoperability
+    - Build player-driven economies
+    
+    **Implementation:**
+    - Deploy game-specific utility tokens
+    - Create in-game earning and spending mechanisms
+    - Implement secure trading between players
+    - Enable asset portability across games
+  </Accordion>
+  
+  <Accordion title="Financial Services" icon="chart-mixed">
+    **DeFi and Financial Applications**
+    - Create tokens for lending and borrowing platforms
+    - Build savings and investment products
+    - Implement yield farming and staking mechanisms
+    - Create governance tokens for DAOs
+    
+    **Implementation:**
+    - Deploy utility tokens for financial services
+    - Implement staking and reward mechanisms
+    - Create governance and voting systems
+    - Build DeFi protocol integrations
+  </Accordion>
+</AccordionGroup>
+
+## Supported Blockchains
+
+<Note>
+Currently, these blockchains are supported to create token contracts and mint ERC20 tokens:
+</Note>
+
+<CardGroup cols={3}>
+  <Card title="Polygon" icon="polygon">
+    **MATIC**
+    - Ultra-low gas fees
+    - Fast transaction finality
+    - Ethereum compatibility
+    - High throughput
+  </Card>
+  <Card title="Ethereum" icon="ethereum">
+    **ETH**
+    - Most established network
+    - Highest security
+    - Maximum liquidity
+    - Widest ecosystem support
+  </Card>
+  <Card title="Binance Smart Chain" icon="binance">
+    **BSC**
+    - Low transaction costs
+    - Fast block times
+    - Large user base
+    - DeFi ecosystem
+  </Card>
+  <Card title="Avalanche" icon="avalanche">
+    **AVAX**
+    - Sub-second finality
+    - High throughput
+    - Eco-friendly consensus
+    - Growing ecosystem
+  </Card>
+  <Card title="Arbitrum" icon="arbitrum">
+    **ARB**
+    - Ethereum Layer 2
+    - Reduced gas costs
+    - Full EVM compatibility
+    - Optimistic rollups
+  </Card>
+</CardGroup>
+
+## API Capabilities
+
+### Contract Deployment
+- **Custom Parameters**: Define token name, symbol, decimals, and initial supply
+- **Supply Management**: Set maximum supply limits and minting permissions
+- **Ownership Control**: Configure contract owner and transfer mechanisms
+- **Security Features**: Built-in security measures and audit-ready contracts
+
+### Token Minting
+- **Bulk Distribution**: Mint tokens to multiple addresses in single transactions
+- **Flexible Amounts**: Specify different amounts for different recipients
+- **Email Integration**: Send tokens to email addresses (auto-wallet creation)
+- **Status Tracking**: Monitor minting progress and completion
+
+### Contract Management
+- **Retrieve Contracts**: List and filter your deployed contracts
+- **Update Ownership**: Transfer contract ownership securely
+- **Archive Contracts**: Deactivate contracts when no longer needed
+- **Status Monitoring**: Track contract deployment and operational status
+
+### Analytics & Reporting
+- **Mint History**: Complete history of all token minting operations
+- **Contract Analytics**: Usage statistics and performance metrics
+- **Transaction Tracking**: Detailed transaction logs and confirmations
+- **Error Handling**: Comprehensive error reporting and debugging
+
+## Getting Started
+
+<Steps>
+  <Step title="Set Up Authentication" icon="key">
+    Get your API credentials from the Venly Portal and authenticate your requests
+  </Step>
+  <Step title="Deploy Your First Contract" icon="file-contract">
+    Create an ERC20 token contract with your custom parameters
+  </Step>
+  <Step title="Mint Initial Tokens" icon="coins">
+    Distribute your first tokens to specified wallet addresses
+  </Step>
+  <Step title="Manage Your Tokens" icon="chart-line">
+    Monitor and manage your token contracts and distributions
+  </Step>
+  <Step title="Scale Your Operations" icon="arrows-up">
+    Implement advanced features and automation
+  </Step>
+</Steps>
+
+## Token Standards & Compliance
+
+### ERC20 Standard
+- **Full Compliance**: Complete implementation of ERC20 specification
+- **Standard Functions**: Transfer, approve, allowance, and balance functions
+- **Event Logging**: Transfer and approval events for transparency
+- **Decimal Support**: Configurable decimal places for token precision
+
+### Security Features
+- **Audited Contracts**: Smart contracts undergo security audits
+- **Access Control**: Role-based permissions and ownership management
+- **Pause Functionality**: Emergency pause capabilities for security
+- **Upgrade Patterns**: Support for contract upgrades when needed
+
+### Regulatory Considerations
+- **Compliance Ready**: Contracts designed with regulatory compliance in mind
+- **KYC Integration**: Support for Know Your Customer requirements
+- **Transfer Restrictions**: Configurable transfer limitations
+- **Reporting Features**: Built-in reporting for regulatory requirements
+
+## Advanced Features
+
+<Tabs>
+  <Tab title="Automation">
+    - **Scheduled Minting**: Automate token distribution based on schedules
+    - **Event-Driven Minting**: Trigger minting based on external events
+    - **Batch Processing**: Process multiple operations efficiently
+    - **Webhook Integration**: Real-time notifications for all operations
+  </Tab>
+  <Tab title="Integration">
+    - **Wallet Integration**: Direct integration with Venly Wallet API
+    - **DeFi Protocols**: Ready for DeFi platform integration
+    - **Exchange Listing**: Prepared for cryptocurrency exchange listings
+    - **Third-party Services**: Compatible with major blockchain services
+  </Tab>
+  <Tab title="Analytics">
+    - **Token Metrics**: Comprehensive token usage analytics
+    - **Holder Analysis**: Detailed token holder statistics
+    - **Transaction Insights**: In-depth transaction analysis
+    - **Performance Monitoring**: Real-time performance metrics
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" href="/guides/token-api/quickstart" icon="rocket">
+    Follow our step-by-step guide to create your first ERC20 token
+  </Card>
+  <Card title="Create ERC20 Contract" href="/guides/token-api/contracts/create-erc20-token-contract" icon="file-contract">
+    Learn how to deploy your first token contract
+  </Card>
+  <Card title="Mint Tokens" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Distribute tokens to multiple wallet addresses
+  </Card>
+  <Card title="Advanced Features" href="/guides/token-api/advanced/webhooks-token-api" icon="webhook">
+    Explore webhooks and advanced functionality
+  </Card>
+</CardGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Token Design" icon="palette">
+    **Planning Your Token**
+    - Define clear utility and purpose for your token
+    - Choose appropriate supply limits and distribution model
+    - Consider tokenomics and incentive mechanisms
+    - Plan for future upgrades and governance
+  </Accordion>
+  
+  <Accordion title="Security" icon="shield">
+    **Security Considerations**
+    - Use testnet for initial testing and validation
+    - Implement proper access controls and permissions
+    - Consider multi-signature wallets for contract ownership
+    - Regular security audits and monitoring
+  </Accordion>
+  
+  <Accordion title="Compliance" icon="scale-balanced">
+    **Regulatory Compliance**
+    - Understand local regulations for token creation
+    - Implement KYC/AML procedures if required
+    - Consider securities regulations and compliance
+    - Maintain proper documentation and records
+  </Accordion>
+  
+  <Accordion title="Operations" icon="gears">
+    **Operational Excellence**
+    - Monitor contract performance and gas usage
+    - Implement proper error handling and recovery
+    - Use webhooks for real-time monitoring
+    - Plan for scalability and high-volume operations
+  </Accordion>
+</AccordionGroup>
+
+## Support & Resources
+
+<AccordionGroup>
+  <Accordion title="API Reference" icon="book">
+    Complete API documentation with all endpoints, parameters, and examples available in our [API Reference](https://docs.venly.io/reference).
+  </Accordion>
+  
+  <Accordion title="Developer Portal" icon="portal">
+    Access your API keys, monitor usage, and manage your applications in the [Venly Portal](https://portal.venly.io).
+  </Accordion>
+  
+  <Accordion title="Community Support" icon="users">
+    Join our developer community for support, discussions, and updates on new features and best practices.
+  </Accordion>
+</AccordionGroup>
+
+---

@@ -1,0 +1,360 @@
+---
+title: "Create Token-type (NFT template)"
+description: "Learn how to create an NFT template (token-type) that defines the blueprint for your NFTs"
+icon: "shapes"
+---
+
+<Info>
+**What you'll learn:** How to create NFT templates (token-types) that serve as blueprints for minting multiple NFTs with the same characteristics.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is a Token-Type?
+
+A token-type is essentially an **NFT template** that defines the characteristics of your NFTs before they're minted. Think of it as creating a blueprint that you can use to mint multiple NFTs with the same properties.
+
+<CardGroup cols={2}>
+  <Card title="Template Definition" icon="file-text">
+    Define name, image, description, and attributes once
+  </Card>
+  <Card title="Multiple Minting" icon="copy">
+    Use the same template to mint many NFTs
+  </Card>
+  <Card title="Consistent Metadata" icon="database">
+    All NFTs from the template share the same base properties
+  </Card>
+  <Card title="Efficient Process" icon="zap">
+    Create once, mint many times
+  </Card>
+</CardGroup>
+
+<Note>
+This means you just have to define the NFT template once with parameters like its `name`, `image`, and `description`. Using this token-type you can mint multiple NFTs with identical characteristics.
+</Note>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Contract Deployed" icon="file-contract">
+    You need a deployed NFT contract to create token-types
+  </Step>
+  <Step title="Contract Address" icon="link">
+    Have your contract address ready from the deployment response
+  </Step>
+  <Step title="Asset Preparation" icon="image">
+    Prepare your NFT image, name, and description
+  </Step>
+</Steps>
+
+## Create Your Token-Type
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/api/v3/erc1155/token-types/creations', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    chain: "MATIC",
+    contractAddress: "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+    creations: [
+      {
+        name: "My first NFT Token-type",
+        description: "Venly",
+        image: "https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg"
+      }
+    ]
+  })
+});
+
+const data = await response.json();
+console.log('Token-type created:', data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/api/v3/erc1155/token-types/creations',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'chain': 'MATIC',
+        'contractAddress': '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+        'creations': [
+            {
+                'name': 'My first NFT Token-type',
+                'description': 'Venly',
+                'image': 'https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg'
+            }
+        ]
+    }
+)
+
+data = response.json()
+print('Token-type created:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc1155/token-types/creations' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "contractAddress": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+    "creations": [
+      {
+        "name": "My first NFT Token-type",
+        "description": "Venly",
+        "image": "https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg"
+      }
+    ]
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | The blockchain of the contract |
+| `contractAddress` | string | ✅ | The contract address under which you want to create the token-type |
+| `creations` | array | ✅ | An array of objects that can define one or multiple token-type details |
+| `creations.name` | string | ✅ | The name of the token-type |
+| `creations.description` | string | ❌ | The description of the token-type |
+| `creations.image` | string | ❌ | The image URL for the token-type that will be displayed |
+
+<Tip>
+**Batch Creation:** You can create multiple token-types in a single request by adding more objects to the `creations` array.
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "creations": [
+          {
+            "id": "45cf858a-cb0d-4e31-b6e1-b3bf4c65d014",
+            "status": "PENDING",
+            "tokenTypeId": 5,
+            "metadata": {
+              "name": "My first NFT Token-type",
+              "description": "Venly",
+              "image": "https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg",
+              "imagePreview": "https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg",
+              "imageThumbnail": "https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg",
+              "animationUrls": [],
+              "attributes": [
+                {
+                  "type": "system",
+                  "name": "tokenTypeId",
+                  "value": "5",
+                  "traitType": "Token Type ID",
+                  "trait_type": "Token Type ID"
+                }
+              ],
+              "contract": {
+                "address": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+                "name": "Test",
+                "symbol": "TE",
+                "image": "string",
+                "imageUrl": "string",
+                "image_url": "string",
+                "description": "Testing",
+                "externalLink": "www.venly.io",
+                "external_link": "www.venly.io",
+                "externalUrl": "www.venly.io",
+                "external_url": "www.venly.io",
+                "media": [],
+                "type": "ERC_1155"
+              },
+              "fungible": false
+            }
+          }
+        ]
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields to save:**
+    - **`result.creations.id`** - Creation ID for tracking status
+    - **`tokenTypeId`** - Use this ID when minting NFTs
+    - **`status`** - Current creation status (PENDING → SUCCESS)
+    - **`metadata`** - Complete token-type metadata
+  </Tab>
+</Tabs>
+
+<Check>
+**Save the Creation ID:** The `result.creations.id` is your **Creation ID** used to track the status of the token-type creation request.
+</Check>
+
+## Token-Type Status
+
+The token-type creation is asynchronous. Monitor the status:
+
+| Status | Description |
+|--------|-------------|
+| `PENDING` | Token-type creation is in progress |
+| `SUCCESS` | Token-type successfully created and ready for minting |
+| `FAILED` | Creation failed - check error details |
+
+## Advanced Token-Type Features
+
+<AccordionGroup>
+  <Accordion title="Adding Custom Attributes" icon="tags">
+    **Enhance your token-types with custom attributes:**
+    
+    ```json
+    {
+      "creations": [
+        {
+          "name": "Legendary Sword",
+          "description": "A powerful weapon",
+          "image": "https://example.com/sword.jpg",
+          "attributes": [
+            {
+              "type": "property",
+              "name": "Rarity",
+              "value": "Legendary"
+            },
+            {
+              "type": "stat",
+              "name": "Attack Power",
+              "value": "95",
+              "maxValue": "100"
+            }
+          ]
+        }
+      ]
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Fungible vs Non-Fungible" icon="coins">
+    **Token-type behavior:**
+    - **Non-fungible (default)**: Each mint gets a unique token ID
+    - **Fungible**: All mints share the same token ID
+    
+    ```json
+    {
+      "creations": [
+        {
+          "name": "Game Currency",
+          "fungible": true,
+          "maxSupply": 1000000
+        }
+      ]
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Supply Limits" icon="chart-line">
+    **Control token supply:**
+    
+    ```json
+    {
+      "creations": [
+        {
+          "name": "Limited Edition NFT",
+          "maxSupply": 100,
+          "description": "Only 100 will ever exist"
+        }
+      ]
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Media and Animation" icon="video">
+    **Add rich media:**
+    
+    ```json
+    {
+      "creations": [
+        {
+          "name": "Animated NFT",
+          "image": "https://example.com/preview.jpg",
+          "animationUrl": "https://example.com/animation.mp4",
+          "backgroundColor": "#FF0000"
+        }
+      ]
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Token-Type Optimization:**
+
+1. **Descriptive Names** - Use clear, searchable names
+2. **High-Quality Images** - Use at least 400x400px images
+3. **Rich Metadata** - Add relevant attributes and properties
+4. **Supply Planning** - Set appropriate max supply limits
+5. **Batch Creation** - Create multiple token-types efficiently
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invalid contract address">
+    **Possible causes:**
+    - Contract not deployed or still pending
+    - Wrong blockchain specified
+    - Incorrect contract address format
+    
+    **Solution:** Verify the contract is successfully deployed and the address is correct.
+  </Accordion>
+  
+  <Accordion title="Image URL not accessible">
+    **Requirements:**
+    - URL must be publicly accessible
+    - Use HTTPS protocol
+    - Supported formats: JPG, PNG, GIF, SVG
+    - Recommended size: 400x400px or larger
+    
+    **Solution:** Test the image URL in a browser to ensure it loads.
+  </Accordion>
+  
+  <Accordion title="Token-type creation failed">
+    **Common causes:**
+    - Invalid metadata format
+    - Network congestion
+    - Insufficient permissions
+    
+    **Solution:** Check the creation status using the creation ID and retry if necessary.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Check Token-Type Status" href="/NFT-API-Basic-Guides/check-token-type-status" icon="magnifying-glass">
+    Monitor your token-type creation progress
+  </Card>
+  <Card title="Mint NFTs" href="/guides/nft-api/minting/how-to-mint-an-nft" icon="coins">
+    Use your token-type to mint actual NFTs
+  </Card>
+  <Card title="Update Token-Type Metadata" href="/NFT-API-Basic-Guides/retrieve-nft-template" icon="pen">
+    Modify token-type properties after creation
+  </Card>
+  <Card title="Batch Mint NFTs" href="/NFT-API-Basic-Guides/how-to-batch-mint-nfts-to-multiple-destinations" icon="layer-group">
+    Mint multiple NFTs to different recipients
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Token-types define the template but don't create actual NFTs on the blockchain. You still need to mint tokens using the token-type ID.
+</Warning>

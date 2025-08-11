@@ -1,0 +1,1608 @@
+---
+title: "Retrieve Token Types"
+description: "Comprehensive guide to retrieving NFT token types with advanced filtering, caching, and batch operations for efficient template management"
+icon: "magnifying-glass"
+---
+
+<Info>
+**Token Type Retrieval:** Efficiently retrieve NFT token types with advanced filtering, caching strategies, and comprehensive metadata analysis.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Token Type Retrieval?
+
+Token type retrieval allows you to fetch detailed information about NFT templates from your contracts. You can retrieve individual token types by ID or get all token types associated with a contract. This is essential for displaying NFT collections, managing templates, and building comprehensive NFT applications.
+
+<CardGroup cols={2}>
+  <Card title="Individual Retrieval" icon="search">
+    Get specific token type details by ID
+  </Card>
+  <Card title="Batch Retrieval" icon="list">
+    Retrieve all token types from a contract
+  </Card>
+  <Card title="Advanced Filtering" icon="filter">
+    Filter and sort token types by various criteria
+  </Card>
+  <Card title="Caching & Performance" icon="bolt">
+    Optimize retrieval with smart caching strategies
+  </Card>
+</CardGroup>
+
+## Retrieval Methods
+
+<Tabs>
+  <Tab title="Single Token Type">
+    **Get Specific Token Type:**
+    - Retrieve detailed metadata for one token type
+    - Full contract and attribute information
+    - On-chain status and verification
+    - Complete media URLs and previews
+    
+    **Use Cases:**
+    - Displaying individual NFT template details
+    - Validating token type configuration
+    - Building NFT detail pages
+    - Template verification workflows
+  </Tab>
+  <Tab title="All Token Types">
+    **Get Contract Token Types:**
+    - Retrieve all token types from a contract
+    - Summary information for each type
+    - Batch processing capabilities
+    - Collection overview data
+    
+    **Use Cases:**
+    - Building NFT collection galleries
+    - Template management dashboards
+    - Bulk operations and analysis
+    - Collection statistics and reporting
+  </Tab>
+  <Tab title="Advanced Queries">
+    **Filtered Retrieval:**
+    - Filter by status, attributes, or metadata
+    - Sort by creation date, name, or ID
+    - Pagination for large collections
+    - Search and discovery features
+    
+    **Use Cases:**
+    - Advanced collection browsing
+    - Template discovery systems
+    - Analytics and reporting tools
+    - Custom collection views
+  </Tab>
+</Tabs>
+
+## Retrieve Token Types
+
+<Steps>
+  <Step title="Choose Retrieval Method" icon="list">
+    Decide between single token type or batch retrieval
+    
+    ```javascript
+    // Single token type retrieval
+    const singleTokenType = await getTokenType(chain, contractAddress, tokenTypeId);
+    
+    // All token types retrieval
+    const allTokenTypes = await getAllTokenTypes(chain, contractAddress);
+    ```
+  </Step>
+  <Step title="Apply Filters" icon="filter">
+    Add filtering and sorting criteria if needed
+  </Step>
+  <Step title="Process Results" icon="gear">
+    Handle the retrieved data and update your application
+  </Step>
+  <Step title="Cache Results" icon="database">
+    Implement caching for improved performance
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Get single token type
+const getTokenType = async (chain, contractAddress, tokenTypeId) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/token-types/${tokenTypeId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve token type');
+    }
+  } catch (error) {
+    console.error('Error retrieving token type:', error);
+    throw error;
+  }
+};
+
+// Get all token types
+const getAllTokenTypes = async (chain, contractAddress) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/token-types`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve token types');
+    }
+  } catch (error) {
+    console.error('Error retrieving token types:', error);
+    throw error;
+  }
+};
+
+// Enhanced token type retrieval manager
+class TokenTypeRetriever {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = new Map();
+    this.defaultCacheTTL = 300000; // 5 minutes
+  }
+
+  async getTokenType(chain, contractAddress, tokenTypeId, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      includeMetadata = true,
+      validateStatus = true
+    } = options;
+
+    const cacheKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached token type');
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      const tokenType = await getTokenType(chain, contractAddress, tokenTypeId);
+
+      // Validate status if requested
+      if (validateStatus && tokenType.onChainStatus !== 'SUCCEEDED') {
+        console.warn(`Token type ${tokenTypeId} status: ${tokenType.onChainStatus}`);
+      }
+
+      // Enhance with additional metadata if requested
+      if (includeMetadata) {
+        tokenType.enhanced = await this.enhanceTokenTypeMetadata(tokenType);
+      }
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, tokenType);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      return tokenType;
+    } catch (error) {
+      console.error(`Failed to retrieve token type ${tokenTypeId}:`, error);
+      throw error;
+    }
+  }
+
+  async getAllTokenTypes(chain, contractAddress, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      sortBy = 'tokenTypeId',
+      sortOrder = 'asc',
+      filterBy = null,
+      includeDetails = false
+    } = options;
+
+    const cacheKey = `${chain}:${contractAddress}:all`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached token types');
+      let tokenTypes = this.cache.get(cacheKey);
+      return this.processTokenTypes(tokenTypes, { sortBy, sortOrder, filterBy });
+    }
+
+    try {
+      let tokenTypes = await getAllTokenTypes(chain, contractAddress);
+
+      // Include detailed metadata if requested
+      if (includeDetails) {
+        tokenTypes = await this.batchEnhanceTokenTypes(tokenTypes);
+      }
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, tokenTypes);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      return this.processTokenTypes(tokenTypes, { sortBy, sortOrder, filterBy });
+    } catch (error) {
+      console.error('Failed to retrieve token types:', error);
+      throw error;
+    }
+  }
+
+  async batchRetrieveTokenTypes(requests, options = {}) {
+    const {
+      concurrency = 5,
+      retryAttempts = 3,
+      retryDelay = 1000
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Process requests in batches to avoid overwhelming the API
+    for (let i = 0; i < requests.length; i += concurrency) {
+      const batch = requests.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (request) => {
+        let attempts = 0;
+        
+        while (attempts < retryAttempts) {
+          try {
+            if (request.tokenTypeId) {
+              // Single token type request
+              const result = await this.getTokenType(
+                request.chain,
+                request.contractAddress,
+                request.tokenTypeId,
+                request.options
+              );
+              
+              return {
+                success: true,
+                request,
+                result
+              };
+            } else {
+              // All token types request
+              const result = await this.getAllTokenTypes(
+                request.chain,
+                request.contractAddress,
+                request.options
+              );
+              
+              return {
+                success: true,
+                request,
+                result
+              };
+            }
+          } catch (error) {
+            attempts++;
+            
+            if (attempts >= retryAttempts) {
+              return {
+                success: false,
+                request,
+                error: error.message
+              };
+            }
+            
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, retryDelay * attempts));
+          }
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  processTokenTypes(tokenTypes, options) {
+    const { sortBy, sortOrder, filterBy } = options;
+    let processed = [...tokenTypes];
+
+    // Apply filters
+    if (filterBy) {
+      processed = processed.filter(tokenType => {
+        return Object.entries(filterBy).every(([key, value]) => {
+          if (key === 'status') {
+            return tokenType.onChainStatus === value;
+          }
+          if (key === 'fungible') {
+            return tokenType.fungible === value;
+          }
+          if (key === 'name') {
+            return tokenType.name?.toLowerCase().includes(value.toLowerCase());
+          }
+          return true;
+        });
+      });
+    }
+
+    // Apply sorting
+    processed.sort((a, b) => {
+      let aValue = a[sortBy];
+      let bValue = b[sortBy];
+
+      // Handle special sorting cases
+      if (sortBy === 'name') {
+        aValue = aValue?.toLowerCase() || '';
+        bValue = bValue?.toLowerCase() || '';
+      }
+
+      if (sortOrder === 'desc') {
+        return bValue > aValue ? 1 : bValue < aValue ? -1 : 0;
+      } else {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      }
+    });
+
+    return processed;
+  }
+
+  async enhanceTokenTypeMetadata(tokenType) {
+    const enhanced = {
+      hasImage: !!tokenType.metadata?.image,
+      hasAnimation: tokenType.metadata?.animationUrls?.length > 0,
+      attributeCount: tokenType.metadata?.attributes?.length || 0,
+      isSuccessful: tokenType.onChainStatus === 'SUCCEEDED',
+      mediaTypes: this.analyzeMediaTypes(tokenType.metadata),
+      rarityScore: this.calculateRarityScore(tokenType.metadata?.attributes)
+    };
+
+    return enhanced;
+  }
+
+  async batchEnhanceTokenTypes(tokenTypes) {
+    return Promise.all(
+      tokenTypes.map(async tokenType => {
+        const detailed = await this.getTokenType(
+          tokenType.chain,
+          tokenType.contractAddress,
+          tokenType.tokenTypeId,
+          { useCache: true, includeMetadata: false }
+        );
+        
+        return {
+          ...tokenType,
+          metadata: detailed.metadata,
+          enhanced: await this.enhanceTokenTypeMetadata(detailed)
+        };
+      })
+    );
+  }
+
+  analyzeMediaTypes(metadata) {
+    const types = [];
+    
+    if (metadata?.image) types.push('image');
+    if (metadata?.animationUrls?.length > 0) {
+      metadata.animationUrls.forEach(url => {
+        if (url.type) types.push(url.type);
+      });
+    }
+    
+    return [...new Set(types)];
+  }
+
+  calculateRarityScore(attributes) {
+    if (!attributes || attributes.length === 0) return 0;
+    
+    // Simple rarity calculation based on attribute count
+    // In a real implementation, this would consider attribute frequency
+    return attributes.filter(attr => attr.type !== 'system').length * 10;
+  }
+
+  isCacheValid(key) {
+    if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
+      return false;
+    }
+    
+    return Date.now() < this.cacheExpiry.get(key);
+  }
+
+  clearCache(pattern = null) {
+    if (pattern) {
+      // Clear cache entries matching pattern
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+          this.cacheExpiry.delete(key);
+        }
+      }
+    } else {
+      // Clear all cache
+      this.cache.clear();
+      this.cacheExpiry.clear();
+    }
+  }
+
+  getCacheStats() {
+    const now = Date.now();
+    let validEntries = 0;
+    let expiredEntries = 0;
+
+    for (const [key, expiry] of this.cacheExpiry.entries()) {
+      if (now < expiry) {
+        validEntries++;
+      } else {
+        expiredEntries++;
+      }
+    }
+
+    return {
+      totalEntries: this.cache.size,
+      validEntries,
+      expiredEntries,
+      hitRate: this.hitRate || 0
+    };
+  }
+
+  async searchTokenTypes(chain, contractAddress, searchTerm, options = {}) {
+    const {
+      searchFields = ['name', 'description'],
+      caseSensitive = false,
+      exactMatch = false
+    } = options;
+
+    const allTokenTypes = await this.getAllTokenTypes(chain, contractAddress, {
+      includeDetails: true
+    });
+
+    const searchValue = caseSensitive ? searchTerm : searchTerm.toLowerCase();
+
+    return allTokenTypes.filter(tokenType => {
+      return searchFields.some(field => {
+        let fieldValue = '';
+        
+        if (field === 'name') {
+          fieldValue = tokenType.name || tokenType.metadata?.name || '';
+        } else if (field === 'description') {
+          fieldValue = tokenType.metadata?.description || '';
+        } else if (field === 'attributes') {
+          fieldValue = tokenType.metadata?.attributes?.map(attr => attr.value).join(' ') || '';
+        }
+
+        if (!caseSensitive) {
+          fieldValue = fieldValue.toLowerCase();
+        }
+
+        return exactMatch ? fieldValue === searchValue : fieldValue.includes(searchValue);
+      });
+    });
+  }
+
+  generateRetrievalReport(chain, contractAddress) {
+    const cacheStats = this.getCacheStats();
+    
+    return {
+      chain,
+      contractAddress,
+      cacheStats,
+      lastRetrieval: new Date().toISOString(),
+      availableMethods: [
+        'getTokenType',
+        'getAllTokenTypes',
+        'batchRetrieveTokenTypes',
+        'searchTokenTypes'
+      ]
+    };
+  }
+}
+
+// Usage examples
+const retriever = new TokenTypeRetriever('YOUR_API_KEY');
+
+// Get single token type
+const tokenType = await retriever.getTokenType(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  1,
+  {
+    useCache: true,
+    includeMetadata: true,
+    validateStatus: true
+  }
+);
+
+console.log('Token type:', tokenType);
+
+// Get all token types with filtering
+const allTokenTypes = await retriever.getAllTokenTypes(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  {
+    sortBy: 'name',
+    sortOrder: 'asc',
+    filterBy: { status: 'SUCCEEDED', fungible: false },
+    includeDetails: true
+  }
+);
+
+console.log('All token types:', allTokenTypes);
+
+// Batch retrieval
+const batchRequests = [
+  {
+    chain: 'MATIC',
+    contractAddress: '0xcontract1',
+    tokenTypeId: 1
+  },
+  {
+    chain: 'MATIC',
+    contractAddress: '0xcontract1'
+    // No tokenTypeId means get all token types
+  }
+];
+
+const batchResults = await retriever.batchRetrieveTokenTypes(batchRequests);
+console.log('Batch results:', batchResults);
+
+// Search token types
+const searchResults = await retriever.searchTokenTypes(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  'first NFT',
+  {
+    searchFields: ['name', 'description'],
+    caseSensitive: false,
+    exactMatch: false
+  }
+);
+
+console.log('Search results:', searchResults);
+```
+
+```python Python
+import requests
+import time
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+
+class TokenTypeRetriever:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.cache = {}
+        self.cache_expiry = {}
+        self.default_cache_ttl = 300  # 5 minutes
+    
+    def get_token_type(self, chain: str, contract_address: str, token_type_id: int) -> Dict[str, Any]:
+        """Get single token type"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/token-types/{token_type_id}'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to retrieve token type')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving token type: {error}')
+            raise error
+    
+    def get_all_token_types(self, chain: str, contract_address: str) -> List[Dict[str, Any]]:
+        """Get all token types"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/token-types'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to retrieve token types')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving token types: {error}')
+            raise error
+    
+    def get_token_type_cached(self, chain: str, contract_address: str, token_type_id: int, 
+                             options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Get token type with caching"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        include_metadata = options.get('include_metadata', True)
+        validate_status = options.get('validate_status', True)
+        
+        cache_key = f"{chain}:{contract_address}:{token_type_id}"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached token type')
+            return self.cache[cache_key]
+        
+        try:
+            token_type = self.get_token_type(chain, contract_address, token_type_id)
+            
+            # Validate status if requested
+            if validate_status and token_type.get('onChainStatus') != 'SUCCEEDED':
+                print(f'Warning: Token type {token_type_id} status: {token_type.get("onChainStatus")}')
+            
+            # Enhance with additional metadata if requested
+            if include_metadata:
+                token_type['enhanced'] = self._enhance_token_type_metadata(token_type)
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = token_type
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            return token_type
+            
+        except Exception as error:
+            print(f'Failed to retrieve token type {token_type_id}: {error}')
+            raise error
+    
+    def get_all_token_types_cached(self, chain: str, contract_address: str, 
+                                  options: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+        """Get all token types with caching and processing"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        sort_by = options.get('sort_by', 'tokenTypeId')
+        sort_order = options.get('sort_order', 'asc')
+        filter_by = options.get('filter_by')
+        include_details = options.get('include_details', False)
+        
+        cache_key = f"{chain}:{contract_address}:all"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached token types')
+            token_types = self.cache[cache_key]
+            return self._process_token_types(token_types, sort_by, sort_order, filter_by)
+        
+        try:
+            token_types = self.get_all_token_types(chain, contract_address)
+            
+            # Include detailed metadata if requested
+            if include_details:
+                token_types = self._batch_enhance_token_types(token_types)
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = token_types
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            return self._process_token_types(token_types, sort_by, sort_order, filter_by)
+            
+        except Exception as error:
+            print(f'Failed to retrieve token types: {error}')
+            raise error
+    
+    def batch_retrieve_token_types(self, requests: List[Dict[str, Any]], 
+                                  options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Batch retrieve token types"""
+        if options is None:
+            options = {}
+        
+        retry_attempts = options.get('retry_attempts', 3)
+        retry_delay = options.get('retry_delay', 1)
+        
+        results = []
+        errors = []
+        
+        for request in requests:
+            attempts = 0
+            
+            while attempts < retry_attempts:
+                try:
+                    if 'token_type_id' in request:
+                        # Single token type request
+                        result = self.get_token_type_cached(
+                            request['chain'],
+                            request['contract_address'],
+                            request['token_type_id'],
+                            request.get('options', {})
+                        )
+                    else:
+                        # All token types request
+                        result = self.get_all_token_types_cached(
+                            request['chain'],
+                            request['contract_address'],
+                            request.get('options', {})
+                        )
+                    
+                    results.append({
+                        'success': True,
+                        'request': request,
+                        'result': result
+                    })
+                    break
+                    
+                except Exception as error:
+                    attempts += 1
+                    
+                    if attempts >= retry_attempts:
+                        errors.append({
+                            'success': False,
+                            'request': request,
+                            'error': str(error)
+                        })
+                    else:
+                        time.sleep(retry_delay * attempts)
+        
+        return {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+    
+    def search_token_types(self, chain: str, contract_address: str, search_term: str,
+                          options: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+        """Search token types"""
+        if options is None:
+            options = {}
+        
+        search_fields = options.get('search_fields', ['name', 'description'])
+        case_sensitive = options.get('case_sensitive', False)
+        exact_match = options.get('exact_match', False)
+        
+        all_token_types = self.get_all_token_types_cached(chain, contract_address, {
+            'include_details': True
+        })
+        
+        search_value = search_term if case_sensitive else search_term.lower()
+        
+        results = []
+        
+        for token_type in all_token_types:
+            for field in search_fields:
+                field_value = ''
+                
+                if field == 'name':
+                    field_value = token_type.get('name', '') or token_type.get('metadata', {}).get('name', '')
+                elif field == 'description':
+                    field_value = token_type.get('metadata', {}).get('description', '')
+                elif field == 'attributes':
+                    attributes = token_type.get('metadata', {}).get('attributes', [])
+                    field_value = ' '.join([attr.get('value', '') for attr in attributes])
+                
+                if not case_sensitive:
+                    field_value = field_value.lower()
+                
+                if exact_match:
+                    if field_value == search_value:
+                        results.append(token_type)
+                        break
+                else:
+                    if search_value in field_value:
+                        results.append(token_type)
+                        break
+        
+        return results
+    
+    def _process_token_types(self, token_types: List[Dict[str, Any]], sort_by: str, 
+                           sort_order: str, filter_by: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Process token types with filtering and sorting"""
+        processed = token_types.copy()
+        
+        # Apply filters
+        if filter_by:
+            filtered = []
+            for token_type in processed:
+                include = True
+                
+                for key, value in filter_by.items():
+                    if key == 'status' and token_type.get('onChainStatus') != value:
+                        include = False
+                        break
+                    elif key == 'fungible' and token_type.get('fungible') != value:
+                        include = False
+                        break
+                    elif key == 'name' and value.lower() not in (token_type.get('name', '') or '').lower():
+                        include = False
+                        break
+                
+                if include:
+                    filtered.append(token_type)
+            
+            processed = filtered
+        
+        # Apply sorting
+        reverse = sort_order == 'desc'
+        
+        if sort_by == 'name':
+            processed.sort(key=lambda x: (x.get('name') or '').lower(), reverse=reverse)
+        else:
+            processed.sort(key=lambda x: x.get(sort_by, 0), reverse=reverse)
+        
+        return processed
+    
+    def _enhance_token_type_metadata(self, token_type: Dict[str, Any]) -> Dict[str, Any]:
+        """Enhance token type with additional metadata"""
+        metadata = token_type.get('metadata', {})
+        
+        enhanced = {
+            'has_image': bool(metadata.get('image')),
+            'has_animation': len(metadata.get('animationUrls', [])) > 0,
+            'attribute_count': len(metadata.get('attributes', [])),
+            'is_successful': token_type.get('onChainStatus') == 'SUCCEEDED',
+            'media_types': self._analyze_media_types(metadata),
+            'rarity_score': self._calculate_rarity_score(metadata.get('attributes', []))
+        }
+        
+        return enhanced
+    
+    def _batch_enhance_token_types(self, token_types: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Enhance multiple token types"""
+        enhanced = []
+        
+        for token_type in token_types:
+            # Get detailed information
+            detailed = self.get_token_type(
+                token_type['chain'],
+                token_type['contractAddress'],
+                token_type['tokenTypeId']
+            )
+            
+            enhanced_token_type = {
+                **token_type,
+                'metadata': detailed.get('metadata'),
+                'enhanced': self._enhance_token_type_metadata(detailed)
+            }
+            
+            enhanced.append(enhanced_token_type)
+        
+        return enhanced
+    
+    def _analyze_media_types(self, metadata: Dict[str, Any]) -> List[str]:
+        """Analyze media types in metadata"""
+        types = []
+        
+        if metadata.get('image'):
+            types.append('image')
+        
+        for url in metadata.get('animationUrls', []):
+            if url.get('type'):
+                types.append(url['type'])
+        
+        return list(set(types))
+    
+    def _calculate_rarity_score(self, attributes: List[Dict[str, Any]]) -> int:
+        """Calculate simple rarity score"""
+        if not attributes:
+            return 0
+        
+        # Simple calculation based on non-system attributes
+        non_system_attrs = [attr for attr in attributes if attr.get('type') != 'system']
+        return len(non_system_attrs) * 10
+    
+    def _is_cache_valid(self, key: str) -> bool:
+        """Check if cache entry is valid"""
+        if key not in self.cache or key not in self.cache_expiry:
+            return False
+        
+        return datetime.now() < self.cache_expiry[key]
+    
+    def clear_cache(self, pattern: str = None):
+        """Clear cache entries"""
+        if pattern:
+            keys_to_remove = [key for key in self.cache.keys() if pattern in key]
+            for key in keys_to_remove:
+                del self.cache[key]
+                if key in self.cache_expiry:
+                    del self.cache_expiry[key]
+        else:
+            self.cache.clear()
+            self.cache_expiry.clear()
+    
+    def get_cache_stats(self) -> Dict[str, Any]:
+        """Get cache statistics"""
+        now = datetime.now()
+        valid_entries = 0
+        expired_entries = 0
+        
+        for key, expiry in self.cache_expiry.items():
+            if now < expiry:
+                valid_entries += 1
+            else:
+                expired_entries += 1
+        
+        return {
+            'total_entries': len(self.cache),
+            'valid_entries': valid_entries,
+            'expired_entries': expired_entries
+        }
+    
+    def generate_retrieval_report(self, chain: str, contract_address: str) -> Dict[str, Any]:
+        """Generate retrieval report"""
+        cache_stats = self.get_cache_stats()
+        
+        return {
+            'chain': chain,
+            'contract_address': contract_address,
+            'cache_stats': cache_stats,
+            'last_retrieval': datetime.now().isoformat(),
+            'available_methods': [
+                'get_token_type',
+                'get_all_token_types',
+                'batch_retrieve_token_types',
+                'search_token_types'
+            ]
+        }
+
+# Usage
+retriever = TokenTypeRetriever('YOUR_API_KEY')
+
+# Get single token type
+token_type = retriever.get_token_type_cached(
+    'MATIC',
+    '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+    1,
+    {
+        'use_cache': True,
+        'include_metadata': True,
+        'validate_status': True
+    }
+)
+
+print('Token type:', token_type)
+
+# Get all token types with filtering
+all_token_types = retriever.get_all_token_types_cached(
+    'MATIC',
+    '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+    {
+        'sort_by': 'name',
+        'sort_order': 'asc',
+        'filter_by': {'status': 'SUCCEEDED', 'fungible': False},
+        'include_details': True
+    }
+)
+
+print('All token types:', all_token_types)
+
+# Search token types
+search_results = retriever.search_token_types(
+    'MATIC',
+    '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+    'first NFT',
+    {
+        'search_fields': ['name', 'description'],
+        'case_sensitive': False,
+        'exact_match': False
+    }
+)
+
+print('Search results:', search_results)
+```
+
+```bash cURL
+# Get single token type
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0x30d6cff9cb268c59c75a94755b2c60e118d65657/token-types/1' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get all token types
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0x30d6cff9cb268c59c75a94755b2c60e118d65657/token-types' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Batch retrieval script
+#!/bin/bash
+API_KEY="YOUR_API_KEY"
+CHAIN="MATIC"
+CONTRACT_ADDRESS="0x30d6cff9cb268c59c75a94755b2c60e118d65657"
+
+echo "Retrieving all token types for contract: $CONTRACT_ADDRESS"
+
+# Get all token types
+response=$(curl -s -X GET \
+  "/api/v3/erc1155/contracts/$CHAIN/$CONTRACT_ADDRESS/token-types" \
+  -H "Authorization: Bearer $API_KEY" \
+  -H 'Content-Type: application/json')
+
+# Check if request was successful
+if echo "$response" | jq -e '.success' > /dev/null; then
+  echo "✓ Successfully retrieved token types"
+  
+  # Extract token type IDs
+  token_type_ids=$(echo "$response" | jq -r '.result[].tokenTypeId')
+  
+  echo "Found token types: $(echo "$token_type_ids" | tr '\n' ' ')"
+  
+  # Get detailed information for each token type
+  for token_type_id in $token_type_ids; do
+    echo "Getting details for token type $token_type_id..."
+    
+    detail_response=$(curl -s -X GET \
+      "/api/v3/erc1155/contracts/$CHAIN/$CONTRACT_ADDRESS/token-types/$token_type_id" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H 'Content-Type: application/json')
+    
+    if echo "$detail_response" | jq -e '.success' > /dev/null; then
+      name=$(echo "$detail_response" | jq -r '.result.name // "Unnamed"')
+      status=$(echo "$detail_response" | jq -r '.result.onChainStatus')
+      echo "  - ID: $token_type_id, Name: $name, Status: $status"
+    else
+      echo "  - Failed to get details for token type $token_type_id"
+    fi
+    
+    sleep 0.5  # Rate limiting
+  done
+else
+  echo "✗ Failed to retrieve token types"
+  echo "$response" | jq '.error // .'
+fi
+```
+
+```php PHP
+<?php
+class TokenTypeRetriever {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    private $defaultCacheTTL;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = [];
+        $this->defaultCacheTTL = 300; // 5 minutes
+    }
+    
+    public function getTokenType($chain, $contractAddress, $tokenTypeId) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/token-types/{$tokenTypeId}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve token type");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve token type');
+        }
+        
+        return $data['result'];
+    }
+    
+    public function getAllTokenTypes($chain, $contractAddress) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/token-types";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve token types");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve token types');
+        }
+        
+        return $data['result'];
+    }
+    
+    public function getTokenTypeCached($chain, $contractAddress, $tokenTypeId, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $includeMetadata = $options['includeMetadata'] ?? true;
+        $validateStatus = $options['validateStatus'] ?? true;
+        
+        $cacheKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached token type\n";
+            return $this->cache[$cacheKey];
+        }
+        
+        try {
+            $tokenType = $this->getTokenType($chain, $contractAddress, $tokenTypeId);
+            
+            // Validate status if requested
+            if ($validateStatus && ($tokenType['onChainStatus'] ?? '') !== 'SUCCEEDED') {
+                echo "Warning: Token type {$tokenTypeId} status: " . ($tokenType['onChainStatus'] ?? 'unknown') . "\n";
+            }
+            
+            // Enhance with additional metadata if requested
+            if ($includeMetadata) {
+                $tokenType['enhanced'] = $this->enhanceTokenTypeMetadata($tokenType);
+            }
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $tokenType;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            return $tokenType;
+            
+        } catch (Exception $error) {
+            echo "Failed to retrieve token type {$tokenTypeId}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    public function getAllTokenTypesCached($chain, $contractAddress, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $sortBy = $options['sortBy'] ?? 'tokenTypeId';
+        $sortOrder = $options['sortOrder'] ?? 'asc';
+        $filterBy = $options['filterBy'] ?? null;
+        $includeDetails = $options['includeDetails'] ?? false;
+        
+        $cacheKey = "{$chain}:{$contractAddress}:all";
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached token types\n";
+            $tokenTypes = $this->cache[$cacheKey];
+            return $this->processTokenTypes($tokenTypes, $sortBy, $sortOrder, $filterBy);
+        }
+        
+        try {
+            $tokenTypes = $this->getAllTokenTypes($chain, $contractAddress);
+            
+            // Include detailed metadata if requested
+            if ($includeDetails) {
+                $tokenTypes = $this->batchEnhanceTokenTypes($tokenTypes);
+            }
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $tokenTypes;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            return $this->processTokenTypes($tokenTypes, $sortBy, $sortOrder, $filterBy);
+            
+        } catch (Exception $error) {
+            echo "Failed to retrieve token types: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    public function batchRetrieveTokenTypes($requests, $options = []) {
+        $retryAttempts = $options['retryAttempts'] ?? 3;
+        $retryDelay = $options['retryDelay'] ?? 1;
+        
+        $results = [];
+        $errors = [];
+        
+        foreach ($requests as $request) {
+            $attempts = 0;
+            
+            while ($attempts < $retryAttempts) {
+                try {
+                    if (isset($request['tokenTypeId'])) {
+                        // Single token type request
+                        $result = $this->getTokenTypeCached(
+                            $request['chain'],
+                            $request['contractAddress'],
+                            $request['tokenTypeId'],
+                            $request['options'] ?? []
+                        );
+                    } else {
+                        // All token types request
+                        $result = $this->getAllTokenTypesCached(
+                            $request['chain'],
+                            $request['contractAddress'],
+                            $request['options'] ?? []
+                        );
+                    }
+                    
+                    $results[] = [
+                        'success' => true,
+                        'request' => $request,
+                        'result' => $result
+                    ];
+                    break;
+                    
+                } catch (Exception $error) {
+                    $attempts++;
+                    
+                    if ($attempts >= $retryAttempts) {
+                        $errors[] = [
+                            'success' => false,
+                            'request' => $request,
+                            'error' => $error->getMessage()
+                        ];
+                    } else {
+                        sleep($retryDelay * $attempts);
+                    }
+                }
+            }
+        }
+        
+        return [
+            'successful' => count($results),
+            'failed' => count($errors),
+            'results' => $results,
+            'errors' => $errors
+        ];
+    }
+    
+    public function searchTokenTypes($chain, $contractAddress, $searchTerm, $options = []) {
+        $searchFields = $options['searchFields'] ?? ['name', 'description'];
+        $caseSensitive = $options['caseSensitive'] ?? false;
+        $exactMatch = $options['exactMatch'] ?? false;
+        
+        $allTokenTypes = $this->getAllTokenTypesCached($chain, $contractAddress, [
+            'includeDetails' => true
+        ]);
+        
+        $searchValue = $caseSensitive ? $searchTerm : strtolower($searchTerm);
+        $results = [];
+        
+        foreach ($allTokenTypes as $tokenType) {
+            foreach ($searchFields as $field) {
+                $fieldValue = '';
+                
+                if ($field === 'name') {
+                    $fieldValue = $tokenType['name'] ?? $tokenType['metadata']['name'] ?? '';
+                } elseif ($field === 'description') {
+                    $fieldValue = $tokenType['metadata']['description'] ?? '';
+                } elseif ($field === 'attributes') {
+                    $attributes = $tokenType['metadata']['attributes'] ?? [];
+                    $fieldValue = implode(' ', array_column($attributes, 'value'));
+                }
+                
+                if (!$caseSensitive) {
+                    $fieldValue = strtolower($fieldValue);
+                }
+                
+                if ($exactMatch) {
+                    if ($fieldValue === $searchValue) {
+                        $results[] = $tokenType;
+                        break;
+                    }
+                } else {
+                    if (strpos($fieldValue, $searchValue) !== false) {
+                        $results[] = $tokenType;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return $results;
+    }
+    
+    private function processTokenTypes($tokenTypes, $sortBy, $sortOrder, $filterBy) {
+        $processed = $tokenTypes;
+        
+        // Apply filters
+        if ($filterBy) {
+            $filtered = [];
+            foreach ($processed as $tokenType) {
+                $include = true;
+                
+                foreach ($filterBy as $key => $value) {
+                    if ($key === 'status' && ($tokenType['onChainStatus'] ?? '') !== $value) {
+                        $include = false;
+                        break;
+                    } elseif ($key === 'fungible' && ($tokenType['fungible'] ?? false) !== $value) {
+                        $include = false;
+                        break;
+                    } elseif ($key === 'name' && stripos($tokenType['name'] ?? '', $value) === false) {
+                        $include = false;
+                        break;
+                    }
+                }
+                
+                if ($include) {
+                    $filtered[] = $tokenType;
+                }
+            }
+            $processed = $filtered;
+        }
+        
+        // Apply sorting
+        usort($processed, function($a, $b) use ($sortBy, $sortOrder) {
+            $aValue = $a[$sortBy] ?? '';
+            $bValue = $b[$sortBy] ?? '';
+            
+            if ($sortBy === 'name') {
+                $aValue = strtolower($aValue);
+                $bValue = strtolower($bValue);
+            }
+            
+            if ($sortOrder === 'desc') {
+                return $bValue <=> $aValue;
+            } else {
+                return $aValue <=> $bValue;
+            }
+        });
+        
+        return $processed;
+    }
+    
+    private function enhanceTokenTypeMetadata($tokenType) {
+        $metadata = $tokenType['metadata'] ?? [];
+        
+        return [
+            'hasImage' => !empty($metadata['image']),
+            'hasAnimation' => !empty($metadata['animationUrls']),
+            'attributeCount' => count($metadata['attributes'] ?? []),
+            'isSuccessful' => ($tokenType['onChainStatus'] ?? '') === 'SUCCEEDED',
+            'mediaTypes' => $this->analyzeMediaTypes($metadata),
+            'rarityScore' => $this->calculateRarityScore($metadata['attributes'] ?? [])
+        ];
+    }
+    
+    private function batchEnhanceTokenTypes($tokenTypes) {
+        $enhanced = [];
+        
+        foreach ($tokenTypes as $tokenType) {
+            // Get detailed information
+            $detailed = $this->getTokenType(
+                $tokenType['chain'],
+                $tokenType['contractAddress'],
+                $tokenType['tokenTypeId']
+            );
+            
+            $enhancedTokenType = array_merge($tokenType, [
+                'metadata' => $detailed['metadata'] ?? [],
+                'enhanced' => $this->enhanceTokenTypeMetadata($detailed)
+            ]);
+            
+            $enhanced[] = $enhancedTokenType;
+        }
+        
+        return $enhanced;
+    }
+    
+    private function analyzeMediaTypes($metadata) {
+        $types = [];
+        
+        if (!empty($metadata['image'])) {
+            $types[] = 'image';
+        }
+        
+        foreach ($metadata['animationUrls'] ?? [] as $url) {
+            if (!empty($url['type'])) {
+                $types[] = $url['type'];
+            }
+        }
+        
+        return array_unique($types);
+    }
+    
+    private function calculateRarityScore($attributes) {
+        if (empty($attributes)) {
+            return 0;
+        }
+        
+        // Simple calculation based on non-system attributes
+        $nonSystemAttrs = array_filter($attributes, function($attr) {
+            return ($attr['type'] ?? '') !== 'system';
+        });
+        
+        return count($nonSystemAttrs) * 10;
+    }
+    
+    private function isCacheValid($key) {
+        return isset($this->cache[$key]) && 
+               isset($this->cacheExpiry[$key]) && 
+               time() < $this->cacheExpiry[$key];
+    }
+    
+    public function clearCache($pattern = null) {
+        if ($pattern) {
+            foreach (array_keys($this->cache) as $key) {
+                if (strpos($key, $pattern) !== false) {
+                    unset($this->cache[$key]);
+                    unset($this->cacheExpiry[$key]);
+                }
+            }
+        } else {
+            $this->cache = [];
+            $this->cacheExpiry = [];
+        }
+    }
+    
+    public function getCacheStats() {
+        $now = time();
+        $validEntries = 0;
+        $expiredEntries = 0;
+        
+        foreach ($this->cacheExpiry as $key => $expiry) {
+            if ($now < $expiry) {
+                $validEntries++;
+            } else {
+                $expiredEntries++;
+            }
+        }
+        
+        return [
+            'totalEntries' => count($this->cache),
+            'validEntries' => $validEntries,
+            'expiredEntries' => $expiredEntries
+        ];
+    }
+    
+    public function generateRetrievalReport($chain, $contractAddress) {
+        $cacheStats = $this->getCacheStats();
+        
+        return [
+            'chain' => $chain,
+            'contractAddress' => $contractAddress,
+            'cacheStats' => $cacheStats,
+            'lastRetrieval' => date('c'),
+            'availableMethods' => [
+                'getTokenType',
+                'getAllTokenTypes',
+                'batchRetrieveTokenTypes',
+                'searchTokenTypes'
+            ]
+        ];
+    }
+}
+
+// Usage
+$retriever = new TokenTypeRetriever('YOUR_API_KEY');
+
+try {
+    // Get single token type
+    $tokenType = $retriever->getTokenTypeCached(
+        'MATIC',
+        '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        1,
+        [
+            'useCache' => true,
+            'includeMetadata' => true,
+            'validateStatus' => true
+        ]
+    );
+    
+    echo "Token type: " . json_encode($tokenType, JSON_PRETTY_PRINT) . "\n";
+    
+    // Get all token types with filtering
+    $allTokenTypes = $retriever->getAllTokenTypesCached(
+        'MATIC',
+        '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        [
+            'sortBy' => 'name',
+            'sortOrder' => 'asc',
+            'filterBy' => ['status' => 'SUCCEEDED', 'fungible' => false],
+            'includeDetails' => true
+        ]
+    );
+    
+    echo "All token types: " . json_encode($allTokenTypes, JSON_PRETTY_PRINT) . "\n";
+    
+    // Search token types
+    $searchResults = $retriever->searchTokenTypes(
+        'MATIC',
+        '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        'first NFT',
+        [
+            'searchFields' => ['name', 'description'],
+            'caseSensitive' => false,
+            'exactMatch' => false
+        ]
+    );
+    
+    echo "Search results: " . json_encode($searchResults, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Token Type Retrieval Best Practices:**
+
+1. **Implement Caching** - Cache frequently accessed token types to reduce API calls
+2. **Batch Operations** - Use batch retrieval for multiple token types to improve efficiency
+3. **Error Handling** - Implement robust error handling with retry mechanisms
+4. **Status Validation** - Always check token type status before using in production
+5. **Filtering & Sorting** - Use client-side filtering and sorting for better user experience
+6. **Metadata Enhancement** - Enrich token types with computed fields for better usability
+7. **Search Functionality** - Implement search capabilities for large collections
+8. **Performance Monitoring** - Track cache hit rates and API response times
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create NFT Template" href="/guides/nft-api/token-types/create-nft-template" icon="plus">
+    Learn how to create new NFT token types
+  </Card>
+  <Card title="Check Token Type Status" href="/guides/nft-api/token-types/check-token-type-status" icon="clock">
+    Monitor token type creation progress
+  </Card>
+  <Card title="Delete Token Type" href="/guides/nft-api/token-types/delete-token-type" icon="trash">
+    Remove unwanted token types
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/token-types/get-all-token-types" icon="book">
+    Explore the complete token type retrieval API documentation
+  </Card>
+</CardGroup>

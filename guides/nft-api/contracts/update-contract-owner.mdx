@@ -1,0 +1,1279 @@
+---
+title: "Update Contract Owner"
+description: "Comprehensive guide to updating NFT contract ownership with security validation, multi-signature support, and ownership transfer workflows"
+icon: "user-crown"
+---
+
+<Warning>
+**Critical Operation:** Updating contract ownership transfers admin rights permanently. This action cannot be undone and requires careful validation of the new owner address.
+</Warning>
+
+<Info>
+**Ownership Transfer:** Transfer NFT contract ownership to a new wallet address with proper validation, security checks, and audit trails.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is Contract Ownership Update?
+
+Contract ownership update transfers administrative control of an NFT contract from the current owner to a new wallet address. The new owner gains full administrative rights including the ability to update metadata, manage royalties, mint tokens, and transfer ownership again. This is a critical operation that requires careful planning and validation.
+
+<CardGroup cols={2}>
+  <Card title="Admin Rights Transfer" icon="key">
+    Complete administrative control transfer to new owner
+  </Card>
+  <Card title="Security Validation" icon="shield">
+    Address validation and ownership verification
+  </Card>
+  <Card title="Audit Trail" icon="list">
+    Complete transaction history and ownership records
+  </Card>
+  <Card title="Multi-sig Support" icon="users">
+    Support for multi-signature wallet ownership
+  </Card>
+</CardGroup>
+
+## When to Update Contract Owner
+
+<Tabs>
+  <Tab title="Business Transitions">
+    **Organizational Changes:**
+    - Company ownership changes
+    - Team member transitions
+    - Business acquisitions or mergers
+    - Departmental responsibility transfers
+    
+    **Best Practices:**
+    - Document ownership transfer reasons
+    - Notify all stakeholders in advance
+    - Verify new owner's technical capabilities
+    - Maintain backup access methods
+  </Tab>
+  <Tab title="Security Upgrades">
+    **Security Improvements:**
+    - Migration to multi-signature wallets
+    - Hardware wallet upgrades
+    - Enhanced security protocols
+    - Compromised wallet recovery
+    
+    **Security Considerations:**
+    - Verify new wallet security setup
+    - Test new wallet functionality
+    - Implement additional security layers
+    - Monitor for suspicious activity
+  </Tab>
+  <Tab title="Technical Migrations">
+    **Infrastructure Changes:**
+    - Wallet infrastructure upgrades
+    - Key management system changes
+    - Automated system integrations
+    - Disaster recovery procedures
+    
+    **Migration Planning:**
+    - Test ownership transfer in staging
+    - Prepare rollback procedures
+    - Update documentation and access
+    - Train new owner on procedures
+  </Tab>
+</Tabs>
+
+## Update Contract Owner
+
+<Steps>
+  <Step title="Validate New Owner" icon="check">
+    Verify the new owner wallet address and ensure it's properly configured
+    
+    ```javascript
+    const newOwner = "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9";
+    
+    // Validate address format
+    if (!ethers.utils.isAddress(newOwner)) {
+      throw new Error("Invalid wallet address format");
+    }
+    
+    // Verify wallet exists and is accessible
+    const balance = await provider.getBalance(newOwner);
+    console.log(`New owner wallet balance: ${ethers.utils.formatEther(balance)} ETH`);
+    ```
+  </Step>
+  <Step title="Prepare Transfer" icon="clipboard">
+    Document the ownership transfer and notify stakeholders
+  </Step>
+  <Step title="Execute Transfer" icon="arrow-right">
+    Submit the ownership update request to the blockchain
+  </Step>
+  <Step title="Verify Transfer" icon="eye">
+    Confirm the ownership transfer was successful and update records
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Update contract owner
+const updateContractOwner = async (chain, contractAddress, newOwner) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/owner`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        owner: newOwner
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Contract ownership updated successfully');
+      console.log('Transaction hash:', data.result.transactionHash);
+      return data.result;
+    } else {
+      throw new Error('Failed to update contract owner');
+    }
+  } catch (error) {
+    console.error('Error updating contract owner:', error);
+    throw error;
+  }
+};
+
+// Enhanced ownership manager with validation and tracking
+class ContractOwnershipManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.ownershipHistory = new Map();
+    this.pendingTransfers = new Map();
+  }
+
+  async updateOwner(chain, contractAddress, newOwner, options = {}) {
+    const {
+      validateNewOwner = true,
+      createBackup = true,
+      notifyStakeholders = false,
+      requireConfirmation = true
+    } = options;
+
+    try {
+      // Get current owner for backup
+      let currentOwner = null;
+      if (createBackup) {
+        currentOwner = await this.getCurrentOwner(chain, contractAddress);
+      }
+
+      // Validate new owner address
+      if (validateNewOwner) {
+        await this.validateOwnerAddress(newOwner);
+      }
+
+      // Require confirmation for critical operation
+      if (requireConfirmation) {
+        const confirmed = await this.requestConfirmation(chain, contractAddress, currentOwner, newOwner);
+        if (!confirmed) {
+          throw new Error('Ownership transfer cancelled by user');
+        }
+      }
+
+      // Record pending transfer
+      this.recordPendingTransfer(chain, contractAddress, {
+        currentOwner,
+        newOwner,
+        timestamp: new Date().toISOString(),
+        status: 'pending'
+      });
+
+      // Execute ownership transfer
+      const result = await updateContractOwner(chain, contractAddress, newOwner);
+
+      // Wait for transaction confirmation
+      const confirmed = await this.waitForTransactionConfirmation(result.transactionHash, chain);
+
+      if (confirmed) {
+        // Record successful transfer
+        this.recordOwnershipChange(chain, contractAddress, {
+          previousOwner: currentOwner,
+          newOwner,
+          transactionHash: result.transactionHash,
+          timestamp: new Date().toISOString(),
+          status: 'completed'
+        });
+
+        // Notify stakeholders if requested
+        if (notifyStakeholders) {
+          await this.notifyOwnershipChange(chain, contractAddress, currentOwner, newOwner, result.transactionHash);
+        }
+
+        // Remove from pending transfers
+        this.pendingTransfers.delete(`${chain}:${contractAddress}`);
+
+        console.log('Ownership transfer completed successfully');
+        return result;
+      } else {
+        throw new Error('Transaction confirmation failed');
+      }
+
+    } catch (error) {
+      // Update pending transfer status
+      const pendingKey = `${chain}:${contractAddress}`;
+      if (this.pendingTransfers.has(pendingKey)) {
+        const pending = this.pendingTransfers.get(pendingKey);
+        pending.status = 'failed';
+        pending.error = error.message;
+      }
+
+      console.error('Ownership transfer failed:', error);
+      throw error;
+    }
+  }
+
+  async validateOwnerAddress(address) {
+    // Basic address format validation
+    if (!this.isValidAddress(address)) {
+      throw new Error('Invalid wallet address format');
+    }
+
+    // Check if address is a contract (optional)
+    const isContract = await this.isContractAddress(address);
+    if (isContract) {
+      console.warn('New owner is a contract address - ensure it can manage NFT contracts');
+    }
+
+    // Verify address has some activity (not a fresh address)
+    const hasActivity = await this.checkAddressActivity(address);
+    if (!hasActivity) {
+      console.warn('New owner address has no transaction history - verify it is correct');
+    }
+
+    return true;
+  }
+
+  isValidAddress(address) {
+    // Basic Ethereum address validation
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  }
+
+  async isContractAddress(address) {
+    try {
+      // This would require a blockchain provider
+      // const code = await provider.getCode(address);
+      // return code !== '0x';
+      
+      // Placeholder implementation
+      return false;
+    } catch (error) {
+      console.warn('Could not verify if address is contract:', error);
+      return false;
+    }
+  }
+
+  async checkAddressActivity(address) {
+    try {
+      // This would require a blockchain provider
+      // const transactionCount = await provider.getTransactionCount(address);
+      // return transactionCount > 0;
+      
+      // Placeholder implementation
+      return true;
+    } catch (error) {
+      console.warn('Could not check address activity:', error);
+      return true;
+    }
+  }
+
+  async getCurrentOwner(chain, contractAddress) {
+    try {
+      const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+        headers: { 'Authorization': `Bearer ${this.apiKey}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch current contract details');
+      }
+
+      const data = await response.json();
+      return data.success ? data.result.owner : null;
+    } catch (error) {
+      console.warn('Could not fetch current owner:', error);
+      return null;
+    }
+  }
+
+  async requestConfirmation(chain, contractAddress, currentOwner, newOwner) {
+    console.log('\n=== OWNERSHIP TRANSFER CONFIRMATION ===');
+    console.log(`Contract: ${contractAddress} on ${chain}`);
+    console.log(`Current Owner: ${currentOwner}`);
+    console.log(`New Owner: ${newOwner}`);
+    console.log('========================================\n');
+
+    // In a real implementation, this would show a UI confirmation dialog
+    // For now, we'll assume confirmation is given
+    return true;
+  }
+
+  async waitForTransactionConfirmation(transactionHash, chain, maxWaitTime = 300000) {
+    console.log(`Waiting for transaction confirmation: ${transactionHash}`);
+    
+    const startTime = Date.now();
+    
+    while (Date.now() - startTime < maxWaitTime) {
+      try {
+        // In a real implementation, check transaction status on blockchain
+        // const receipt = await provider.getTransactionReceipt(transactionHash);
+        // if (receipt && receipt.confirmations >= 1) {
+        //   return true;
+        // }
+        
+        // Placeholder - assume success after 5 seconds
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        return true;
+        
+      } catch (error) {
+        console.warn('Error checking transaction status:', error);
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
+    }
+    
+    return false;
+  }
+
+  recordPendingTransfer(chain, contractAddress, transferData) {
+    const key = `${chain}:${contractAddress}`;
+    this.pendingTransfers.set(key, transferData);
+  }
+
+  recordOwnershipChange(chain, contractAddress, changeData) {
+    const key = `${chain}:${contractAddress}`;
+    
+    if (!this.ownershipHistory.has(key)) {
+      this.ownershipHistory.set(key, []);
+    }
+    
+    const history = this.ownershipHistory.get(key);
+    history.push(changeData);
+    
+    // Keep only last 50 ownership changes
+    if (history.length > 50) {
+      history.splice(0, history.length - 50);
+    }
+  }
+
+  async notifyOwnershipChange(chain, contractAddress, previousOwner, newOwner, transactionHash) {
+    const notification = {
+      type: 'ownership_transfer',
+      chain,
+      contractAddress,
+      previousOwner,
+      newOwner,
+      transactionHash,
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('Sending ownership change notification:', notification);
+    
+    // Implementation would depend on your notification system
+    // await sendNotification(notification);
+  }
+
+  async batchUpdateOwners(updates) {
+    const results = [];
+    const errors = [];
+
+    for (const update of updates) {
+      try {
+        const result = await this.updateOwner(
+          update.chain,
+          update.contractAddress,
+          update.newOwner,
+          update.options
+        );
+        
+        results.push({
+          chain: update.chain,
+          contractAddress: update.contractAddress,
+          success: true,
+          result
+        });
+      } catch (error) {
+        errors.push({
+          chain: update.chain,
+          contractAddress: update.contractAddress,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  getOwnershipHistory(chain, contractAddress) {
+    const key = `${chain}:${contractAddress}`;
+    return this.ownershipHistory.get(key) || [];
+  }
+
+  getPendingTransfers() {
+    return Array.from(this.pendingTransfers.entries()).map(([key, data]) => ({
+      contract: key,
+      ...data
+    }));
+  }
+
+  generateOwnershipReport(chain, contractAddress) {
+    const history = this.getOwnershipHistory(chain, contractAddress);
+    const pending = this.pendingTransfers.get(`${chain}:${contractAddress}`);
+    
+    return {
+      contractAddress,
+      chain,
+      totalTransfers: history.length,
+      lastTransfer: history.length > 0 ? history[history.length - 1] : null,
+      pendingTransfer: pending || null,
+      ownershipChain: history.map(h => ({
+        owner: h.newOwner,
+        timestamp: h.timestamp,
+        transactionHash: h.transactionHash
+      }))
+    };
+  }
+}
+
+// Usage examples
+const ownershipManager = new ContractOwnershipManager('YOUR_API_KEY');
+
+// Simple ownership update
+const result = await ownershipManager.updateOwner(
+  'MATIC',
+  '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+  '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9'
+);
+
+console.log('Ownership update result:', result);
+
+// Batch ownership updates
+const batchUpdates = [
+  {
+    chain: 'MATIC',
+    contractAddress: '0xcontract1',
+    newOwner: '0xnewowner1',
+    options: { notifyStakeholders: true }
+  },
+  {
+    chain: 'ETH',
+    contractAddress: '0xcontract2',
+    newOwner: '0xnewowner2',
+    options: { validateNewOwner: true }
+  }
+];
+
+const batchResult = await ownershipManager.batchUpdateOwners(batchUpdates);
+console.log('Batch update result:', batchResult);
+```
+
+```python Python
+import requests
+import time
+import re
+from typing import Dict, List, Any, Optional
+from datetime import datetime
+
+class ContractOwnershipManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.ownership_history = {}
+        self.pending_transfers = {}
+    
+    def update_owner(self, chain: str, contract_address: str, new_owner: str, 
+                    options: Dict[str, bool] = None) -> Dict[str, Any]:
+        """Update contract owner with validation and tracking"""
+        if options is None:
+            options = {}
+        
+        validate_new_owner = options.get('validate_new_owner', True)
+        create_backup = options.get('create_backup', True)
+        notify_stakeholders = options.get('notify_stakeholders', False)
+        require_confirmation = options.get('require_confirmation', True)
+        
+        try:
+            # Get current owner for backup
+            current_owner = None
+            if create_backup:
+                current_owner = self._get_current_owner(chain, contract_address)
+            
+            # Validate new owner address
+            if validate_new_owner:
+                self.validate_owner_address(new_owner)
+            
+            # Require confirmation for critical operation
+            if require_confirmation:
+                confirmed = self._request_confirmation(chain, contract_address, current_owner, new_owner)
+                if not confirmed:
+                    raise Exception('Ownership transfer cancelled by user')
+            
+            # Record pending transfer
+            self._record_pending_transfer(chain, contract_address, {
+                'current_owner': current_owner,
+                'new_owner': new_owner,
+                'timestamp': datetime.now().isoformat(),
+                'status': 'pending'
+            })
+            
+            # Execute ownership transfer
+            result = self._update_contract_owner(chain, contract_address, new_owner)
+            
+            # Wait for transaction confirmation
+            confirmed = self._wait_for_transaction_confirmation(result['transactionHash'], chain)
+            
+            if confirmed:
+                # Record successful transfer
+                self._record_ownership_change(chain, contract_address, {
+                    'previous_owner': current_owner,
+                    'new_owner': new_owner,
+                    'transaction_hash': result['transactionHash'],
+                    'timestamp': datetime.now().isoformat(),
+                    'status': 'completed'
+                })
+                
+                # Notify stakeholders if requested
+                if notify_stakeholders:
+                    self._notify_ownership_change(chain, contract_address, current_owner, new_owner, result['transactionHash'])
+                
+                # Remove from pending transfers
+                pending_key = f"{chain}:{contract_address}"
+                if pending_key in self.pending_transfers:
+                    del self.pending_transfers[pending_key]
+                
+                print('Ownership transfer completed successfully')
+                return result
+            else:
+                raise Exception('Transaction confirmation failed')
+                
+        except Exception as error:
+            # Update pending transfer status
+            pending_key = f"{chain}:{contract_address}"
+            if pending_key in self.pending_transfers:
+                self.pending_transfers[pending_key]['status'] = 'failed'
+                self.pending_transfers[pending_key]['error'] = str(error)
+            
+            print(f'Ownership transfer failed: {error}')
+            raise error
+    
+    def _update_contract_owner(self, chain: str, contract_address: str, new_owner: str) -> Dict[str, Any]:
+        """Internal method to call the API"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/owner'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {'owner': new_owner}
+        
+        try:
+            response = requests.put(url, headers=headers, json=data)
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            if result.get('success'):
+                return result['result']
+            else:
+                raise Exception('Failed to update contract owner')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error updating contract owner: {error}')
+            raise error
+    
+    def validate_owner_address(self, address: str) -> bool:
+        """Validate owner address format and properties"""
+        # Basic address format validation
+        if not self._is_valid_address(address):
+            raise Exception('Invalid wallet address format')
+        
+        # Check if address is a contract (optional)
+        is_contract = self._is_contract_address(address)
+        if is_contract:
+            print('Warning: New owner is a contract address - ensure it can manage NFT contracts')
+        
+        # Verify address has some activity (not a fresh address)
+        has_activity = self._check_address_activity(address)
+        if not has_activity:
+            print('Warning: New owner address has no transaction history - verify it is correct')
+        
+        return True
+    
+    def _is_valid_address(self, address: str) -> bool:
+        """Basic Ethereum address validation"""
+        return bool(re.match(r'^0x[a-fA-F0-9]{40}$', address))
+    
+    def _is_contract_address(self, address: str) -> bool:
+        """Check if address is a contract (placeholder implementation)"""
+        # This would require a blockchain provider
+        return False
+    
+    def _check_address_activity(self, address: str) -> bool:
+        """Check if address has transaction history (placeholder implementation)"""
+        # This would require a blockchain provider
+        return True
+    
+    def _get_current_owner(self, chain: str, contract_address: str) -> Optional[str]:
+        """Get current contract owner"""
+        try:
+            url = f'{self.base_url}/contracts/{chain}/{contract_address}'
+            headers = {'Authorization': f'Bearer {self.api_key}'}
+            
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            return data['result']['owner'] if data.get('success') else None
+            
+        except Exception as error:
+            print(f'Could not fetch current owner: {error}')
+            return None
+    
+    def _request_confirmation(self, chain: str, contract_address: str, current_owner: str, new_owner: str) -> bool:
+        """Request confirmation for ownership transfer"""
+        print('\n=== OWNERSHIP TRANSFER CONFIRMATION ===')
+        print(f'Contract: {contract_address} on {chain}')
+        print(f'Current Owner: {current_owner}')
+        print(f'New Owner: {new_owner}')
+        print('========================================\n')
+        
+        # In a real implementation, this would show a UI confirmation dialog
+        return True
+    
+    def _wait_for_transaction_confirmation(self, transaction_hash: str, chain: str, max_wait_time: int = 300) -> bool:
+        """Wait for transaction confirmation"""
+        print(f'Waiting for transaction confirmation: {transaction_hash}')
+        
+        start_time = time.time()
+        
+        while time.time() - start_time < max_wait_time:
+            try:
+                # In a real implementation, check transaction status on blockchain
+                # Placeholder - assume success after 5 seconds
+                time.sleep(5)
+                return True
+                
+            except Exception as error:
+                print(f'Error checking transaction status: {error}')
+            
+            time.sleep(10)  # Wait 10 seconds
+        
+        return False
+    
+    def _record_pending_transfer(self, chain: str, contract_address: str, transfer_data: Dict[str, Any]):
+        """Record pending transfer"""
+        key = f"{chain}:{contract_address}"
+        self.pending_transfers[key] = transfer_data
+    
+    def _record_ownership_change(self, chain: str, contract_address: str, change_data: Dict[str, Any]):
+        """Record ownership change in history"""
+        key = f"{chain}:{contract_address}"
+        
+        if key not in self.ownership_history:
+            self.ownership_history[key] = []
+        
+        history = self.ownership_history[key]
+        history.append(change_data)
+        
+        # Keep only last 50 ownership changes
+        if len(history) > 50:
+            self.ownership_history[key] = history[-50:]
+    
+    def _notify_ownership_change(self, chain: str, contract_address: str, previous_owner: str, new_owner: str, transaction_hash: str):
+        """Notify stakeholders of ownership change"""
+        notification = {
+            'type': 'ownership_transfer',
+            'chain': chain,
+            'contract_address': contract_address,
+            'previous_owner': previous_owner,
+            'new_owner': new_owner,
+            'transaction_hash': transaction_hash,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        print('Sending ownership change notification:', notification)
+        # Implementation would depend on your notification system
+    
+    def batch_update_owners(self, updates: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Update multiple contract owners in batch"""
+        results = []
+        errors = []
+        
+        for update in updates:
+            try:
+                result = self.update_owner(
+                    update['chain'],
+                    update['contract_address'],
+                    update['new_owner'],
+                    update.get('options', {})
+                )
+                
+                results.append({
+                    'chain': update['chain'],
+                    'contract_address': update['contract_address'],
+                    'success': True,
+                    'result': result
+                })
+                
+            except Exception as error:
+                errors.append({
+                    'chain': update['chain'],
+                    'contract_address': update['contract_address'],
+                    'success': False,
+                    'error': str(error)
+                })
+        
+        return {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+    
+    def get_ownership_history(self, chain: str, contract_address: str) -> List[Dict[str, Any]]:
+        """Get ownership history for a contract"""
+        key = f"{chain}:{contract_address}"
+        return self.ownership_history.get(key, [])
+    
+    def get_pending_transfers(self) -> List[Dict[str, Any]]:
+        """Get all pending transfers"""
+        return [{'contract': key, **data} for key, data in self.pending_transfers.items()]
+    
+    def generate_ownership_report(self, chain: str, contract_address: str) -> Dict[str, Any]:
+        """Generate comprehensive ownership report"""
+        history = self.get_ownership_history(chain, contract_address)
+        pending_key = f"{chain}:{contract_address}"
+        pending = self.pending_transfers.get(pending_key)
+        
+        return {
+            'contract_address': contract_address,
+            'chain': chain,
+            'total_transfers': len(history),
+            'last_transfer': history[-1] if history else None,
+            'pending_transfer': pending,
+            'ownership_chain': [
+                {
+                    'owner': h['new_owner'],
+                    'timestamp': h['timestamp'],
+                    'transaction_hash': h['transaction_hash']
+                }
+                for h in history
+            ]
+        }
+
+# Usage
+ownership_manager = ContractOwnershipManager('YOUR_API_KEY')
+
+# Simple ownership update
+result = ownership_manager.update_owner(
+    'MATIC',
+    '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+    '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9'
+)
+
+print('Ownership update result:', result)
+
+# Generate ownership report
+report = ownership_manager.generate_ownership_report('MATIC', '0x44260f782c8ae2cf62e31051920d206d19b475e5')
+print('Ownership report:', report)
+```
+
+```bash cURL
+# Update contract owner
+curl -X PUT '/api/v3/erc1155/contracts/MATIC/0x44260f782c8ae2cf62e31051920d206d19b475e5/owner' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+  }'
+
+# Batch ownership update script
+#!/bin/bash
+API_KEY="YOUR_API_KEY"
+CONTRACTS=(
+  "MATIC:0xcontract1:0xnewowner1"
+  "ETH:0xcontract2:0xnewowner2"
+  "BSC:0xcontract3:0xnewowner3"
+)
+
+echo "Starting batch ownership updates..."
+
+for contract_info in "${CONTRACTS[@]}"; do
+  IFS=':' read -r chain contract_address new_owner <<< "$contract_info"
+  
+  echo "Updating owner for $contract_address on $chain..."
+  
+  response=$(curl -s -X PUT "/api/v3/erc1155/contracts/$chain/$contract_address/owner" \
+    -H "Authorization: Bearer $API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d "{\"owner\": \"$new_owner\"}")
+  
+  success=$(echo "$response" | jq -r '.success')
+  
+  if [ "$success" = "true" ]; then
+    tx_hash=$(echo "$response" | jq -r '.result.transactionHash')
+    echo "✓ Success: Transaction hash $tx_hash"
+  else
+    echo "✗ Failed to update owner for $contract_address"
+  fi
+  
+  echo "Waiting 5 seconds before next update..."
+  sleep 5
+done
+
+echo "Batch ownership updates completed!"
+```
+
+```php PHP
+<?php
+class ContractOwnershipManager {
+    private $apiKey;
+    private $baseUrl;
+    private $ownershipHistory;
+    private $pendingTransfers;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->ownershipHistory = [];
+        $this->pendingTransfers = [];
+    }
+    
+    public function updateOwner($chain, $contractAddress, $newOwner, $options = []) {
+        $validateNewOwner = $options['validate_new_owner'] ?? true;
+        $createBackup = $options['create_backup'] ?? true;
+        $notifyStakeholders = $options['notify_stakeholders'] ?? false;
+        $requireConfirmation = $options['require_confirmation'] ?? true;
+        
+        try {
+            // Get current owner for backup
+            $currentOwner = null;
+            if ($createBackup) {
+                $currentOwner = $this->getCurrentOwner($chain, $contractAddress);
+            }
+            
+            // Validate new owner address
+            if ($validateNewOwner) {
+                $this->validateOwnerAddress($newOwner);
+            }
+            
+            // Require confirmation for critical operation
+            if ($requireConfirmation) {
+                $confirmed = $this->requestConfirmation($chain, $contractAddress, $currentOwner, $newOwner);
+                if (!$confirmed) {
+                    throw new Exception('Ownership transfer cancelled by user');
+                }
+            }
+            
+            // Record pending transfer
+            $this->recordPendingTransfer($chain, $contractAddress, [
+                'current_owner' => $currentOwner,
+                'new_owner' => $newOwner,
+                'timestamp' => date('c'),
+                'status' => 'pending'
+            ]);
+            
+            // Execute ownership transfer
+            $result = $this->updateContractOwner($chain, $contractAddress, $newOwner);
+            
+            // Wait for transaction confirmation
+            $confirmed = $this->waitForTransactionConfirmation($result['transactionHash'], $chain);
+            
+            if ($confirmed) {
+                // Record successful transfer
+                $this->recordOwnershipChange($chain, $contractAddress, [
+                    'previous_owner' => $currentOwner,
+                    'new_owner' => $newOwner,
+                    'transaction_hash' => $result['transactionHash'],
+                    'timestamp' => date('c'),
+                    'status' => 'completed'
+                ]);
+                
+                // Notify stakeholders if requested
+                if ($notifyStakeholders) {
+                    $this->notifyOwnershipChange($chain, $contractAddress, $currentOwner, $newOwner, $result['transactionHash']);
+                }
+                
+                // Remove from pending transfers
+                $pendingKey = "{$chain}:{$contractAddress}";
+                unset($this->pendingTransfers[$pendingKey]);
+                
+                echo "Ownership transfer completed successfully\n";
+                return $result;
+            } else {
+                throw new Exception('Transaction confirmation failed');
+            }
+            
+        } catch (Exception $error) {
+            // Update pending transfer status
+            $pendingKey = "{$chain}:{$contractAddress}";
+            if (isset($this->pendingTransfers[$pendingKey])) {
+                $this->pendingTransfers[$pendingKey]['status'] = 'failed';
+                $this->pendingTransfers[$pendingKey]['error'] = $error->getMessage();
+            }
+            
+            echo "Ownership transfer failed: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function updateContractOwner($chain, $contractAddress, $newOwner) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/owner";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['owner' => $newOwner]));
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to update contract owner");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if ($data['success']) {
+            return $data['result'];
+        } else {
+            throw new Exception('Failed to update contract owner');
+        }
+    }
+    
+    private function validateOwnerAddress($address) {
+        if (!$this->isValidAddress($address)) {
+            throw new Exception('Invalid wallet address format');
+        }
+        return true;
+    }
+    
+    private function isValidAddress($address) {
+        return preg_match('/^0x[a-fA-F0-9]{40}$/', $address);
+    }
+    
+    private function getCurrentOwner($chain, $contractAddress) {
+        try {
+            $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}";
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer {$this->apiKey}"
+            ]);
+            
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            $data = json_decode($response, true);
+            return $data['success'] ? $data['result']['owner'] : null;
+            
+        } catch (Exception $error) {
+            echo "Could not fetch current owner: " . $error->getMessage() . "\n";
+            return null;
+        }
+    }
+    
+    private function requestConfirmation($chain, $contractAddress, $currentOwner, $newOwner) {
+        echo "\n=== OWNERSHIP TRANSFER CONFIRMATION ===\n";
+        echo "Contract: {$contractAddress} on {$chain}\n";
+        echo "Current Owner: {$currentOwner}\n";
+        echo "New Owner: {$newOwner}\n";
+        echo "========================================\n\n";
+        
+        return true;
+    }
+    
+    private function waitForTransactionConfirmation($transactionHash, $chain, $maxWaitTime = 300) {
+        echo "Waiting for transaction confirmation: {$transactionHash}\n";
+        sleep(5); // Placeholder implementation
+        return true;
+    }
+    
+    private function recordPendingTransfer($chain, $contractAddress, $transferData) {
+        $key = "{$chain}:{$contractAddress}";
+        $this->pendingTransfers[$key] = $transferData;
+    }
+    
+    private function recordOwnershipChange($chain, $contractAddress, $changeData) {
+        $key = "{$chain}:{$contractAddress}";
+        
+        if (!isset($this->ownershipHistory[$key])) {
+            $this->ownershipHistory[$key] = [];
+        }
+        
+        $this->ownershipHistory[$key][] = $changeData;
+        
+        // Keep only last 50 ownership changes
+        if (count($this->ownershipHistory[$key]) > 50) {
+            $this->ownershipHistory[$key] = array_slice($this->ownershipHistory[$key], -50);
+        }
+    }
+    
+    private function notifyOwnershipChange($chain, $contractAddress, $previousOwner, $newOwner, $transactionHash) {
+        $notification = [
+            'type' => 'ownership_transfer',
+            'chain' => $chain,
+            'contract_address' => $contractAddress,
+            'previous_owner' => $previousOwner,
+            'new_owner' => $newOwner,
+            'transaction_hash' => $transactionHash,
+            'timestamp' => date('c')
+        ];
+        
+        echo "Sending ownership change notification: " . json_encode($notification) . "\n";
+    }
+}
+
+// Usage
+$ownershipManager = new ContractOwnershipManager('YOUR_API_KEY');
+
+try {
+    $result = $ownershipManager->updateOwner(
+        'MATIC',
+        '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+        '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9'
+    );
+    
+    echo "Ownership update result: " . json_encode($result) . "\n";
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `owner` | string | ✅ | New owner wallet address (must be valid Ethereum address) |
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | Blockchain network (MATIC, ETH, BSC, etc.) |
+| `contractAddress` | string | ✅ | Contract address to update ownership for |
+
+### Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "transactionHash": "0x7bfb36e8b18e5d5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Error Response">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "INVALID_OWNER_ADDRESS",
+        "message": "The provided owner address is not valid"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Security Considerations
+
+<AccordionGroup>
+  <Accordion title="Address Validation" icon="shield-check">
+    **Critical Validations:**
+    - Verify address format (42 characters, starts with 0x)
+    - Confirm address is not zero address (0x0000...)
+    - Check if address is accessible and controlled
+    - Validate address has transaction history
+    
+    **Implementation:**
+    ```javascript
+    function validateOwnerAddress(address) {
+      // Format validation
+      if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
+        throw new Error('Invalid address format');
+      }
+      
+      // Zero address check
+      if (address === '0x0000000000000000000000000000000000000000') {
+        throw new Error('Cannot set zero address as owner');
+      }
+      
+      // Additional validations...
+      return true;
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Multi-Signature Support" icon="users">
+    **Multi-Sig Considerations:**
+    - Verify multi-sig wallet can execute NFT operations
+    - Test contract interaction capabilities
+    - Document required signers and thresholds
+    - Implement emergency recovery procedures
+    
+    **Multi-Sig Validation:**
+    ```javascript
+    async function validateMultiSigOwner(address) {
+      // Check if address is a contract
+      const code = await provider.getCode(address);
+      const isContract = code !== '0x';
+      
+      if (isContract) {
+        // Verify it's a multi-sig wallet
+        const isMultiSig = await checkMultiSigInterface(address);
+        if (!isMultiSig) {
+          console.warn('Contract owner is not a recognized multi-sig wallet');
+        }
+      }
+      
+      return true;
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Ownership Transfer Audit" icon="clipboard-list">
+    **Audit Requirements:**
+    - Log all ownership transfer attempts
+    - Record transaction hashes and timestamps
+    - Track previous and new owners
+    - Monitor for suspicious patterns
+    
+    **Audit Implementation:**
+    ```javascript
+    class OwnershipAuditLogger {
+      constructor() {
+        this.auditLog = [];
+      }
+      
+      logOwnershipTransfer(data) {
+        const auditEntry = {
+          timestamp: new Date().toISOString(),
+          contractAddress: data.contractAddress,
+          chain: data.chain,
+          previousOwner: data.previousOwner,
+          newOwner: data.newOwner,
+          transactionHash: data.transactionHash,
+          initiatedBy: data.initiatedBy,
+          reason: data.reason
+        };
+        
+        this.auditLog.push(auditEntry);
+        
+        // Send to audit system
+        this.sendToAuditSystem(auditEntry);
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Ownership Transfer Best Practices:**
+
+1. **Verify New Owner** - Always validate the new owner address format and accessibility
+2. **Test First** - Test ownership transfer on testnet before mainnet
+3. **Document Changes** - Keep detailed records of ownership transfers
+4. **Notify Stakeholders** - Inform all relevant parties about ownership changes
+5. **Backup Access** - Ensure backup access methods before transfer
+6. **Monitor Transactions** - Track transaction status and confirmations
+7. **Security Validation** - Verify new owner can manage contract operations
+8. **Emergency Procedures** - Have recovery plans for failed transfers
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invalid Owner Address" icon="exclamation-triangle">
+    **Problem:** Receiving "Invalid owner address" error
+    
+    **Common Causes:**
+    - Incorrect address format
+    - Zero address (0x0000...)
+    - Checksum validation failure
+    
+    **Solution:**
+    - Verify address format (42 characters, starts with 0x)
+    - Ensure address is not zero address
+    - Use proper checksum format
+    - Test address with small transaction first
+  </Accordion>
+  
+  <Accordion title="Transaction Failed" icon="x-circle">
+    **Problem:** Ownership transfer transaction fails
+    
+    **Possible Causes:**
+    - Insufficient gas fees
+    - Network congestion
+    - Contract restrictions
+    - Invalid permissions
+    
+    **Solution:**
+    - Increase gas limit and price
+    - Retry during lower network activity
+    - Verify current owner permissions
+    - Check contract ownership restrictions
+  </Accordion>
+  
+  <Accordion title="New Owner Cannot Access" icon="lock">
+    **Problem:** New owner cannot perform contract operations
+    
+    **Investigation Steps:**
+    - Verify ownership transfer completed
+    - Check new owner wallet access
+    - Test basic contract operations
+    - Validate multi-sig setup if applicable
+    
+    **Resolution:**
+    - Confirm transaction was mined successfully
+    - Verify new owner has proper wallet access
+    - Test with simple operations first
+    - Update access control systems
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Contract Management" href="/guides/nft-api/contracts/retrieve-contract" icon="folder">
+    Learn comprehensive contract management techniques
+  </Card>
+  <Card title="Royalty Management" href="/guides/nft-api/contracts/update-contract-royalties" icon="percentage">
+    Update and manage contract royalty settings
+  </Card>
+  <Card title="Security Best Practices" href="/guides/nft-api/overview" icon="shield">
+    Implement security best practices for NFT contracts
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract/update-contract-owner" icon="book">
+    Explore the complete API documentation
+  </Card>
+</CardGroup>

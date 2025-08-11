@@ -1,0 +1,765 @@
+---
+title: "Token API Webhooks"
+description: "Set up real-time notifications for ERC20 token contract deployments and minting operations"
+icon: "webhook"
+---
+
+<Info>
+**Real-time Notifications:** Receive instant updates about contract deployments and token minting operations without polling.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What are Token API Webhooks?
+
+Webhooks provide real-time notifications for Token API events, eliminating the need for constant polling. When contracts are deployed or tokens are minted, Venly automatically sends HTTP POST requests to your configured endpoint with event details.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Updates" icon="bolt">
+    Instant notifications for all token operations
+  </Card>
+  <Card title="Reliable Delivery" icon="shield">
+    Automatic retry mechanism with 5 attempts
+  </Card>
+  <Card title="Comprehensive Events" icon="list">
+    Contract and token mint success/failure events
+  </Card>
+  <Card title="Secure Authentication" icon="lock">
+    Multiple authentication methods supported
+  </Card>
+</CardGroup>
+
+## Supported Events
+
+<Tabs>
+  <Tab title="Contract Events">
+    **ERC20 Contract Deployment**
+    - `ERC20_CONTRACT_CREATION_SUCCEEDED` - Contract deployed successfully
+    - `ERC20_CONTRACT_CREATION_FAILED` - Contract deployment failed
+    
+    **Use cases:**
+    - Update application state when contracts are ready
+    - Handle deployment failures gracefully
+    - Trigger post-deployment workflows
+  </Tab>
+  <Tab title="Token Events">
+    **ERC20 Token Minting**
+    - `ERC20_TOKEN_CREATION_SUCCEEDED` - Tokens minted successfully
+    - `ERC20_TOKEN_CREATION_FAILED` - Token minting failed
+    
+    **Use cases:**
+    - Notify users of successful token distribution
+    - Handle failed mints and retry logic
+    - Update user balances in real-time
+  </Tab>
+</Tabs>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Webhook Endpoint" icon="globe">
+    Set up a publicly accessible HTTPS endpoint that accepts POST requests
+  </Step>
+  <Step title="Authentication Setup" icon="key">
+    Implement authentication on your endpoint (Basic Auth, API Key, or Custom Header)
+  </Step>
+  <Step title="Portal Access" icon="user">
+    Access to the [Venly Developer Portal](https://portal.venly.io)
+  </Step>
+  <Step title="Response Handling" icon="code">
+    Implement proper response handling (return 200 OK for successful processing)
+  </Step>
+</Steps>
+
+<Note>
+Token API webhooks are configured through the NFT API section in the Developer Portal. This unified configuration sends notifications for both NFT and Token API events.
+</Note>
+
+## Configure Webhooks in Portal
+
+### Step-by-Step Setup
+
+<Steps>
+  <Step title="Access Developer Portal" icon="browser">
+    Navigate to the [Venly Developer Portal](https://portal.venly.io) and log in
+  </Step>
+  <Step title="Go to NFT API Section" icon="gear">
+    Under **Configuration**, click on the **NFT API** section
+  </Step>
+  <Step title="Create Webhook" icon="plus">
+    Click on **Create webhook** to start the configuration
+  </Step>
+  <Step title="Configure Details" icon="form">
+    Fill in the webhook configuration form with your endpoint details
+  </Step>
+  <Step title="Test & Activate" icon="check">
+    Test your webhook and activate it for production use
+  </Step>
+</Steps>
+
+### Configuration Parameters
+
+| Field | Description | Required |
+|-------|-------------|----------|
+| **Description** | Human-readable description of the webhook | ✅ |
+| **Endpoint (POST)** | Your HTTPS URL that will receive webhook calls | ✅ |
+| **Type** | Authentication method (Basic Auth, API Key, Custom Header) | ✅ |
+| **Username/Header Name** | Authentication username or custom header name | ✅ |
+| **Password/API Key** | Authentication password or API key value | ✅ |
+
+<Tip>
+**Authentication Best Practices:**
+- Use strong, unique credentials for webhook authentication
+- Implement proper validation on your endpoint
+- Consider using API keys over basic authentication
+- Rotate credentials regularly for security
+</Tip>
+
+## Webhook Event Payloads
+
+### Successful Contract Creation
+
+<CodeGroup>
+```json Success Response
+{
+  "eventType": "ERC20_CONTRACT_CREATION_SUCCEEDED",
+  "result": {
+    "id": "9e1c8b8b-9e7e-4ecd-98f9-98ab15c95651",
+    "chain": "AVAC",
+    "address": "0xb1c62e4dc8dfab73c0fe12ba1736ddb976a485c0",
+    "name": "Infinity Token",
+    "symbol": "IFT",
+    "maxSupply": 500,
+    "burnable": true,
+    "owner": "0x204EAca1F1E701EdC52FF9872D7DFc04a6481730",
+    "transactionHash": "0xa6c75281be7f1b5c543852f2fb6d40830398251ef27b7ceed54fd34afb6b74d4",
+    "status": "SUCCEEDED"
+  }
+}
+```
+
+```json Failed Response
+{
+  "eventType": "ERC20_CONTRACT_CREATION_FAILED",
+  "result": {
+    "id": "bd442012-f0aa-4ed7-b770-2a13e0d965cd",
+    "chain": "MATIC",
+    "address": null,
+    "name": "Infinity Token",
+    "symbol": "IFT",
+    "maxSupply": 500,
+    "burnable": true,
+    "owner": "0x204EAca1F1E701EdC52FF9872D7DFc04a6481730",
+    "transactionHash": null,
+    "status": "FAILED"
+  }
+}
+```
+</CodeGroup>
+
+### Successful Token Minting
+
+<CodeGroup>
+```json Success Response
+{
+  "eventType": "ERC20_TOKEN_CREATION_SUCCEEDED",
+  "result": {
+    "id": "ea9a149f-cdad-44d6-ab0e-55a8a7490429",
+    "createdOn": "2024-09-26T11:16:18.256375",
+    "status": "SUCCEEDED",
+    "transactionHash": "0x8a84df811b33f908cd31f6694ba621b9bef8e6617245970fad2d5627e8bdc1a2",
+    "destination": {
+      "address": "0x6296E346abb7Ecf72308c34de2F5a8888403a6b8",
+      "amount": 450
+    },
+    "contract": {
+      "address": "0xb1c62e4dc8dfab73c0fe12ba1736ddb976a485c0",
+      "name": "Infinity Token",
+      "symbol": "IFT",
+      "maxSupply": 500,
+      "burnable": true,
+      "owner": "0x204EAca1F1E701EdC52FF9872D7DFc04a6481730",
+      "type": "ERC_20"
+    }
+  }
+}
+```
+
+```json Failed Response
+{
+  "eventType": "ERC20_TOKEN_CREATION_FAILED",
+  "result": {
+    "id": "7bfd74a1-e514-4118-98d7-18b82751c4b2",
+    "createdOn": "2024-06-17T14:08:24.795289",
+    "status": "FAILED",
+    "transactionHash": "string",
+    "destination": {
+      "address": "0xb1c62e4dc8dfab73c0fe12ba1736ddb976a485c0",
+      "amount": 1
+    },
+    "contract": {
+      "address": "0xb041536ab3b225a89e1a4fe2c601648dfa551145",
+      "name": "Kindred cows - 1 square foot",
+      "symbol": "DC62",
+      "maxSupply": 0,
+      "burnable": true,
+      "owner": "string",
+      "type": "ERC_20"
+    }
+  }
+}
+```
+</CodeGroup>
+
+## Webhook Implementation Examples
+
+<Tabs>
+  <Tab title="Node.js/Express">
+    ```javascript
+    const express = require('express');
+    const crypto = require('crypto');
+    const app = express();
+    
+    app.use(express.json());
+    
+    // Webhook authentication middleware
+    function authenticateWebhook(req, res, next) {
+      const authHeader = req.headers.authorization;
+      const expectedAuth = 'Bearer YOUR_WEBHOOK_SECRET';
+      
+      if (authHeader !== expectedAuth) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      
+      next();
+    }
+    
+    // Token API webhook handler
+    app.post('/webhooks/token-api', authenticateWebhook, (req, res) => {
+      try {
+        const { eventType, result } = req.body;
+        
+        console.log('Received webhook:', eventType);
+        
+        switch (eventType) {
+          case 'ERC20_CONTRACT_CREATION_SUCCEEDED':
+            handleContractSuccess(result);
+            break;
+            
+          case 'ERC20_CONTRACT_CREATION_FAILED':
+            handleContractFailure(result);
+            break;
+            
+          case 'ERC20_TOKEN_CREATION_SUCCEEDED':
+            handleTokenMintSuccess(result);
+            break;
+            
+          case 'ERC20_TOKEN_CREATION_FAILED':
+            handleTokenMintFailure(result);
+            break;
+            
+          default:
+            console.log('Unknown event type:', eventType);
+        }
+        
+        // Always return 200 OK for successful processing
+        res.status(200).json({ received: true });
+        
+      } catch (error) {
+        console.error('Webhook processing error:', error);
+        res.status(500).json({ error: 'Processing failed' });
+      }
+    });
+    
+    function handleContractSuccess(result) {
+      console.log('✅ Contract deployed successfully:', result.address);
+      
+      // Update database
+      updateContractStatus(result.id, 'DEPLOYED', result.address);
+      
+      // Notify users
+      notifyContractReady(result);
+      
+      // Trigger post-deployment workflows
+      triggerPostDeployment(result);
+    }
+    
+    function handleContractFailure(result) {
+      console.log('❌ Contract deployment failed:', result.id);
+      
+      // Update database
+      updateContractStatus(result.id, 'FAILED');
+      
+      // Notify administrators
+      notifyDeploymentFailure(result);
+      
+      // Potentially retry deployment
+      scheduleRetryDeployment(result);
+    }
+    
+    function handleTokenMintSuccess(result) {
+      console.log('✅ Tokens minted successfully:', result.destination);
+      
+      // Update user balance
+      updateUserBalance(result.destination.address, result.destination.amount);
+      
+      // Send notification
+      notifyTokensReceived(result);
+      
+      // Update mint status
+      updateMintStatus(result.id, 'COMPLETED');
+    }
+    
+    function handleTokenMintFailure(result) {
+      console.log('❌ Token mint failed:', result.id);
+      
+      // Update mint status
+      updateMintStatus(result.id, 'FAILED');
+      
+      // Retry logic
+      scheduleRetryMint(result);
+      
+      // Notify user of failure
+      notifyMintFailure(result);
+    }
+    
+    app.listen(3000, () => {
+      console.log('Webhook server running on port 3000');
+    });
+    ```
+  </Tab>
+  <Tab title="Python/Flask">
+    ```python
+    from flask import Flask, request, jsonify
+    import hmac
+    import hashlib
+    import json
+    
+    app = Flask(__name__)
+    
+    WEBHOOK_SECRET = "YOUR_WEBHOOK_SECRET"
+    
+    def authenticate_webhook():
+        """Verify webhook authentication"""
+        auth_header = request.headers.get('Authorization')
+        expected_auth = f'Bearer {WEBHOOK_SECRET}'
+        
+        if auth_header != expected_auth:
+            return False
+        return True
+    
+    @app.route('/webhooks/token-api', methods=['POST'])
+    def handle_token_webhook():
+        try:
+            # Authenticate request
+            if not authenticate_webhook():
+                return jsonify({'error': 'Unauthorized'}), 401
+            
+            data = request.get_json()
+            event_type = data.get('eventType')
+            result = data.get('result')
+            
+            print(f'Received webhook: {event_type}')
+            
+            # Handle different event types
+            if event_type == 'ERC20_CONTRACT_CREATION_SUCCEEDED':
+                handle_contract_success(result)
+            elif event_type == 'ERC20_CONTRACT_CREATION_FAILED':
+                handle_contract_failure(result)
+            elif event_type == 'ERC20_TOKEN_CREATION_SUCCEEDED':
+                handle_token_mint_success(result)
+            elif event_type == 'ERC20_TOKEN_CREATION_FAILED':
+                handle_token_mint_failure(result)
+            else:
+                print(f'Unknown event type: {event_type}')
+            
+            return jsonify({'received': True}), 200
+            
+        except Exception as error:
+            print(f'Webhook processing error: {error}')
+            return jsonify({'error': 'Processing failed'}), 500
+    
+    def handle_contract_success(result):
+        """Handle successful contract deployment"""
+        print(f'✅ Contract deployed successfully: {result["address"]}')
+        
+        # Update database
+        update_contract_status(result['id'], 'DEPLOYED', result['address'])
+        
+        # Notify users
+        notify_contract_ready(result)
+        
+        # Trigger workflows
+        trigger_post_deployment(result)
+    
+    def handle_contract_failure(result):
+        """Handle failed contract deployment"""
+        print(f'❌ Contract deployment failed: {result["id"]}')
+        
+        # Update database
+        update_contract_status(result['id'], 'FAILED')
+        
+        # Notify administrators
+        notify_deployment_failure(result)
+    
+    def handle_token_mint_success(result):
+        """Handle successful token minting"""
+        destination = result['destination']
+        print(f'✅ Tokens minted successfully: {destination}')
+        
+        # Update user balance
+        update_user_balance(destination['address'], destination['amount'])
+        
+        # Send notification
+        notify_tokens_received(result)
+    
+    def handle_token_mint_failure(result):
+        """Handle failed token minting"""
+        print(f'❌ Token mint failed: {result["id"]}')
+        
+        # Update mint status
+        update_mint_status(result['id'], 'FAILED')
+        
+        # Schedule retry
+        schedule_retry_mint(result)
+    
+    if __name__ == '__main__':
+        app.run(host='0.0.0.0', port=3000)
+    ```
+  </Tab>
+  <Tab title="PHP">
+    ```php
+    <?php
+    
+    // webhook-handler.php
+    
+    // Verify webhook authentication
+    function authenticateWebhook() {
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        $expectedAuth = 'Bearer YOUR_WEBHOOK_SECRET';
+        
+        return $authHeader === $expectedAuth;
+    }
+    
+    // Main webhook handler
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
+        // Authenticate request
+        if (!authenticateWebhook()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            exit;
+        }
+        
+        // Get webhook payload
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        if (!$data) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON']);
+            exit;
+        }
+        
+        $eventType = $data['eventType'] ?? '';
+        $result = $data['result'] ?? [];
+        
+        error_log("Received webhook: $eventType");
+        
+        try {
+            // Handle different event types
+            switch ($eventType) {
+                case 'ERC20_CONTRACT_CREATION_SUCCEEDED':
+                    handleContractSuccess($result);
+                    break;
+                    
+                case 'ERC20_CONTRACT_CREATION_FAILED':
+                    handleContractFailure($result);
+                    break;
+                    
+                case 'ERC20_TOKEN_CREATION_SUCCEEDED':
+                    handleTokenMintSuccess($result);
+                    break;
+                    
+                case 'ERC20_TOKEN_CREATION_FAILED':
+                    handleTokenMintFailure($result);
+                    break;
+                    
+                default:
+                    error_log("Unknown event type: $eventType");
+            }
+            
+            // Return success response
+            http_response_code(200);
+            echo json_encode(['received' => true]);
+            
+        } catch (Exception $e) {
+            error_log("Webhook processing error: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => 'Processing failed']);
+        }
+    }
+    
+    function handleContractSuccess($result) {
+        error_log("✅ Contract deployed successfully: " . $result['address']);
+        
+        // Update database
+        updateContractStatus($result['id'], 'DEPLOYED', $result['address']);
+        
+        // Notify users
+        notifyContractReady($result);
+    }
+    
+    function handleContractFailure($result) {
+        error_log("❌ Contract deployment failed: " . $result['id']);
+        
+        // Update database
+        updateContractStatus($result['id'], 'FAILED');
+        
+        // Notify administrators
+        notifyDeploymentFailure($result);
+    }
+    
+    function handleTokenMintSuccess($result) {
+        $destination = $result['destination'];
+        error_log("✅ Tokens minted successfully: " . json_encode($destination));
+        
+        // Update user balance
+        updateUserBalance($destination['address'], $destination['amount']);
+        
+        // Send notification
+        notifyTokensReceived($result);
+    }
+    
+    function handleTokenMintFailure($result) {
+        error_log("❌ Token mint failed: " . $result['id']);
+        
+        // Update mint status
+        updateMintStatus($result['id'], 'FAILED');
+        
+        // Schedule retry
+        scheduleRetryMint($result);
+    }
+    
+    ?>
+    ```
+  </Tab>
+</Tabs>
+
+## Retry Mechanism & Reliability
+
+<AccordionGroup>
+  <Accordion title="Automatic Retries" icon="refresh">
+    **Venly's Retry Policy:**
+    
+    - **5 retry attempts** if your endpoint is unavailable
+    - **10-second intervals** between retry attempts
+    - **Total retry window:** ~50 seconds
+    - **Message dropped** after final failed attempt
+    
+    **Best practices:**
+    - Ensure your endpoint has high availability
+    - Implement proper error handling and logging
+    - Return HTTP 200 OK for successful processing
+    - Use monitoring to detect endpoint issues
+  </Accordion>
+  
+  <Accordion title="Fallback Strategies" icon="shield">
+    **Handle missed webhooks:**
+    
+    ```javascript
+    // Periodic status check for missed webhooks
+    async function checkMissedEvents() {
+      const pendingContracts = await getPendingContracts();
+      const pendingMints = await getPendingMints();
+      
+      // Check contract statuses
+      for (const contract of pendingContracts) {
+        const status = await checkContractStatus(contract.deploymentId);
+        if (status.status !== 'PENDING') {
+          await updateContractFromStatus(contract.id, status);
+        }
+      }
+      
+      // Check mint statuses
+      for (const mint of pendingMints) {
+        const status = await checkMintStatus(mint.mintId);
+        if (status.status !== 'PENDING') {
+          await updateMintFromStatus(mint.id, status);
+        }
+      }
+    }
+    
+    // Run every 5 minutes
+    setInterval(checkMissedEvents, 5 * 60 * 1000);
+    ```
+    
+    **Fallback endpoints:**
+    - [Check Token Contract Status](https://docs.venly.io/docs/check-erc20-token-contract-status)
+    - [Check Token Mint Status](https://docs.venly.io/docs/check-erc20-token-mint-request)
+  </Accordion>
+  
+  <Accordion title="Idempotency Handling" icon="check-double">
+    **Prevent duplicate processing:**
+    
+    ```javascript
+    const processedEvents = new Set();
+    
+    app.post('/webhooks/token-api', (req, res) => {
+      const { eventType, result } = req.body;
+      const eventId = `${eventType}-${result.id}`;
+      
+      // Check if already processed
+      if (processedEvents.has(eventId)) {
+        console.log('Event already processed:', eventId);
+        return res.status(200).json({ received: true });
+      }
+      
+      try {
+        // Process the event
+        processEvent(eventType, result);
+        
+        // Mark as processed
+        processedEvents.add(eventId);
+        
+        res.status(200).json({ received: true });
+      } catch (error) {
+        console.error('Processing error:', error);
+        res.status(500).json({ error: 'Processing failed' });
+      }
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Monitoring & Alerting" icon="bell">
+    **Monitor webhook health:**
+    
+    ```javascript
+    const webhookMetrics = {
+      received: 0,
+      processed: 0,
+      failed: 0,
+      lastReceived: null
+    };
+    
+    function updateMetrics(status) {
+      webhookMetrics.received++;
+      webhookMetrics.lastReceived = new Date();
+      
+      if (status === 'success') {
+        webhookMetrics.processed++;
+      } else {
+        webhookMetrics.failed++;
+      }
+    }
+    
+    // Health check endpoint
+    app.get('/webhook-health', (req, res) => {
+      const timeSinceLastWebhook = Date.now() - webhookMetrics.lastReceived;
+      const isHealthy = timeSinceLastWebhook < 5 * 60 * 1000; // 5 minutes
+      
+      res.json({
+        healthy: isHealthy,
+        metrics: webhookMetrics,
+        timeSinceLastWebhook
+      });
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Testing Your Webhook
+
+<Steps>
+  <Step title="Deploy Endpoint" icon="rocket">
+    Deploy your webhook endpoint to a publicly accessible HTTPS URL
+  </Step>
+  <Step title="Configure in Portal" icon="gear">
+    Set up the webhook in the Venly Developer Portal with your endpoint URL
+  </Step>
+  <Step title="Test Contract Creation" icon="file-contract">
+    Create a test ERC20 contract and verify you receive the webhook
+  </Step>
+  <Step title="Test Token Minting" icon="coins">
+    Mint test tokens and confirm webhook delivery
+  </Step>
+  <Step title="Verify Error Handling" icon="exclamation-triangle">
+    Test with invalid parameters to ensure failure webhooks work
+  </Step>
+</Steps>
+
+## Best Practices
+
+<Tip>
+**Webhook Best Practices:**
+
+1. **Reliable Endpoint** - Ensure high availability and fast response times
+2. **Proper Authentication** - Implement secure authentication verification
+3. **Idempotency** - Handle duplicate webhook deliveries gracefully
+4. **Error Handling** - Log errors and implement proper error responses
+5. **Monitoring** - Set up alerts for webhook failures or delays
+6. **Fallback Strategy** - Use status check APIs for missed webhooks
+7. **Response Time** - Process webhooks quickly and return 200 OK promptly
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhooks not received">
+    **Common causes:**
+    - Endpoint not publicly accessible
+    - HTTPS certificate issues
+    - Firewall blocking requests
+    - Incorrect authentication setup
+    
+    **Solution:** Verify endpoint accessibility, check SSL certificates, and confirm authentication configuration.
+  </Accordion>
+  
+  <Accordion title="Authentication failures">
+    **Possible issues:**
+    - Wrong authentication type selected
+    - Incorrect credentials
+    - Missing authentication headers
+    
+    **Solution:** Double-check authentication method and credentials in the portal configuration.
+  </Accordion>
+  
+  <Accordion title="Webhook timeouts">
+    **Causes:**
+    - Slow endpoint response
+    - Heavy processing in webhook handler
+    - Database connection issues
+    
+    **Solution:** Optimize webhook processing, use async processing for heavy tasks, and ensure quick response times.
+  </Accordion>
+  
+  <Accordion title="Duplicate events">
+    **Why it happens:**
+    - Network issues causing retries
+    - Endpoint returning non-200 status
+    - Processing delays
+    
+    **Solution:** Implement idempotency checks using event IDs and ensure proper HTTP status responses.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Contract Status Checking" href="/guides/token-api/contracts/check-erc20-token-contract-status" icon="magnifying-glass">
+    Fallback method for checking contract deployment status
+  </Card>
+  <Card title="Mint Status Checking" href="/guides/token-api/minting/check-erc20-token-mint-request" icon="search">
+    Fallback method for checking token mint status
+  </Card>
+  <Card title="Create ERC20 Contract" href="/guides/token-api/contracts/create-erc20-token-contract" icon="file-contract">
+    Deploy contracts that trigger webhook events
+  </Card>
+  <Card title="Mint ERC20 Tokens" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Mint tokens that trigger webhook notifications
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Always implement fallback mechanisms using the status check APIs in case webhooks are missed. Webhooks are not stored and cannot be retrieved after the retry period expires.
+</Warning>

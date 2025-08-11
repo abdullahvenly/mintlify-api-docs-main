@@ -1,0 +1,1978 @@
+---
+title: "Retrieve NFT Details"
+description: "Comprehensive guide to retrieving detailed NFT information with advanced analysis, attribute insights, and metadata evaluation"
+icon: "gem"
+---
+
+<Info>
+**NFT Information Retrieval:** Get comprehensive details about any specific NFT with advanced analysis, attribute insights, and metadata evaluation.
+
+**Time required:** ~4 minutes
+</Info>
+
+## What is NFT Detail Retrieval?
+
+NFT detail retrieval allows you to access comprehensive information about any specific NFT token, including metadata, attributes, media content, and contract information. This provides complete visibility into NFT properties, rarity factors, and technical specifications essential for analysis and integration.
+
+<CardGroup cols={2}>
+  <Card title="Complete NFT Data" icon="database">
+    Access all NFT metadata and attributes
+  </Card>
+  <Card title="Rarity Analysis" icon="star">
+    Analyze attribute rarity and uniqueness
+  </Card>
+  <Card title="Media Content" icon="image">
+    Retrieve images, animations, and media
+  </Card>
+  <Card title="Contract Integration" icon="link">
+    Get contract details and specifications
+  </Card>
+</CardGroup>
+
+## NFT Detail Capabilities
+
+<Tabs>
+  <Tab title="Data Access">
+    **Available Information:**
+    - NFT name and description
+    - Token ID and contract details
+    - Image and animation URLs
+    - Comprehensive attributes
+    - Background and styling
+    
+    **Use Cases:**
+    - NFT marketplace displays
+    - Portfolio management
+    - Rarity analysis
+    - Collection research
+  </Tab>
+  <Tab title="Analysis Features">
+    **Advanced Analysis:**
+    - Attribute rarity scoring
+    - Media type detection
+    - Metadata completeness
+    - Contract verification
+    - Value assessment factors
+    
+    **Insights Provided:**
+    - Rarity rankings
+    - Collection statistics
+    - Market positioning
+    - Technical specifications
+  </Tab>
+  <Tab title="Integration Options">
+    **Implementation Methods:**
+    - Single NFT queries
+    - Batch NFT analysis
+    - Real-time monitoring
+    - Collection scanning
+    
+    **Platform Integration:**
+    - Marketplace platforms
+    - Portfolio trackers
+    - Analytics dashboards
+    - Mobile applications
+  </Tab>
+</Tabs>
+
+## Retrieve NFT Details
+
+<Steps>
+  <Step title="Specify NFT" icon="gem">
+    Provide the blockchain, contract address, and token ID
+    
+    ```javascript
+    const nftQuery = {
+      secretType: 'HEDERA',
+      contractAddress: '0.0.2850147',
+      tokenId: '25'
+    };
+    ```
+  </Step>
+  <Step title="Execute Query" icon="magnifying-glass">
+    Retrieve the comprehensive NFT information
+  </Step>
+  <Step title="Analyze Data" icon="chart-bar">
+    Process attributes, media, and metadata
+  </Step>
+  <Step title="Generate Insights" icon="lightbulb">
+    Create rarity analysis and recommendations
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve detailed NFT information
+const getNFTDetails = async (secretType, contractAddress, tokenId) => {
+  try {
+    const response = await fetch(`/api/nonfungibles/${secretType}/${contractAddress}/${tokenId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve NFT details');
+    }
+  } catch (error) {
+    console.error('Error retrieving NFT details:', error);
+    throw error;
+  }
+};
+
+// Enhanced NFT analysis system
+class NFTAnalyzer {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = new Map();
+    this.defaultCacheTTL = 300000; // 5 minutes
+    this.rarityCache = new Map();
+    this.collectionStats = new Map();
+  }
+
+  async analyzeNFT(secretType, contractAddress, tokenId, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      includeRarityAnalysis = true,
+      includeMediaAnalysis = true,
+      includeContractAnalysis = true,
+      calculateEstimatedValue = false
+    } = options;
+
+    const cacheKey = `${secretType}:${contractAddress}:${tokenId}`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached NFT details');
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      // Retrieve NFT details
+      const nftDetails = await getNFTDetails(secretType, contractAddress, tokenId);
+
+      // Enhance NFT data with analysis
+      const enhancedNFT = this.enhanceNFTData(nftDetails, secretType);
+
+      // Perform rarity analysis if requested
+      const rarityAnalysis = includeRarityAnalysis ? 
+        await this.performRarityAnalysis(enhancedNFT, secretType, contractAddress) : null;
+
+      // Analyze media content if requested
+      const mediaAnalysis = includeMediaAnalysis ? 
+        this.analyzeMediaContent(enhancedNFT) : null;
+
+      // Analyze contract information if requested
+      const contractAnalysis = includeContractAnalysis ? 
+        this.analyzeContractInfo(enhancedNFT.contract) : null;
+
+      // Estimate value if requested
+      const valueEstimation = calculateEstimatedValue ? 
+        await this.estimateNFTValue(enhancedNFT, rarityAnalysis) : null;
+
+      const result = {
+        nft: enhancedNFT,
+        rarity: rarityAnalysis,
+        media: mediaAnalysis,
+        contract: contractAnalysis,
+        value: valueEstimation,
+        insights: this.generateNFTInsights(enhancedNFT, rarityAnalysis),
+        summary: this.generateNFTSummary(enhancedNFT, rarityAnalysis),
+        queriedAt: new Date().toISOString()
+      };
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, result);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      return result;
+
+    } catch (error) {
+      console.error(`Failed to analyze NFT ${tokenId}:`, error);
+      throw error;
+    }
+  }
+
+  async batchAnalyzeNFTs(nftQueries, options = {}) {
+    const {
+      concurrency = 3,
+      continueOnError = true,
+      includeComparison = false,
+      includeCollectionStats = false
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Process NFTs in batches
+    for (let i = 0; i < nftQueries.length; i += concurrency) {
+      const batch = nftQueries.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (query) => {
+        try {
+          const result = await this.analyzeNFT(
+            query.secretType,
+            query.contractAddress,
+            query.tokenId,
+            query.options
+          );
+          
+          return {
+            success: true,
+            query,
+            result
+          };
+        } catch (error) {
+          const errorResult = {
+            success: false,
+            query,
+            error: error.message
+          };
+          
+          if (!continueOnError) {
+            throw error;
+          }
+          
+          return errorResult;
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    const batchAnalysis = {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+
+    // Add comparison analysis if requested
+    if (includeComparison && results.length > 1) {
+      batchAnalysis.comparison = this.compareNFTs(results.map(r => r.result));
+    }
+
+    // Add collection statistics if requested
+    if (includeCollectionStats) {
+      batchAnalysis.collectionStats = this.generateCollectionStats(results.map(r => r.result));
+    }
+
+    return batchAnalysis;
+  }
+
+  enhanceNFTData(nftDetails, secretType) {
+    const enhanced = {
+      ...nftDetails,
+      blockchain: secretType,
+      // Add computed fields
+      hasDescription: !!(nftDetails.description && nftDetails.description.trim()),
+      hasImage: !!(nftDetails.imageUrl),
+      hasAnimation: !!(nftDetails.animationUrl || (nftDetails.animationUrls && nftDetails.animationUrls.length > 0)),
+      hasBackground: !!(nftDetails.backgroundColor),
+      hasExternalUrl: !!(nftDetails.url),
+      // Attribute analysis
+      attributeCount: nftDetails.attributes ? nftDetails.attributes.length : 0,
+      propertyCount: nftDetails.attributes ? nftDetails.attributes.filter(attr => attr.type === 'property').length : 0,
+      statCount: nftDetails.attributes ? nftDetails.attributes.filter(attr => attr.type === 'stat').length : 0,
+      systemCount: nftDetails.attributes ? nftDetails.attributes.filter(attr => attr.type === 'system').length : 0,
+      // Media type detection
+      mediaType: this.determineMediaType(nftDetails),
+      // Add processing timestamp
+      analyzedAt: new Date().toISOString()
+    };
+
+    return enhanced;
+  }
+
+  async performRarityAnalysis(nft, secretType, contractAddress) {
+    const analysis = {
+      attributeRarity: this.analyzeAttributeRarity(nft.attributes),
+      rarityScore: 0,
+      rarityRank: null,
+      rarityTier: 'common',
+      uniqueTraits: [],
+      commonTraits: [],
+      statisticalRarity: null
+    };
+
+    // Calculate basic rarity score
+    analysis.rarityScore = this.calculateRarityScore(nft.attributes);
+    analysis.rarityTier = this.determineRarityTier(analysis.rarityScore);
+
+    // Identify unique and common traits
+    const traitAnalysis = this.analyzeTraitRarity(nft.attributes);
+    analysis.uniqueTraits = traitAnalysis.unique;
+    analysis.commonTraits = traitAnalysis.common;
+
+    // Statistical rarity (would require collection data in real implementation)
+    analysis.statisticalRarity = this.calculateStatisticalRarity(nft.attributes);
+
+    return analysis;
+  }
+
+  analyzeMediaContent(nft) {
+    const analysis = {
+      primaryMedia: {
+        type: nft.mediaType,
+        url: nft.imageUrl,
+        hasPreview: !!nft.imagePreviewUrl,
+        hasThumbnail: !!nft.imageThumbnailUrl
+      },
+      animationMedia: {
+        hasAnimation: nft.hasAnimation,
+        animationUrl: nft.animationUrl,
+        animationUrls: nft.animationUrls || [],
+        animationCount: nft.animationUrls ? nft.animationUrls.length : 0
+      },
+      mediaQuality: this.assessMediaQuality(nft),
+      mediaAccessibility: this.assessMediaAccessibility(nft),
+      recommendations: this.generateMediaRecommendations(nft)
+    };
+
+    return analysis;
+  }
+
+  analyzeContractInfo(contract) {
+    if (!contract) return null;
+
+    return {
+      basic: {
+        name: contract.name,
+        symbol: contract.symbol,
+        address: contract.address,
+        type: contract.type,
+        isVerified: contract.verified || false,
+        isPremium: contract.premium || false
+      },
+      metadata: {
+        hasDescription: !!(contract.description && contract.description.trim()),
+        hasImage: !!contract.imageUrl,
+        hasUrl: !!contract.url,
+        hasMedia: !!(contract.media && contract.media.length > 0),
+        categoryCount: contract.categories ? contract.categories.length : 0
+      },
+      trustFactors: {
+        verificationStatus: contract.verified ? 'verified' : 'unverified',
+        premiumStatus: contract.premium ? 'premium' : 'standard',
+        metadataCompleteness: this.calculateContractMetadataScore(contract)
+      }
+    };
+  }
+
+  async estimateNFTValue(nft, rarityAnalysis) {
+    // This would integrate with market data APIs in a real implementation
+    const estimation = {
+      estimatedValue: 'Not available',
+      valueFactors: {
+        rarity: rarityAnalysis?.rarityScore || 0,
+        attributes: nft.attributeCount,
+        media: nft.hasAnimation ? 'enhanced' : 'standard',
+        contract: nft.contract?.verified ? 'verified' : 'unverified'
+      },
+      marketIndicators: {
+        floorPrice: 'Not available',
+        averagePrice: 'Not available',
+        recentSales: 'Not available'
+      },
+      disclaimer: 'Value estimation requires market data integration'
+    };
+
+    return estimation;
+  }
+
+  generateNFTInsights(nft, rarityAnalysis) {
+    const insights = [];
+
+    // Rarity insights
+    if (rarityAnalysis) {
+      if (rarityAnalysis.rarityScore > 80) {
+        insights.push({
+          type: 'rarity',
+          severity: 'positive',
+          message: `Highly rare NFT with rarity score of ${rarityAnalysis.rarityScore}`,
+          data: { rarityScore: rarityAnalysis.rarityScore }
+        });
+      } else if (rarityAnalysis.rarityScore < 20) {
+        insights.push({
+          type: 'rarity',
+          severity: 'info',
+          message: `Common NFT with rarity score of ${rarityAnalysis.rarityScore}`,
+          data: { rarityScore: rarityAnalysis.rarityScore }
+        });
+      }
+
+      if (rarityAnalysis.uniqueTraits.length > 0) {
+        insights.push({
+          type: 'traits',
+          severity: 'positive',
+          message: `Has ${rarityAnalysis.uniqueTraits.length} unique trait(s)`,
+          data: { uniqueTraits: rarityAnalysis.uniqueTraits }
+        });
+      }
+    }
+
+    // Media insights
+    if (nft.hasAnimation) {
+      insights.push({
+        type: 'media',
+        severity: 'positive',
+        message: 'NFT includes animation content',
+        data: { hasAnimation: true }
+      });
+    }
+
+    if (!nft.hasImage) {
+      insights.push({
+        type: 'media',
+        severity: 'warning',
+        message: 'NFT has no primary image',
+        data: { hasImage: false }
+      });
+    }
+
+    // Metadata insights
+    if (!nft.hasDescription) {
+      insights.push({
+        type: 'metadata',
+        severity: 'info',
+        message: 'NFT has no description',
+        data: { hasDescription: false }
+      });
+    }
+
+    if (nft.attributeCount === 0) {
+      insights.push({
+        type: 'attributes',
+        severity: 'warning',
+        message: 'NFT has no attributes',
+        data: { attributeCount: 0 }
+      });
+    } else if (nft.attributeCount > 10) {
+      insights.push({
+        type: 'attributes',
+        severity: 'positive',
+        message: `Rich attribute set with ${nft.attributeCount} attributes`,
+        data: { attributeCount: nft.attributeCount }
+      });
+    }
+
+    return insights;
+  }
+
+  generateNFTSummary(nft, rarityAnalysis) {
+    return {
+      name: nft.name || 'Unnamed NFT',
+      tokenId: nft.id,
+      contractAddress: nft.contract?.address,
+      blockchain: nft.blockchain,
+      mediaType: nft.mediaType,
+      attributeCount: nft.attributeCount,
+      rarityScore: rarityAnalysis?.rarityScore || 0,
+      rarityTier: rarityAnalysis?.rarityTier || 'unknown',
+      hasAnimation: nft.hasAnimation,
+      isVerified: nft.contract?.verified || false,
+      lastAnalyzed: nft.analyzedAt
+    };
+  }
+
+  compareNFTs(nftResults) {
+    const comparison = {
+      nfts: nftResults.map(result => ({
+        tokenId: result.nft.id,
+        name: result.nft.name,
+        rarityScore: result.rarity?.rarityScore || 0,
+        attributeCount: result.nft.attributeCount,
+        mediaType: result.nft.mediaType
+      })),
+      analysis: {
+        averageRarity: 0,
+        mostRare: null,
+        leastRare: null,
+        commonAttributes: [],
+        mediaDistribution: {}
+      }
+    };
+
+    if (nftResults.length === 0) return comparison;
+
+    // Calculate average rarity
+    const rarityScores = nftResults.map(r => r.rarity?.rarityScore || 0);
+    comparison.analysis.averageRarity = rarityScores.reduce((sum, score) => sum + score, 0) / rarityScores.length;
+
+    // Find most and least rare
+    let maxRarity = 0;
+    let minRarity = 100;
+    nftResults.forEach(result => {
+      const rarity = result.rarity?.rarityScore || 0;
+      if (rarity > maxRarity) {
+        maxRarity = rarity;
+        comparison.analysis.mostRare = {
+          tokenId: result.nft.id,
+          name: result.nft.name,
+          rarityScore: rarity
+        };
+      }
+      if (rarity < minRarity) {
+        minRarity = rarity;
+        comparison.analysis.leastRare = {
+          tokenId: result.nft.id,
+          name: result.nft.name,
+          rarityScore: rarity
+        };
+      }
+    });
+
+    // Analyze media distribution
+    const mediaTypes = {};
+    nftResults.forEach(result => {
+      const mediaType = result.nft.mediaType || 'unknown';
+      mediaTypes[mediaType] = (mediaTypes[mediaType] || 0) + 1;
+    });
+    comparison.analysis.mediaDistribution = mediaTypes;
+
+    return comparison;
+  }
+
+  generateCollectionStats(nftResults) {
+    const stats = {
+      totalNFTs: nftResults.length,
+      averageAttributes: 0,
+      averageRarity: 0,
+      mediaTypes: {},
+      rarityDistribution: {
+        legendary: 0,
+        epic: 0,
+        rare: 0,
+        uncommon: 0,
+        common: 0
+      },
+      attributeFrequency: {}
+    };
+
+    if (nftResults.length === 0) return stats;
+
+    // Calculate averages
+    const attributeCounts = nftResults.map(r => r.nft.attributeCount || 0);
+    const rarityScores = nftResults.map(r => r.rarity?.rarityScore || 0);
+
+    stats.averageAttributes = attributeCounts.reduce((sum, count) => sum + count, 0) / attributeCounts.length;
+    stats.averageRarity = rarityScores.reduce((sum, score) => sum + score, 0) / rarityScores.length;
+
+    // Analyze media types
+    nftResults.forEach(result => {
+      const mediaType = result.nft.mediaType || 'unknown';
+      stats.mediaTypes[mediaType] = (stats.mediaTypes[mediaType] || 0) + 1;
+    });
+
+    // Analyze rarity distribution
+    nftResults.forEach(result => {
+      const tier = result.rarity?.rarityTier || 'common';
+      if (stats.rarityDistribution.hasOwnProperty(tier)) {
+        stats.rarityDistribution[tier]++;
+      }
+    });
+
+    return stats;
+  }
+
+  // Analysis helper methods
+  determineMediaType(nft) {
+    if (nft.animationUrl || (nft.animationUrls && nft.animationUrls.length > 0)) {
+      // Check animation URL for media type hints
+      const animationUrl = nft.animationUrl || nft.animationUrls[0]?.value || nft.animationUrls[0];
+      if (typeof animationUrl === 'string') {
+        if (animationUrl.includes('.mp4') || animationUrl.includes('.webm')) return 'video';
+        if (animationUrl.includes('.mp3') || animationUrl.includes('.wav')) return 'audio';
+        return 'animation';
+      }
+      return 'animation';
+    }
+    
+    if (nft.imageUrl) return 'image';
+    return 'unknown';
+  }
+
+  analyzeAttributeRarity(attributes) {
+    if (!attributes || attributes.length === 0) {
+      return { score: 0, analysis: 'No attributes to analyze' };
+    }
+
+    const analysis = {
+      totalAttributes: attributes.length,
+      propertyAttributes: attributes.filter(attr => attr.type === 'property').length,
+      statAttributes: attributes.filter(attr => attr.type === 'stat').length,
+      systemAttributes: attributes.filter(attr => attr.type === 'system').length,
+      attributeBreakdown: {}
+    };
+
+    // Analyze each attribute
+    attributes.forEach(attr => {
+      const key = attr.name || 'Unknown';
+      if (!analysis.attributeBreakdown[key]) {
+        analysis.attributeBreakdown[key] = {
+          type: attr.type,
+          value: attr.value,
+          displayType: attr.displayType,
+          rarity: this.estimateAttributeRarity(attr)
+        };
+      }
+    });
+
+    return analysis;
+  }
+
+  calculateRarityScore(attributes) {
+    if (!attributes || attributes.length === 0) return 0;
+
+    let score = 0;
+    
+    // Base score for having attributes
+    score += Math.min(attributes.length * 5, 30);
+
+    // Bonus for stat attributes with max values
+    attributes.forEach(attr => {
+      if (attr.type === 'stat' && attr.maxValue) {
+        const percentage = (parseInt(attr.value) || 0) / (parseInt(attr.maxValue) || 1);
+        score += percentage * 20;
+      }
+      
+      // Bonus for unique-looking values
+      if (attr.value && typeof attr.value === 'string') {
+        if (attr.value.toLowerCase().includes('legendary') || 
+            attr.value.toLowerCase().includes('rare') ||
+            attr.value.toLowerCase().includes('unique')) {
+          score += 15;
+        }
+      }
+    });
+
+    return Math.min(score, 100);
+  }
+
+  determineRarityTier(rarityScore) {
+    if (rarityScore >= 90) return 'legendary';
+    if (rarityScore >= 70) return 'epic';
+    if (rarityScore >= 50) return 'rare';
+    if (rarityScore >= 30) return 'uncommon';
+    return 'common';
+  }
+
+  analyzeTraitRarity(attributes) {
+    const unique = [];
+    const common = [];
+
+    if (!attributes) return { unique, common };
+
+    attributes.forEach(attr => {
+      const rarity = this.estimateAttributeRarity(attr);
+      if (rarity === 'unique' || rarity === 'very_rare') {
+        unique.push({
+          name: attr.name,
+          value: attr.value,
+          rarity
+        });
+      } else if (rarity === 'common' || rarity === 'very_common') {
+        common.push({
+          name: attr.name,
+          value: attr.value,
+          rarity
+        });
+      }
+    });
+
+    return { unique, common };
+  }
+
+  estimateAttributeRarity(attribute) {
+    // This is a simplified estimation - real implementation would use collection data
+    if (!attribute.value) return 'unknown';
+    
+    const value = attribute.value.toString().toLowerCase();
+    
+    if (value.includes('legendary') || value.includes('mythic')) return 'unique';
+    if (value.includes('rare') || value.includes('epic')) return 'very_rare';
+    if (value.includes('uncommon') || value.includes('special')) return 'rare';
+    if (value.includes('common') || value.includes('normal')) return 'common';
+    
+    return 'uncommon'; // Default assumption
+  }
+
+  calculateStatisticalRarity(attributes) {
+    // Placeholder for statistical rarity calculation
+    // Real implementation would compare against collection statistics
+    return {
+      percentile: 'Not calculated',
+      rank: 'Not calculated',
+      totalSupply: 'Unknown',
+      note: 'Requires collection data for accurate calculation'
+    };
+  }
+
+  assessMediaQuality(nft) {
+    const quality = {
+      score: 0,
+      factors: []
+    };
+
+    if (nft.hasImage) {
+      quality.score += 30;
+      quality.factors.push('Has primary image');
+    }
+
+    if (nft.imagePreviewUrl) {
+      quality.score += 10;
+      quality.factors.push('Has preview image');
+    }
+
+    if (nft.imageThumbnailUrl) {
+      quality.score += 10;
+      quality.factors.push('Has thumbnail image');
+    }
+
+    if (nft.hasAnimation) {
+      quality.score += 40;
+      quality.factors.push('Has animation content');
+    }
+
+    if (nft.hasBackground) {
+      quality.score += 10;
+      quality.factors.push('Has background color');
+    }
+
+    return {
+      score: Math.min(quality.score, 100),
+      level: quality.score >= 80 ? 'high' : quality.score >= 50 ? 'medium' : 'low',
+      factors: quality.factors
+    };
+  }
+
+  assessMediaAccessibility(nft) {
+    const accessibility = {
+      score: 0,
+      issues: [],
+      recommendations: []
+    };
+
+    if (!nft.hasImage) {
+      accessibility.issues.push('No primary image available');
+      accessibility.recommendations.push('Add a primary image for better visibility');
+    } else {
+      accessibility.score += 50;
+    }
+
+    if (!nft.imageThumbnailUrl && nft.hasImage) {
+      accessibility.issues.push('No thumbnail available');
+      accessibility.recommendations.push('Add thumbnail for faster loading');
+    } else if (nft.imageThumbnailUrl) {
+      accessibility.score += 25;
+    }
+
+    if (!nft.imagePreviewUrl && nft.hasImage) {
+      accessibility.issues.push('No preview image available');
+    } else if (nft.imagePreviewUrl) {
+      accessibility.score += 25;
+    }
+
+    return accessibility;
+  }
+
+  generateMediaRecommendations(nft) {
+    const recommendations = [];
+
+    if (!nft.hasImage) {
+      recommendations.push({
+        type: 'critical',
+        message: 'Add a primary image to improve NFT visibility and marketability'
+      });
+    }
+
+    if (!nft.imageThumbnailUrl && nft.hasImage) {
+      recommendations.push({
+        type: 'improvement',
+        message: 'Add a thumbnail image for better performance in galleries'
+      });
+    }
+
+    if (!nft.hasAnimation && nft.mediaType === 'image') {
+      recommendations.push({
+        type: 'enhancement',
+        message: 'Consider adding animation to increase engagement and value'
+      });
+    }
+
+    if (!nft.hasDescription) {
+      recommendations.push({
+        type: 'content',
+        message: 'Add a description to provide context and story for the NFT'
+      });
+    }
+
+    return recommendations;
+  }
+
+  calculateContractMetadataScore(contract) {
+    let score = 0;
+    let maxScore = 0;
+
+    // Required fields
+    if (contract.name) { score += 2; maxScore += 2; } else { maxScore += 2; }
+    if (contract.symbol) { score += 1; maxScore += 1; } else { maxScore += 1; }
+
+    // Optional fields
+    if (contract.description) { score += 1; maxScore += 1; } else { maxScore += 1; }
+    if (contract.imageUrl) { score += 1; maxScore += 1; } else { maxScore += 1; }
+    if (contract.url) { score += 0.5; maxScore += 0.5; } else { maxScore += 0.5; }
+
+    return maxScore > 0 ? (score / maxScore) * 100 : 0;
+  }
+
+  // Utility methods
+  isCacheValid(key) {
+    if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
+      return false;
+    }
+    return Date.now() < this.cacheExpiry.get(key);
+  }
+
+  clearCache(pattern = null) {
+    if (pattern) {
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+          this.cacheExpiry.delete(key);
+        }
+      }
+    } else {
+      this.cache.clear();
+      this.cacheExpiry.clear();
+    }
+  }
+}
+
+// Usage examples
+const nftAnalyzer = new NFTAnalyzer('YOUR_API_KEY');
+
+// Simple NFT analysis
+const nftDetails = await nftAnalyzer.analyzeNFT(
+  'HEDERA',
+  '0.0.2850147',
+  '25',
+  {
+    includeRarityAnalysis: true,
+    includeMediaAnalysis: true,
+    includeContractAnalysis: true,
+    calculateEstimatedValue: false
+  }
+);
+
+console.log('NFT Details:', nftDetails);
+console.log('Rarity Analysis:', nftDetails.rarity);
+console.log('Media Analysis:', nftDetails.media);
+console.log('Contract Analysis:', nftDetails.contract);
+
+// Batch NFT analysis
+const nftQueries = [
+  {
+    secretType: 'HEDERA',
+    contractAddress: '0.0.2850147',
+    tokenId: '25',
+    options: { includeRarityAnalysis: true }
+  },
+  {
+    secretType: 'HEDERA',
+    contractAddress: '0.0.2850147',
+    tokenId: '26',
+    options: { includeRarityAnalysis: true }
+  }
+];
+
+const batchResults = await nftAnalyzer.batchAnalyzeNFTs(nftQueries, {
+  includeComparison: true,
+  includeCollectionStats: true
+});
+
+console.log('Batch Analysis:', batchResults);
+console.log('NFT Comparison:', batchResults.comparison);
+console.log('Collection Stats:', batchResults.collectionStats);
+
+// Collection analysis
+const collectionNFTs = [
+  { secretType: 'HEDERA', contractAddress: '0.0.2850147', tokenId: '25' },
+  { secretType: 'HEDERA', contractAddress: '0.0.2850147', tokenId: '26' },
+  { secretType: 'HEDERA', contractAddress: '0.0.2850147', tokenId: '27' }
+];
+
+const collectionAnalysis = await nftAnalyzer.batchAnalyzeNFTs(collectionNFTs, {
+  includeComparison: true,
+  includeCollectionStats: true
+});
+
+console.log('Collection Analysis:', collectionAnalysis);
+```
+
+```python Python
+import requests
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+
+class NFTAnalyzer:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/nonfungibles'
+        self.cache = {}
+        self.cache_expiry = {}
+        self.default_cache_ttl = 300  # 5 minutes
+    
+    def get_nft_details(self, secret_type: str, contract_address: str, token_id: str) -> Dict[str, Any]:
+        """Retrieve detailed NFT information"""
+        url = f'{self.base_url}/{secret_type}/{contract_address}/{token_id}'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to retrieve NFT details')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving NFT details: {error}')
+            raise error
+    
+    def analyze_nft(self, secret_type: str, contract_address: str, token_id: str, 
+                   options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Analyze NFT with comprehensive insights"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        include_rarity_analysis = options.get('include_rarity_analysis', True)
+        include_media_analysis = options.get('include_media_analysis', True)
+        include_contract_analysis = options.get('include_contract_analysis', True)
+        
+        cache_key = f"{secret_type}:{contract_address}:{token_id}"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached NFT details')
+            return self.cache[cache_key]
+        
+        try:
+            # Retrieve NFT details
+            nft_details = self.get_nft_details(secret_type, contract_address, token_id)
+            
+            # Enhance NFT data with analysis
+            enhanced_nft = self._enhance_nft_data(nft_details, secret_type)
+            
+            # Perform analyses
+            rarity_analysis = self._perform_rarity_analysis(enhanced_nft) if include_rarity_analysis else None
+            media_analysis = self._analyze_media_content(enhanced_nft) if include_media_analysis else None
+            contract_analysis = self._analyze_contract_info(enhanced_nft.get('contract')) if include_contract_analysis else None
+            
+            result = {
+                'nft': enhanced_nft,
+                'rarity': rarity_analysis,
+                'media': media_analysis,
+                'contract': contract_analysis,
+                'insights': self._generate_nft_insights(enhanced_nft, rarity_analysis),
+                'summary': self._generate_nft_summary(enhanced_nft, rarity_analysis),
+                'queried_at': datetime.now().isoformat()
+            }
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = result
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            return result
+            
+        except Exception as error:
+            print(f'Failed to analyze NFT {token_id}: {error}')
+            raise error
+    
+    def batch_analyze_nfts(self, nft_queries: List[Dict[str, Any]], 
+                          options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Batch analyze multiple NFTs"""
+        if options is None:
+            options = {}
+        
+        continue_on_error = options.get('continue_on_error', True)
+        include_comparison = options.get('include_comparison', False)
+        include_collection_stats = options.get('include_collection_stats', False)
+        
+        results = []
+        errors = []
+        
+        for query in nft_queries:
+            try:
+                result = self.analyze_nft(
+                    query['secret_type'],
+                    query['contract_address'],
+                    query['token_id'],
+                    query.get('options', {})
+                )
+                
+                results.append({
+                    'success': True,
+                    'query': query,
+                    'result': result
+                })
+                
+            except Exception as error:
+                error_result = {
+                    'success': False,
+                    'query': query,
+                    'error': str(error)
+                }
+                
+                if not continue_on_error:
+                    raise error
+                
+                errors.append(error_result)
+        
+        batch_analysis = {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+        
+        # Add comparison analysis if requested
+        if include_comparison and len(results) > 1:
+            batch_analysis['comparison'] = self._compare_nfts([r['result'] for r in results])
+        
+        # Add collection statistics if requested
+        if include_collection_stats:
+            batch_analysis['collection_stats'] = self._generate_collection_stats([r['result'] for r in results])
+        
+        return batch_analysis
+    
+    def _enhance_nft_data(self, nft_details: Dict[str, Any], secret_type: str) -> Dict[str, Any]:
+        """Enhance NFT data with computed fields"""
+        enhanced = {
+            **nft_details,
+            'blockchain': secret_type,
+            'has_description': bool(nft_details.get('description', '').strip()),
+            'has_image': bool(nft_details.get('imageUrl')),
+            'has_animation': bool(nft_details.get('animationUrl') or nft_details.get('animationUrls')),
+            'has_background': bool(nft_details.get('backgroundColor')),
+            'has_external_url': bool(nft_details.get('url')),
+            'attribute_count': len(nft_details.get('attributes', [])),
+            'media_type': self._determine_media_type(nft_details),
+            'analyzed_at': datetime.now().isoformat()
+        }
+        
+        return enhanced
+    
+    def _perform_rarity_analysis(self, nft: Dict[str, Any]) -> Dict[str, Any]:
+        """Perform rarity analysis on NFT"""
+        attributes = nft.get('attributes', [])
+        
+        analysis = {
+            'attribute_rarity': self._analyze_attribute_rarity(attributes),
+            'rarity_score': self._calculate_rarity_score(attributes),
+            'rarity_tier': 'common',
+            'unique_traits': [],
+            'common_traits': []
+        }
+        
+        analysis['rarity_tier'] = self._determine_rarity_tier(analysis['rarity_score'])
+        
+        return analysis
+    
+    def _analyze_media_content(self, nft: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze media content of NFT"""
+        return {
+            'primary_media': {
+                'type': nft.get('media_type'),
+                'url': nft.get('imageUrl'),
+                'has_preview': bool(nft.get('imagePreviewUrl')),
+                'has_thumbnail': bool(nft.get('imageThumbnailUrl'))
+            },
+            'animation_media': {
+                'has_animation': nft.get('has_animation', False),
+                'animation_url': nft.get('animationUrl'),
+                'animation_urls': nft.get('animationUrls', [])
+            },
+            'media_quality': self._assess_media_quality(nft),
+            'recommendations': self._generate_media_recommendations(nft)
+        }
+    
+    def _analyze_contract_info(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze contract information"""
+        if not contract:
+            return None
+        
+        return {
+            'basic': {
+                'name': contract.get('name'),
+                'symbol': contract.get('symbol'),
+                'address': contract.get('address'),
+                'type': contract.get('type'),
+                'is_verified': contract.get('verified', False),
+                'is_premium': contract.get('premium', False)
+            },
+            'metadata': {
+                'has_description': bool(contract.get('description', '').strip()),
+                'has_image': bool(contract.get('imageUrl')),
+                'has_url': bool(contract.get('url'))
+            },
+            'trust_factors': {
+                'verification_status': 'verified' if contract.get('verified') else 'unverified',
+                'premium_status': 'premium' if contract.get('premium') else 'standard'
+            }
+        }
+    
+    def _generate_nft_insights(self, nft: Dict[str, Any], rarity_analysis: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Generate insights about the NFT"""
+        insights = []
+        
+        # Rarity insights
+        if rarity_analysis:
+            rarity_score = rarity_analysis.get('rarity_score', 0)
+            if rarity_score > 80:
+                insights.append({
+                    'type': 'rarity',
+                    'severity': 'positive',
+                    'message': f'Highly rare NFT with rarity score of {rarity_score}',
+                    'data': {'rarity_score': rarity_score}
+                })
+            elif rarity_score < 20:
+                insights.append({
+                    'type': 'rarity',
+                    'severity': 'info',
+                    'message': f'Common NFT with rarity score of {rarity_score}',
+                    'data': {'rarity_score': rarity_score}
+                })
+        
+        # Media insights
+        if nft.get('has_animation'):
+            insights.append({
+                'type': 'media',
+                'severity': 'positive',
+                'message': 'NFT includes animation content',
+                'data': {'has_animation': True}
+            })
+        
+        if not nft.get('has_image'):
+            insights.append({
+                'type': 'media',
+                'severity': 'warning',
+                'message': 'NFT has no primary image',
+                'data': {'has_image': False}
+            })
+        
+        # Attribute insights
+        attribute_count = nft.get('attribute_count', 0)
+        if attribute_count == 0:
+            insights.append({
+                'type': 'attributes',
+                'severity': 'warning',
+                'message': 'NFT has no attributes',
+                'data': {'attribute_count': 0}
+            })
+        elif attribute_count > 10:
+            insights.append({
+                'type': 'attributes',
+                'severity': 'positive',
+                'message': f'Rich attribute set with {attribute_count} attributes',
+                'data': {'attribute_count': attribute_count}
+            })
+        
+        return insights
+    
+    def _generate_nft_summary(self, nft: Dict[str, Any], rarity_analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate NFT summary"""
+        return {
+            'name': nft.get('name', 'Unnamed NFT'),
+            'token_id': nft.get('id'),
+            'contract_address': nft.get('contract', {}).get('address'),
+            'blockchain': nft.get('blockchain'),
+            'media_type': nft.get('media_type'),
+            'attribute_count': nft.get('attribute_count', 0),
+            'rarity_score': rarity_analysis.get('rarity_score', 0) if rarity_analysis else 0,
+            'rarity_tier': rarity_analysis.get('rarity_tier', 'unknown') if rarity_analysis else 'unknown',
+            'has_animation': nft.get('has_animation', False),
+            'is_verified': nft.get('contract', {}).get('verified', False),
+            'last_analyzed': nft.get('analyzed_at')
+        }
+    
+    def _compare_nfts(self, nft_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Compare multiple NFTs"""
+        if not nft_results:
+            return {}
+        
+        comparison = {
+            'nfts': [
+                {
+                    'token_id': result['nft'].get('id'),
+                    'name': result['nft'].get('name'),
+                    'rarity_score': result.get('rarity', {}).get('rarity_score', 0),
+                    'attribute_count': result['nft'].get('attribute_count', 0),
+                    'media_type': result['nft'].get('media_type')
+                }
+                for result in nft_results
+            ],
+            'analysis': {
+                'average_rarity': 0,
+                'most_rare': None,
+                'least_rare': None,
+                'media_distribution': {}
+            }
+        }
+        
+        # Calculate average rarity
+        rarity_scores = [result.get('rarity', {}).get('rarity_score', 0) for result in nft_results]
+        if rarity_scores:
+            comparison['analysis']['average_rarity'] = sum(rarity_scores) / len(rarity_scores)
+        
+        # Find most and least rare
+        max_rarity = 0
+        min_rarity = 100
+        for result in nft_results:
+            rarity = result.get('rarity', {}).get('rarity_score', 0)
+            if rarity > max_rarity:
+                max_rarity = rarity
+                comparison['analysis']['most_rare'] = {
+                    'token_id': result['nft'].get('id'),
+                    'name': result['nft'].get('name'),
+                    'rarity_score': rarity
+                }
+            if rarity < min_rarity:
+                min_rarity = rarity
+                comparison['analysis']['least_rare'] = {
+                    'token_id': result['nft'].get('id'),
+                    'name': result['nft'].get('name'),
+                    'rarity_score': rarity
+                }
+        
+        return comparison
+    
+    def _generate_collection_stats(self, nft_results: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate collection statistics"""
+        if not nft_results:
+            return {}
+        
+        stats = {
+            'total_nfts': len(nft_results),
+            'average_attributes': 0,
+            'average_rarity': 0,
+            'media_types': {},
+            'rarity_distribution': {
+                'legendary': 0,
+                'epic': 0,
+                'rare': 0,
+                'uncommon': 0,
+                'common': 0
+            }
+        }
+        
+        # Calculate averages
+        attribute_counts = [result['nft'].get('attribute_count', 0) for result in nft_results]
+        rarity_scores = [result.get('rarity', {}).get('rarity_score', 0) for result in nft_results]
+        
+        if attribute_counts:
+            stats['average_attributes'] = sum(attribute_counts) / len(attribute_counts)
+        if rarity_scores:
+            stats['average_rarity'] = sum(rarity_scores) / len(rarity_scores)
+        
+        # Analyze media types and rarity distribution
+        for result in nft_results:
+            media_type = result['nft'].get('media_type', 'unknown')
+            stats['media_types'][media_type] = stats['media_types'].get(media_type, 0) + 1
+            
+            tier = result.get('rarity', {}).get('rarity_tier', 'common')
+            if tier in stats['rarity_distribution']:
+                stats['rarity_distribution'][tier] += 1
+        
+        return stats
+    
+    # Helper methods
+    def _determine_media_type(self, nft: Dict[str, Any]) -> str:
+        """Determine media type of NFT"""
+        if nft.get('animationUrl') or nft.get('animationUrls'):
+            return 'animation'
+        elif nft.get('imageUrl'):
+            return 'image'
+        else:
+            return 'unknown'
+    
+    def _analyze_attribute_rarity(self, attributes: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze attribute rarity"""
+        if not attributes:
+            return {'score': 0, 'analysis': 'No attributes to analyze'}
+        
+        return {
+            'total_attributes': len(attributes),
+            'property_attributes': len([attr for attr in attributes if attr.get('type') == 'property']),
+            'stat_attributes': len([attr for attr in attributes if attr.get('type') == 'stat']),
+            'system_attributes': len([attr for attr in attributes if attr.get('type') == 'system'])
+        }
+    
+    def _calculate_rarity_score(self, attributes: List[Dict[str, Any]]) -> int:
+        """Calculate rarity score based on attributes"""
+        if not attributes:
+            return 0
+        
+        score = 0
+        score += min(len(attributes) * 5, 30)  # Base score for having attributes
+        
+        for attr in attributes:
+            if attr.get('type') == 'stat' and attr.get('maxValue'):
+                try:
+                    percentage = int(attr.get('value', 0)) / int(attr.get('maxValue', 1))
+                    score += percentage * 20
+                except (ValueError, ZeroDivisionError):
+                    pass
+            
+            # Bonus for rare-sounding values
+            value = str(attr.get('value', '')).lower()
+            if any(keyword in value for keyword in ['legendary', 'rare', 'unique', 'epic']):
+                score += 15
+        
+        return min(int(score), 100)
+    
+    def _determine_rarity_tier(self, rarity_score: int) -> str:
+        """Determine rarity tier from score"""
+        if rarity_score >= 90:
+            return 'legendary'
+        elif rarity_score >= 70:
+            return 'epic'
+        elif rarity_score >= 50:
+            return 'rare'
+        elif rarity_score >= 30:
+            return 'uncommon'
+        else:
+            return 'common'
+    
+    def _assess_media_quality(self, nft: Dict[str, Any]) -> Dict[str, Any]:
+        """Assess media quality of NFT"""
+        score = 0
+        factors = []
+        
+        if nft.get('has_image'):
+            score += 30
+            factors.append('Has primary image')
+        
+        if nft.get('imagePreviewUrl'):
+            score += 10
+            factors.append('Has preview image')
+        
+        if nft.get('imageThumbnailUrl'):
+            score += 10
+            factors.append('Has thumbnail image')
+        
+        if nft.get('has_animation'):
+            score += 40
+            factors.append('Has animation content')
+        
+        if nft.get('has_background'):
+            score += 10
+            factors.append('Has background color')
+        
+        return {
+            'score': min(score, 100),
+            'level': 'high' if score >= 80 else 'medium' if score >= 50 else 'low',
+            'factors': factors
+        }
+    
+    def _generate_media_recommendations(self, nft: Dict[str, Any]) -> List[Dict[str, str]]:
+        """Generate media recommendations"""
+        recommendations = []
+        
+        if not nft.get('has_image'):
+            recommendations.append({
+                'type': 'critical',
+                'message': 'Add a primary image to improve NFT visibility and marketability'
+            })
+        
+        if not nft.get('imageThumbnailUrl') and nft.get('has_image'):
+            recommendations.append({
+                'type': 'improvement',
+                'message': 'Add a thumbnail image for better performance in galleries'
+            })
+        
+        if not nft.get('has_animation') and nft.get('media_type') == 'image':
+            recommendations.append({
+                'type': 'enhancement',
+                'message': 'Consider adding animation to increase engagement and value'
+            })
+        
+        return recommendations
+    
+    def _is_cache_valid(self, key: str) -> bool:
+        """Check if cache entry is valid"""
+        if key not in self.cache or key not in self.cache_expiry:
+            return False
+        return datetime.now() < self.cache_expiry[key]
+
+# Usage
+nft_analyzer = NFTAnalyzer('YOUR_API_KEY')
+
+# Simple NFT analysis
+nft_details = nft_analyzer.analyze_nft(
+    'HEDERA',
+    '0.0.2850147',
+    '25',
+    {
+        'include_rarity_analysis': True,
+        'include_media_analysis': True,
+        'include_contract_analysis': True
+    }
+)
+
+print('NFT Details:', nft_details)
+```
+
+```bash cURL
+# Get NFT details
+curl -X GET '/api/nonfungibles/HEDERA/0.0.2850147/25' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get NFT details with formatted output
+curl -X GET '/api/nonfungibles/HEDERA/0.0.2850147/25' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -s | jq '.'
+
+# Batch retrieve multiple NFT details
+#!/bin/bash
+CONTRACT_ADDRESS="0.0.2850147"
+SECRET_TYPE="HEDERA"
+TOKEN_IDS=("25" "26" "27" "28" "29")
+
+for token_id in "${TOKEN_IDS[@]}"; do
+  echo "Retrieving details for NFT $token_id..."
+  curl -X GET "/api/nonfungibles/$SECRET_TYPE/$CONTRACT_ADDRESS/$token_id" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result' > "nft_${token_id}_details.json"
+  echo "Saved to nft_${token_id}_details.json"
+  sleep 0.5  # Rate limiting
+done
+
+# Analyze NFT rarity from attributes
+#!/bin/bash
+analyze_nft_rarity() {
+  local token_id=$1
+  echo "Analyzing rarity for NFT $token_id..."
+  
+  # Get NFT details
+  nft_data=$(curl -X GET "/api/nonfungibles/HEDERA/0.0.2850147/$token_id" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result')
+  
+  # Extract attributes
+  attributes=$(echo "$nft_data" | jq '.attributes // []')
+  attribute_count=$(echo "$attributes" | jq 'length')
+  
+  # Calculate basic rarity score
+  rarity_score=$((attribute_count * 5))
+  
+  # Check for rare attributes
+  rare_keywords=("legendary" "rare" "unique" "epic")
+  for keyword in "${rare_keywords[@]}"; do
+    if echo "$attributes" | jq -r '.[].value' | grep -qi "$keyword"; then
+      rarity_score=$((rarity_score + 15))
+    fi
+  done
+  
+  # Determine rarity tier
+  if [ $rarity_score -ge 90 ]; then
+    tier="legendary"
+  elif [ $rarity_score -ge 70 ]; then
+    tier="epic"
+  elif [ $rarity_score -ge 50 ]; then
+    tier="rare"
+  elif [ $rarity_score -ge 30 ]; then
+    tier="uncommon"
+  else
+    tier="common"
+  fi
+  
+  echo "NFT $token_id - Rarity Score: $rarity_score, Tier: $tier, Attributes: $attribute_count"
+}
+
+# Analyze multiple NFTs
+for token_id in "${TOKEN_IDS[@]}"; do
+  analyze_nft_rarity "$token_id"
+done
+```
+
+```php PHP
+<?php
+class NFTAnalyzer {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    private $defaultCacheTTL;
+    
+    public function __construct($apiKey, $baseUrl = '/api/nonfungibles') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = [];
+        $this->defaultCacheTTL = 300; // 5 minutes
+    }
+    
+    public function analyzeNFT($secretType, $contractAddress, $tokenId, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $includeRarityAnalysis = $options['includeRarityAnalysis'] ?? true;
+        $includeMediaAnalysis = $options['includeMediaAnalysis'] ?? true;
+        $includeContractAnalysis = $options['includeContractAnalysis'] ?? true;
+        
+        $cacheKey = "{$secretType}:{$contractAddress}:{$tokenId}";
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached NFT details\n";
+            return $this->cache[$cacheKey];
+        }
+        
+        try {
+            // Retrieve NFT details
+            $nftDetails = $this->getNFTDetails($secretType, $contractAddress, $tokenId);
+            
+            // Enhance NFT data with analysis
+            $enhancedNFT = $this->enhanceNFTData($nftDetails, $secretType);
+            
+            // Perform analyses
+            $rarityAnalysis = $includeRarityAnalysis ? $this->performRarityAnalysis($enhancedNFT) : null;
+            $mediaAnalysis = $includeMediaAnalysis ? $this->analyzeMediaContent($enhancedNFT) : null;
+            $contractAnalysis = $includeContractAnalysis ? $this->analyzeContractInfo($enhancedNFT['contract'] ?? null) : null;
+            
+            $result = [
+                'nft' => $enhancedNFT,
+                'rarity' => $rarityAnalysis,
+                'media' => $mediaAnalysis,
+                'contract' => $contractAnalysis,
+                'insights' => $this->generateNFTInsights($enhancedNFT, $rarityAnalysis),
+                'summary' => $this->generateNFTSummary($enhancedNFT, $rarityAnalysis),
+                'queriedAt' => date('c')
+            ];
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $result;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            return $result;
+            
+        } catch (Exception $error) {
+            echo "Failed to analyze NFT {$tokenId}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function getNFTDetails($secretType, $contractAddress, $tokenId) {
+        $url = "{$this->baseUrl}/{$secretType}/{$contractAddress}/{$tokenId}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve NFT details");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve NFT details');
+        }
+        
+        return $data['result'];
+    }
+    
+    private function enhanceNFTData($nftDetails, $secretType) {
+        return array_merge($nftDetails, [
+            'blockchain' => $secretType,
+            'hasDescription' => !empty(trim($nftDetails['description'] ?? '')),
+            'hasImage' => !empty($nftDetails['imageUrl']),
+            'hasAnimation' => !empty($nftDetails['animationUrl']) || !empty($nftDetails['animationUrls']),
+            'hasBackground' => !empty($nftDetails['backgroundColor']),
+            'hasExternalUrl' => !empty($nftDetails['url']),
+            'attributeCount' => count($nftDetails['attributes'] ?? []),
+            'mediaType' => $this->determineMediaType($nftDetails),
+            'analyzedAt' => date('c')
+        ]);
+    }
+    
+    private function performRarityAnalysis($nft) {
+        $attributes = $nft['attributes'] ?? [];
+        
+        $analysis = [
+            'attributeRarity' => $this->analyzeAttributeRarity($attributes),
+            'rarityScore' => $this->calculateRarityScore($attributes),
+            'rarityTier' => 'common',
+            'uniqueTraits' => [],
+            'commonTraits' => []
+        ];
+        
+        $analysis['rarityTier'] = $this->determineRarityTier($analysis['rarityScore']);
+        
+        return $analysis;
+    }
+    
+    private function analyzeMediaContent($nft) {
+        return [
+            'primaryMedia' => [
+                'type' => $nft['mediaType'],
+                'url' => $nft['imageUrl'] ?? null,
+                'hasPreview' => !empty($nft['imagePreviewUrl']),
+                'hasThumbnail' => !empty($nft['imageThumbnailUrl'])
+            ],
+            'animationMedia' => [
+                'hasAnimation' => $nft['hasAnimation'],
+                'animationUrl' => $nft['animationUrl'] ?? null,
+                'animationUrls' => $nft['animationUrls'] ?? []
+            ],
+            'mediaQuality' => $this->assessMediaQuality($nft),
+            'recommendations' => $this->generateMediaRecommendations($nft)
+        ];
+    }
+    
+    private function analyzeContractInfo($contract) {
+        if (!$contract) return null;
+        
+        return [
+            'basic' => [
+                'name' => $contract['name'] ?? null,
+                'symbol' => $contract['symbol'] ?? null,
+                'address' => $contract['address'] ?? null,
+                'type' => $contract['type'] ?? null,
+                'isVerified' => $contract['verified'] ?? false,
+                'isPremium' => $contract['premium'] ?? false
+            ],
+            'metadata' => [
+                'hasDescription' => !empty(trim($contract['description'] ?? '')),
+                'hasImage' => !empty($contract['imageUrl']),
+                'hasUrl' => !empty($contract['url'])
+            ],
+            'trustFactors' => [
+                'verificationStatus' => ($contract['verified'] ?? false) ? 'verified' : 'unverified',
+                'premiumStatus' => ($contract['premium'] ?? false) ? 'premium' : 'standard'
+            ]
+        ];
+    }
+    
+    private function generateNFTInsights($nft, $rarityAnalysis) {
+        $insights = [];
+        
+        // Rarity insights
+        if ($rarityAnalysis) {
+            $rarityScore = $rarityAnalysis['rarityScore'];
+            if ($rarityScore > 80) {
+                $insights[] = [
+                    'type' => 'rarity',
+                    'severity' => 'positive',
+                    'message' => "Highly rare NFT with rarity score of {$rarityScore}",
+                    'data' => ['rarityScore' => $rarityScore]
+                ];
+            } elseif ($rarityScore < 20) {
+                $insights[] = [
+                    'type' => 'rarity',
+                    'severity' => 'info',
+                    'message' => "Common NFT with rarity score of {$rarityScore}",
+                    'data' => ['rarityScore' => $rarityScore]
+                ];
+            }
+        }
+        
+        // Media insights
+        if ($nft['hasAnimation']) {
+            $insights[] = [
+                'type' => 'media',
+                'severity' => 'positive',
+                'message' => 'NFT includes animation content',
+                'data' => ['hasAnimation' => true]
+            ];
+        }
+        
+        if (!$nft['hasImage']) {
+            $insights[] = [
+                'type' => 'media',
+                'severity' => 'warning',
+                'message' => 'NFT has no primary image',
+                'data' => ['hasImage' => false]
+            ];
+        }
+        
+        // Attribute insights
+        $attributeCount = $nft['attributeCount'];
+        if ($attributeCount === 0) {
+            $insights[] = [
+                'type' => 'attributes',
+                'severity' => 'warning',
+                'message' => 'NFT has no attributes',
+                'data' => ['attributeCount' => 0]
+            ];
+        } elseif ($attributeCount > 10) {
+            $insights[] = [
+                'type' => 'attributes',
+                'severity' => 'positive',
+                'message' => "Rich attribute set with {$attributeCount} attributes",
+                'data' => ['attributeCount' => $attributeCount]
+            ];
+        }
+        
+        return $insights;
+    }
+    
+    private function generateNFTSummary($nft, $rarityAnalysis) {
+        return [
+            'name' => $nft['name'] ?? 'Unnamed NFT',
+            'tokenId' => $nft['id'] ?? null,
+            'contractAddress' => $nft['contract']['address'] ?? null,
+            'blockchain' => $nft['blockchain'],
+            'mediaType' => $nft['mediaType'],
+            'attributeCount' => $nft['attributeCount'],
+            'rarityScore' => $rarityAnalysis['rarityScore'] ?? 0,
+            'rarityTier' => $rarityAnalysis['rarityTier'] ?? 'unknown',
+            'hasAnimation' => $nft['hasAnimation'],
+            'isVerified' => $nft['contract']['verified'] ?? false,
+            'lastAnalyzed' => $nft['analyzedAt']
+        ];
+    }
+    
+    // Helper methods
+    private function determineMediaType($nft) {
+        if (!empty($nft['animationUrl']) || !empty($nft['animationUrls'])) {
+            return 'animation';
+        } elseif (!empty($nft['imageUrl'])) {
+            return 'image';
+        } else {
+            return 'unknown';
+        }
+    }
+    
+    private function analyzeAttributeRarity($attributes) {
+        if (empty($attributes)) {
+            return ['score' => 0, 'analysis' => 'No attributes to analyze'];
+        }
+        
+        return [
+            'totalAttributes' => count($attributes),
+            'propertyAttributes' => count(array_filter($attributes, function($attr) {
+                return ($attr['type'] ?? '') === 'property';
+            })),
+            'statAttributes' => count(array_filter($attributes, function($attr) {
+                return ($attr['type'] ?? '') === 'stat';
+            })),
+            'systemAttributes' => count(array_filter($attributes, function($attr) {
+                return ($attr['type'] ?? '') === 'system';
+            }))
+        ];
+    }
+    
+    private function calculateRarityScore($attributes) {
+        if (empty($attributes)) return 0;
+        
+        $score = 0;
+        $score += min(count($attributes) * 5, 30); // Base score for having attributes
+        
+        foreach ($attributes as $attr) {
+            if (($attr['type'] ?? '') === 'stat' && !empty($attr['maxValue'])) {
+                $percentage = (int)($attr['value'] ?? 0) / (int)($attr['maxValue'] ?? 1);
+                $score += $percentage * 20;
+            }
+            
+            // Bonus for rare-sounding values
+            $value = strtolower($attr['value'] ?? '');
+            $rareKeywords = ['legendary', 'rare', 'unique', 'epic'];
+            foreach ($rareKeywords as $keyword) {
+                if (strpos($value, $keyword) !== false) {
+                    $score += 15;
+                    break;
+                }
+            }
+        }
+        
+        return min((int)$score, 100);
+    }
+    
+    private function determineRarityTier($rarityScore) {
+        if ($rarityScore >= 90) return 'legendary';
+        if ($rarityScore >= 70) return 'epic';
+        if ($rarityScore >= 50) return 'rare';
+        if ($rarityScore >= 30) return 'uncommon';
+        return 'common';
+    }
+    
+    private function assessMediaQuality($nft) {
+        $score = 0;
+        $factors = [];
+        
+        if ($nft['hasImage']) {
+            $score += 30;
+            $factors[] = 'Has primary image';
+        }
+        
+        if (!empty($nft['imagePreviewUrl'])) {
+            $score += 10;
+            $factors[] = 'Has preview image';
+        }
+        
+        if (!empty($nft['imageThumbnailUrl'])) {
+            $score += 10;
+            $factors[] = 'Has thumbnail image';
+        }
+        
+        if ($nft['hasAnimation']) {
+            $score += 40;
+            $factors[] = 'Has animation content';
+        }
+        
+        if ($nft['hasBackground']) {
+            $score += 10;
+            $factors[] = 'Has background color';
+        }
+        
+        return [
+            'score' => min($score, 100),
+            'level' => $score >= 80 ? 'high' : ($score >= 50 ? 'medium' : 'low'),
+            'factors' => $factors
+        ];
+    }
+    
+    private function generateMediaRecommendations($nft) {
+        $recommendations = [];
+        
+        if (!$nft['hasImage']) {
+            $recommendations[] = [
+                'type' => 'critical',
+                'message' => 'Add a primary image to improve NFT visibility and marketability'
+            ];
+        }
+        
+        if (empty($nft['imageThumbnailUrl']) && $nft['hasImage']) {
+            $recommendations[] = [
+                'type' => 'improvement',
+                'message' => 'Add a thumbnail image for better performance in galleries'
+            ];
+        }
+        
+        if (!$nft['hasAnimation'] && $nft['mediaType'] === 'image') {
+            $recommendations[] = [
+                'type' => 'enhancement',
+                'message' => 'Consider adding animation to increase engagement and value'
+            ];
+        }
+        
+        return $recommendations;
+    }
+    
+    private function isCacheValid($key) {
+        return isset($this->cache[$key]) && 
+               isset($this->cacheExpiry[$key]) && 
+               time() < $this->cacheExpiry[$key];
+    }
+}
+
+// Usage
+$nftAnalyzer = new NFTAnalyzer('YOUR_API_KEY');
+
+try {
+    $nftDetails = $nftAnalyzer->analyzeNFT(
+        'HEDERA',
+        '0.0.2850147',
+        '25',
+        [
+            'includeRarityAnalysis' => true,
+            'includeMediaAnalysis' => true,
+            'includeContractAnalysis' => true
+        ]
+    );
+    
+    echo "NFT Analysis: " . json_encode($nftDetails, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**NFT Detail Retrieval Best Practices:**
+
+1. **Comprehensive Analysis** - Always retrieve complete NFT data including metadata, attributes, and media
+2. **Rarity Assessment** - Implement systematic rarity analysis based on attributes and collection data
+3. **Media Validation** - Verify all media URLs and assess content quality and accessibility
+4. **Caching Strategy** - Use intelligent caching to improve performance and reduce API calls
+5. **Batch Processing** - Use batch operations for analyzing multiple NFTs efficiently
+6. **Error Handling** - Implement robust error handling for missing or invalid NFT data
+7. **Comparison Tools** - Provide comparison capabilities for analyzing multiple NFTs
+8. **Insights Generation** - Generate actionable insights and recommendations for NFT optimization
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Retrieve NFTs by Wallet" href="/guides/nft-api/querying/retrieve-nfts-by-wallet" icon="wallet">
+    Find all NFTs owned by a specific wallet
+  </Card>
+  <Card title="Retrieve Wallets by NFT" href="/guides/nft-api/querying/retrieve-wallets-by-nft" icon="users">
+    Find all wallets that own specific NFTs
+  </Card>
+  <Card title="NFT Contract Information" href="/guides/nft-api/querying/retrieve-nft-contract-info" icon="file-contract">
+    Get detailed contract information and statistics
+  </Card>
+  <Card title="API Reference" href="/api-reference/Wallet-API/non-fungibles/get-nft-information" icon="book">
+    Explore the complete NFT details API documentation
+  </Card>
+</CardGroup>

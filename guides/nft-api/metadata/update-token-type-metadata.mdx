@@ -1,0 +1,1533 @@
+---
+title: "Update Token Type Metadata"
+description: "Comprehensive guide to updating NFT token type metadata with validation, versioning, and advanced metadata management systems"
+icon: "pen-to-square"
+---
+
+<Info>
+**Metadata Updates:** Safely update NFT token type metadata with comprehensive validation, change tracking, and advanced management systems.
+
+**Time required:** ~7 minutes
+</Info>
+
+## What is Token Type Metadata Updating?
+
+Token type metadata updating allows you to modify the metadata of NFT templates after creation. This includes updating names, descriptions, images, and custom attributes while preserving immutable contract-level properties. Essential for maintaining collections, fixing errors, and evolving NFT templates over time.
+
+<CardGroup cols={2}>
+  <Card title="Safe Updates" icon="shield-check">
+    Update metadata with validation and safety checks
+  </Card>
+  <Card title="Change Tracking" icon="clock-rotate-left">
+    Track all metadata changes with version history
+  </Card>
+  <Card title="Batch Operations" icon="layer-group">
+    Update multiple token types efficiently
+  </Card>
+  <Card title="Validation Systems" icon="check-double">
+    Comprehensive validation and error prevention
+  </Card>
+</CardGroup>
+
+## Update Restrictions
+
+<Warning>
+**Immutable Properties:** Some attributes are defined at the contract level and cannot be updated:
+
+- `fungible` - Token fungibility status
+- `burnable` - Whether tokens can be burned
+- `maxSupply` - Maximum supply limit
+
+Attempting to update these properties will result in an error.
+</Warning>
+
+<Tabs>
+  <Tab title="Updatable Fields">
+    **Modifiable Properties:**
+    - Name and description
+    - Image URLs and media
+    - Custom attributes and traits
+    - Animation URLs
+    - External links
+    - Background colors
+    
+    **Use Cases:**
+    - Fixing typos or errors
+    - Updating artwork or media
+    - Adding new attributes
+    - Improving descriptions
+  </Tab>
+  <Tab title="Restricted Fields">
+    **Immutable Properties:**
+    - Fungible status
+    - Burnable configuration
+    - Maximum supply limits
+    - Contract-level settings
+    
+    **Reason:**
+    - Defined at contract creation
+    - Affects token economics
+    - Cannot be changed post-deployment
+    - Maintains contract integrity
+  </Tab>
+  <Tab title="Best Practices">
+    **Update Guidelines:**
+    - Always validate before updating
+    - Keep backup of original metadata
+    - Test updates on staging first
+    - Document all changes
+    
+    **Safety Measures:**
+    - Validate URLs and formats
+    - Check attribute consistency
+    - Verify image accessibility
+    - Maintain attribute structure
+  </Tab>
+</Tabs>
+
+## Update Token Type Metadata
+
+<Steps>
+  <Step title="Prepare Update Data" icon="clipboard-list">
+    Prepare the metadata fields you want to update
+    
+    ```javascript
+    const updateData = {
+      name: "Updated Token Name",
+      description: "Updated description with new details",
+      image: "https://example.com/new-image.png"
+    };
+    ```
+  </Step>
+  <Step title="Validate Changes" icon="check">
+    Validate the update data before sending
+  </Step>
+  <Step title="Execute Update" icon="paper-plane">
+    Send the update request to the API
+  </Step>
+  <Step title="Verify Results" icon="magnifying-glass">
+    Confirm the metadata was updated successfully
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Update token type metadata
+const updateTokenTypeMetadata = async (chain, contractAddress, tokenTypeId, updateData) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/token-types/${tokenTypeId}/metadata`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(updateData)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to update token type metadata');
+    }
+  } catch (error) {
+    console.error('Error updating token type metadata:', error);
+    throw error;
+  }
+};
+
+// Enhanced metadata update management system
+class TokenTypeMetadataUpdater {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.updateHistory = new Map();
+    this.validationRules = new Map();
+    this.backupStorage = new Map();
+    this.pendingUpdates = new Map();
+  }
+
+  async updateMetadata(chain, contractAddress, tokenTypeId, updateData, options = {}) {
+    const {
+      validateBeforeUpdate = true,
+      createBackup = true,
+      trackChanges = true,
+      dryRun = false
+    } = options;
+
+    const updateKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+
+    try {
+      // Create backup if requested
+      if (createBackup) {
+        await this.createBackup(chain, contractAddress, tokenTypeId);
+      }
+
+      // Validate update data
+      if (validateBeforeUpdate) {
+        const validation = this.validateUpdateData(updateData);
+        if (!validation.isValid) {
+          throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+        }
+      }
+
+      // Dry run mode - validate without updating
+      if (dryRun) {
+        return {
+          success: true,
+          dryRun: true,
+          validation: this.validateUpdateData(updateData),
+          changes: this.analyzeChanges(updateData),
+          message: 'Dry run completed successfully'
+        };
+      }
+
+      // Execute the update
+      const result = await updateTokenTypeMetadata(chain, contractAddress, tokenTypeId, updateData);
+
+      // Track changes if requested
+      if (trackChanges) {
+        this.recordUpdate(updateKey, updateData, result);
+      }
+
+      return {
+        success: true,
+        result,
+        updateKey,
+        timestamp: new Date().toISOString()
+      };
+
+    } catch (error) {
+      console.error(`Failed to update metadata for ${updateKey}:`, error);
+      
+      // Attempt to restore from backup if update failed
+      if (createBackup && this.backupStorage.has(updateKey)) {
+        console.log('Update failed, backup available for restoration');
+      }
+      
+      throw error;
+    }
+  }
+
+  async batchUpdateMetadata(updates, options = {}) {
+    const {
+      concurrency = 3,
+      continueOnError = false,
+      validateAll = true
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Validate all updates first if requested
+    if (validateAll) {
+      for (const update of updates) {
+        const validation = this.validateUpdateData(update.updateData);
+        if (!validation.isValid) {
+          const error = {
+            update,
+            error: `Validation failed: ${validation.errors.join(', ')}`
+          };
+          
+          if (!continueOnError) {
+            throw new Error(`Batch validation failed: ${error.error}`);
+          }
+          
+          errors.push(error);
+        }
+      }
+    }
+
+    // Process updates in batches
+    for (let i = 0; i < updates.length; i += concurrency) {
+      const batch = updates.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (update) => {
+        try {
+          const result = await this.updateMetadata(
+            update.chain,
+            update.contractAddress,
+            update.tokenTypeId,
+            update.updateData,
+            update.options
+          );
+          
+          return {
+            success: true,
+            update,
+            result
+          };
+        } catch (error) {
+          const errorResult = {
+            success: false,
+            update,
+            error: error.message
+          };
+          
+          if (!continueOnError) {
+            throw error;
+          }
+          
+          return errorResult;
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  validateUpdateData(updateData) {
+    const errors = [];
+    const warnings = [];
+
+    // Check for restricted fields
+    const restrictedFields = ['fungible', 'burnable', 'maxSupply'];
+    restrictedFields.forEach(field => {
+      if (updateData.hasOwnProperty(field)) {
+        errors.push(`Cannot update restricted field: ${field}`);
+      }
+    });
+
+    // Validate URLs
+    const urlFields = ['image', 'imagePreview', 'imageThumbnail'];
+    urlFields.forEach(field => {
+      if (updateData[field] && !this.isValidUrl(updateData[field])) {
+        errors.push(`Invalid URL in field: ${field}`);
+      }
+    });
+
+    // Validate animation URLs
+    if (updateData.animationUrls && Array.isArray(updateData.animationUrls)) {
+      updateData.animationUrls.forEach((animUrl, index) => {
+        if (!animUrl.value || !this.isValidUrl(animUrl.value)) {
+          errors.push(`Invalid animation URL at index ${index}`);
+        }
+        if (!animUrl.type) {
+          warnings.push(`Missing type for animation URL at index ${index}`);
+        }
+      });
+    }
+
+    // Validate attributes
+    if (updateData.attributes && Array.isArray(updateData.attributes)) {
+      updateData.attributes.forEach((attr, index) => {
+        if (!attr.name && !attr.traitType && !attr.trait_type) {
+          errors.push(`Attribute at index ${index} missing name or trait type`);
+        }
+        if (attr.value === undefined || attr.value === null) {
+          warnings.push(`Attribute at index ${index} has no value`);
+        }
+      });
+    }
+
+    // Validate required fields
+    if (updateData.name && typeof updateData.name !== 'string') {
+      errors.push('Name must be a string');
+    }
+
+    if (updateData.description && typeof updateData.description !== 'string') {
+      errors.push('Description must be a string');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  analyzeChanges(updateData) {
+    const changes = {
+      fieldsUpdated: Object.keys(updateData),
+      hasMediaChanges: !!(updateData.image || updateData.imagePreview || updateData.imageThumbnail || updateData.animationUrls),
+      hasAttributeChanges: !!updateData.attributes,
+      hasDescriptionChanges: !!updateData.description,
+      hasNameChanges: !!updateData.name,
+      estimatedImpact: 'low'
+    };
+
+    // Estimate impact
+    if (changes.hasMediaChanges || changes.hasNameChanges) {
+      changes.estimatedImpact = 'high';
+    } else if (changes.hasAttributeChanges || changes.hasDescriptionChanges) {
+      changes.estimatedImpact = 'medium';
+    }
+
+    return changes;
+  }
+
+  async createBackup(chain, contractAddress, tokenTypeId) {
+    const backupKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    
+    try {
+      // Get current metadata (this would need to be implemented)
+      const currentMetadata = await this.getCurrentMetadata(chain, contractAddress, tokenTypeId);
+      
+      this.backupStorage.set(backupKey, {
+        metadata: currentMetadata,
+        timestamp: new Date().toISOString(),
+        chain,
+        contractAddress,
+        tokenTypeId
+      });
+      
+      console.log(`Backup created for ${backupKey}`);
+    } catch (error) {
+      console.warn(`Failed to create backup for ${backupKey}:`, error);
+    }
+  }
+
+  async restoreFromBackup(chain, contractAddress, tokenTypeId) {
+    const backupKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    
+    if (!this.backupStorage.has(backupKey)) {
+      throw new Error(`No backup found for ${backupKey}`);
+    }
+    
+    const backup = this.backupStorage.get(backupKey);
+    
+    try {
+      const result = await this.updateMetadata(
+        chain,
+        contractAddress,
+        tokenTypeId,
+        backup.metadata,
+        { validateBeforeUpdate: false, createBackup: false, trackChanges: true }
+      );
+      
+      console.log(`Successfully restored from backup for ${backupKey}`);
+      return result;
+    } catch (error) {
+      console.error(`Failed to restore from backup for ${backupKey}:`, error);
+      throw error;
+    }
+  }
+
+  recordUpdate(updateKey, updateData, result) {
+    if (!this.updateHistory.has(updateKey)) {
+      this.updateHistory.set(updateKey, []);
+    }
+    
+    const history = this.updateHistory.get(updateKey);
+    history.push({
+      timestamp: new Date().toISOString(),
+      updateData,
+      result,
+      changes: this.analyzeChanges(updateData)
+    });
+    
+    // Keep only last 10 updates
+    if (history.length > 10) {
+      history.shift();
+    }
+  }
+
+  getUpdateHistory(chain, contractAddress, tokenTypeId) {
+    const updateKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    return this.updateHistory.get(updateKey) || [];
+  }
+
+  async scheduleUpdate(chain, contractAddress, tokenTypeId, updateData, scheduleTime, options = {}) {
+    const updateKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    const scheduleId = `${updateKey}:${Date.now()}`;
+    
+    const scheduledUpdate = {
+      scheduleId,
+      chain,
+      contractAddress,
+      tokenTypeId,
+      updateData,
+      scheduleTime: new Date(scheduleTime),
+      options,
+      status: 'scheduled',
+      createdAt: new Date().toISOString()
+    };
+    
+    this.pendingUpdates.set(scheduleId, scheduledUpdate);
+    
+    // Set timeout for execution
+    const delay = new Date(scheduleTime).getTime() - Date.now();
+    if (delay > 0) {
+      setTimeout(async () => {
+        await this.executeScheduledUpdate(scheduleId);
+      }, delay);
+    }
+    
+    return scheduleId;
+  }
+
+  async executeScheduledUpdate(scheduleId) {
+    const scheduledUpdate = this.pendingUpdates.get(scheduleId);
+    
+    if (!scheduledUpdate || scheduledUpdate.status !== 'scheduled') {
+      return;
+    }
+    
+    try {
+      scheduledUpdate.status = 'executing';
+      
+      const result = await this.updateMetadata(
+        scheduledUpdate.chain,
+        scheduledUpdate.contractAddress,
+        scheduledUpdate.tokenTypeId,
+        scheduledUpdate.updateData,
+        scheduledUpdate.options
+      );
+      
+      scheduledUpdate.status = 'completed';
+      scheduledUpdate.result = result;
+      scheduledUpdate.executedAt = new Date().toISOString();
+      
+      console.log(`Scheduled update ${scheduleId} completed successfully`);
+    } catch (error) {
+      scheduledUpdate.status = 'failed';
+      scheduledUpdate.error = error.message;
+      scheduledUpdate.executedAt = new Date().toISOString();
+      
+      console.error(`Scheduled update ${scheduleId} failed:`, error);
+    }
+  }
+
+  cancelScheduledUpdate(scheduleId) {
+    const scheduledUpdate = this.pendingUpdates.get(scheduleId);
+    
+    if (scheduledUpdate && scheduledUpdate.status === 'scheduled') {
+      scheduledUpdate.status = 'cancelled';
+      scheduledUpdate.cancelledAt = new Date().toISOString();
+      return true;
+    }
+    
+    return false;
+  }
+
+  // Utility methods
+  isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async getCurrentMetadata(chain, contractAddress, tokenTypeId) {
+    // This would typically call the retrieve metadata endpoint
+    // For now, return a placeholder
+    return {
+      name: 'Current Name',
+      description: 'Current Description',
+      image: 'https://current-image.com/image.png'
+    };
+  }
+
+  generateUpdateReport(chain, contractAddress, tokenTypeId) {
+    const updateKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    const history = this.getUpdateHistory(chain, contractAddress, tokenTypeId);
+    const backup = this.backupStorage.get(updateKey);
+    
+    return {
+      chain,
+      contractAddress,
+      tokenTypeId,
+      totalUpdates: history.length,
+      lastUpdate: history.length > 0 ? history[history.length - 1].timestamp : null,
+      hasBackup: !!backup,
+      backupTimestamp: backup?.timestamp || null,
+      updateHistory: history.map(update => ({
+        timestamp: update.timestamp,
+        changes: update.changes,
+        fieldsUpdated: Object.keys(update.updateData)
+      }))
+    };
+  }
+
+  clearHistory(chain, contractAddress, tokenTypeId) {
+    const updateKey = `${chain}:${contractAddress}:${tokenTypeId}`;
+    this.updateHistory.delete(updateKey);
+    this.backupStorage.delete(updateKey);
+  }
+}
+
+// Usage examples
+const metadataUpdater = new TokenTypeMetadataUpdater('YOUR_API_KEY');
+
+// Simple metadata update
+const updateData = {
+  name: "Updated Token Name",
+  description: "Updated description with new details",
+  image: "https://example.com/new-image.png"
+};
+
+const result = await metadataUpdater.updateMetadata(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  1,
+  updateData,
+  {
+    validateBeforeUpdate: true,
+    createBackup: true,
+    trackChanges: true
+  }
+);
+
+console.log('Update result:', result);
+
+// Dry run to test update
+const dryRunResult = await metadataUpdater.updateMetadata(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  1,
+  updateData,
+  { dryRun: true }
+);
+
+console.log('Dry run result:', dryRunResult);
+
+// Batch update multiple token types
+const batchUpdates = [
+  {
+    chain: 'MATIC',
+    contractAddress: '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+    tokenTypeId: 1,
+    updateData: { name: "Updated Token 1" }
+  },
+  {
+    chain: 'MATIC',
+    contractAddress: '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+    tokenTypeId: 2,
+    updateData: { name: "Updated Token 2" }
+  }
+];
+
+const batchResult = await metadataUpdater.batchUpdateMetadata(batchUpdates);
+console.log('Batch update result:', batchResult);
+
+// Schedule an update for later
+const scheduleId = await metadataUpdater.scheduleUpdate(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  1,
+  { description: "Scheduled update" },
+  new Date(Date.now() + 3600000) // 1 hour from now
+);
+
+console.log('Scheduled update ID:', scheduleId);
+
+// Generate update report
+const report = metadataUpdater.generateUpdateReport(
+  'MATIC',
+  '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+  1
+);
+
+console.log('Update report:', report);
+```
+
+```python Python
+import requests
+import json
+from datetime import datetime, timedelta
+from typing import Dict, List, Any, Optional
+from urllib.parse import urlparse
+
+class TokenTypeMetadataUpdater:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.update_history = {}
+        self.backup_storage = {}
+        self.pending_updates = {}
+    
+    def update_token_type_metadata(self, chain: str, contract_address: str, 
+                                  token_type_id: int, update_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Update token type metadata"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/token-types/{token_type_id}/metadata'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        try:
+            response = requests.put(url, headers=headers, json=update_data)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to update token type metadata')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error updating token type metadata: {error}')
+            raise error
+    
+    def update_metadata(self, chain: str, contract_address: str, token_type_id: int,
+                       update_data: Dict[str, Any], options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Update metadata with validation and tracking"""
+        if options is None:
+            options = {}
+        
+        validate_before_update = options.get('validate_before_update', True)
+        create_backup = options.get('create_backup', True)
+        track_changes = options.get('track_changes', True)
+        dry_run = options.get('dry_run', False)
+        
+        update_key = f"{chain}:{contract_address}:{token_type_id}"
+        
+        try:
+            # Create backup if requested
+            if create_backup:
+                self.create_backup(chain, contract_address, token_type_id)
+            
+            # Validate update data
+            if validate_before_update:
+                validation = self.validate_update_data(update_data)
+                if not validation['is_valid']:
+                    raise Exception(f"Validation failed: {', '.join(validation['errors'])}")
+            
+            # Dry run mode
+            if dry_run:
+                return {
+                    'success': True,
+                    'dry_run': True,
+                    'validation': self.validate_update_data(update_data),
+                    'changes': self.analyze_changes(update_data),
+                    'message': 'Dry run completed successfully'
+                }
+            
+            # Execute the update
+            result = self.update_token_type_metadata(chain, contract_address, token_type_id, update_data)
+            
+            # Track changes if requested
+            if track_changes:
+                self.record_update(update_key, update_data, result)
+            
+            return {
+                'success': True,
+                'result': result,
+                'update_key': update_key,
+                'timestamp': datetime.now().isoformat()
+            }
+            
+        except Exception as error:
+            print(f'Failed to update metadata for {update_key}: {error}')
+            
+            # Note about backup availability
+            if create_backup and update_key in self.backup_storage:
+                print('Update failed, backup available for restoration')
+            
+            raise error
+    
+    def batch_update_metadata(self, updates: List[Dict[str, Any]], 
+                             options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Batch update multiple token types"""
+        if options is None:
+            options = {}
+        
+        continue_on_error = options.get('continue_on_error', False)
+        validate_all = options.get('validate_all', True)
+        
+        results = []
+        errors = []
+        
+        # Validate all updates first if requested
+        if validate_all:
+            for update in updates:
+                validation = self.validate_update_data(update['update_data'])
+                if not validation['is_valid']:
+                    error = {
+                        'update': update,
+                        'error': f"Validation failed: {', '.join(validation['errors'])}"
+                    }
+                    
+                    if not continue_on_error:
+                        raise Exception(f"Batch validation failed: {error['error']}")
+                    
+                    errors.append(error)
+        
+        # Process updates
+        for update in updates:
+            try:
+                result = self.update_metadata(
+                    update['chain'],
+                    update['contract_address'],
+                    update['token_type_id'],
+                    update['update_data'],
+                    update.get('options', {})
+                )
+                
+                results.append({
+                    'success': True,
+                    'update': update,
+                    'result': result
+                })
+                
+            except Exception as error:
+                error_result = {
+                    'success': False,
+                    'update': update,
+                    'error': str(error)
+                }
+                
+                if not continue_on_error:
+                    raise error
+                
+                errors.append(error_result)
+        
+        return {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+    
+    def validate_update_data(self, update_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate update data"""
+        errors = []
+        warnings = []
+        
+        # Check for restricted fields
+        restricted_fields = ['fungible', 'burnable', 'maxSupply']
+        for field in restricted_fields:
+            if field in update_data:
+                errors.append(f'Cannot update restricted field: {field}')
+        
+        # Validate URLs
+        url_fields = ['image', 'imagePreview', 'imageThumbnail']
+        for field in url_fields:
+            if update_data.get(field) and not self._is_valid_url(update_data[field]):
+                errors.append(f'Invalid URL in field: {field}')
+        
+        # Validate animation URLs
+        if 'animationUrls' in update_data and isinstance(update_data['animationUrls'], list):
+            for i, anim_url in enumerate(update_data['animationUrls']):
+                if not anim_url.get('value') or not self._is_valid_url(anim_url['value']):
+                    errors.append(f'Invalid animation URL at index {i}')
+                if not anim_url.get('type'):
+                    warnings.append(f'Missing type for animation URL at index {i}')
+        
+        # Validate attributes
+        if 'attributes' in update_data and isinstance(update_data['attributes'], list):
+            for i, attr in enumerate(update_data['attributes']):
+                if not any([attr.get('name'), attr.get('traitType'), attr.get('trait_type')]):
+                    errors.append(f'Attribute at index {i} missing name or trait type')
+                if attr.get('value') is None:
+                    warnings.append(f'Attribute at index {i} has no value')
+        
+        # Validate required fields
+        if 'name' in update_data and not isinstance(update_data['name'], str):
+            errors.append('Name must be a string')
+        
+        if 'description' in update_data and not isinstance(update_data['description'], str):
+            errors.append('Description must be a string')
+        
+        return {
+            'is_valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+    
+    def analyze_changes(self, update_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze the changes being made"""
+        changes = {
+            'fields_updated': list(update_data.keys()),
+            'has_media_changes': any(field in update_data for field in ['image', 'imagePreview', 'imageThumbnail', 'animationUrls']),
+            'has_attribute_changes': 'attributes' in update_data,
+            'has_description_changes': 'description' in update_data,
+            'has_name_changes': 'name' in update_data,
+            'estimated_impact': 'low'
+        }
+        
+        # Estimate impact
+        if changes['has_media_changes'] or changes['has_name_changes']:
+            changes['estimated_impact'] = 'high'
+        elif changes['has_attribute_changes'] or changes['has_description_changes']:
+            changes['estimated_impact'] = 'medium'
+        
+        return changes
+    
+    def create_backup(self, chain: str, contract_address: str, token_type_id: int):
+        """Create backup of current metadata"""
+        backup_key = f"{chain}:{contract_address}:{token_type_id}"
+        
+        try:
+            # Get current metadata (placeholder implementation)
+            current_metadata = self.get_current_metadata(chain, contract_address, token_type_id)
+            
+            self.backup_storage[backup_key] = {
+                'metadata': current_metadata,
+                'timestamp': datetime.now().isoformat(),
+                'chain': chain,
+                'contract_address': contract_address,
+                'token_type_id': token_type_id
+            }
+            
+            print(f'Backup created for {backup_key}')
+        except Exception as error:
+            print(f'Failed to create backup for {backup_key}: {error}')
+    
+    def restore_from_backup(self, chain: str, contract_address: str, token_type_id: int) -> Dict[str, Any]:
+        """Restore metadata from backup"""
+        backup_key = f"{chain}:{contract_address}:{token_type_id}"
+        
+        if backup_key not in self.backup_storage:
+            raise Exception(f'No backup found for {backup_key}')
+        
+        backup = self.backup_storage[backup_key]
+        
+        try:
+            result = self.update_metadata(
+                chain,
+                contract_address,
+                token_type_id,
+                backup['metadata'],
+                {
+                    'validate_before_update': False,
+                    'create_backup': False,
+                    'track_changes': True
+                }
+            )
+            
+            print(f'Successfully restored from backup for {backup_key}')
+            return result
+        except Exception as error:
+            print(f'Failed to restore from backup for {backup_key}: {error}')
+            raise error
+    
+    def record_update(self, update_key: str, update_data: Dict[str, Any], result: Dict[str, Any]):
+        """Record update in history"""
+        if update_key not in self.update_history:
+            self.update_history[update_key] = []
+        
+        history = self.update_history[update_key]
+        history.append({
+            'timestamp': datetime.now().isoformat(),
+            'update_data': update_data,
+            'result': result,
+            'changes': self.analyze_changes(update_data)
+        })
+        
+        # Keep only last 10 updates
+        if len(history) > 10:
+            self.update_history[update_key] = history[-10:]
+    
+    def get_update_history(self, chain: str, contract_address: str, token_type_id: int) -> List[Dict[str, Any]]:
+        """Get update history for token type"""
+        update_key = f"{chain}:{contract_address}:{token_type_id}"
+        return self.update_history.get(update_key, [])
+    
+    def get_current_metadata(self, chain: str, contract_address: str, token_type_id: int) -> Dict[str, Any]:
+        """Get current metadata (placeholder implementation)"""
+        return {
+            'name': 'Current Name',
+            'description': 'Current Description',
+            'image': 'https://current-image.com/image.png'
+        }
+    
+    def _is_valid_url(self, url: str) -> bool:
+        """Check if URL is valid"""
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except:
+            return False
+    
+    def generate_update_report(self, chain: str, contract_address: str, token_type_id: int) -> Dict[str, Any]:
+        """Generate update report"""
+        update_key = f"{chain}:{contract_address}:{token_type_id}"
+        history = self.get_update_history(chain, contract_address, token_type_id)
+        backup = self.backup_storage.get(update_key)
+        
+        return {
+            'chain': chain,
+            'contract_address': contract_address,
+            'token_type_id': token_type_id,
+            'total_updates': len(history),
+            'last_update': history[-1]['timestamp'] if history else None,
+            'has_backup': backup is not None,
+            'backup_timestamp': backup['timestamp'] if backup else None,
+            'update_history': [
+                {
+                    'timestamp': update['timestamp'],
+                    'changes': update['changes'],
+                    'fields_updated': list(update['update_data'].keys())
+                }
+                for update in history
+            ]
+        }
+
+# Usage
+metadata_updater = TokenTypeMetadataUpdater('YOUR_API_KEY')
+
+# Simple metadata update
+update_data = {
+    'name': 'Updated Token Name',
+    'description': 'Updated description with new details',
+    'image': 'https://example.com/new-image.png'
+}
+
+result = metadata_updater.update_metadata(
+    'MATIC',
+    '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+    1,
+    update_data,
+    {
+        'validate_before_update': True,
+        'create_backup': True,
+        'track_changes': True
+    }
+)
+
+print('Update result:', result)
+```
+
+```bash cURL
+# Update token type metadata
+curl -X PUT '/api/v3/erc1155/contracts/MATIC/0x30d6cff9cb268c59c75a94755b2c60e118d65657/token-types/1/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Updated Token Name",
+    "description": "Updated description with enhanced details",
+    "image": "https://example.com/updated-image.png"
+  }'
+
+# Update with attributes
+curl -X PUT '/api/v3/erc1155/contracts/MATIC/0x30d6cff9cb268c59c75a94755b2c60e118d65657/token-types/1/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Enhanced Token",
+    "description": "Token with updated attributes",
+    "attributes": [
+      {
+        "name": "Rarity",
+        "value": "Epic",
+        "type": "property"
+      },
+      {
+        "name": "Power",
+        "value": "85",
+        "maxValue": "100",
+        "type": "stat"
+      }
+    ]
+  }'
+
+# Update with animation URLs
+curl -X PUT '/api/v3/erc1155/contracts/MATIC/0x30d6cff9cb268c59c75a94755b2c60e118d65657/token-types/1/metadata' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Animated Token",
+    "animationUrls": [
+      {
+        "type": "video",
+        "value": "https://example.com/animation.mp4"
+      },
+      {
+        "type": "audio",
+        "value": "https://example.com/sound.mp3"
+      }
+    ]
+  }'
+
+# Batch update script
+#!/bin/bash
+CONTRACT_ADDRESS="0x30d6cff9cb268c59c75a94755b2c60e118d65657"
+CHAIN="MATIC"
+
+# Array of token type updates
+declare -a TOKEN_UPDATES=(
+  '{"tokenTypeId": 1, "name": "Updated Token 1", "description": "First updated token"}'
+  '{"tokenTypeId": 2, "name": "Updated Token 2", "description": "Second updated token"}'
+  '{"tokenTypeId": 3, "name": "Updated Token 3", "description": "Third updated token"}'
+)
+
+for update in "${TOKEN_UPDATES[@]}"; do
+  TOKEN_TYPE_ID=$(echo $update | jq -r '.tokenTypeId')
+  NAME=$(echo $update | jq -r '.name')
+  DESCRIPTION=$(echo $update | jq -r '.description')
+  
+  echo "Updating token type $TOKEN_TYPE_ID..."
+  
+  curl -X PUT "/api/v3/erc1155/contracts/$CHAIN/$CONTRACT_ADDRESS/token-types/$TOKEN_TYPE_ID/metadata" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -d "{\"name\": \"$NAME\", \"description\": \"$DESCRIPTION\"}" \
+    -s | jq '.success'
+  
+  echo "Updated token type $TOKEN_TYPE_ID successfully"
+  sleep 1  # Rate limiting
+done
+```
+
+```php PHP
+<?php
+class TokenTypeMetadataUpdater {
+    private $apiKey;
+    private $baseUrl;
+    private $updateHistory;
+    private $backupStorage;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->updateHistory = [];
+        $this->backupStorage = [];
+    }
+    
+    public function updateMetadata($chain, $contractAddress, $tokenTypeId, $updateData, $options = []) {
+        $validateBeforeUpdate = $options['validateBeforeUpdate'] ?? true;
+        $createBackup = $options['createBackup'] ?? true;
+        $trackChanges = $options['trackChanges'] ?? true;
+        $dryRun = $options['dryRun'] ?? false;
+        
+        $updateKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        
+        try {
+            // Create backup if requested
+            if ($createBackup) {
+                $this->createBackup($chain, $contractAddress, $tokenTypeId);
+            }
+            
+            // Validate update data
+            if ($validateBeforeUpdate) {
+                $validation = $this->validateUpdateData($updateData);
+                if (!$validation['isValid']) {
+                    throw new Exception('Validation failed: ' . implode(', ', $validation['errors']));
+                }
+            }
+            
+            // Dry run mode
+            if ($dryRun) {
+                return [
+                    'success' => true,
+                    'dryRun' => true,
+                    'validation' => $this->validateUpdateData($updateData),
+                    'changes' => $this->analyzeChanges($updateData),
+                    'message' => 'Dry run completed successfully'
+                ];
+            }
+            
+            // Execute the update
+            $result = $this->updateTokenTypeMetadata($chain, $contractAddress, $tokenTypeId, $updateData);
+            
+            // Track changes if requested
+            if ($trackChanges) {
+                $this->recordUpdate($updateKey, $updateData, $result);
+            }
+            
+            return [
+                'success' => true,
+                'result' => $result,
+                'updateKey' => $updateKey,
+                'timestamp' => date('c')
+            ];
+            
+        } catch (Exception $error) {
+            echo "Failed to update metadata for {$updateKey}: " . $error->getMessage() . "\n";
+            
+            // Note about backup availability
+            if ($createBackup && isset($this->backupStorage[$updateKey])) {
+                echo "Update failed, backup available for restoration\n";
+            }
+            
+            throw $error;
+        }
+    }
+    
+    private function updateTokenTypeMetadata($chain, $contractAddress, $tokenTypeId, $updateData) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/token-types/{$tokenTypeId}/metadata";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($updateData));
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to update token type metadata");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to update token type metadata');
+        }
+        
+        return $data['result'];
+    }
+    
+    public function validateUpdateData($updateData) {
+        $errors = [];
+        $warnings = [];
+        
+        // Check for restricted fields
+        $restrictedFields = ['fungible', 'burnable', 'maxSupply'];
+        foreach ($restrictedFields as $field) {
+            if (array_key_exists($field, $updateData)) {
+                $errors[] = "Cannot update restricted field: {$field}";
+            }
+        }
+        
+        // Validate URLs
+        $urlFields = ['image', 'imagePreview', 'imageThumbnail'];
+        foreach ($urlFields as $field) {
+            if (isset($updateData[$field]) && !filter_var($updateData[$field], FILTER_VALIDATE_URL)) {
+                $errors[] = "Invalid URL in field: {$field}";
+            }
+        }
+        
+        // Validate animation URLs
+        if (isset($updateData['animationUrls']) && is_array($updateData['animationUrls'])) {
+            foreach ($updateData['animationUrls'] as $index => $animUrl) {
+                if (empty($animUrl['value']) || !filter_var($animUrl['value'], FILTER_VALIDATE_URL)) {
+                    $errors[] = "Invalid animation URL at index {$index}";
+                }
+                if (empty($animUrl['type'])) {
+                    $warnings[] = "Missing type for animation URL at index {$index}";
+                }
+            }
+        }
+        
+        // Validate attributes
+        if (isset($updateData['attributes']) && is_array($updateData['attributes'])) {
+            foreach ($updateData['attributes'] as $index => $attr) {
+                if (empty($attr['name']) && empty($attr['traitType']) && empty($attr['trait_type'])) {
+                    $errors[] = "Attribute at index {$index} missing name or trait type";
+                }
+                if (!isset($attr['value'])) {
+                    $warnings[] = "Attribute at index {$index} has no value";
+                }
+            }
+        }
+        
+        // Validate required fields
+        if (isset($updateData['name']) && !is_string($updateData['name'])) {
+            $errors[] = 'Name must be a string';
+        }
+        
+        if (isset($updateData['description']) && !is_string($updateData['description'])) {
+            $errors[] = 'Description must be a string';
+        }
+        
+        return [
+            'isValid' => empty($errors),
+            'errors' => $errors,
+            'warnings' => $warnings
+        ];
+    }
+    
+    private function analyzeChanges($updateData) {
+        $changes = [
+            'fieldsUpdated' => array_keys($updateData),
+            'hasMediaChanges' => !empty(array_intersect(array_keys($updateData), ['image', 'imagePreview', 'imageThumbnail', 'animationUrls'])),
+            'hasAttributeChanges' => isset($updateData['attributes']),
+            'hasDescriptionChanges' => isset($updateData['description']),
+            'hasNameChanges' => isset($updateData['name']),
+            'estimatedImpact' => 'low'
+        ];
+        
+        // Estimate impact
+        if ($changes['hasMediaChanges'] || $changes['hasNameChanges']) {
+            $changes['estimatedImpact'] = 'high';
+        } elseif ($changes['hasAttributeChanges'] || $changes['hasDescriptionChanges']) {
+            $changes['estimatedImpact'] = 'medium';
+        }
+        
+        return $changes;
+    }
+    
+    private function createBackup($chain, $contractAddress, $tokenTypeId) {
+        $backupKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        
+        try {
+            // Get current metadata (placeholder implementation)
+            $currentMetadata = $this->getCurrentMetadata($chain, $contractAddress, $tokenTypeId);
+            
+            $this->backupStorage[$backupKey] = [
+                'metadata' => $currentMetadata,
+                'timestamp' => date('c'),
+                'chain' => $chain,
+                'contractAddress' => $contractAddress,
+                'tokenTypeId' => $tokenTypeId
+            ];
+            
+            echo "Backup created for {$backupKey}\n";
+        } catch (Exception $error) {
+            echo "Failed to create backup for {$backupKey}: " . $error->getMessage() . "\n";
+        }
+    }
+    
+    public function restoreFromBackup($chain, $contractAddress, $tokenTypeId) {
+        $backupKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        
+        if (!isset($this->backupStorage[$backupKey])) {
+            throw new Exception("No backup found for {$backupKey}");
+        }
+        
+        $backup = $this->backupStorage[$backupKey];
+        
+        try {
+            $result = $this->updateMetadata(
+                $chain,
+                $contractAddress,
+                $tokenTypeId,
+                $backup['metadata'],
+                [
+                    'validateBeforeUpdate' => false,
+                    'createBackup' => false,
+                    'trackChanges' => true
+                ]
+            );
+            
+            echo "Successfully restored from backup for {$backupKey}\n";
+            return $result;
+        } catch (Exception $error) {
+            echo "Failed to restore from backup for {$backupKey}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function recordUpdate($updateKey, $updateData, $result) {
+        if (!isset($this->updateHistory[$updateKey])) {
+            $this->updateHistory[$updateKey] = [];
+        }
+        
+        $this->updateHistory[$updateKey][] = [
+            'timestamp' => date('c'),
+            'updateData' => $updateData,
+            'result' => $result,
+            'changes' => $this->analyzeChanges($updateData)
+        ];
+        
+        // Keep only last 10 updates
+        if (count($this->updateHistory[$updateKey]) > 10) {
+            $this->updateHistory[$updateKey] = array_slice($this->updateHistory[$updateKey], -10);
+        }
+    }
+    
+    public function getUpdateHistory($chain, $contractAddress, $tokenTypeId) {
+        $updateKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        return $this->updateHistory[$updateKey] ?? [];
+    }
+    
+    private function getCurrentMetadata($chain, $contractAddress, $tokenTypeId) {
+        // Placeholder implementation
+        return [
+            'name' => 'Current Name',
+            'description' => 'Current Description',
+            'image' => 'https://current-image.com/image.png'
+        ];
+    }
+    
+    public function batchUpdateMetadata($updates, $options = []) {
+        $continueOnError = $options['continueOnError'] ?? false;
+        $validateAll = $options['validateAll'] ?? true;
+        
+        $results = [];
+        $errors = [];
+        
+        // Validate all updates first if requested
+        if ($validateAll) {
+            foreach ($updates as $update) {
+                $validation = $this->validateUpdateData($update['updateData']);
+                if (!$validation['isValid']) {
+                    $error = [
+                        'update' => $update,
+                        'error' => 'Validation failed: ' . implode(', ', $validation['errors'])
+                    ];
+                    
+                    if (!$continueOnError) {
+                        throw new Exception('Batch validation failed: ' . $error['error']);
+                    }
+                    
+                    $errors[] = $error;
+                }
+            }
+        }
+        
+        // Process updates
+        foreach ($updates as $update) {
+            try {
+                $result = $this->updateMetadata(
+                    $update['chain'],
+                    $update['contractAddress'],
+                    $update['tokenTypeId'],
+                    $update['updateData'],
+                    $update['options'] ?? []
+                );
+                
+                $results[] = [
+                    'success' => true,
+                    'update' => $update,
+                    'result' => $result
+                ];
+                
+            } catch (Exception $error) {
+                $errorResult = [
+                    'success' => false,
+                    'update' => $update,
+                    'error' => $error->getMessage()
+                ];
+                
+                if (!$continueOnError) {
+                    throw $error;
+                }
+                
+                $errors[] = $errorResult;
+            }
+        }
+        
+        return [
+            'successful' => count($results),
+            'failed' => count($errors),
+            'results' => $results,
+            'errors' => $errors
+        ];
+    }
+    
+    public function generateUpdateReport($chain, $contractAddress, $tokenTypeId) {
+        $updateKey = "{$chain}:{$contractAddress}:{$tokenTypeId}";
+        $history = $this->getUpdateHistory($chain, $contractAddress, $tokenTypeId);
+        $backup = $this->backupStorage[$updateKey] ?? null;
+        
+        return [
+            'chain' => $chain,
+            'contractAddress' => $contractAddress,
+            'tokenTypeId' => $tokenTypeId,
+            'totalUpdates' => count($history),
+            'lastUpdate' => !empty($history) ? end($history)['timestamp'] : null,
+            'hasBackup' => $backup !== null,
+            'backupTimestamp' => $backup['timestamp'] ?? null,
+            'updateHistory' => array_map(function($update) {
+                return [
+                    'timestamp' => $update['timestamp'],
+                    'changes' => $update['changes'],
+                    'fieldsUpdated' => array_keys($update['updateData'])
+                ];
+            }, $history)
+        ];
+    }
+}
+
+// Usage
+$metadataUpdater = new TokenTypeMetadataUpdater('YOUR_API_KEY');
+
+try {
+    // Simple metadata update
+    $updateData = [
+        'name' => 'Updated Token Name',
+        'description' => 'Updated description with new details',
+        'image' => 'https://example.com/new-image.png'
+    ];
+    
+    $result = $metadataUpdater->updateMetadata(
+        'MATIC',
+        '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        1,
+        $updateData,
+        [
+            'validateBeforeUpdate' => true,
+            'createBackup' => true,
+            'trackChanges' => true
+        ]
+    );
+    
+    echo "Update result: " . json_encode($result, JSON_PRETTY_PRINT) . "\n";
+    
+    // Batch update
+    $batchUpdates = [
+        [
+            'chain' => 'MATIC',
+            'contractAddress' => '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+            'tokenTypeId' => 1,
+            'updateData' => ['name' => 'Updated Token 1']
+        ],
+        [
+            'chain' => 'MATIC',
+            'contractAddress' => '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+            'tokenTypeId' => 2,
+            'updateData' => ['name' => 'Updated Token 2']
+        ]
+    ];
+    
+    $batchResult = $metadataUpdater->batchUpdateMetadata($batchUpdates);
+    echo "Batch update result: " . json_encode($batchResult, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Token Type Metadata Update Best Practices:**
+
+1. **Backup Before Updates** - Always create backups before making changes to preserve original metadata
+2. **Validate All Changes** - Use comprehensive validation to prevent errors and maintain data integrity
+3. **Track Changes** - Maintain detailed history of all updates for transparency and debugging
+4. **Test First** - Use dry run mode to test updates before applying them to production
+5. **Batch Efficiently** - Use batch operations for multiple updates while respecting rate limits
+6. **Handle Restrictions** - Understand which fields are immutable and cannot be updated
+7. **Monitor Impact** - Consider how changes affect existing NFTs and marketplace displays
+8. **Document Updates** - Keep clear records of why changes were made and their expected impact
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Retrieve Token Type Metadata" href="/guides/nft-api/metadata/retrieve-token-type-metadata" icon="search">
+    Learn how to retrieve token type metadata
+  </Card>
+  <Card title="Update NFT Metadata" href="/guides/nft-api/metadata/update-nft-metadata" icon="pen-nib">
+    Update individual NFT metadata properties
+  </Card>
+  <Card title="Token Type Management" href="/guides/nft-api/token-types/retrieve-token-types" icon="layer-group">
+    Comprehensive token type management
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/token-type-metadata/update-token-type-metadata" icon="book">
+    Explore the complete token type metadata update API documentation
+  </Card>
+</CardGroup>

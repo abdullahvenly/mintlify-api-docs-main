@@ -1,0 +1,682 @@
+---
+title: "Customize Checkout Branding"
+description: "Personalize your checkout pages with custom colors, logos, and branding to match your business identity"
+icon: "palette"
+---
+
+<Info>
+**Checkout Customization:** Create branded checkout experiences that align with your business identity and build customer trust.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What is Checkout Branding?
+
+Checkout branding allows you to customize the appearance of your payment pages with your business logo, colors, and visual identity. This creates a seamless, professional experience that builds trust and reinforces your brand.
+
+<CardGroup cols={2}>
+  <Card title="Custom Logo" icon="image">
+    Upload your business logo or icon
+  </Card>
+  <Card title="Brand Colors" icon="palette">
+    Set primary and secondary colors
+  </Card>
+  <Card title="Professional Look" icon="star">
+    Create trust with consistent branding
+  </Card>
+  <Card title="Easy Setup" icon="rocket">
+    Simple two-step configuration process
+  </Card>
+</CardGroup>
+
+## Why Customize Your Checkout?
+
+<Tabs>
+  <Tab title="Brand Recognition">
+    **Build Trust & Recognition**
+    - Consistent brand experience
+    - Professional appearance
+    - Reduced cart abandonment
+    - Increased customer confidence
+  </Tab>
+  <Tab title="Business Benefits">
+    **Competitive Advantages**
+    - Stand out from competitors
+    - Reinforce brand identity
+    - Improve conversion rates
+    - Create memorable experiences
+  </Tab>
+  <Tab title="Customer Experience">
+    **Enhanced User Journey**
+    - Seamless brand transition
+    - Familiar visual elements
+    - Reduced confusion
+    - Professional credibility
+  </Tab>
+</Tabs>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Business Logo" icon="image">
+    Prepare a square logo/icon (minimum 128px × 128px)
+  </Step>
+  <Step title="Brand Colors" icon="palette">
+    Choose your primary and secondary brand colors (hex codes)
+  </Step>
+  <Step title="API Access" icon="key">
+    Ensure you have valid PAY-API credentials
+  </Step>
+</Steps>
+
+<Note>
+Your logo must be a square image with minimum dimensions of 128px × 128px. Supported formats include JPG, PNG, and other common image types.
+</Note>
+
+## Step 1: Upload Your Business Icon
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const formData = new FormData();
+formData.append('icon', iconFile); // iconFile is a File object
+
+const response = await fetch('/account/settings/branding/icon', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  },
+  body: formData
+});
+
+const data = await response.json();
+console.log('Icon uploaded:', data.id);
+```
+
+```python Python
+import requests
+
+files = {'icon': open('your-logo.jpg', 'rb')}
+
+response = requests.post(
+    '/account/settings/branding/icon',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    files=files
+)
+
+data = response.json()
+print('Icon uploaded:', data['id'])
+```
+
+```bash cURL
+curl -X POST '/account/settings/branding/icon' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -F 'icon=@your-logo.jpg'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `icon` | File | ✅ | Square image file (minimum 128px × 128px) |
+
+<Tip>
+**Image Guidelines:**
+- Use square dimensions (1:1 aspect ratio)
+- Minimum size: 128px × 128px
+- Recommended size: 512px × 512px for best quality
+- Supported formats: JPG, PNG, GIF, SVG
+- Keep file size under 5MB for optimal performance
+</Tip>
+
+### Upload Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "id": "file_1Nk6WcFdbOilQPiZLgnem6MT",
+      "object": "file",
+      "created": 1693233282,
+      "expires_at": null,
+      "filename": "icon5243171464818044029venly logo.jpg",
+      "links": {
+        "object": "list",
+        "data": [],
+        "has_more": false,
+        "url": "/v1/file_links?file=file_1Nk6WcFdbOilQPiZLgnem6MT"
+      },
+      "purpose": "business_icon",
+      "size": 9231,
+      "title": null,
+      "type": "jpg",
+      "url": "https://files.stripe.com/v1/files/file_1Nk6WcFdbOilQPiZLgnem6MT/contents"
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields to save:**
+    - **`id`** - Icon ID for branding configuration
+    - **`url`** - Direct URL to access the uploaded icon
+    - **`size`** - File size in bytes
+    - **`type`** - File format (jpg, png, etc.)
+    - **`filename`** - Original filename
+  </Tab>
+</Tabs>
+
+<Check>
+**Save the Icon ID:** The `id` field from the response is required for the next step. This identifies your uploaded icon in the branding configuration.
+</Check>
+
+## Step 2: Configure Checkout Branding
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const iconId = "file_1Nk6WcFdbOilQPiZLgnem6MT"; // From previous step
+
+const response = await fetch('/account/settings/branding', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    settings: {
+      branding: {
+        primary_color: "#BF40BF",
+        secondary_color: "#000000",
+        icon: iconId
+      }
+    }
+  })
+});
+
+const data = await response.json();
+console.log('Branding configured:', data);
+```
+
+```python Python
+import requests
+
+icon_id = "file_1Nk6WcFdbOilQPiZLgnem6MT"  # From previous step
+
+response = requests.post(
+    '/account/settings/branding',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'settings': {
+            'branding': {
+                'primary_color': '#BF40BF',
+                'secondary_color': '#000000',
+                'icon': icon_id
+            }
+        }
+    }
+)
+
+data = response.json()
+print('Branding configured:', data)
+```
+
+```bash cURL
+curl -X POST '/account/settings/branding' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "settings": {
+      "branding": {
+        "primary_color": "#BF40BF",
+        "secondary_color": "#000000",
+        "icon": "file_1Nk6WcFdbOilQPiZLgnem6MT"
+      }
+    }
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `settings.branding.primary_color` | string | ✅ | Hex color code for the left side background |
+| `settings.branding.secondary_color` | string | ✅ | Hex color code for the PAY button |
+| `settings.branding.icon` | string | ✅ | Icon ID from the upload response |
+
+<Tip>
+**Color Guidelines:**
+- Use hex color codes (e.g., #BF40BF, #000000)
+- Primary color appears on the left side of checkout
+- Secondary color is used for the PAY button
+- Ensure good contrast for accessibility
+- Test colors on different devices and screens
+</Tip>
+
+## Branding Configuration Examples
+
+<Tabs>
+  <Tab title="Corporate Blue">
+    ```json
+    {
+      "settings": {
+        "branding": {
+          "primary_color": "#1E3A8A",
+          "secondary_color": "#3B82F6",
+          "icon": "file_1Nk6WcFdbOilQPiZLgnem6MT"
+        }
+      }
+    }
+    ```
+    Professional blue theme for corporate brands.
+  </Tab>
+  <Tab title="Modern Green">
+    ```json
+    {
+      "settings": {
+        "branding": {
+          "primary_color": "#059669",
+          "secondary_color": "#10B981",
+          "icon": "file_1Nk6WcFdbOilQPiZLgnem6MT"
+        }
+      }
+    }
+    ```
+    Fresh green palette for eco-friendly brands.
+  </Tab>
+  <Tab title="Elegant Purple">
+    ```json
+    {
+      "settings": {
+        "branding": {
+          "primary_color": "#7C3AED",
+          "secondary_color": "#A855F7",
+          "icon": "file_1Nk6WcFdbOilQPiZLgnem6MT"
+        }
+      }
+    }
+    ```
+    Sophisticated purple for premium brands.
+  </Tab>
+  <Tab title="Classic Black">
+    ```json
+    {
+      "settings": {
+        "branding": {
+          "primary_color": "#1F2937",
+          "secondary_color": "#374151",
+          "icon": "file_1Nk6WcFdbOilQPiZLgnem6MT"
+        }
+      }
+    }
+    ```
+    Timeless black and gray for minimalist brands.
+  </Tab>
+</Tabs>
+
+## Complete Branding Workflow
+
+<Steps>
+  <Step title="Prepare Assets" icon="image">
+    Create or prepare your square logo and choose brand colors
+  </Step>
+  <Step title="Upload Icon" icon="upload">
+    Upload your business icon using the branding/icon endpoint
+  </Step>
+  <Step title="Save Icon ID" icon="bookmark">
+    Store the returned icon ID from the upload response
+  </Step>
+  <Step title="Configure Branding" icon="palette">
+    Set colors and icon using the branding configuration endpoint
+  </Step>
+  <Step title="Test Checkout" icon="credit-card">
+    Create a test checkout session to preview your branding
+  </Step>
+</Steps>
+
+## Advanced Branding Strategies
+
+<AccordionGroup>
+  <Accordion title="Brand Consistency" icon="check-circle">
+    **Maintain consistent branding:**
+    
+    ```javascript
+    // Define your brand palette
+    const brandColors = {
+      primary: '#1E40AF',      // Main brand color
+      secondary: '#3B82F6',    // Accent color
+      success: '#10B981',      // Success states
+      warning: '#F59E0B',      // Warning states
+      error: '#EF4444'         // Error states
+    };
+    
+    // Use consistent colors across all checkouts
+    const brandingConfig = {
+      settings: {
+        branding: {
+          primary_color: brandColors.primary,
+          secondary_color: brandColors.secondary,
+          icon: iconId
+        }
+      }
+    };
+    ```
+    
+    **Best practices:**
+    - Use your official brand colors
+    - Maintain consistency across all touchpoints
+    - Consider accessibility and contrast ratios
+    - Test on different devices and screen sizes
+  </Accordion>
+  
+  <Accordion title="Dynamic Branding" icon="magic">
+    **Customize branding per customer segment:**
+    
+    ```javascript
+    async function setBrandingForSegment(segment, iconId) {
+      const segmentBranding = {
+        'premium': {
+          primary_color: '#1F2937',   // Dark elegant
+          secondary_color: '#F59E0B'  // Gold accent
+        },
+        'standard': {
+          primary_color: '#1E40AF',   // Professional blue
+          secondary_color: '#3B82F6'  // Light blue
+        },
+        'eco': {
+          primary_color: '#059669',   // Green
+          secondary_color: '#10B981'  // Light green
+        }
+      };
+    
+      const config = {
+        settings: {
+          branding: {
+            ...segmentBranding[segment],
+            icon: iconId
+          }
+        }
+      };
+    
+      return await updateBranding(config);
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="A/B Testing" icon="chart-line">
+    **Test different branding approaches:**
+    
+    ```javascript
+    const brandingVariants = {
+      'variant_a': {
+        primary_color: '#1E40AF',
+        secondary_color: '#3B82F6',
+        name: 'Professional Blue'
+      },
+      'variant_b': {
+        primary_color: '#059669',
+        secondary_color: '#10B981',
+        name: 'Trust Green'
+      },
+      'variant_c': {
+        primary_color: '#7C3AED',
+        secondary_color: '#A855F7',
+        name: 'Premium Purple'
+      }
+    };
+    
+    async function setRandomBranding(iconId) {
+      const variants = Object.keys(brandingVariants);
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+      const branding = brandingVariants[randomVariant];
+      
+      console.log(`Using branding variant: ${branding.name}`);
+      
+      return await updateBranding({
+        settings: {
+          branding: {
+            primary_color: branding.primary_color,
+            secondary_color: branding.secondary_color,
+            icon: iconId
+          }
+        }
+      });
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Seasonal Branding" icon="calendar">
+    **Update branding for seasons or events:**
+    
+    ```javascript
+    function getSeasonalBranding() {
+      const month = new Date().getMonth();
+      
+      const seasonalThemes = {
+        // Winter (Dec, Jan, Feb)
+        winter: {
+          primary_color: '#1E3A8A',   // Deep blue
+          secondary_color: '#60A5FA', // Light blue
+          months: [11, 0, 1]
+        },
+        // Spring (Mar, Apr, May)
+        spring: {
+          primary_color: '#059669',   // Fresh green
+          secondary_color: '#34D399', // Light green
+          months: [2, 3, 4]
+        },
+        // Summer (Jun, Jul, Aug)
+        summer: {
+          primary_color: '#F59E0B',   // Sunny orange
+          secondary_color: '#FBBF24', // Light orange
+          months: [5, 6, 7]
+        },
+        // Fall (Sep, Oct, Nov)
+        fall: {
+          primary_color: '#DC2626',   // Autumn red
+          secondary_color: '#F87171', // Light red
+          months: [8, 9, 10]
+        }
+      };
+    
+      for (const [season, config] of Object.entries(seasonalThemes)) {
+        if (config.months.includes(month)) {
+          return config;
+        }
+      }
+    
+      return seasonalThemes.spring; // Default
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<CodeGroup>
+```javascript JavaScript
+// Complete branding setup workflow
+async function setupCheckoutBranding(logoFile, primaryColor, secondaryColor) {
+  try {
+    // Step 1: Upload icon
+    const formData = new FormData();
+    formData.append('icon', logoFile);
+    
+    const uploadResponse = await fetch('/account/settings/branding/icon', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' },
+      body: formData
+    });
+    
+    const uploadData = await uploadResponse.json();
+    const iconId = uploadData.id;
+    
+    console.log('✅ Icon uploaded:', iconId);
+    
+    // Step 2: Configure branding
+    const brandingResponse = await fetch('/account/settings/branding', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        settings: {
+          branding: {
+            primary_color: primaryColor,
+            secondary_color: secondaryColor,
+            icon: iconId
+          }
+        }
+      })
+    });
+    
+    const brandingData = await brandingResponse.json();
+    console.log('✅ Branding configured successfully');
+    
+    return { iconId, branding: brandingData };
+    
+  } catch (error) {
+    console.error('❌ Branding setup failed:', error);
+    throw error;
+  }
+}
+
+// Usage
+const logoFile = document.getElementById('logo-input').files[0];
+const result = await setupCheckoutBranding(logoFile, '#1E40AF', '#3B82F6');
+```
+
+```python Python
+import requests
+
+def setup_checkout_branding(logo_path, primary_color, secondary_color):
+    """Complete branding setup workflow"""
+    try:
+        # Step 1: Upload icon
+        with open(logo_path, 'rb') as logo_file:
+            files = {'icon': logo_file}
+            upload_response = requests.post(
+                '/account/settings/branding/icon',
+                headers={'Authorization': 'Bearer YOUR_API_KEY'},
+                files=files
+            )
+        
+        upload_data = upload_response.json()
+        icon_id = upload_data['id']
+        
+        print(f'✅ Icon uploaded: {icon_id}')
+        
+        # Step 2: Configure branding
+        branding_response = requests.post(
+            '/account/settings/branding',
+            headers={
+                'Authorization': 'Bearer YOUR_API_KEY',
+                'Content-Type': 'application/json'
+            },
+            json={
+                'settings': {
+                    'branding': {
+                        'primary_color': primary_color,
+                        'secondary_color': secondary_color,
+                        'icon': icon_id
+                    }
+                }
+            }
+        )
+        
+        branding_data = branding_response.json()
+        print('✅ Branding configured successfully')
+        
+        return {'icon_id': icon_id, 'branding': branding_data}
+        
+    except Exception as error:
+        print(f'❌ Branding setup failed: {error}')
+        raise error
+
+# Usage
+result = setup_checkout_branding('logo.png', '#1E40AF', '#3B82F6')
+```
+</CodeGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Icon upload failed">
+    **Common causes:**
+    - Image not square (must be 1:1 aspect ratio)
+    - Image too small (minimum 128px × 128px)
+    - Unsupported file format
+    - File size too large
+    
+    **Solution:** Ensure your image meets all requirements: square dimensions, minimum size, supported format (JPG, PNG, GIF, SVG).
+  </Accordion>
+  
+  <Accordion title="Invalid color format">
+    **Error:** Color code not recognized
+    
+    **Causes:**
+    - Missing # symbol
+    - Invalid hex characters
+    - Wrong color format
+    
+    **Solution:** Use proper hex format: #RRGGBB (e.g., #1E40AF, #000000).
+  </Accordion>
+  
+  <Accordion title="Branding not appearing">
+    **Possible issues:**
+    - Incorrect icon ID
+    - Branding not applied to checkout session
+    - Cache issues
+    
+    **Solution:** Verify icon ID, clear browser cache, and ensure branding is properly configured.
+  </Accordion>
+  
+  <Accordion title="Colors look different">
+    **Common causes:**
+    - Monitor color calibration
+    - Different color profiles
+    - Browser rendering differences
+    
+    **Solution:** Test on multiple devices and browsers, use standard hex colors, consider accessibility guidelines.
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Branding Best Practices:**
+
+1. **Consistent Identity** - Use your official brand colors and logo
+2. **Accessibility** - Ensure good contrast ratios for readability
+3. **Quality Images** - Use high-resolution, square logos
+4. **Test Thoroughly** - Preview on different devices and browsers
+5. **Brand Guidelines** - Follow your company's brand standards
+6. **User Experience** - Prioritize clarity and trust over flashy design
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create Checkout Session" href="/guides/pay-api/checkout/checkout-link-management" icon="credit-card">
+    Create branded checkout sessions for your products
+  </Card>
+  <Card title="Fiat On-Ramps" href="/guides/pay-api/fiat-ramps/fiat-on-ramps" icon="arrow-up">
+    Add cryptocurrency purchase options
+  </Card>
+  <Card title="Webhooks Setup" href="/PAY-API-Basic-Guides/webhooks-pay-api" icon="webhook">
+    Get real-time payment notifications
+  </Card>
+  <Card title="Stripe Dashboard" href="/PAY-API-Basic-Guides/fetch-stripe-dashboard" icon="chart-bar">
+    Access detailed payment analytics
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Branding changes apply to all future checkout sessions. Test your branding thoroughly before deploying to production to ensure it meets your brand standards and provides a good user experience.
+</Warning>

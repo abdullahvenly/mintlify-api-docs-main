@@ -1,0 +1,1844 @@
+---
+title: "Retrieve NFTs by Wallet"
+description: "Comprehensive guide to retrieving NFTs from any wallet address with advanced filtering, analysis, and portfolio management capabilities"
+icon: "wallet"
+---
+
+<Info>
+**NFT Portfolio Retrieval:** Retrieve and analyze NFTs from any wallet address with comprehensive filtering, portfolio analysis, and advanced querying capabilities.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is NFT Wallet Querying?
+
+NFT wallet querying allows you to retrieve all Non-Fungible Tokens held within a specific wallet address across different blockchain networks. This enables portfolio analysis, collection discovery, and comprehensive NFT inventory management. Essential for building portfolio trackers, marketplace integrations, and wallet analytics.
+
+<CardGroup cols={2}>
+  <Card title="Portfolio Analysis" icon="chart-line">
+    Analyze complete NFT portfolios and collections
+  </Card>
+  <Card title="Multi-Chain Support" icon="link">
+    Query NFTs across different blockchain networks
+  </Card>
+  <Card title="Advanced Filtering" icon="filter">
+    Filter by contracts, collections, and attributes
+  </Card>
+  <Card title="Real-time Data" icon="clock">
+    Get up-to-date NFT ownership information
+  </Card>
+</CardGroup>
+
+## NFT Querying Capabilities
+
+<Tabs>
+  <Tab title="Query Options">
+    **Filtering Methods:**
+    - By wallet address
+    - By contract addresses
+    - By blockchain network
+    - By NFT collections
+    - By token attributes
+    
+    **Use Cases:**
+    - Portfolio tracking
+    - Collection analysis
+    - Ownership verification
+    - Market research
+  </Tab>
+  <Tab title="Data Analysis">
+    **Portfolio Insights:**
+    - Total NFT count
+    - Collection diversity
+    - Value estimation
+    - Rarity analysis
+    - Attribute distribution
+    
+    **Analytics Features:**
+    - Collection statistics
+    - Ownership patterns
+    - Market trends
+    - Performance metrics
+  </Tab>
+  <Tab title="Integration Options">
+    **Implementation Methods:**
+    - Single wallet queries
+    - Batch wallet analysis
+    - Real-time monitoring
+    - Historical tracking
+    
+    **Platform Integration:**
+    - Portfolio dashboards
+    - Marketplace displays
+    - Analytics platforms
+    - Mobile applications
+  </Tab>
+</Tabs>
+
+## Retrieve NFTs by Wallet
+
+<Steps>
+  <Step title="Specify Wallet" icon="wallet">
+    Provide the blockchain network and wallet address
+    
+    ```javascript
+    const walletQuery = {
+      secretType: 'HEDERA',
+      walletAddress: '0.0.18402479'
+    };
+    ```
+  </Step>
+  <Step title="Apply Filters" icon="filter">
+    Optionally filter by contract addresses or other criteria
+  </Step>
+  <Step title="Execute Query" icon="magnifying-glass">
+    Retrieve the NFTs from the specified wallet
+  </Step>
+  <Step title="Analyze Results" icon="chart-bar">
+    Process and analyze the retrieved NFT data
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve NFTs from a wallet
+const getNFTsByWallet = async (secretType, walletAddress, options = {}) => {
+  try {
+    let url = `/api/wallets/${secretType}/${walletAddress}/nonfungibles`;
+    
+    // Add contract address filters if provided
+    if (options.contractAddresses && options.contractAddresses.length > 0) {
+      const params = new URLSearchParams();
+      options.contractAddresses.forEach(address => {
+        params.append('contract-addresses', address);
+      });
+      url += `?${params.toString()}`;
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve NFTs from wallet');
+    }
+  } catch (error) {
+    console.error('Error retrieving NFTs from wallet:', error);
+    throw error;
+  }
+};
+
+// Enhanced NFT wallet analysis system
+class NFTWalletAnalyzer {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = new Map();
+    this.defaultCacheTTL = 300000; // 5 minutes
+    this.portfolioAnalytics = new Map();
+  }
+
+  async analyzeWallet(secretType, walletAddress, options = {}) {
+    const {
+      useCache = true,
+      cacheTTL = this.defaultCacheTTL,
+      includeAnalytics = true,
+      filterContracts = [],
+      sortBy = 'name',
+      groupBy = null
+    } = options;
+
+    const cacheKey = `${secretType}:${walletAddress}:${JSON.stringify(filterContracts)}`;
+
+    // Check cache first
+    if (useCache && this.isCacheValid(cacheKey)) {
+      console.log('Returning cached wallet NFTs');
+      return this.cache.get(cacheKey);
+    }
+
+    try {
+      // Retrieve NFTs from wallet
+      const nfts = await getNFTsByWallet(secretType, walletAddress, {
+        contractAddresses: filterContracts
+      });
+
+      // Process and enhance NFT data
+      const processedNFTs = this.processNFTData(nfts);
+
+      // Sort NFTs
+      const sortedNFTs = this.sortNFTs(processedNFTs, sortBy);
+
+      // Group NFTs if requested
+      const groupedNFTs = groupBy ? this.groupNFTs(sortedNFTs, groupBy) : sortedNFTs;
+
+      // Generate analytics
+      const analytics = includeAnalytics ? this.generatePortfolioAnalytics(processedNFTs) : null;
+
+      const result = {
+        wallet: {
+          secretType,
+          walletAddress,
+          totalNFTs: processedNFTs.length,
+          queriedAt: new Date().toISOString()
+        },
+        nfts: groupedNFTs,
+        analytics,
+        summary: this.generatePortfolioSummary(processedNFTs)
+      };
+
+      // Cache the result
+      if (useCache) {
+        this.cache.set(cacheKey, result);
+        this.cacheExpiry.set(cacheKey, Date.now() + cacheTTL);
+      }
+
+      // Record analytics
+      this.recordWalletQuery(secretType, walletAddress, processedNFTs.length);
+
+      return result;
+
+    } catch (error) {
+      console.error(`Failed to analyze wallet ${walletAddress}:`, error);
+      throw error;
+    }
+  }
+
+  async batchAnalyzeWallets(walletQueries, options = {}) {
+    const {
+      concurrency = 3,
+      continueOnError = true,
+      includeComparison = false
+    } = options;
+
+    const results = [];
+    const errors = [];
+
+    // Process wallets in batches
+    for (let i = 0; i < walletQueries.length; i += concurrency) {
+      const batch = walletQueries.slice(i, i + concurrency);
+      
+      const batchPromises = batch.map(async (query) => {
+        try {
+          const result = await this.analyzeWallet(
+            query.secretType,
+            query.walletAddress,
+            query.options
+          );
+          
+          return {
+            success: true,
+            query,
+            result
+          };
+        } catch (error) {
+          const errorResult = {
+            success: false,
+            query,
+            error: error.message
+          };
+          
+          if (!continueOnError) {
+            throw error;
+          }
+          
+          return errorResult;
+        }
+      });
+
+      const batchResults = await Promise.allSettled(batchPromises);
+      
+      batchResults.forEach(result => {
+        if (result.status === 'fulfilled') {
+          if (result.value.success) {
+            results.push(result.value);
+          } else {
+            errors.push(result.value);
+          }
+        } else {
+          errors.push({
+            success: false,
+            error: result.reason.message
+          });
+        }
+      });
+    }
+
+    const batchAnalysis = {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+
+    // Add comparison analysis if requested
+    if (includeComparison && results.length > 1) {
+      batchAnalysis.comparison = this.compareWalletPortfolios(results.map(r => r.result));
+    }
+
+    return batchAnalysis;
+  }
+
+  processNFTData(nfts) {
+    if (!Array.isArray(nfts)) {
+      nfts = [nfts]; // Handle single NFT response
+    }
+
+    return nfts.map(nft => ({
+      ...nft,
+      // Add computed fields
+      hasAnimation: !!(nft.animationUrl || (nft.animationUrls && nft.animationUrls.length > 0)),
+      attributeCount: nft.attributes ? nft.attributes.length : 0,
+      rarityScore: this.calculateRarityScore(nft.attributes),
+      collectionInfo: this.extractCollectionInfo(nft.contract),
+      mediaType: this.determineMediaType(nft),
+      // Add processing timestamp
+      processedAt: new Date().toISOString()
+    }));
+  }
+
+  sortNFTs(nfts, sortBy) {
+    const sortFunctions = {
+      name: (a, b) => (a.name || '').localeCompare(b.name || ''),
+      rarity: (a, b) => (b.rarityScore || 0) - (a.rarityScore || 0),
+      collection: (a, b) => (a.contract?.name || '').localeCompare(b.contract?.name || ''),
+      attributes: (a, b) => (b.attributeCount || 0) - (a.attributeCount || 0),
+      recent: (a, b) => new Date(b.processedAt) - new Date(a.processedAt)
+    };
+
+    const sortFunction = sortFunctions[sortBy] || sortFunctions.name;
+    return [...nfts].sort(sortFunction);
+  }
+
+  groupNFTs(nfts, groupBy) {
+    const groups = {};
+
+    nfts.forEach(nft => {
+      let groupKey;
+      
+      switch (groupBy) {
+        case 'collection':
+          groupKey = nft.contract?.name || 'Unknown Collection';
+          break;
+        case 'contract':
+          groupKey = nft.contract?.address || 'Unknown Contract';
+          break;
+        case 'mediaType':
+          groupKey = nft.mediaType || 'Unknown Media';
+          break;
+        case 'rarity':
+          groupKey = this.getRarityTier(nft.rarityScore);
+          break;
+        default:
+          groupKey = 'All NFTs';
+      }
+
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
+      }
+      groups[groupKey].push(nft);
+    });
+
+    return groups;
+  }
+
+  generatePortfolioAnalytics(nfts) {
+    const analytics = {
+      overview: {
+        totalNFTs: nfts.length,
+        uniqueCollections: new Set(nfts.map(nft => nft.contract?.address)).size,
+        uniqueContracts: new Set(nfts.map(nft => nft.contract?.address)).size,
+        averageAttributeCount: nfts.reduce((sum, nft) => sum + (nft.attributeCount || 0), 0) / nfts.length
+      },
+      collections: this.analyzeCollections(nfts),
+      attributes: this.analyzeAttributes(nfts),
+      media: this.analyzeMediaTypes(nfts),
+      rarity: this.analyzeRarityDistribution(nfts),
+      trends: this.analyzeTrends(nfts)
+    };
+
+    return analytics;
+  }
+
+  analyzeCollections(nfts) {
+    const collections = {};
+
+    nfts.forEach(nft => {
+      const collectionKey = nft.contract?.address || 'unknown';
+      const collectionName = nft.contract?.name || 'Unknown Collection';
+
+      if (!collections[collectionKey]) {
+        collections[collectionKey] = {
+          name: collectionName,
+          contract: nft.contract,
+          count: 0,
+          nfts: [],
+          averageRarity: 0,
+          mediaTypes: new Set()
+        };
+      }
+
+      collections[collectionKey].count++;
+      collections[collectionKey].nfts.push(nft);
+      collections[collectionKey].mediaTypes.add(nft.mediaType);
+    });
+
+    // Calculate averages and convert sets to arrays
+    Object.values(collections).forEach(collection => {
+      collection.averageRarity = collection.nfts.reduce((sum, nft) => sum + (nft.rarityScore || 0), 0) / collection.count;
+      collection.mediaTypes = Array.from(collection.mediaTypes);
+      collection.percentage = (collection.count / nfts.length) * 100;
+    });
+
+    return collections;
+  }
+
+  analyzeAttributes(nfts) {
+    const attributeStats = {};
+    const traitTypes = new Set();
+
+    nfts.forEach(nft => {
+      if (nft.attributes) {
+        nft.attributes.forEach(attr => {
+          const traitType = attr.traitType || attr.name || 'Unknown';
+          traitTypes.add(traitType);
+
+          if (!attributeStats[traitType]) {
+            attributeStats[traitType] = {
+              values: {},
+              totalCount: 0,
+              uniqueValues: 0
+            };
+          }
+
+          const value = attr.value || 'Unknown';
+          if (!attributeStats[traitType].values[value]) {
+            attributeStats[traitType].values[value] = 0;
+          }
+
+          attributeStats[traitType].values[value]++;
+          attributeStats[traitType].totalCount++;
+        });
+      }
+    });
+
+    // Calculate rarity percentages
+    Object.values(attributeStats).forEach(stat => {
+      stat.uniqueValues = Object.keys(stat.values).length;
+      Object.keys(stat.values).forEach(value => {
+        const count = stat.values[value];
+        stat.values[value] = {
+          count,
+          percentage: (count / nfts.length) * 100,
+          rarity: count === 1 ? 'Unique' : count <= 3 ? 'Rare' : count <= 10 ? 'Uncommon' : 'Common'
+        };
+      });
+    });
+
+    return {
+      totalTraitTypes: traitTypes.size,
+      traitTypes: Array.from(traitTypes),
+      statistics: attributeStats
+    };
+  }
+
+  analyzeMediaTypes(nfts) {
+    const mediaStats = {
+      image: 0,
+      video: 0,
+      audio: 0,
+      animation: 0,
+      unknown: 0
+    };
+
+    nfts.forEach(nft => {
+      const mediaType = nft.mediaType || 'unknown';
+      if (mediaStats.hasOwnProperty(mediaType)) {
+        mediaStats[mediaType]++;
+      } else {
+        mediaStats.unknown++;
+      }
+    });
+
+    // Convert to percentages
+    const total = nfts.length;
+    const mediaPercentages = {};
+    Object.keys(mediaStats).forEach(type => {
+      mediaPercentages[type] = {
+        count: mediaStats[type],
+        percentage: (mediaStats[type] / total) * 100
+      };
+    });
+
+    return mediaPercentages;
+  }
+
+  analyzeRarityDistribution(nfts) {
+    const rarityTiers = {
+      legendary: 0,
+      epic: 0,
+      rare: 0,
+      uncommon: 0,
+      common: 0
+    };
+
+    nfts.forEach(nft => {
+      const tier = this.getRarityTier(nft.rarityScore);
+      if (rarityTiers.hasOwnProperty(tier)) {
+        rarityTiers[tier]++;
+      }
+    });
+
+    // Convert to percentages
+    const total = nfts.length;
+    const rarityPercentages = {};
+    Object.keys(rarityTiers).forEach(tier => {
+      rarityPercentages[tier] = {
+        count: rarityTiers[tier],
+        percentage: (rarityTiers[tier] / total) * 100
+      };
+    });
+
+    return rarityPercentages;
+  }
+
+  analyzeTrends(nfts) {
+    // This would typically analyze historical data
+    // For now, provide basic insights
+    return {
+      mostCommonCollection: this.getMostCommonCollection(nfts),
+      averageAttributesPerNFT: nfts.reduce((sum, nft) => sum + (nft.attributeCount || 0), 0) / nfts.length,
+      mediaTypeDiversity: new Set(nfts.map(nft => nft.mediaType)).size,
+      hasRareItems: nfts.some(nft => (nft.rarityScore || 0) > 80)
+    };
+  }
+
+  generatePortfolioSummary(nfts) {
+    const collections = new Set(nfts.map(nft => nft.contract?.address)).size;
+    const hasAnimations = nfts.some(nft => nft.hasAnimation);
+    const averageRarity = nfts.reduce((sum, nft) => sum + (nft.rarityScore || 0), 0) / nfts.length;
+
+    return {
+      totalNFTs: nfts.length,
+      uniqueCollections: collections,
+      hasAnimatedNFTs: hasAnimations,
+      averageRarityScore: Math.round(averageRarity * 100) / 100,
+      portfolioValue: 'Not calculated', // Would require market data
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
+  compareWalletPortfolios(portfolios) {
+    const comparison = {
+      wallets: portfolios.map(p => ({
+        address: p.wallet.walletAddress,
+        totalNFTs: p.wallet.totalNFTs,
+        collections: p.analytics?.overview.uniqueCollections || 0
+      })),
+      commonCollections: this.findCommonCollections(portfolios),
+      diversityComparison: this.compareDiversity(portfolios),
+      rarityComparison: this.compareRarity(portfolios)
+    };
+
+    return comparison;
+  }
+
+  // Utility methods
+  calculateRarityScore(attributes) {
+    if (!attributes || attributes.length === 0) return 0;
+
+    // Simplified rarity calculation
+    let score = 0;
+    attributes.forEach(attr => {
+      if (attr.type === 'stat' && attr.maxValue) {
+        const percentage = (parseInt(attr.value) || 0) / (parseInt(attr.maxValue) || 1);
+        score += percentage * 20;
+      } else {
+        score += 10; // Base score for having the attribute
+      }
+    });
+
+    return Math.min(score, 100);
+  }
+
+  getRarityTier(rarityScore) {
+    if (rarityScore >= 90) return 'legendary';
+    if (rarityScore >= 70) return 'epic';
+    if (rarityScore >= 50) return 'rare';
+    if (rarityScore >= 30) return 'uncommon';
+    return 'common';
+  }
+
+  extractCollectionInfo(contract) {
+    if (!contract) return null;
+
+    return {
+      name: contract.name,
+      symbol: contract.symbol,
+      address: contract.address,
+      type: contract.type,
+      verified: contract.verified || false
+    };
+  }
+
+  determineMediaType(nft) {
+    if (nft.animationUrl || (nft.animationUrls && nft.animationUrls.length > 0)) {
+      // Check if it's video or audio based on URL or type
+      const animationUrl = nft.animationUrl || nft.animationUrls[0]?.value;
+      if (animationUrl) {
+        if (animationUrl.includes('.mp4') || animationUrl.includes('.webm')) return 'video';
+        if (animationUrl.includes('.mp3') || animationUrl.includes('.wav')) return 'audio';
+        return 'animation';
+      }
+    }
+    
+    if (nft.imageUrl || nft.imagePreviewUrl) return 'image';
+    return 'unknown';
+  }
+
+  getMostCommonCollection(nfts) {
+    const collectionCounts = {};
+    
+    nfts.forEach(nft => {
+      const collection = nft.contract?.name || 'Unknown';
+      collectionCounts[collection] = (collectionCounts[collection] || 0) + 1;
+    });
+
+    return Object.keys(collectionCounts).reduce((a, b) => 
+      collectionCounts[a] > collectionCounts[b] ? a : b
+    );
+  }
+
+  findCommonCollections(portfolios) {
+    const allCollections = portfolios.map(p => 
+      new Set(p.nfts.map ? p.nfts.map(nft => nft.contract?.address) : 
+              Object.values(p.nfts).flat().map(nft => nft.contract?.address))
+    );
+
+    if (allCollections.length === 0) return [];
+
+    return Array.from(allCollections[0]).filter(collection =>
+      allCollections.every(set => set.has(collection))
+    );
+  }
+
+  compareDiversity(portfolios) {
+    return portfolios.map(p => ({
+      address: p.wallet.walletAddress,
+      collections: p.analytics?.overview.uniqueCollections || 0,
+      mediaTypes: p.analytics?.media ? Object.keys(p.analytics.media).length : 0,
+      diversityScore: this.calculateDiversityScore(p)
+    }));
+  }
+
+  compareRarity(portfolios) {
+    return portfolios.map(p => ({
+      address: p.wallet.walletAddress,
+      averageRarity: p.summary?.averageRarityScore || 0,
+      rareItems: p.analytics?.rarity?.rare?.count || 0,
+      legendaryItems: p.analytics?.rarity?.legendary?.count || 0
+    }));
+  }
+
+  calculateDiversityScore(portfolio) {
+    const collections = portfolio.analytics?.overview.uniqueCollections || 0;
+    const mediaTypes = portfolio.analytics?.media ? Object.keys(portfolio.analytics.media).length : 0;
+    const totalNFTs = portfolio.wallet.totalNFTs || 1;
+
+    return Math.round(((collections + mediaTypes) / totalNFTs) * 100);
+  }
+
+  isCacheValid(key) {
+    if (!this.cache.has(key) || !this.cacheExpiry.has(key)) {
+      return false;
+    }
+    return Date.now() < this.cacheExpiry.get(key);
+  }
+
+  recordWalletQuery(secretType, walletAddress, nftCount) {
+    const key = `${secretType}:${walletAddress}`;
+    
+    if (!this.portfolioAnalytics.has(key)) {
+      this.portfolioAnalytics.set(key, {
+        queryCount: 0,
+        firstQuery: new Date().toISOString(),
+        lastQuery: null,
+        lastNFTCount: 0
+      });
+    }
+    
+    const analytics = this.portfolioAnalytics.get(key);
+    analytics.queryCount++;
+    analytics.lastQuery = new Date().toISOString();
+    analytics.lastNFTCount = nftCount;
+  }
+
+  generateWalletReport(secretType, walletAddress) {
+    const key = `${secretType}:${walletAddress}`;
+    const analytics = this.portfolioAnalytics.get(key);
+    
+    return {
+      secretType,
+      walletAddress,
+      analytics: analytics || { queryCount: 0 },
+      cacheStatus: this.isCacheValid(key) ? 'cached' : 'not_cached',
+      lastAnalyzed: new Date().toISOString()
+    };
+  }
+
+  clearCache(pattern = null) {
+    if (pattern) {
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+          this.cacheExpiry.delete(key);
+        }
+      }
+    } else {
+      this.cache.clear();
+      this.cacheExpiry.clear();
+    }
+  }
+}
+
+// Usage examples
+const walletAnalyzer = new NFTWalletAnalyzer('YOUR_API_KEY');
+
+// Simple wallet query
+const walletNFTs = await walletAnalyzer.analyzeWallet(
+  'HEDERA',
+  '0.0.18402479',
+  {
+    includeAnalytics: true,
+    sortBy: 'rarity',
+    groupBy: 'collection'
+  }
+);
+
+console.log('Wallet NFTs:', walletNFTs);
+console.log('Portfolio summary:', walletNFTs.summary);
+console.log('Analytics:', walletNFTs.analytics);
+
+// Batch wallet analysis
+const walletQueries = [
+  {
+    secretType: 'HEDERA',
+    walletAddress: '0.0.18402479',
+    options: { includeAnalytics: true }
+  },
+  {
+    secretType: 'ETHEREUM',
+    walletAddress: '0x742d35Cc6634C0532925a3b8D0C9e3e0C0c0e0c0',
+    options: { includeAnalytics: true }
+  }
+];
+
+const batchResults = await walletAnalyzer.batchAnalyzeWallets(walletQueries, {
+  includeComparison: true
+});
+
+console.log('Batch analysis:', batchResults);
+console.log('Portfolio comparison:', batchResults.comparison);
+
+// Filter by specific contracts
+const filteredNFTs = await walletAnalyzer.analyzeWallet(
+  'HEDERA',
+  '0.0.18402479',
+  {
+    filterContracts: ['0.0.2850147'],
+    sortBy: 'name',
+    includeAnalytics: true
+  }
+);
+
+console.log('Filtered NFTs:', filteredNFTs);
+
+// Generate wallet report
+const report = walletAnalyzer.generateWalletReport('HEDERA', '0.0.18402479');
+console.log('Wallet report:', report);
+```
+
+```python Python
+import requests
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+from collections import defaultdict
+
+class NFTWalletAnalyzer:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/wallets'
+        self.cache = {}
+        self.cache_expiry = {}
+        self.default_cache_ttl = 300  # 5 minutes
+        self.portfolio_analytics = {}
+    
+    def get_nfts_by_wallet(self, secret_type: str, wallet_address: str, 
+                          contract_addresses: List[str] = None) -> Dict[str, Any]:
+        """Retrieve NFTs from a wallet"""
+        url = f'{self.base_url}/{secret_type}/{wallet_address}/nonfungibles'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        params = {}
+        if contract_addresses:
+            params['contract-addresses'] = contract_addresses
+        
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to retrieve NFTs from wallet')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving NFTs from wallet: {error}')
+            raise error
+    
+    def analyze_wallet(self, secret_type: str, wallet_address: str, 
+                      options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Analyze wallet with comprehensive portfolio insights"""
+        if options is None:
+            options = {}
+        
+        use_cache = options.get('use_cache', True)
+        cache_ttl = options.get('cache_ttl', self.default_cache_ttl)
+        include_analytics = options.get('include_analytics', True)
+        filter_contracts = options.get('filter_contracts', [])
+        sort_by = options.get('sort_by', 'name')
+        group_by = options.get('group_by')
+        
+        cache_key = f"{secret_type}:{wallet_address}:{str(filter_contracts)}"
+        
+        # Check cache first
+        if use_cache and self._is_cache_valid(cache_key):
+            print('Returning cached wallet NFTs')
+            return self.cache[cache_key]
+        
+        try:
+            # Retrieve NFTs from wallet
+            nfts = self.get_nfts_by_wallet(secret_type, wallet_address, filter_contracts)
+            
+            # Process and enhance NFT data
+            processed_nfts = self._process_nft_data(nfts)
+            
+            # Sort NFTs
+            sorted_nfts = self._sort_nfts(processed_nfts, sort_by)
+            
+            # Group NFTs if requested
+            grouped_nfts = self._group_nfts(sorted_nfts, group_by) if group_by else sorted_nfts
+            
+            # Generate analytics
+            analytics = self._generate_portfolio_analytics(processed_nfts) if include_analytics else None
+            
+            result = {
+                'wallet': {
+                    'secret_type': secret_type,
+                    'wallet_address': wallet_address,
+                    'total_nfts': len(processed_nfts),
+                    'queried_at': datetime.now().isoformat()
+                },
+                'nfts': grouped_nfts,
+                'analytics': analytics,
+                'summary': self._generate_portfolio_summary(processed_nfts)
+            }
+            
+            # Cache the result
+            if use_cache:
+                self.cache[cache_key] = result
+                self.cache_expiry[cache_key] = datetime.now() + timedelta(seconds=cache_ttl)
+            
+            # Record analytics
+            self._record_wallet_query(secret_type, wallet_address, len(processed_nfts))
+            
+            return result
+            
+        except Exception as error:
+            print(f'Failed to analyze wallet {wallet_address}: {error}')
+            raise error
+    
+    def _process_nft_data(self, nfts: Any) -> List[Dict[str, Any]]:
+        """Process and enhance NFT data"""
+        if not isinstance(nfts, list):
+            nfts = [nfts]  # Handle single NFT response
+        
+        processed = []
+        for nft in nfts:
+            enhanced_nft = dict(nft)
+            
+            # Add computed fields
+            enhanced_nft['has_animation'] = bool(
+                nft.get('animationUrl') or 
+                (nft.get('animationUrls') and len(nft['animationUrls']) > 0)
+            )
+            enhanced_nft['attribute_count'] = len(nft.get('attributes', []))
+            enhanced_nft['rarity_score'] = self._calculate_rarity_score(nft.get('attributes', []))
+            enhanced_nft['collection_info'] = self._extract_collection_info(nft.get('contract'))
+            enhanced_nft['media_type'] = self._determine_media_type(nft)
+            enhanced_nft['processed_at'] = datetime.now().isoformat()
+            
+            processed.append(enhanced_nft)
+        
+        return processed
+    
+    def _sort_nfts(self, nfts: List[Dict[str, Any]], sort_by: str) -> List[Dict[str, Any]]:
+        """Sort NFTs by specified criteria"""
+        sort_functions = {
+            'name': lambda x: x.get('name', ''),
+            'rarity': lambda x: x.get('rarity_score', 0),
+            'collection': lambda x: x.get('contract', {}).get('name', ''),
+            'attributes': lambda x: x.get('attribute_count', 0),
+            'recent': lambda x: x.get('processed_at', '')
+        }
+        
+        sort_key = sort_functions.get(sort_by, sort_functions['name'])
+        reverse = sort_by in ['rarity', 'attributes', 'recent']
+        
+        return sorted(nfts, key=sort_key, reverse=reverse)
+    
+    def _group_nfts(self, nfts: List[Dict[str, Any]], group_by: str) -> Dict[str, List[Dict[str, Any]]]:
+        """Group NFTs by specified criteria"""
+        groups = defaultdict(list)
+        
+        for nft in nfts:
+            if group_by == 'collection':
+                group_key = nft.get('contract', {}).get('name', 'Unknown Collection')
+            elif group_by == 'contract':
+                group_key = nft.get('contract', {}).get('address', 'Unknown Contract')
+            elif group_by == 'media_type':
+                group_key = nft.get('media_type', 'Unknown Media')
+            elif group_by == 'rarity':
+                group_key = self._get_rarity_tier(nft.get('rarity_score', 0))
+            else:
+                group_key = 'All NFTs'
+            
+            groups[group_key].append(nft)
+        
+        return dict(groups)
+    
+    def _generate_portfolio_analytics(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate comprehensive portfolio analytics"""
+        return {
+            'overview': self._analyze_overview(nfts),
+            'collections': self._analyze_collections(nfts),
+            'attributes': self._analyze_attributes(nfts),
+            'media': self._analyze_media_types(nfts),
+            'rarity': self._analyze_rarity_distribution(nfts)
+        }
+    
+    def _analyze_overview(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze portfolio overview"""
+        unique_collections = set(nft.get('contract', {}).get('address') for nft in nfts)
+        avg_attributes = sum(nft.get('attribute_count', 0) for nft in nfts) / len(nfts) if nfts else 0
+        
+        return {
+            'total_nfts': len(nfts),
+            'unique_collections': len(unique_collections),
+            'unique_contracts': len(unique_collections),
+            'average_attribute_count': avg_attributes
+        }
+    
+    def _analyze_collections(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze collections in portfolio"""
+        collections = defaultdict(lambda: {
+            'name': 'Unknown Collection',
+            'contract': None,
+            'count': 0,
+            'nfts': [],
+            'average_rarity': 0,
+            'media_types': set()
+        })
+        
+        for nft in nfts:
+            contract_address = nft.get('contract', {}).get('address', 'unknown')
+            collection = collections[contract_address]
+            
+            collection['name'] = nft.get('contract', {}).get('name', 'Unknown Collection')
+            collection['contract'] = nft.get('contract')
+            collection['count'] += 1
+            collection['nfts'].append(nft)
+            collection['media_types'].add(nft.get('media_type'))
+        
+        # Calculate averages and convert sets
+        for collection in collections.values():
+            if collection['nfts']:
+                collection['average_rarity'] = sum(nft.get('rarity_score', 0) for nft in collection['nfts']) / len(collection['nfts'])
+            collection['media_types'] = list(collection['media_types'])
+            collection['percentage'] = (collection['count'] / len(nfts)) * 100 if nfts else 0
+        
+        return dict(collections)
+    
+    def _analyze_attributes(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze attributes across portfolio"""
+        attribute_stats = defaultdict(lambda: {
+            'values': defaultdict(int),
+            'total_count': 0,
+            'unique_values': 0
+        })
+        
+        trait_types = set()
+        
+        for nft in nfts:
+            attributes = nft.get('attributes', [])
+            for attr in attributes:
+                trait_type = attr.get('traitType') or attr.get('name', 'Unknown')
+                trait_types.add(trait_type)
+                
+                value = str(attr.get('value', 'Unknown'))
+                attribute_stats[trait_type]['values'][value] += 1
+                attribute_stats[trait_type]['total_count'] += 1
+        
+        # Calculate rarity percentages
+        for stat in attribute_stats.values():
+            stat['unique_values'] = len(stat['values'])
+            total_nfts = len(nfts)
+            
+            for value, count in stat['values'].items():
+                stat['values'][value] = {
+                    'count': count,
+                    'percentage': (count / total_nfts) * 100,
+                    'rarity': 'Unique' if count == 1 else 'Rare' if count <= 3 else 'Uncommon' if count <= 10 else 'Common'
+                }
+        
+        return {
+            'total_trait_types': len(trait_types),
+            'trait_types': list(trait_types),
+            'statistics': dict(attribute_stats)
+        }
+    
+    def _analyze_media_types(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze media types in portfolio"""
+        media_stats = defaultdict(int)
+        
+        for nft in nfts:
+            media_type = nft.get('media_type', 'unknown')
+            media_stats[media_type] += 1
+        
+        total = len(nfts)
+        return {
+            media_type: {
+                'count': count,
+                'percentage': (count / total) * 100 if total > 0 else 0
+            }
+            for media_type, count in media_stats.items()
+        }
+    
+    def _analyze_rarity_distribution(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze rarity distribution in portfolio"""
+        rarity_tiers = defaultdict(int)
+        
+        for nft in nfts:
+            tier = self._get_rarity_tier(nft.get('rarity_score', 0))
+            rarity_tiers[tier] += 1
+        
+        total = len(nfts)
+        return {
+            tier: {
+                'count': count,
+                'percentage': (count / total) * 100 if total > 0 else 0
+            }
+            for tier, count in rarity_tiers.items()
+        }
+    
+    def _generate_portfolio_summary(self, nfts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate portfolio summary"""
+        collections = set(nft.get('contract', {}).get('address') for nft in nfts)
+        has_animations = any(nft.get('has_animation', False) for nft in nfts)
+        avg_rarity = sum(nft.get('rarity_score', 0) for nft in nfts) / len(nfts) if nfts else 0
+        
+        return {
+            'total_nfts': len(nfts),
+            'unique_collections': len(collections),
+            'has_animated_nfts': has_animations,
+            'average_rarity_score': round(avg_rarity, 2),
+            'portfolio_value': 'Not calculated',
+            'last_updated': datetime.now().isoformat()
+        }
+    
+    # Helper methods
+    def _calculate_rarity_score(self, attributes: List[Dict[str, Any]]) -> int:
+        """Calculate rarity score based on attributes"""
+        if not attributes:
+            return 0
+        
+        score = 0
+        for attr in attributes:
+            if attr.get('type') == 'stat' and attr.get('maxValue'):
+                try:
+                    percentage = int(attr.get('value', 0)) / int(attr.get('maxValue', 1))
+                    score += percentage * 20
+                except (ValueError, ZeroDivisionError):
+                    pass
+            else:
+                score += 10
+        
+        return min(int(score), 100)
+    
+    def _get_rarity_tier(self, rarity_score: int) -> str:
+        """Get rarity tier from score"""
+        if rarity_score >= 90:
+            return 'legendary'
+        elif rarity_score >= 70:
+            return 'epic'
+        elif rarity_score >= 50:
+            return 'rare'
+        elif rarity_score >= 30:
+            return 'uncommon'
+        else:
+            return 'common'
+    
+    def _extract_collection_info(self, contract: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract collection information"""
+        if not contract:
+            return None
+        
+        return {
+            'name': contract.get('name'),
+            'symbol': contract.get('symbol'),
+            'address': contract.get('address'),
+            'type': contract.get('type'),
+            'verified': contract.get('verified', False)
+        }
+    
+    def _determine_media_type(self, nft: Dict[str, Any]) -> str:
+        """Determine media type of NFT"""
+        if nft.get('animationUrl') or nft.get('animationUrls'):
+            animation_url = nft.get('animationUrl') or (nft.get('animationUrls', [{}])[0].get('value', ''))
+            if '.mp4' in animation_url or '.webm' in animation_url:
+                return 'video'
+            elif '.mp3' in animation_url or '.wav' in animation_url:
+                return 'audio'
+            return 'animation'
+        elif nft.get('imageUrl') or nft.get('imagePreviewUrl'):
+            return 'image'
+        else:
+            return 'unknown'
+    
+    def _record_wallet_query(self, secret_type: str, wallet_address: str, nft_count: int):
+        """Record wallet query analytics"""
+        key = f"{secret_type}:{wallet_address}"
+        
+        if key not in self.portfolio_analytics:
+            self.portfolio_analytics[key] = {
+                'query_count': 0,
+                'first_query': datetime.now().isoformat(),
+                'last_query': None,
+                'last_nft_count': 0
+            }
+        
+        analytics = self.portfolio_analytics[key]
+        analytics['query_count'] += 1
+        analytics['last_query'] = datetime.now().isoformat()
+        analytics['last_nft_count'] = nft_count
+    
+    def _is_cache_valid(self, key: str) -> bool:
+        """Check if cache entry is valid"""
+        if key not in self.cache or key not in self.cache_expiry:
+            return False
+        return datetime.now() < self.cache_expiry[key]
+
+# Usage
+wallet_analyzer = NFTWalletAnalyzer('YOUR_API_KEY')
+
+# Simple wallet analysis
+wallet_nfts = wallet_analyzer.analyze_wallet(
+    'HEDERA',
+    '0.0.18402479',
+    {
+        'include_analytics': True,
+        'sort_by': 'rarity',
+        'group_by': 'collection'
+    }
+)
+
+print('Wallet NFTs:', wallet_nfts)
+```
+
+```bash cURL
+# Get NFTs from wallet
+curl -X GET '/api/wallets/HEDERA/0.0.18402479/nonfungibles' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get NFTs from wallet with contract filter
+curl -X GET '/api/wallets/HEDERA/0.0.18402479/nonfungibles?contract-addresses=0.0.2850147' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get NFTs with multiple contract filters
+curl -X GET '/api/wallets/HEDERA/0.0.18402479/nonfungibles?contract-addresses=0.0.2850147&contract-addresses=0.0.2850148' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Batch analyze multiple wallets
+#!/bin/bash
+WALLETS=(
+  "HEDERA:0.0.18402479"
+  "ETHEREUM:0x742d35Cc6634C0532925a3b8D0C9e3e0C0c0e0c0"
+  "POLYGON:0x8ba1f109551bD432803012645Hac136c"
+)
+
+for wallet in "${WALLETS[@]}"; do
+  IFS=':' read -r chain address <<< "$wallet"
+  echo "Analyzing wallet $address on $chain..."
+  
+  curl -X GET "/api/wallets/$chain/$address/nonfungibles" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result | length' > "wallet_${address}_count.txt"
+  
+  echo "NFT count saved to wallet_${address}_count.txt"
+  sleep 1  # Rate limiting
+done
+
+# Portfolio analysis script
+#!/bin/bash
+analyze_portfolio() {
+  local chain=$1
+  local wallet_address=$2
+  
+  echo "=== Portfolio Analysis for $wallet_address ==="
+  
+  # Get all NFTs
+  nfts=$(curl -X GET "/api/wallets/$chain/$wallet_address/nonfungibles" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result')
+  
+  # Count total NFTs
+  total_nfts=$(echo "$nfts" | jq 'length')
+  echo "Total NFTs: $total_nfts"
+  
+  # Count unique collections
+  unique_collections=$(echo "$nfts" | jq '[.[].contract.address] | unique | length')
+  echo "Unique Collections: $unique_collections"
+  
+  # Count NFTs with animations
+  animated_nfts=$(echo "$nfts" | jq '[.[] | select(.animationUrl != null or (.animationUrls | length > 0))] | length')
+  echo "Animated NFTs: $animated_nfts"
+  
+  # Average attributes per NFT
+  avg_attributes=$(echo "$nfts" | jq '[.[].attributes | length] | add / length')
+  echo "Average Attributes: $avg_attributes"
+  
+  # Top collections
+  echo "Top Collections:"
+  echo "$nfts" | jq -r '[group_by(.contract.address)[] | {collection: .[0].contract.name, count: length}] | sort_by(.count) | reverse | .[0:5][] | "  \(.collection): \(.count) NFTs"'
+  
+  echo ""
+}
+
+# Analyze specific wallet
+analyze_portfolio "HEDERA" "0.0.18402479"
+
+# Collection diversity analysis
+#!/bin/bash
+diversity_analysis() {
+  local chain=$1
+  local wallet_address=$2
+  
+  nfts=$(curl -X GET "/api/wallets/$chain/$wallet_address/nonfungibles" \
+    -H 'Authorization: Bearer YOUR_API_KEY' \
+    -H 'Content-Type: application/json' \
+    -s | jq '.result')
+  
+  total_nfts=$(echo "$nfts" | jq 'length')
+  unique_collections=$(echo "$nfts" | jq '[.[].contract.address] | unique | length')
+  
+  # Calculate diversity score (0-100)
+  if [ $total_nfts -gt 0 ]; then
+    diversity_score=$(echo "scale=2; ($unique_collections / $total_nfts) * 100" | bc)
+    echo "Diversity Score: $diversity_score%"
+    
+    if (( $(echo "$diversity_score > 50" | bc -l) )); then
+      echo "Portfolio Status: Highly Diversified"
+    elif (( $(echo "$diversity_score > 25" | bc -l) )); then
+      echo "Portfolio Status: Moderately Diversified"
+    else
+      echo "Portfolio Status: Concentrated"
+    fi
+  fi
+}
+
+diversity_analysis "HEDERA" "0.0.18402479"
+```
+
+```php PHP
+<?php
+class NFTWalletAnalyzer {
+    private $apiKey;
+    private $baseUrl;
+    private $cache;
+    private $cacheExpiry;
+    private $defaultCacheTTL;
+    private $portfolioAnalytics;
+    
+    public function __construct($apiKey, $baseUrl = '/api/wallets') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->cache = [];
+        $this->cacheExpiry = [];
+        $this->defaultCacheTTL = 300; // 5 minutes
+        $this->portfolioAnalytics = [];
+    }
+    
+    public function analyzeWallet($secretType, $walletAddress, $options = []) {
+        $useCache = $options['useCache'] ?? true;
+        $cacheTTL = $options['cacheTTL'] ?? $this->defaultCacheTTL;
+        $includeAnalytics = $options['includeAnalytics'] ?? true;
+        $filterContracts = $options['filterContracts'] ?? [];
+        $sortBy = $options['sortBy'] ?? 'name';
+        $groupBy = $options['groupBy'] ?? null;
+        
+        $cacheKey = "{$secretType}:{$walletAddress}:" . json_encode($filterContracts);
+        
+        // Check cache first
+        if ($useCache && $this->isCacheValid($cacheKey)) {
+            echo "Returning cached wallet NFTs\n";
+            return $this->cache[$cacheKey];
+        }
+        
+        try {
+            // Retrieve NFTs from wallet
+            $nfts = $this->getNFTsByWallet($secretType, $walletAddress, $filterContracts);
+            
+            // Process and enhance NFT data
+            $processedNFTs = $this->processNFTData($nfts);
+            
+            // Sort NFTs
+            $sortedNFTs = $this->sortNFTs($processedNFTs, $sortBy);
+            
+            // Group NFTs if requested
+            $groupedNFTs = $groupBy ? $this->groupNFTs($sortedNFTs, $groupBy) : $sortedNFTs;
+            
+            // Generate analytics
+            $analytics = $includeAnalytics ? $this->generatePortfolioAnalytics($processedNFTs) : null;
+            
+            $result = [
+                'wallet' => [
+                    'secretType' => $secretType,
+                    'walletAddress' => $walletAddress,
+                    'totalNFTs' => count($processedNFTs),
+                    'queriedAt' => date('c')
+                ],
+                'nfts' => $groupedNFTs,
+                'analytics' => $analytics,
+                'summary' => $this->generatePortfolioSummary($processedNFTs)
+            ];
+            
+            // Cache the result
+            if ($useCache) {
+                $this->cache[$cacheKey] = $result;
+                $this->cacheExpiry[$cacheKey] = time() + $cacheTTL;
+            }
+            
+            // Record analytics
+            $this->recordWalletQuery($secretType, $walletAddress, count($processedNFTs));
+            
+            return $result;
+            
+        } catch (Exception $error) {
+            echo "Failed to analyze wallet {$walletAddress}: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function getNFTsByWallet($secretType, $walletAddress, $contractAddresses = []) {
+        $url = "{$this->baseUrl}/{$secretType}/{$walletAddress}/nonfungibles";
+        
+        if (!empty($contractAddresses)) {
+            $params = [];
+            foreach ($contractAddresses as $address) {
+                $params[] = 'contract-addresses=' . urlencode($address);
+            }
+            $url .= '?' . implode('&', $params);
+        }
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve NFTs from wallet");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve NFTs from wallet');
+        }
+        
+        return $data['result'];
+    }
+    
+    private function processNFTData($nfts) {
+        if (!is_array($nfts)) {
+            $nfts = [$nfts]; // Handle single NFT response
+        }
+        
+        $processed = [];
+        foreach ($nfts as $nft) {
+            $enhancedNFT = $nft;
+            
+            // Add computed fields
+            $enhancedNFT['hasAnimation'] = !empty($nft['animationUrl']) || !empty($nft['animationUrls']);
+            $enhancedNFT['attributeCount'] = count($nft['attributes'] ?? []);
+            $enhancedNFT['rarityScore'] = $this->calculateRarityScore($nft['attributes'] ?? []);
+            $enhancedNFT['collectionInfo'] = $this->extractCollectionInfo($nft['contract'] ?? null);
+            $enhancedNFT['mediaType'] = $this->determineMediaType($nft);
+            $enhancedNFT['processedAt'] = date('c');
+            
+            $processed[] = $enhancedNFT;
+        }
+        
+        return $processed;
+    }
+    
+    private function sortNFTs($nfts, $sortBy) {
+        usort($nfts, function($a, $b) use ($sortBy) {
+            switch ($sortBy) {
+                case 'name':
+                    return strcmp($a['name'] ?? '', $b['name'] ?? '');
+                case 'rarity':
+                    return ($b['rarityScore'] ?? 0) - ($a['rarityScore'] ?? 0);
+                case 'collection':
+                    return strcmp($a['contract']['name'] ?? '', $b['contract']['name'] ?? '');
+                case 'attributes':
+                    return ($b['attributeCount'] ?? 0) - ($a['attributeCount'] ?? 0);
+                case 'recent':
+                    return strcmp($b['processedAt'] ?? '', $a['processedAt'] ?? '');
+                default:
+                    return strcmp($a['name'] ?? '', $b['name'] ?? '');
+            }
+        });
+        
+        return $nfts;
+    }
+    
+    private function groupNFTs($nfts, $groupBy) {
+        $groups = [];
+        
+        foreach ($nfts as $nft) {
+            switch ($groupBy) {
+                case 'collection':
+                    $groupKey = $nft['contract']['name'] ?? 'Unknown Collection';
+                    break;
+                case 'contract':
+                    $groupKey = $nft['contract']['address'] ?? 'Unknown Contract';
+                    break;
+                case 'mediaType':
+                    $groupKey = $nft['mediaType'] ?? 'Unknown Media';
+                    break;
+                case 'rarity':
+                    $groupKey = $this->getRarityTier($nft['rarityScore'] ?? 0);
+                    break;
+                default:
+                    $groupKey = 'All NFTs';
+            }
+            
+            if (!isset($groups[$groupKey])) {
+                $groups[$groupKey] = [];
+            }
+            $groups[$groupKey][] = $nft;
+        }
+        
+        return $groups;
+    }
+    
+    private function generatePortfolioAnalytics($nfts) {
+        return [
+            'overview' => $this->analyzeOverview($nfts),
+            'collections' => $this->analyzeCollections($nfts),
+            'attributes' => $this->analyzeAttributes($nfts),
+            'media' => $this->analyzeMediaTypes($nfts),
+            'rarity' => $this->analyzeRarityDistribution($nfts)
+        ];
+    }
+    
+    private function analyzeOverview($nfts) {
+        $uniqueCollections = array_unique(array_map(function($nft) {
+            return $nft['contract']['address'] ?? 'unknown';
+        }, $nfts));
+        
+        $avgAttributes = count($nfts) > 0 ? 
+            array_sum(array_map(function($nft) { return $nft['attributeCount'] ?? 0; }, $nfts)) / count($nfts) : 0;
+        
+        return [
+            'totalNFTs' => count($nfts),
+            'uniqueCollections' => count($uniqueCollections),
+            'uniqueContracts' => count($uniqueCollections),
+            'averageAttributeCount' => $avgAttributes
+        ];
+    }
+    
+    private function analyzeCollections($nfts) {
+        $collections = [];
+        
+        foreach ($nfts as $nft) {
+            $contractAddress = $nft['contract']['address'] ?? 'unknown';
+            
+            if (!isset($collections[$contractAddress])) {
+                $collections[$contractAddress] = [
+                    'name' => $nft['contract']['name'] ?? 'Unknown Collection',
+                    'contract' => $nft['contract'] ?? null,
+                    'count' => 0,
+                    'nfts' => [],
+                    'averageRarity' => 0,
+                    'mediaTypes' => []
+                ];
+            }
+            
+            $collections[$contractAddress]['count']++;
+            $collections[$contractAddress]['nfts'][] = $nft;
+            $collections[$contractAddress]['mediaTypes'][] = $nft['mediaType'] ?? 'unknown';
+        }
+        
+        // Calculate averages and percentages
+        foreach ($collections as &$collection) {
+            if (count($collection['nfts']) > 0) {
+                $collection['averageRarity'] = array_sum(array_map(function($nft) {
+                    return $nft['rarityScore'] ?? 0;
+                }, $collection['nfts'])) / count($collection['nfts']);
+            }
+            
+            $collection['mediaTypes'] = array_unique($collection['mediaTypes']);
+            $collection['percentage'] = (count($collection['nfts']) / count($nfts)) * 100;
+        }
+        
+        return $collections;
+    }
+    
+    private function analyzeAttributes($nfts) {
+        $attributeStats = [];
+        $traitTypes = [];
+        
+        foreach ($nfts as $nft) {
+            $attributes = $nft['attributes'] ?? [];
+            foreach ($attributes as $attr) {
+                $traitType = $attr['traitType'] ?? $attr['name'] ?? 'Unknown';
+                $traitTypes[] = $traitType;
+                
+                if (!isset($attributeStats[$traitType])) {
+                    $attributeStats[$traitType] = [
+                        'values' => [],
+                        'totalCount' => 0,
+                        'uniqueValues' => 0
+                    ];
+                }
+                
+                $value = $attr['value'] ?? 'Unknown';
+                if (!isset($attributeStats[$traitType]['values'][$value])) {
+                    $attributeStats[$traitType]['values'][$value] = 0;
+                }
+                
+                $attributeStats[$traitType]['values'][$value]++;
+                $attributeStats[$traitType]['totalCount']++;
+            }
+        }
+        
+        // Calculate rarity percentages
+        foreach ($attributeStats as &$stat) {
+            $stat['uniqueValues'] = count($stat['values']);
+            foreach ($stat['values'] as $value => $count) {
+                $stat['values'][$value] = [
+                    'count' => $count,
+                    'percentage' => ($count / count($nfts)) * 100,
+                    'rarity' => $count === 1 ? 'Unique' : ($count <= 3 ? 'Rare' : ($count <= 10 ? 'Uncommon' : 'Common'))
+                ];
+            }
+        }
+        
+        return [
+            'totalTraitTypes' => count(array_unique($traitTypes)),
+            'traitTypes' => array_unique($traitTypes),
+            'statistics' => $attributeStats
+        ];
+    }
+    
+    private function analyzeMediaTypes($nfts) {
+        $mediaStats = [];
+        
+        foreach ($nfts as $nft) {
+            $mediaType = $nft['mediaType'] ?? 'unknown';
+            if (!isset($mediaStats[$mediaType])) {
+                $mediaStats[$mediaType] = 0;
+            }
+            $mediaStats[$mediaType]++;
+        }
+        
+        $total = count($nfts);
+        $mediaPercentages = [];
+        foreach ($mediaStats as $type => $count) {
+            $mediaPercentages[$type] = [
+                'count' => $count,
+                'percentage' => $total > 0 ? ($count / $total) * 100 : 0
+            ];
+        }
+        
+        return $mediaPercentages;
+    }
+    
+    private function analyzeRarityDistribution($nfts) {
+        $rarityTiers = [
+            'legendary' => 0,
+            'epic' => 0,
+            'rare' => 0,
+            'uncommon' => 0,
+            'common' => 0
+        ];
+        
+        foreach ($nfts as $nft) {
+            $tier = $this->getRarityTier($nft['rarityScore'] ?? 0);
+            if (isset($rarityTiers[$tier])) {
+                $rarityTiers[$tier]++;
+            }
+        }
+        
+        $total = count($nfts);
+        $rarityPercentages = [];
+        foreach ($rarityTiers as $tier => $count) {
+            $rarityPercentages[$tier] = [
+                'count' => $count,
+                'percentage' => $total > 0 ? ($count / $total) * 100 : 0
+            ];
+        }
+        
+        return $rarityPercentages;
+    }
+    
+    private function generatePortfolioSummary($nfts) {
+        $collections = array_unique(array_map(function($nft) {
+            return $nft['contract']['address'] ?? 'unknown';
+        }, $nfts));
+        
+        $hasAnimations = false;
+        foreach ($nfts as $nft) {
+            if ($nft['hasAnimation'] ?? false) {
+                $hasAnimations = true;
+                break;
+            }
+        }
+        
+        $avgRarity = count($nfts) > 0 ? 
+            array_sum(array_map(function($nft) { return $nft['rarityScore'] ?? 0; }, $nfts)) / count($nfts) : 0;
+        
+        return [
+            'totalNFTs' => count($nfts),
+            'uniqueCollections' => count($collections),
+            'hasAnimatedNFTs' => $hasAnimations,
+            'averageRarityScore' => round($avgRarity, 2),
+            'portfolioValue' => 'Not calculated',
+            'lastUpdated' => date('c')
+        ];
+    }
+    
+    // Helper methods
+    private function calculateRarityScore($attributes) {
+        if (empty($attributes)) return 0;
+        
+        $score = 0;
+        foreach ($attributes as $attr) {
+            if (($attr['type'] ?? '') === 'stat' && !empty($attr['maxValue'])) {
+                $percentage = (int)($attr['value'] ?? 0) / (int)($attr['maxValue'] ?? 1);
+                $score += $percentage * 20;
+            } else {
+                $score += 10;
+            }
+        }
+        
+        return min((int)$score, 100);
+    }
+    
+    private function getRarityTier($rarityScore) {
+        if ($rarityScore >= 90) return 'legendary';
+        if ($rarityScore >= 70) return 'epic';
+        if ($rarityScore >= 50) return 'rare';
+        if ($rarityScore >= 30) return 'uncommon';
+        return 'common';
+    }
+    
+    private function extractCollectionInfo($contract) {
+        if (!$contract) return null;
+        
+        return [
+            'name' => $contract['name'] ?? null,
+            'symbol' => $contract['symbol'] ?? null,
+            'address' => $contract['address'] ?? null,
+            'type' => $contract['type'] ?? null,
+            'verified' => $contract['verified'] ?? false
+        ];
+    }
+    
+    private function determineMediaType($nft) {
+        if (!empty($nft['animationUrl']) || !empty($nft['animationUrls'])) {
+            $animationUrl = $nft['animationUrl'] ?? '';
+            if (empty($animationUrl) && !empty($nft['animationUrls'])) {
+                $animationUrl = is_array($nft['animationUrls'][0]) ? 
+                    ($nft['animationUrls'][0]['value'] ?? '') : 
+                    $nft['animationUrls'][0];
+            }
+            
+            if (strpos($animationUrl, '.mp4') !== false || strpos($animationUrl, '.webm') !== false) {
+                return 'video';
+            } elseif (strpos($animationUrl, '.mp3') !== false || strpos($animationUrl, '.wav') !== false) {
+                return 'audio';
+            }
+            return 'animation';
+        } elseif (!empty($nft['imageUrl']) || !empty($nft['imagePreviewUrl'])) {
+            return 'image';
+        } else {
+            return 'unknown';
+        }
+    }
+    
+    private function recordWalletQuery($secretType, $walletAddress, $nftCount) {
+        $key = "{$secretType}:{$walletAddress}";
+        
+        if (!isset($this->portfolioAnalytics[$key])) {
+            $this->portfolioAnalytics[$key] = [
+                'queryCount' => 0,
+                'firstQuery' => date('c'),
+                'lastQuery' => null,
+                'lastNFTCount' => 0
+            ];
+        }
+        
+        $this->portfolioAnalytics[$key]['queryCount']++;
+        $this->portfolioAnalytics[$key]['lastQuery'] = date('c');
+        $this->portfolioAnalytics[$key]['lastNFTCount'] = $nftCount;
+    }
+    
+    private function isCacheValid($key) {
+        return isset($this->cache[$key]) && 
+               isset($this->cacheExpiry[$key]) && 
+               time() < $this->cacheExpiry[$key];
+    }
+    
+    public function generateWalletReport($secretType, $walletAddress) {
+        $key = "{$secretType}:{$walletAddress}";
+        $analytics = $this->portfolioAnalytics[$key] ?? ['queryCount' => 0];
+        
+        return [
+            'secretType' => $secretType,
+            'walletAddress' => $walletAddress,
+            'analytics' => $analytics,
+            'cacheStatus' => $this->isCacheValid($key) ? 'cached' : 'not_cached',
+            'lastAnalyzed' => date('c')
+        ];
+    }
+    
+    public function clearCache($pattern = null) {
+        if ($pattern) {
+            foreach (array_keys($this->cache) as $key) {
+                if (strpos($key, $pattern) !== false) {
+                    unset($this->cache[$key]);
+                    unset($this->cacheExpiry[$key]);
+                }
+            }
+        } else {
+            $this->cache = [];
+            $this->cacheExpiry = [];
+        }
+    }
+}
+
+// Usage
+$walletAnalyzer = new NFTWalletAnalyzer('YOUR_API_KEY');
+
+try {
+    // Simple wallet analysis
+    $walletNFTs = $walletAnalyzer->analyzeWallet(
+        'HEDERA',
+        '0.0.18402479',
+        [
+            'includeAnalytics' => true,
+            'sortBy' => 'rarity',
+            'groupBy' => 'collection'
+        ]
+    );
+    
+    echo "Wallet Analysis: " . json_encode($walletNFTs, JSON_PRETTY_PRINT) . "\n";
+    echo "Portfolio Summary: " . json_encode($walletNFTs['summary'], JSON_PRETTY_PRINT) . "\n";
+    
+    // Filter by specific contracts
+    $filteredNFTs = $walletAnalyzer->analyzeWallet(
+        'HEDERA',
+        '0.0.18402479',
+        [
+            'filterContracts' => ['0.0.2850147'],
+            'sortBy' => 'name',
+            'includeAnalytics' => true
+        ]
+    );
+    
+    echo "Filtered NFTs: " . json_encode($filteredNFTs, JSON_PRETTY_PRINT) . "\n";
+    
+    // Generate wallet report
+    $report = $walletAnalyzer->generateWalletReport('HEDERA', '0.0.18402479');
+    echo "Wallet Report: " . json_encode($report, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**NFT Wallet Querying Best Practices:**
+
+1. **Efficient Filtering** - Use contract address filters to reduce response size and improve performance
+2. **Caching Strategy** - Implement intelligent caching to minimize API calls and improve response times
+3. **Batch Processing** - Process multiple wallets efficiently with proper concurrency controls
+4. **Portfolio Analytics** - Generate comprehensive analytics to provide valuable insights
+5. **Error Handling** - Implement robust error handling for network issues and invalid addresses
+6. **Rate Limiting** - Respect API rate limits when processing multiple wallets
+7. **Data Enhancement** - Enrich NFT data with computed fields for better analysis
+8. **Sorting and Grouping** - Provide flexible sorting and grouping options for better data organization
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Retrieve NFT Details" href="/guides/nft-api/querying/retrieve-nft-details" icon="gem">
+    Get detailed information about specific NFTs
+  </Card>
+  <Card title="Retrieve Wallets by NFT" href="/guides/nft-api/querying/retrieve-wallets-by-nft" icon="users">
+    Find all wallets that own specific NFTs
+  </Card>
+  <Card title="NFT Contract Information" href="/guides/nft-api/querying/retrieve-nft-contract-info" icon="file-contract">
+    Get detailed contract information and statistics
+  </Card>
+  <Card title="API Reference" href="/api-reference/Wallet-API/non-fungibles/get-nfts-by-walletid" icon="book">
+    Explore the complete wallet NFT querying API documentation
+  </Card>
+</CardGroup>

@@ -1,0 +1,1237 @@
+---
+title: "Add Video to NFTs"
+description: "Comprehensive guide to adding video files to NFTs with advanced media management, format optimization, and streaming capabilities"
+icon: "video"
+---
+
+<Info>
+**Video NFT Creation:** Add video files to your NFTs with comprehensive media management, format validation, and advanced video processing capabilities.
+
+**Time required:** ~7 minutes
+</Info>
+
+## What is Video NFT Creation?
+
+Video NFT creation allows you to embed video files directly into your NFTs during token type creation. This enables video art, animations, documentaries, and other video-based digital assets. Essential for video creators, animators, and multimedia NFT projects.
+
+<CardGroup cols={2}>
+  <Card title="Video Art NFTs" icon="film">
+    Create video and animation-based NFTs
+  </Card>
+  <Card title="Multi-Format Support" icon="file-video">
+    Support for MP4, WebM, MOV, and more
+  </Card>
+  <Card title="Streaming Optimization" icon="gauge-high">
+    Optimize videos for web streaming
+  </Card>
+  <Card title="Quality Management" icon="sliders">
+    Multiple quality options and compression
+  </Card>
+</CardGroup>
+
+## Video NFT Capabilities
+
+<Tabs>
+  <Tab title="Supported Formats">
+    **Video Formats:**
+    - MP4 - Most compatible, H.264/H.265
+    - WebM - Web-optimized, VP8/VP9
+    - MOV - High quality, Apple format
+    - AVI - Legacy support
+    - MKV - Container format
+    
+    **Use Cases:**
+    - Digital art and animations
+    - Short films and documentaries
+    - Music videos and performances
+    - Interactive video experiences
+  </Tab>
+  <Tab title="Quality Guidelines">
+    **Recommended Settings:**
+    - **Resolution:** 1080p for quality, 720p for size
+    - **Bitrate:** 5-10 Mbps for 1080p
+    - **Format:** MP4 with H.264 for compatibility
+    - **Duration:** Consider file size limits
+    
+    **Best Practices:**
+    - Optimize for web streaming
+    - Provide multiple quality options
+    - Include preview thumbnails
+    - Test on different devices
+  </Tab>
+  <Tab title="Integration Options">
+    **Implementation Methods:**
+    - Single video per NFT
+    - Multiple video angles/versions
+    - Combined with audio tracks
+    - Interactive video experiences
+    
+    **Platform Considerations:**
+    - Marketplace video players
+    - Mobile playback support
+    - Bandwidth optimization
+    - Progressive loading
+  </Tab>
+</Tabs>
+
+## Add Video to NFTs
+
+<Steps>
+  <Step title="Prepare Video File" icon="file-video">
+    Upload your video file and get the URL
+    
+    ```javascript
+    const videoUrl = "https://storage.venly.io/video/my-animation.mp4";
+    ```
+  </Step>
+  <Step title="Configure Animation URLs" icon="sliders">
+    Set up the animationUrls array with video configuration
+  </Step>
+  <Step title="Create Token Type" icon="plus">
+    Create the NFT token type with video included
+  </Step>
+  <Step title="Test Playback" icon="play">
+    Verify video playback and streaming performance
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Create NFT token type with video
+const createVideoNFT = async (contractAddress, videoConfig) => {
+  try {
+    const response = await fetch('/api/v3/erc1155/token-types/creations', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chain: videoConfig.chain,
+        contractAddress: contractAddress,
+        creations: [{
+          name: videoConfig.name,
+          description: videoConfig.description,
+          image: videoConfig.thumbnailImage,
+          externalUrl: videoConfig.externalUrl,
+          animationUrls: videoConfig.animationUrls
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to create video NFT');
+    }
+  } catch (error) {
+    console.error('Error creating video NFT:', error);
+    throw error;
+  }
+};
+
+// Enhanced video NFT management system
+class VideoNFTManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.supportedFormats = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'ogv'];
+    this.maxFileSize = 500 * 1024 * 1024; // 500MB
+    this.videoCache = new Map();
+    this.qualityProfiles = new Map();
+    this.streamingOptimizations = new Map();
+  }
+
+  async createVideoNFT(contractAddress, videoConfig, options = {}) {
+    const {
+      validateVideo = true,
+      optimizeForStreaming = true,
+      generateThumbnails = true,
+      addMetadata = true,
+      createMultipleQualities = false
+    } = options;
+
+    try {
+      // Validate video configuration
+      if (validateVideo) {
+        const validation = await this.validateVideoConfig(videoConfig);
+        if (!validation.isValid) {
+          throw new Error(`Video validation failed: ${validation.errors.join(', ')}`);
+        }
+      }
+
+      // Generate thumbnails if requested
+      if (generateThumbnails && !videoConfig.thumbnailImage) {
+        videoConfig.thumbnailImage = await this.generateVideoThumbnail(videoConfig.animationUrls[0]);
+      }
+
+      // Optimize for streaming if requested
+      if (optimizeForStreaming) {
+        videoConfig.animationUrls = await this.optimizeVideoUrls(videoConfig.animationUrls);
+      }
+
+      // Create multiple quality versions
+      if (createMultipleQualities) {
+        videoConfig.animationUrls = await this.createMultipleQualities(videoConfig.animationUrls);
+      }
+
+      // Add video metadata
+      if (addMetadata) {
+        videoConfig.attributes = await this.extractVideoMetadata(videoConfig.animationUrls);
+      }
+
+      // Create the NFT
+      const result = await createVideoNFT(contractAddress, videoConfig);
+
+      // Cache the result
+      this.cacheVideoNFT(result);
+
+      return {
+        success: true,
+        result,
+        videoAnalysis: await this.analyzeVideoFiles(videoConfig.animationUrls),
+        streamingInfo: this.generateStreamingInfo(videoConfig.animationUrls),
+        recommendations: this.generateVideoRecommendations(videoConfig)
+      };
+
+    } catch (error) {
+      console.error('Failed to create video NFT:', error);
+      throw error;
+    }
+  }
+
+  async createVideoSeries(contractAddress, seriesConfig, options = {}) {
+    const {
+      createIndividualEpisodes = true,
+      createSeriesNFT = true,
+      addEpisodeNumbers = true,
+      generatePlaylist = true
+    } = options;
+
+    const results = {
+      series: null,
+      episodes: [],
+      playlist: null,
+      totalDuration: 0
+    };
+
+    try {
+      // Create individual episode NFTs
+      if (createIndividualEpisodes) {
+        for (let i = 0; i < seriesConfig.episodes.length; i++) {
+          const episode = seriesConfig.episodes[i];
+          
+          const episodeConfig = {
+            chain: seriesConfig.chain,
+            name: `${seriesConfig.seriesName} - Episode ${i + 1}: ${episode.title}`,
+            description: `Episode ${i + 1} from the series "${seriesConfig.seriesName}". ${episode.description}`,
+            thumbnailImage: episode.thumbnail || seriesConfig.seriesThumbnail,
+            externalUrl: seriesConfig.externalUrl,
+            animationUrls: [{
+              type: 'video',
+              value: episode.videoUrl,
+              title: episode.title,
+              duration: episode.duration,
+              episodeNumber: addEpisodeNumbers ? i + 1 : undefined,
+              resolution: episode.resolution,
+              quality: episode.quality
+            }]
+          };
+
+          const episodeResult = await this.createVideoNFT(contractAddress, episodeConfig);
+          results.episodes.push(episodeResult);
+          results.totalDuration += episode.duration || 0;
+        }
+      }
+
+      // Create series NFT with all episodes
+      if (createSeriesNFT) {
+        const seriesNFTConfig = {
+          chain: seriesConfig.chain,
+          name: seriesConfig.seriesName,
+          description: `Complete series "${seriesConfig.seriesName}". Contains ${seriesConfig.episodes.length} episodes.`,
+          thumbnailImage: seriesConfig.seriesThumbnail,
+          externalUrl: seriesConfig.externalUrl,
+          animationUrls: seriesConfig.episodes.map((episode, index) => ({
+            type: 'video',
+            value: episode.videoUrl,
+            title: episode.title,
+            duration: episode.duration,
+            episodeNumber: addEpisodeNumbers ? index + 1 : undefined,
+            resolution: episode.resolution,
+            quality: episode.quality
+          }))
+        };
+
+        results.series = await this.createVideoNFT(contractAddress, seriesNFTConfig);
+      }
+
+      // Generate playlist metadata
+      if (generatePlaylist) {
+        results.playlist = this.generateVideoPlaylist(seriesConfig, results);
+      }
+
+      return results;
+
+    } catch (error) {
+      console.error('Failed to create video series:', error);
+      throw error;
+    }
+  }
+
+  async validateVideoConfig(videoConfig) {
+    const errors = [];
+    const warnings = [];
+
+    // Validate required fields
+    if (!videoConfig.name) {
+      errors.push('Video NFT name is required');
+    }
+
+    if (!videoConfig.animationUrls || videoConfig.animationUrls.length === 0) {
+      errors.push('At least one video URL is required');
+    }
+
+    // Validate video URLs
+    if (videoConfig.animationUrls) {
+      for (let i = 0; i < videoConfig.animationUrls.length; i++) {
+        const videoUrl = videoConfig.animationUrls[i];
+        
+        if (!videoUrl.value) {
+          errors.push(`Video URL at index ${i} is missing value`);
+          continue;
+        }
+
+        if (!this.isValidUrl(videoUrl.value)) {
+          errors.push(`Invalid video URL at index ${i}`);
+          continue;
+        }
+
+        // Check file format
+        const format = this.getVideoFormat(videoUrl.value);
+        if (!this.supportedFormats.includes(format.toLowerCase())) {
+          warnings.push(`Unsupported video format "${format}" at index ${i}. Supported: ${this.supportedFormats.join(', ')}`);
+        }
+
+        // Validate video file
+        try {
+          const videoValidation = await this.validateVideoFile(videoUrl.value);
+          if (!videoValidation.isValid) {
+            warnings.push(`Video file validation failed at index ${i}: ${videoValidation.error}`);
+          } else {
+            // Check file size
+            if (videoValidation.fileSize && videoValidation.fileSize > this.maxFileSize) {
+              warnings.push(`Large video file at index ${i}: ${this.formatFileSize(videoValidation.fileSize)}`);
+            }
+          }
+        } catch (error) {
+          warnings.push(`Could not validate video file at index ${i}: ${error.message}`);
+        }
+      }
+    }
+
+    // Validate thumbnail image
+    if (videoConfig.thumbnailImage && !this.isValidUrl(videoConfig.thumbnailImage)) {
+      errors.push('Invalid thumbnail image URL');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  async validateVideoFile(videoUrl) {
+    try {
+      // This would typically make a HEAD request to check the file
+      const response = await fetch(videoUrl, { method: 'HEAD' });
+      
+      if (!response.ok) {
+        return {
+          isValid: false,
+          error: `Video file not accessible: ${response.status}`
+        };
+      }
+
+      const contentType = response.headers.get('content-type');
+      const contentLength = response.headers.get('content-length');
+
+      // Check content type
+      if (!contentType || !contentType.startsWith('video/')) {
+        return {
+          isValid: false,
+          error: `Invalid content type: ${contentType}`
+        };
+      }
+
+      return {
+        isValid: true,
+        contentType,
+        fileSize: contentLength ? parseInt(contentLength) : null
+      };
+
+    } catch (error) {
+      return {
+        isValid: false,
+        error: error.message
+      };
+    }
+  }
+
+  async analyzeVideoFiles(animationUrls) {
+    const analysis = {
+      totalFiles: animationUrls.length,
+      formats: {},
+      totalSize: 0,
+      estimatedDuration: 0,
+      qualityAnalysis: [],
+      streamingAnalysis: [],
+      recommendations: []
+    };
+
+    for (const videoUrl of animationUrls) {
+      try {
+        const format = this.getVideoFormat(videoUrl.value);
+        analysis.formats[format] = (analysis.formats[format] || 0) + 1;
+
+        const validation = await this.validateVideoFile(videoUrl.value);
+        if (validation.isValid && validation.fileSize) {
+          analysis.totalSize += validation.fileSize;
+        }
+
+        // Estimate duration if provided
+        if (videoUrl.duration) {
+          analysis.estimatedDuration += videoUrl.duration;
+        }
+
+        // Quality analysis
+        const qualityInfo = this.analyzeVideoQuality(videoUrl);
+        analysis.qualityAnalysis.push(qualityInfo);
+
+        // Streaming analysis
+        const streamingInfo = this.analyzeStreamingCapability(videoUrl);
+        analysis.streamingAnalysis.push(streamingInfo);
+
+      } catch (error) {
+        console.warn(`Failed to analyze video file: ${videoUrl.value}`, error);
+      }
+    }
+
+    // Generate recommendations
+    analysis.recommendations = this.generateQualityRecommendations(analysis);
+
+    return analysis;
+  }
+
+  analyzeVideoQuality(videoUrl) {
+    const format = this.getVideoFormat(videoUrl.value);
+    const quality = {
+      format,
+      estimatedQuality: 'unknown',
+      compression: 'unknown',
+      streamingOptimized: false,
+      recommendations: []
+    };
+
+    switch (format.toLowerCase()) {
+      case 'mp4':
+        quality.estimatedQuality = 'good';
+        quality.compression = 'h264/h265';
+        quality.streamingOptimized = true;
+        quality.recommendations.push('Excellent for web streaming and compatibility');
+        break;
+      case 'webm':
+        quality.estimatedQuality = 'good';
+        quality.compression = 'vp8/vp9';
+        quality.streamingOptimized = true;
+        quality.recommendations.push('Great for web, smaller file sizes');
+        break;
+      case 'mov':
+        quality.estimatedQuality = 'excellent';
+        quality.compression = 'various';
+        quality.streamingOptimized = false;
+        quality.recommendations.push('High quality but may need conversion for web');
+        break;
+      case 'avi':
+        quality.estimatedQuality = 'variable';
+        quality.compression = 'various';
+        quality.streamingOptimized = false;
+        quality.recommendations.push('Legacy format, consider converting to MP4');
+        break;
+      default:
+        quality.recommendations.push('Consider using MP4 or WebM for better compatibility');
+    }
+
+    // Analyze resolution if provided
+    if (videoUrl.resolution) {
+      const [width, height] = videoUrl.resolution.split('x').map(Number);
+      if (width >= 1920) {
+        quality.recommendations.push('High resolution - ensure good compression');
+      } else if (width < 720) {
+        quality.recommendations.push('Low resolution - consider higher quality source');
+      }
+    }
+
+    return quality;
+  }
+
+  analyzeStreamingCapability(videoUrl) {
+    const format = this.getVideoFormat(videoUrl.value);
+    const streaming = {
+      format,
+      webOptimized: false,
+      progressiveDownload: false,
+      adaptiveStreaming: false,
+      mobileCompatible: false,
+      recommendations: []
+    };
+
+    switch (format.toLowerCase()) {
+      case 'mp4':
+        streaming.webOptimized = true;
+        streaming.progressiveDownload = true;
+        streaming.mobileCompatible = true;
+        streaming.recommendations.push('Excellent streaming format');
+        break;
+      case 'webm':
+        streaming.webOptimized = true;
+        streaming.progressiveDownload = true;
+        streaming.mobileCompatible = true;
+        streaming.recommendations.push('Good web streaming, smaller files');
+        break;
+      default:
+        streaming.recommendations.push('Consider converting to MP4 for better streaming');
+    }
+
+    return streaming;
+  }
+
+  async optimizeVideoUrls(animationUrls) {
+    const optimized = [];
+
+    for (const videoUrl of animationUrls) {
+      const optimizedUrl = { ...videoUrl };
+
+      // Add format-specific optimizations
+      const format = this.getVideoFormat(videoUrl.value);
+      
+      if (!optimizedUrl.type) {
+        optimizedUrl.type = 'video';
+      }
+
+      // Add format metadata
+      optimizedUrl.format = format;
+      optimizedUrl.mimeType = this.getMimeType(format);
+
+      // Add streaming hints
+      if (['mp4', 'webm'].includes(format.toLowerCase())) {
+        optimizedUrl.streamingOptimized = true;
+        optimizedUrl.progressiveDownload = true;
+      }
+
+      // Add quality metadata
+      if (!optimizedUrl.quality) {
+        optimizedUrl.quality = this.estimateQuality(videoUrl);
+      }
+
+      optimized.push(optimizedUrl);
+    }
+
+    return optimized;
+  }
+
+  async createMultipleQualities(animationUrls) {
+    const multiQuality = [];
+
+    for (const videoUrl of animationUrls) {
+      // Add original quality
+      multiQuality.push({
+        ...videoUrl,
+        quality: 'original',
+        label: 'Original Quality'
+      });
+
+      // Note: In a real implementation, you would create different quality versions
+      // For now, we'll simulate this with metadata
+      const format = this.getVideoFormat(videoUrl.value);
+      
+      if (format.toLowerCase() === 'mp4') {
+        // Simulate HD version
+        multiQuality.push({
+          ...videoUrl,
+          value: videoUrl.value.replace('.mp4', '_hd.mp4'),
+          quality: 'hd',
+          label: 'HD (720p)',
+          resolution: '1280x720'
+        });
+
+        // Simulate mobile version
+        multiQuality.push({
+          ...videoUrl,
+          value: videoUrl.value.replace('.mp4', '_mobile.mp4'),
+          quality: 'mobile',
+          label: 'Mobile (480p)',
+          resolution: '854x480'
+        });
+      }
+    }
+
+    return multiQuality;
+  }
+
+  async extractVideoMetadata(animationUrls) {
+    const attributes = [];
+
+    // Add video format information
+    const formats = [...new Set(animationUrls.map(url => this.getVideoFormat(url.value)))];
+    attributes.push({
+      type: 'property',
+      name: 'Video Formats',
+      value: formats.join(', '),
+      traitType: 'Video Formats',
+      trait_type: 'Video Formats'
+    });
+
+    // Add video count
+    attributes.push({
+      type: 'stat',
+      name: 'Video Count',
+      value: animationUrls.length.toString(),
+      displayType: 'number',
+      display_type: 'number',
+      traitType: 'Video Count',
+      trait_type: 'Video Count'
+    });
+
+    // Add total duration if available
+    const totalDuration = animationUrls.reduce((sum, url) => sum + (url.duration || 0), 0);
+    if (totalDuration > 0) {
+      attributes.push({
+        type: 'stat',
+        name: 'Total Duration',
+        value: Math.round(totalDuration).toString(),
+        displayType: 'number',
+        display_type: 'number',
+        traitType: 'Duration (seconds)',
+        trait_type: 'Duration (seconds)'
+      });
+    }
+
+    // Add resolution information
+    const resolutions = animationUrls
+      .map(url => url.resolution)
+      .filter(Boolean);
+    
+    if (resolutions.length > 0) {
+      const uniqueResolutions = [...new Set(resolutions)];
+      attributes.push({
+        type: 'property',
+        name: 'Resolutions',
+        value: uniqueResolutions.join(', '),
+        traitType: 'Resolutions',
+        trait_type: 'Resolutions'
+      });
+    }
+
+    // Add media type
+    attributes.push({
+      type: 'property',
+      name: 'Media Type',
+      value: 'Video',
+      traitType: 'Media Type',
+      trait_type: 'Media Type'
+    });
+
+    return attributes;
+  }
+
+  generateVideoPlaylist(seriesConfig, results) {
+    return {
+      name: seriesConfig.seriesName,
+      creator: seriesConfig.creator,
+      totalEpisodes: seriesConfig.episodes.length,
+      totalDuration: results.totalDuration,
+      episodes: seriesConfig.episodes.map((episode, index) => ({
+        episodeNumber: index + 1,
+        title: episode.title,
+        duration: episode.duration,
+        resolution: episode.resolution,
+        nftId: results.episodes[index]?.result?.creations?.[0]?.id
+      })),
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  generateStreamingInfo(animationUrls) {
+    return {
+      totalVideos: animationUrls.length,
+      streamingOptimized: animationUrls.filter(url => 
+        ['mp4', 'webm'].includes(this.getVideoFormat(url.value).toLowerCase())
+      ).length,
+      qualityOptions: [...new Set(animationUrls.map(url => url.quality).filter(Boolean))],
+      estimatedBandwidth: this.calculateBandwidthRequirements(animationUrls),
+      recommendations: this.generateStreamingRecommendations(animationUrls)
+    };
+  }
+
+  calculateBandwidthRequirements(animationUrls) {
+    // Simplified bandwidth calculation
+    const requirements = {
+      low: '1 Mbps',
+      medium: '3 Mbps',
+      high: '8 Mbps'
+    };
+
+    const hasHD = animationUrls.some(url => {
+      const resolution = url.resolution;
+      if (resolution) {
+        const [width] = resolution.split('x').map(Number);
+        return width >= 1280;
+      }
+      return false;
+    });
+
+    return hasHD ? requirements.high : requirements.medium;
+  }
+
+  generateVideoRecommendations(videoConfig) {
+    const recommendations = [];
+
+    // Check for thumbnail
+    if (!videoConfig.thumbnailImage) {
+      recommendations.push({
+        type: 'missing_media',
+        priority: 'high',
+        message: 'Add a thumbnail image for better video preview'
+      });
+    }
+
+    // Check video format diversity
+    const formats = videoConfig.animationUrls.map(url => this.getVideoFormat(url.value));
+    const uniqueFormats = [...new Set(formats)];
+    
+    if (!uniqueFormats.includes('mp4')) {
+      recommendations.push({
+        type: 'format_suggestion',
+        priority: 'medium',
+        message: 'Consider providing MP4 format for maximum compatibility'
+      });
+    }
+
+    // Check for multiple videos without series structure
+    if (videoConfig.animationUrls.length > 1) {
+      recommendations.push({
+        type: 'organization',
+        priority: 'low',
+        message: 'Consider organizing multiple videos as a series or providing different quality options'
+      });
+    }
+
+    return recommendations;
+  }
+
+  generateStreamingRecommendations(animationUrls) {
+    const recommendations = [];
+
+    const nonStreamingFormats = animationUrls.filter(url => 
+      !['mp4', 'webm'].includes(this.getVideoFormat(url.value).toLowerCase())
+    );
+
+    if (nonStreamingFormats.length > 0) {
+      recommendations.push('Convert videos to MP4 or WebM for better streaming performance');
+    }
+
+    const largeFiles = animationUrls.filter(url => {
+      // This would need actual file size checking
+      return false; // Placeholder
+    });
+
+    if (largeFiles.length > 0) {
+      recommendations.push('Consider compressing large video files for faster loading');
+    }
+
+    return recommendations;
+  }
+
+  // Utility methods
+  isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  getVideoFormat(url) {
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const extension = pathname.split('.').pop()?.toLowerCase();
+      return extension || 'unknown';
+    } catch {
+      return 'unknown';
+    }
+  }
+
+  getMimeType(format) {
+    const mimeTypes = {
+      'mp4': 'video/mp4',
+      'webm': 'video/webm',
+      'mov': 'video/quicktime',
+      'avi': 'video/x-msvideo',
+      'mkv': 'video/x-matroska',
+      'ogv': 'video/ogg'
+    };
+    return mimeTypes[format.toLowerCase()] || 'video/mp4';
+  }
+
+  estimateQuality(videoUrl) {
+    const format = this.getVideoFormat(videoUrl.value);
+    
+    if (videoUrl.resolution) {
+      const [width] = videoUrl.resolution.split('x').map(Number);
+      if (width >= 1920) return 'ultra';
+      if (width >= 1280) return 'high';
+      if (width >= 854) return 'medium';
+      return 'low';
+    }
+
+    // Default based on format
+    return ['mp4', 'webm'].includes(format.toLowerCase()) ? 'medium' : 'unknown';
+  }
+
+  formatFileSize(bytes) {
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    if (bytes === 0) return '0 Bytes';
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  async generateVideoThumbnail(videoUrl) {
+    // In a real implementation, this would generate a thumbnail from the video
+    // For now, return a placeholder
+    return `${videoUrl.value.replace(/\.[^/.]+$/, '')}_thumbnail.jpg`;
+  }
+
+  cacheVideoNFT(result) {
+    if (result.creations && result.creations[0]) {
+      const creation = result.creations[0];
+      this.videoCache.set(creation.id, {
+        ...creation,
+        cachedAt: new Date().toISOString()
+      });
+    }
+  }
+
+  getCachedVideoNFT(id) {
+    return this.videoCache.get(id);
+  }
+
+  clearCache() {
+    this.videoCache.clear();
+  }
+}
+
+// Usage examples
+const videoNFTManager = new VideoNFTManager('YOUR_API_KEY');
+
+// Simple video NFT
+const videoConfig = {
+  chain: 'MATIC',
+  name: 'My Video Art NFT',
+  description: 'A beautiful piece of video art',
+  thumbnailImage: 'https://example.com/thumbnail.jpg',
+  externalUrl: 'https://mywebsite.com',
+  animationUrls: [{
+    type: 'video',
+    value: 'https://storage.venly.io/video/my-animation.mp4',
+    title: 'My Animation',
+    duration: 120, // 2 minutes
+    resolution: '1920x1080',
+    quality: 'high'
+  }]
+};
+
+const result = await videoNFTManager.createVideoNFT(
+  '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+  videoConfig,
+  {
+    validateVideo: true,
+    optimizeForStreaming: true,
+    generateThumbnails: true,
+    addMetadata: true,
+    createMultipleQualities: true
+  }
+);
+
+console.log('Video NFT created:', result);
+console.log('Streaming info:', result.streamingInfo);
+
+// Video series NFT
+const seriesConfig = {
+  chain: 'MATIC',
+  seriesName: 'My Video Series',
+  creator: 'Creator Name',
+  seriesThumbnail: 'https://example.com/series-thumbnail.jpg',
+  externalUrl: 'https://mywebsite.com/series',
+  episodes: [
+    {
+      title: 'Episode 1: Beginning',
+      videoUrl: 'https://storage.venly.io/video/episode1.mp4',
+      duration: 300,
+      resolution: '1920x1080',
+      quality: 'high',
+      thumbnail: 'https://example.com/ep1-thumb.jpg'
+    },
+    {
+      title: 'Episode 2: Development',
+      videoUrl: 'https://storage.venly.io/video/episode2.mp4',
+      duration: 280,
+      resolution: '1920x1080',
+      quality: 'high'
+    }
+  ]
+};
+
+const seriesResult = await videoNFTManager.createVideoSeries(
+  '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+  seriesConfig,
+  {
+    createIndividualEpisodes: true,
+    createSeriesNFT: true,
+    addEpisodeNumbers: true,
+    generatePlaylist: true
+  }
+);
+
+console.log('Video series created:', seriesResult);
+console.log('Playlist metadata:', seriesResult.playlist);
+```
+
+```python Python
+import requests
+import json
+from urllib.parse import urlparse
+from typing import Dict, List, Any, Optional
+
+class VideoNFTManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.supported_formats = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'ogv']
+        self.max_file_size = 500 * 1024 * 1024  # 500MB
+        self.video_cache = {}
+    
+    def create_video_nft(self, contract_address: str, video_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Create NFT token type with video"""
+        url = f'{self.base_url}/token-types/creations'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            'chain': video_config['chain'],
+            'contractAddress': contract_address,
+            'creations': [{
+                'name': video_config['name'],
+                'description': video_config['description'],
+                'image': video_config.get('thumbnailImage'),
+                'externalUrl': video_config.get('externalUrl'),
+                'animationUrls': video_config['animationUrls']
+            }]
+        }
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to create video NFT')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error creating video NFT: {error}')
+            raise error
+    
+    def validate_video_config(self, video_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate video configuration"""
+        errors = []
+        warnings = []
+        
+        # Validate required fields
+        if not video_config.get('name'):
+            errors.append('Video NFT name is required')
+        
+        if not video_config.get('animationUrls') or len(video_config['animationUrls']) == 0:
+            errors.append('At least one video URL is required')
+        
+        # Validate video URLs
+        if video_config.get('animationUrls'):
+            for i, video_url in enumerate(video_config['animationUrls']):
+                if not video_url.get('value'):
+                    errors.append(f'Video URL at index {i} is missing value')
+                    continue
+                
+                if not self._is_valid_url(video_url['value']):
+                    errors.append(f'Invalid video URL at index {i}')
+                    continue
+                
+                # Check file format
+                format_ext = self._get_video_format(video_url['value'])
+                if format_ext.lower() not in self.supported_formats:
+                    warnings.append(f'Unsupported video format "{format_ext}" at index {i}. Supported: {", ".join(self.supported_formats)}')
+        
+        # Validate thumbnail image
+        if video_config.get('thumbnailImage') and not self._is_valid_url(video_config['thumbnailImage']):
+            errors.append('Invalid thumbnail image URL')
+        
+        return {
+            'is_valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+    
+    def _is_valid_url(self, url: str) -> bool:
+        """Check if URL is valid"""
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except:
+            return False
+    
+    def _get_video_format(self, url: str) -> str:
+        """Get video format from URL"""
+        try:
+            parsed = urlparse(url)
+            path = parsed.path
+            extension = path.split('.')[-1].lower() if '.' in path else 'unknown'
+            return extension
+        except:
+            return 'unknown'
+
+# Usage
+video_nft_manager = VideoNFTManager('YOUR_API_KEY')
+
+# Simple video NFT
+video_config = {
+    'chain': 'MATIC',
+    'name': 'My Video Art NFT',
+    'description': 'A beautiful piece of video art',
+    'thumbnailImage': 'https://example.com/thumbnail.jpg',
+    'externalUrl': 'https://mywebsite.com',
+    'animationUrls': [{
+        'type': 'video',
+        'value': 'https://storage.venly.io/video/my-animation.mp4',
+        'title': 'My Animation',
+        'duration': 120,  # 2 minutes
+        'resolution': '1920x1080',
+        'quality': 'high'
+    }]
+}
+
+result = video_nft_manager.create_video_nft(
+    '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+    video_config
+)
+
+print('Video NFT created:', result)
+```
+
+```bash cURL
+# Create video NFT token type
+curl -X POST '/api/v3/erc1155/token-types/creations' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "contractAddress": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+    "creations": [{
+      "name": "My Video Art NFT",
+      "description": "A beautiful piece of video art",
+      "image": "https://example.com/thumbnail.jpg",
+      "externalUrl": "https://mywebsite.com",
+      "animationUrls": [{
+        "type": "video",
+        "value": "https://storage.venly.io/video/my-animation.mp4",
+        "title": "My Animation",
+        "duration": 120,
+        "resolution": "1920x1080",
+        "quality": "high"
+      }]
+    }]
+  }'
+```
+
+```php PHP
+<?php
+class VideoNFTManager {
+    private $apiKey;
+    private $baseUrl;
+    private $supportedFormats;
+    
+    public function __construct($apiKey) {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = '/api/v3/erc1155';
+        $this->supportedFormats = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'ogv'];
+    }
+    
+    public function createVideoNFT($contractAddress, $videoConfig) {
+        $url = $this->baseUrl . '/token-types/creations';
+        
+        $payload = [
+            'chain' => $videoConfig['chain'],
+            'contractAddress' => $contractAddress,
+            'creations' => [[
+                'name' => $videoConfig['name'],
+                'description' => $videoConfig['description'],
+                'image' => $videoConfig['thumbnailImage'] ?? null,
+                'externalUrl' => $videoConfig['externalUrl'] ?? null,
+                'animationUrls' => $videoConfig['animationUrls']
+            ]]
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to create video NFT");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if ($data['success']) {
+            return $data['result'];
+        } else {
+            throw new Exception('Failed to create video NFT');
+        }
+    }
+    
+    public function validateVideoConfig($videoConfig) {
+        $errors = [];
+        
+        if (empty($videoConfig['name'])) {
+            $errors[] = 'Video NFT name is required';
+        }
+        
+        if (empty($videoConfig['animationUrls'])) {
+            $errors[] = 'At least one video URL is required';
+        }
+        
+        foreach ($videoConfig['animationUrls'] as $i => $videoUrl) {
+            if (empty($videoUrl['value'])) {
+                $errors[] = "Video URL at index {$i} is missing value";
+            }
+            
+            $format = $this->getVideoFormat($videoUrl['value']);
+            if (!in_array(strtolower($format), $this->supportedFormats)) {
+                $errors[] = "Unsupported video format '{$format}' at index {$i}";
+            }
+        }
+        
+        return [
+            'isValid' => empty($errors),
+            'errors' => $errors
+        ];
+    }
+    
+    private function getVideoFormat($url) {
+        $path = parse_url($url, PHP_URL_PATH);
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        return strtolower($extension ?: 'unknown');
+    }
+}
+
+// Usage
+$videoNFTManager = new VideoNFTManager('YOUR_API_KEY');
+
+$videoConfig = [
+    'chain' => 'MATIC',
+    'name' => 'My Video Art NFT',
+    'description' => 'A beautiful piece of video art',
+    'thumbnailImage' => 'https://example.com/thumbnail.jpg',
+    'externalUrl' => 'https://mywebsite.com',
+    'animationUrls' => [[
+        'type' => 'video',
+        'value' => 'https://storage.venly.io/video/my-animation.mp4',
+        'title' => 'My Animation',
+        'duration' => 120,
+        'resolution' => '1920x1080',
+        'quality' => 'high'
+    ]]
+];
+
+try {
+    $validation = $videoNFTManager->validateVideoConfig($videoConfig);
+    
+    if ($validation['isValid']) {
+        $result = $videoNFTManager->createVideoNFT(
+            '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+            $videoConfig
+        );
+        
+        echo "Video NFT created successfully: " . json_encode($result) . "\n";
+    } else {
+        echo "Validation failed: " . implode(', ', $validation['errors']) . "\n";
+    }
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Video NFT Best Practices:**
+
+1. **Format Selection** - Use MP4 for compatibility, WebM for web optimization
+2. **File Size** - Balance quality with reasonable file sizes for web delivery
+3. **Thumbnails** - Always include attractive thumbnail images for video preview
+4. **Resolution** - Use 1080p for quality, 720p for smaller file sizes
+5. **Compression** - Optimize videos for streaming without sacrificing quality
+6. **Multiple Qualities** - Consider providing different quality options
+7. **Mobile Compatibility** - Ensure videos work well on mobile devices
+8. **Progressive Loading** - Use formats that support progressive download
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Audio NFTs" href="/guides/nft-api/media/add-audio-to-nfts" icon="volume-high">
+    Learn how to add audio content to your NFTs
+  </Card>
+  <Card title="Media Storage" href="/guides/nft-api/media/store-nft-image-and-media" icon="cloud">
+    Understand media storage and optimization
+  </Card>
+  <Card title="Token Types" href="/guides/nft-api/token-types/create-nft-template" icon="shapes">
+    Create comprehensive NFT token types
+  </Card>
+  <Card title="Minting" href="/guides/nft-api/minting/how-to-mint-an-nft" icon="hammer">
+    Mint your video NFTs to the blockchain
+  </Card>
+</CardGroup>

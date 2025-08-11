@@ -1,0 +1,250 @@
+---
+title: "NFT API Overview"
+description: "Comprehensive overview of Venly's NFT API - create, manage, and distribute NFTs across multiple blockchains with advanced features"
+icon: "gem"
+---
+
+<Info>
+**Venly NFT API** provides a comprehensive set of endpoints for developers to streamline the creation, management, and distribution of NFTs with the ability to query NFT-related information based on contracts or wallet addresses.
+</Info>
+
+## What is the NFT API?
+
+The Venly NFT API offers endpoints that allow you to manage your own collection of standardized blockchain NFTs. You can create collections and create cool NFTs with pictures and animations on different blockchains. Plus, you can send these NFTs straight to your users' wallets.
+
+It is not limited to creating your own NFTs, as it also allows discovering which NFTs are stored in a wallet, and fetching the metadata not only of the NFT itself but also of the NFT contract.
+
+You now can mint **dynamic NFTs**, marking the end of static, unchanging digital assets. Creators can now infuse their NFTs with dynamic elements that evolve, respond to external triggers, and offer a new level of engagement for collectors and end-users.
+
+<CardGroup cols={2}>
+  <Card title="Create Collections" icon="folder-plus">
+    Deploy smart contracts for your NFT collections
+  </Card>
+  <Card title="Mint NFTs" icon="coins">
+    Create and distribute NFTs directly to user wallets
+  </Card>
+  <Card title="Dynamic NFTs" icon="arrows-rotate">
+    Build NFTs that evolve and change over time
+  </Card>
+  <Card title="Query & Discover" icon="magnifying-glass">
+    Find NFTs by wallet or contract address
+  </Card>
+</CardGroup>
+
+## Key Features
+
+<Tabs>
+  <Tab title="Core Features">
+    | Feature | Description |
+    |---------|-------------|
+    | **Minting** | Instantly mint and transfer NFTs directly to your users' wallets. This streamlines the NFT distribution process. |
+    | **Customizable** | Specify **metadata** and **attributes** for each NFT, enabling you to provide additional information and customization for your NFTs. |
+    | **Dynamic** | Ability to mint dynamic NFTs, whose properties and attributes can be changed/updated over time. |
+    | **High throughput** | Distribute high-volume assets in bulk to multiple addresses for high-demand projects |
+  </Tab>
+  <Tab title="Technical Features">
+    | Feature | Description |
+    |---------|-------------|
+    | **Token Standards** | Supports **ERC-721** and **ERC-1155**, allowing you to choose the token type that best suits your use case. For token creation, we support **ERC-1155** for most chains, except for **IMX** which uses **ERC-721**. |
+    | **Multichain** | Create and manage NFT collections on various blockchain networks. |
+    | **Security** | Offers features such as `burnable` and `max supply` for advanced protection, all coded in audited smart contracts. |
+    | **Royalties** | Configure royalties on NFT contracts by specifying the royalty recipient's wallet address and percentage. |
+  </Tab>
+</Tabs>
+
+## Use Cases & Examples
+
+<AccordionGroup>
+  <Accordion title="Gaming NFTs" icon="gamepad">
+    **Dynamic Gaming Assets**
+    - Imagine an in-game sword that becomes more powerful with each boss defeated
+    - Character NFTs that level up and gain new abilities
+    - Equipment that changes appearance based on achievements
+    
+    **Implementation:**
+    - Create base NFT templates for weapons, characters, armor
+    - Use dynamic metadata updates to reflect game progress
+    - Implement attribute changes based on player actions
+  </Accordion>
+  
+  <Accordion title="Membership & Loyalty" icon="id-card">
+    **Evolving Memberships**
+    - Membership NFTs that evolve over time based on participation
+    - Loyalty cards that unlock new benefits and change appearance
+    - VIP passes that upgrade based on engagement levels
+    
+    **Implementation:**
+    - Deploy membership contract with upgradeable metadata
+    - Track user engagement and trigger NFT updates
+    - Create tiered membership systems with visual changes
+  </Accordion>
+  
+  <Accordion title="Digital Art & Collectibles" icon="palette">
+    **Interactive Art Collections**
+    - Art pieces that change based on time, weather, or events
+    - Collectible series with reveal mechanics
+    - Community-driven art that evolves based on holder votes
+    
+    **Implementation:**
+    - Create base art templates with variable elements
+    - Implement time-based or event-triggered changes
+    - Use external data sources to drive visual updates
+  </Accordion>
+  
+  <Accordion title="Event & Ticketing" icon="ticket">
+    **Smart Event Tickets**
+    - Tickets that transform into commemorative NFTs after events
+    - Access passes that unlock additional content over time
+    - Event badges that collect memories and experiences
+    
+    **Implementation:**
+    - Create ticket NFTs with post-event transformation
+    - Implement proof-of-attendance updates
+    - Add media and memories to NFTs after events
+  </Accordion>
+</AccordionGroup>
+
+## Supported Blockchains
+
+<Note>
+Currently, these blockchains are supported to create collections and mint NFTs:
+</Note>
+
+<CardGroup cols={3}>
+  <Card title="Polygon" icon="polygon">
+    **MATIC**
+    - Low gas fees
+    - Fast transactions
+    - Ethereum compatibility
+  </Card>
+  <Card title="Ethereum" icon="ethereum">
+    **ETH**
+    - Most established network
+    - Highest liquidity
+    - Maximum compatibility
+  </Card>
+  <Card title="Binance Smart Chain" icon="binance">
+    **BSC**
+    - Low transaction costs
+    - Fast block times
+    - Large ecosystem
+  </Card>
+  <Card title="Avalanche" icon="avalanche">
+    **AVAX**
+    - High throughput
+    - Low latency
+    - Eco-friendly consensus
+  </Card>
+  <Card title="Arbitrum" icon="arbitrum">
+    **ARB**
+    - Ethereum Layer 2
+    - Lower gas costs
+    - Full EVM compatibility
+  </Card>
+  <Card title="Hedera" icon="hedera">
+    **HBAR**
+    - Enterprise-grade
+    - Carbon negative
+    - High performance
+  </Card>
+</CardGroup>
+
+## API Capabilities
+
+### Contract Management
+- **Deploy Collections**: Create smart contracts for your NFT collections
+- **Configure Settings**: Set up royalties, supply limits, and security features
+- **Update Metadata**: Modify collection information and branding
+- **Monitor Status**: Track deployment and transaction status
+
+### Token Type Creation
+- **Define Templates**: Create reusable NFT templates with metadata
+- **Set Attributes**: Configure properties, stats, and custom traits
+- **Media Support**: Add images, videos, audio, and animations
+- **Batch Creation**: Create multiple token types efficiently
+
+### NFT Minting & Distribution
+- **Direct Minting**: Mint NFTs directly to user wallets
+- **Batch Operations**: Mint multiple NFTs in single transactions
+- **Email Integration**: Send NFTs to email addresses (auto-wallet creation)
+- **Dynamic Updates**: Modify NFT properties after minting
+
+### Querying & Discovery
+- **Wallet Queries**: Find all NFTs owned by specific wallets
+- **Contract Analysis**: Retrieve contract information and metadata
+- **Ownership Tracking**: Discover who owns specific NFTs
+- **Portfolio Analytics**: Analyze NFT collections and distributions
+
+## Getting Started
+
+<Steps>
+  <Step title="Set Up Authentication" icon="key">
+    Get your API credentials from the Venly Portal and authenticate your requests
+  </Step>
+  <Step title="Deploy Your First Contract" icon="file-contract">
+    Create a smart contract for your NFT collection
+  </Step>
+  <Step title="Create Token Types" icon="shapes">
+    Define templates for your NFTs with metadata and attributes
+  </Step>
+  <Step title="Mint NFTs" icon="coins">
+    Create and distribute your first NFTs to users
+  </Step>
+  <Step title="Explore Advanced Features" icon="rocket">
+    Implement dynamic NFTs, batch operations, and analytics
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" href="/guides/nft-api/quickstart" icon="rocket">
+    Follow our step-by-step guide to create your first NFT
+  </Card>
+  <Card title="Authentication Setup" href="/guides/nft-api/getting-started/authentication" icon="key">
+    Learn how to authenticate with the NFT API
+  </Card>
+  <Card title="Create Your First Contract" href="/guides/nft-api/contracts/create-contract" icon="file-contract">
+    Deploy a smart contract for your collection
+  </Card>
+  <Card title="Advanced Features" href="/guides/nft-api/advanced/webhooks-nft-api" icon="webhook">
+    Explore webhooks and advanced functionality
+  </Card>
+</CardGroup>
+
+## Examples & Inspiration
+
+<Tip>
+**Dynamic NFT Ideas:**
+- A membership NFT that evolves over time or changes based on participation in specific events
+- An in-game sword that becomes more powerful with each boss defeated
+- Art pieces that change based on external data like weather or stock prices
+- Collectibles that unlock new features as the community grows
+</Tip>
+
+<Warning>
+**Important Notes:**
+- All API calls in sandbox environment run on testnets
+- Production deployments require mainnet setup
+- Gas fees apply for all blockchain transactions
+- Always test thoroughly before mainnet deployment
+</Warning>
+
+## Support & Resources
+
+<AccordionGroup>
+  <Accordion title="API Reference" icon="book">
+    Complete API documentation with all endpoints, parameters, and examples available in our [API Reference](https://docs.venly.io/reference).
+  </Accordion>
+  
+  <Accordion title="Developer Portal" icon="portal">
+    Access your API keys, monitor usage, and manage your applications in the [Venly Portal](https://portal.venly.io).
+  </Accordion>
+  
+  <Accordion title="Community Support" icon="users">
+    Join our developer community for support, discussions, and updates on new features and best practices.
+  </Accordion>
+</AccordionGroup>
+
+---
+

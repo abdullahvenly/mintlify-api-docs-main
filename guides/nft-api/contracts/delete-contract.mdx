@@ -1,0 +1,981 @@
+---
+title: "Delete NFT Contract"
+description: "Safely archive NFT contracts with proper data backup and lifecycle management strategies"
+icon: "trash"
+---
+
+<Warning>
+**Permanent Action:** Deleting an NFT contract removes it from all API responses and prevents creation of new token types. This action cannot be undone.
+</Warning>
+
+<Info>
+**Contract Archival:** Properly archive NFT contracts when they're no longer needed while ensuring data preservation and stakeholder notification.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Contract Deletion?
+
+Contract deletion (archival) permanently removes an NFT contract from the Venly system, making it inaccessible through API calls. Once deleted, you cannot create new token types under the contract, and it will no longer appear in contract listings. This is typically used for deprecated contracts, test contracts, or contracts that are no longer actively maintained.
+
+<CardGroup cols={2}>
+  <Card title="Permanent Removal" icon="ban">
+    Contract becomes inaccessible via API calls
+  </Card>
+  <Card title="Token Type Prevention" icon="stop">
+    No new token types can be created under deleted contracts
+  </Card>
+  <Card title="Data Preservation" icon="database">
+    Existing tokens and metadata remain on blockchain
+  </Card>
+  <Card title="Clean Organization" icon="broom">
+    Remove unused contracts from your workspace
+  </Card>
+</CardGroup>
+
+## When to Delete Contracts
+
+<Tabs>
+  <Tab title="Test Contracts">
+    **Development Cleanup**
+    - Remove test contracts after development
+    - Clean up proof-of-concept implementations
+    - Archive experimental contracts
+    - Maintain organized development environment
+  </Tab>
+  <Tab title="Deprecated Contracts">
+    **Lifecycle Management**
+    - Archive contracts replaced by newer versions
+    - Remove contracts with outdated functionality
+    - Clean up legacy implementations
+    - Maintain current contract portfolio
+  </Tab>
+  <Tab title="Failed Projects">
+    **Project Cleanup**
+    - Remove contracts from cancelled projects
+    - Archive contracts that didn't launch
+    - Clean up abandoned implementations
+    - Maintain professional workspace
+  </Tab>
+</Tabs>
+
+## Pre-Deletion Checklist
+
+<Steps>
+  <Step title="Data Backup" icon="download">
+    Export all contract data, metadata, and token information before deletion
+    
+    ```javascript
+    // Backup contract data before deletion
+    const contractData = await getContractDetails(chain, contractAddress);
+    const tokenTypes = await getAllTokenTypes(contractAddress);
+    const mintedTokens = await getAllTokens(contractAddress);
+    
+    // Save backup data
+    const backup = {
+      contract: contractData,
+      tokenTypes: tokenTypes,
+      mintedTokens: mintedTokens,
+      backupDate: new Date().toISOString()
+    };
+    
+    await saveBackup(`contract_${contractAddress}_backup.json`, backup);
+    ```
+  </Step>
+  <Step title="Stakeholder Notification" icon="bell">
+    Notify all relevant stakeholders about the upcoming contract deletion
+    
+    ```javascript
+    const stakeholders = [
+      'development-team@company.com',
+      'product-manager@company.com',
+      'legal@company.com'
+    ];
+    
+    await notifyStakeholders(stakeholders, {
+      action: 'contract_deletion',
+      contractAddress: contractAddress,
+      scheduledDate: deletionDate,
+      reason: 'Contract deprecation'
+    });
+    ```
+  </Step>
+  <Step title="Dependency Check" icon="link">
+    Verify no active systems or applications depend on this contract
+    
+    ```javascript
+    const dependencies = await checkContractDependencies(contractAddress);
+    
+    if (dependencies.length > 0) {
+      console.warn('Active dependencies found:', dependencies);
+      // Handle dependencies before deletion
+    }
+    ```
+  </Step>
+  <Step title="Final Verification" icon="check">
+    Confirm the contract address and chain are correct before proceeding
+  </Step>
+</Steps>
+
+## Delete Contract API
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+// Delete NFT contract
+const deleteContract = async (chain, contractAddress) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY'
+      }
+    });
+
+    if (response.ok) {
+      console.log('Contract deleted successfully');
+      return { success: true, status: response.status };
+    } else {
+      throw new Error(`Deletion failed: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error deleting contract:', error);
+    throw error;
+  }
+};
+
+// Usage
+await deleteContract('MATIC', '0xa90da02f49880320e4bb237c8ce0d2f4f42bfbd5');
+```
+
+```python Python
+import requests
+
+def delete_contract(chain, contract_address, api_key):
+    """Delete NFT contract"""
+    url = f'/api/v3/erc1155/contracts/{chain}/{contract_address}'
+    
+    headers = {
+        'Authorization': f'Bearer {api_key}'
+    }
+    
+    try:
+        response = requests.delete(url, headers=headers)
+        
+        if response.status_code == 200:
+            print('Contract deleted successfully')
+            return {'success': True, 'status': response.status_code}
+        else:
+            raise Exception(f'Deletion failed: {response.status_code}')
+            
+    except Exception as error:
+        print(f'Error deleting contract: {error}')
+        raise error
+
+# Usage
+delete_contract('MATIC', '0xa90da02f49880320e4bb237c8ce0d2f4f42bfbd5', 'YOUR_API_KEY')
+```
+
+```bash cURL
+# Delete NFT contract
+curl -X DELETE '/api/v3/erc1155/contracts/MATIC/0xa90da02f49880320e4bb237c8ce0d2f4f42bfbd5' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+
+# Expected response: 200 OK
+```
+
+```php PHP
+<?php
+function deleteContract($chain, $contractAddress, $apiKey) {
+    $url = "/api/v3/erc1155/contracts/{$chain}/{$contractAddress}";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "Authorization: Bearer {$apiKey}"
+    ]);
+    
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($httpCode === 200) {
+        echo 'Contract deleted successfully';
+        return ['success' => true, 'status' => $httpCode];
+    } else {
+        throw new Exception("Deletion failed: {$httpCode}");
+    }
+}
+
+// Usage
+deleteContract('MATIC', '0xa90da02f49880320e4bb237c8ce0d2f4f42bfbd5', 'YOUR_API_KEY');
+?>
+```
+</CodeGroup>
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | The blockchain network (e.g., MATIC, ETH, BSC) |
+| `contractAddress` | string | ✅ | The contract address to delete |
+
+<Tip>
+**Chain Networks:** Supported chains include MATIC (Polygon), ETH (Ethereum), BSC (Binance Smart Chain), and others. Use the exact chain identifier as specified in the API documentation.
+</Tip>
+
+### Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```http
+    HTTP/1.1 200 OK
+    ```
+    
+    **Success Indicators:**
+    - HTTP status code `200 OK`
+    - Contract is immediately removed from API responses
+    - No response body for successful deletion
+  </Tab>
+  <Tab title="Error Responses">
+    ```http
+    HTTP/1.1 404 Not Found
+    {
+      "error": "Contract not found"
+    }
+    ```
+    
+    ```http
+    HTTP/1.1 403 Forbidden
+    {
+      "error": "Insufficient permissions"
+    }
+    ```
+    
+    **Common Errors:**
+    - `404` - Contract not found or already deleted
+    - `403` - Insufficient permissions to delete contract
+    - `400` - Invalid contract address format
+  </Tab>
+</Tabs>
+
+## Advanced Contract Management
+
+<AccordionGroup>
+  <Accordion title="Batch Contract Deletion" icon="list">
+    **Delete multiple contracts efficiently:**
+    
+    ```javascript
+    class BatchContractManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.deletionQueue = [];
+        this.results = [];
+      }
+    
+      addToQueue(chain, contractAddress, metadata = {}) {
+        this.deletionQueue.push({
+          chain,
+          contractAddress,
+          metadata,
+          status: 'pending'
+        });
+      }
+    
+      async processQueue(options = {}) {
+        const {
+          batchSize = 5,
+          delayBetweenBatches = 1000,
+          backupBeforeDelete = true
+        } = options;
+        
+        console.log(`Processing ${this.deletionQueue.length} contract deletions...`);
+        
+        for (let i = 0; i < this.deletionQueue.length; i += batchSize) {
+          const batch = this.deletionQueue.slice(i, i + batchSize);
+          
+          const batchPromises = batch.map(async (item) => {
+            try {
+              // Backup before deletion if requested
+              if (backupBeforeDelete) {
+                await this.backupContract(item.chain, item.contractAddress);
+              }
+              
+              // Delete contract
+              await this.deleteContract(item.chain, item.contractAddress);
+              
+              item.status = 'deleted';
+              item.deletedAt = new Date().toISOString();
+              
+              return { success: true, item };
+            } catch (error) {
+              item.status = 'failed';
+              item.error = error.message;
+              
+              return { success: false, item, error };
+            }
+          });
+          
+          const batchResults = await Promise.all(batchPromises);
+          this.results.push(...batchResults);
+          
+          // Delay between batches to avoid rate limiting
+          if (i + batchSize < this.deletionQueue.length) {
+            await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+          }
+        }
+        
+        return this.generateReport();
+      }
+    
+      async deleteContract(chain, contractAddress) {
+        const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return response;
+      }
+    
+      async backupContract(chain, contractAddress) {
+        try {
+          // Get contract details
+          const contractResponse = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (!contractResponse.ok) {
+            throw new Error('Failed to fetch contract details');
+          }
+          
+          const contractData = await contractResponse.json();
+          
+          // Get token types
+          const tokenTypesResponse = await fetch(`/api/v3/erc1155/contracts/${contractAddress}/token-types`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const tokenTypes = tokenTypesResponse.ok ? await tokenTypesResponse.json() : [];
+          
+          // Create backup
+          const backup = {
+            contract: contractData,
+            tokenTypes: tokenTypes,
+            backupDate: new Date().toISOString(),
+            chain,
+            contractAddress
+          };
+          
+          // Save backup (implement your preferred storage method)
+          await this.saveBackup(`${contractAddress}_backup.json`, backup);
+          
+          console.log(`Backup created for contract ${contractAddress}`);
+        } catch (error) {
+          console.warn(`Failed to backup contract ${contractAddress}:`, error);
+          // Continue with deletion even if backup fails
+        }
+      }
+    
+      async saveBackup(filename, data) {
+        // Implement your backup storage logic
+        // This could be local file system, cloud storage, database, etc.
+        console.log(`Saving backup: ${filename}`);
+        
+        // Example: Save to local storage (browser) or file system (Node.js)
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(`contract_backup_${filename}`, JSON.stringify(data));
+        } else {
+          // Node.js file system save
+          const fs = require('fs').promises;
+          await fs.writeFile(`./backups/${filename}`, JSON.stringify(data, null, 2));
+        }
+      }
+    
+      generateReport() {
+        const successful = this.results.filter(r => r.success).length;
+        const failed = this.results.filter(r => !r.success).length;
+        
+        const report = {
+          summary: {
+            total: this.results.length,
+            successful,
+            failed,
+            successRate: ((successful / this.results.length) * 100).toFixed(2) + '%'
+          },
+          details: this.results,
+          failedContracts: this.results
+            .filter(r => !r.success)
+            .map(r => ({
+              chain: r.item.chain,
+              contractAddress: r.item.contractAddress,
+              error: r.error.message
+            }))
+        };
+        
+        console.log('Batch deletion report:', report.summary);
+        return report;
+      }
+    
+      clearQueue() {
+        this.deletionQueue = [];
+        this.results = [];
+      }
+    }
+    
+    // Usage
+    const batchManager = new BatchContractManager('YOUR_API_KEY');
+    
+    // Add contracts to deletion queue
+    batchManager.addToQueue('MATIC', '0xcontract1', { reason: 'test contract' });
+    batchManager.addToQueue('MATIC', '0xcontract2', { reason: 'deprecated' });
+    batchManager.addToQueue('ETH', '0xcontract3', { reason: 'failed project' });
+    
+    // Process all deletions
+    const report = await batchManager.processQueue({
+      batchSize: 3,
+      delayBetweenBatches: 2000,
+      backupBeforeDelete: true
+    });
+    
+    console.log('Final report:', report);
+    ```
+  </Accordion>
+  
+  <Accordion title="Contract Lifecycle Management" icon="recycle">
+    **Implement comprehensive contract lifecycle management:**
+    
+    ```javascript
+    class ContractLifecycleManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.lifecycleStages = ['development', 'testing', 'staging', 'production', 'deprecated', 'archived'];
+      }
+    
+      async getContractLifecycle(chain, contractAddress) {
+        try {
+          const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (!response.ok) {
+            throw new Error('Contract not found');
+          }
+          
+          const contract = await response.json();
+          
+          return {
+            contractAddress,
+            chain,
+            currentStage: this.determineLifecycleStage(contract),
+            createdAt: contract.createdAt,
+            lastActivity: await this.getLastActivity(contractAddress),
+            tokenTypeCount: await this.getTokenTypeCount(contractAddress),
+            mintedTokenCount: await this.getMintedTokenCount(contractAddress)
+          };
+        } catch (error) {
+          console.error('Error getting contract lifecycle:', error);
+          throw error;
+        }
+      }
+    
+      determineLifecycleStage(contract) {
+        // Implement logic to determine lifecycle stage based on contract data
+        // This is a simplified example
+        
+        if (contract.metadata?.stage) {
+          return contract.metadata.stage;
+        }
+        
+        // Default logic based on contract properties
+        if (contract.name?.includes('test') || contract.name?.includes('Test')) {
+          return 'testing';
+        }
+        
+        return 'production'; // Default assumption
+      }
+    
+      async getLastActivity(contractAddress) {
+        try {
+          // Get recent token mints or other activities
+          const response = await fetch(`/api/v3/erc1155/contracts/${contractAddress}/tokens?limit=1&sort=createdAt:desc`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (response.ok) {
+            const tokens = await response.json();
+            return tokens.length > 0 ? tokens[0].createdAt : null;
+          }
+          
+          return null;
+        } catch (error) {
+          return null;
+        }
+      }
+    
+      async getTokenTypeCount(contractAddress) {
+        try {
+          const response = await fetch(`/api/v3/erc1155/contracts/${contractAddress}/token-types`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (response.ok) {
+            const tokenTypes = await response.json();
+            return tokenTypes.length;
+          }
+          
+          return 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+    
+      async getMintedTokenCount(contractAddress) {
+        try {
+          const response = await fetch(`/api/v3/erc1155/contracts/${contractAddress}/tokens`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (response.ok) {
+            const tokens = await response.json();
+            return tokens.length;
+          }
+          
+          return 0;
+        } catch (error) {
+          return 0;
+        }
+      }
+    
+      async identifyDeletionCandidates(criteria = {}) {
+        const {
+          maxAge = 90, // days
+          minActivity = 30, // days since last activity
+          maxTokenTypes = 0, // contracts with no token types
+          stages = ['testing', 'development'] // lifecycle stages to consider
+        } = criteria;
+        
+        try {
+          // Get all contracts
+          const response = await fetch('/api/v3/erc1155/contracts', {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch contracts');
+          }
+          
+          const contracts = await response.json();
+          const candidates = [];
+          
+          for (const contract of contracts) {
+            const lifecycle = await this.getContractLifecycle(contract.chain, contract.contractAddress);
+            
+            // Check age
+            const ageInDays = (Date.now() - new Date(lifecycle.createdAt)) / (1000 * 60 * 60 * 24);
+            
+            // Check last activity
+            const daysSinceActivity = lifecycle.lastActivity 
+              ? (Date.now() - new Date(lifecycle.lastActivity)) / (1000 * 60 * 60 * 24)
+              : Infinity;
+            
+            // Apply criteria
+            const meetsAgeCriteria = ageInDays > maxAge;
+            const meetsActivityCriteria = daysSinceActivity > minActivity;
+            const meetsTokenTypeCriteria = lifecycle.tokenTypeCount <= maxTokenTypes;
+            const meetsStageCriteria = stages.includes(lifecycle.currentStage);
+            
+            if (meetsAgeCriteria && meetsActivityCriteria && meetsTokenTypeCriteria && meetsStageCriteria) {
+              candidates.push({
+                ...lifecycle,
+                ageInDays: Math.round(ageInDays),
+                daysSinceActivity: Math.round(daysSinceActivity),
+                deletionReasons: [
+                  meetsAgeCriteria && `Age: ${Math.round(ageInDays)} days`,
+                  meetsActivityCriteria && `Inactive: ${Math.round(daysSinceActivity)} days`,
+                  meetsTokenTypeCriteria && `No token types`,
+                  meetsStageCriteria && `Stage: ${lifecycle.currentStage}`
+                ].filter(Boolean)
+              });
+            }
+          }
+          
+          return candidates.sort((a, b) => b.ageInDays - a.ageInDays);
+        } catch (error) {
+          console.error('Error identifying deletion candidates:', error);
+          throw error;
+        }
+      }
+    
+      async generateDeletionPlan(candidates) {
+        const plan = {
+          summary: {
+            totalCandidates: candidates.length,
+            estimatedSavings: candidates.length * 0.1, // Estimated cost savings
+            riskAssessment: this.assessDeletionRisk(candidates)
+          },
+          phases: [
+            {
+              name: 'Phase 1: Test Contracts',
+              contracts: candidates.filter(c => c.currentStage === 'testing'),
+              priority: 'high',
+              risk: 'low'
+            },
+            {
+              name: 'Phase 2: Development Contracts',
+              contracts: candidates.filter(c => c.currentStage === 'development'),
+              priority: 'medium',
+              risk: 'low'
+            },
+            {
+              name: 'Phase 3: Deprecated Contracts',
+              contracts: candidates.filter(c => c.currentStage === 'deprecated'),
+              priority: 'medium',
+              risk: 'medium'
+            }
+          ],
+          recommendations: this.generateRecommendations(candidates)
+        };
+        
+        return plan;
+      }
+    
+      assessDeletionRisk(candidates) {
+        const highRisk = candidates.filter(c => c.mintedTokenCount > 0 || c.tokenTypeCount > 5).length;
+        const mediumRisk = candidates.filter(c => c.tokenTypeCount > 0 && c.tokenTypeCount <= 5).length;
+        const lowRisk = candidates.filter(c => c.tokenTypeCount === 0 && c.mintedTokenCount === 0).length;
+        
+        return { high: highRisk, medium: mediumRisk, low: lowRisk };
+      }
+    
+      generateRecommendations(candidates) {
+        const recommendations = [];
+        
+        if (candidates.some(c => c.mintedTokenCount > 0)) {
+          recommendations.push('Consider archiving contracts with minted tokens instead of deleting');
+        }
+        
+        if (candidates.some(c => c.daysSinceActivity < 7)) {
+          recommendations.push('Review recently active contracts before deletion');
+        }
+        
+        if (candidates.length > 10) {
+          recommendations.push('Consider phased deletion approach to minimize risk');
+        }
+        
+        return recommendations;
+      }
+    }
+    
+    // Usage
+    const lifecycleManager = new ContractLifecycleManager('YOUR_API_KEY');
+    
+    // Identify deletion candidates
+    const candidates = await lifecycleManager.identifyDeletionCandidates({
+      maxAge: 60, // 60 days old
+      minActivity: 30, // 30 days inactive
+      stages: ['testing', 'development']
+    });
+    
+    console.log(`Found ${candidates.length} deletion candidates`);
+    
+    // Generate deletion plan
+    const plan = await lifecycleManager.generateDeletionPlan(candidates);
+    console.log('Deletion plan:', plan);
+    ```
+  </Accordion>
+  
+  <Accordion title="Recovery and Rollback" icon="undo">
+    **Implement recovery mechanisms for accidental deletions:**
+    
+    ```javascript
+    class ContractRecoveryManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.backupStorage = new Map(); // In production, use persistent storage
+      }
+    
+      async createRecoveryPoint(chain, contractAddress) {
+        try {
+          console.log(`Creating recovery point for ${contractAddress}...`);
+          
+          // Get complete contract data
+          const contractData = await this.getCompleteContractData(chain, contractAddress);
+          
+          // Create recovery point
+          const recoveryPoint = {
+            id: `recovery_${Date.now()}`,
+            chain,
+            contractAddress,
+            createdAt: new Date().toISOString(),
+            data: contractData,
+            checksum: this.calculateChecksum(contractData)
+          };
+          
+          // Store recovery point
+          await this.storeRecoveryPoint(recoveryPoint);
+          
+          console.log(`Recovery point created: ${recoveryPoint.id}`);
+          return recoveryPoint.id;
+        } catch (error) {
+          console.error('Failed to create recovery point:', error);
+          throw error;
+        }
+      }
+    
+      async getCompleteContractData(chain, contractAddress) {
+        const data = {};
+        
+        try {
+          // Get contract details
+          const contractResponse = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (contractResponse.ok) {
+            data.contract = await contractResponse.json();
+          }
+          
+          // Get token types
+          const tokenTypesResponse = await fetch(`/api/v3/erc1155/contracts/${contractAddress}/token-types`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (tokenTypesResponse.ok) {
+            data.tokenTypes = await tokenTypesResponse.json();
+          }
+          
+          // Get minted tokens (limited to recent ones to avoid large datasets)
+          const tokensResponse = await fetch(`/api/v3/erc1155/contracts/${contractAddress}/tokens?limit=100`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          if (tokensResponse.ok) {
+            data.tokens = await tokensResponse.json();
+          }
+          
+          return data;
+        } catch (error) {
+          console.error('Error getting complete contract data:', error);
+          throw error;
+        }
+      }
+    
+      calculateChecksum(data) {
+        // Simple checksum calculation (in production, use a proper hash function)
+        return btoa(JSON.stringify(data)).slice(0, 16);
+      }
+    
+      async storeRecoveryPoint(recoveryPoint) {
+        // In production, store in database, cloud storage, etc.
+        this.backupStorage.set(recoveryPoint.id, recoveryPoint);
+        
+        // Also save to persistent storage if available
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(`recovery_${recoveryPoint.id}`, JSON.stringify(recoveryPoint));
+        }
+      }
+    
+      async listRecoveryPoints(contractAddress = null) {
+        const points = Array.from(this.backupStorage.values());
+        
+        if (contractAddress) {
+          return points.filter(p => p.contractAddress === contractAddress);
+        }
+        
+        return points.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+    
+      async validateRecoveryPoint(recoveryPointId) {
+        const recoveryPoint = this.backupStorage.get(recoveryPointId);
+        
+        if (!recoveryPoint) {
+          throw new Error('Recovery point not found');
+        }
+        
+        // Validate checksum
+        const currentChecksum = this.calculateChecksum(recoveryPoint.data);
+        
+        if (currentChecksum !== recoveryPoint.checksum) {
+          throw new Error('Recovery point data integrity check failed');
+        }
+        
+        return {
+          valid: true,
+          recoveryPoint,
+          dataIntegrity: 'verified'
+        };
+      }
+    
+      async simulateRecovery(recoveryPointId) {
+        const validation = await this.validateRecoveryPoint(recoveryPointId);
+        const { recoveryPoint } = validation;
+        
+        // Simulate what would be recovered
+        const simulation = {
+          contractAddress: recoveryPoint.contractAddress,
+          chain: recoveryPoint.chain,
+          recoveryActions: [],
+          estimatedTime: '5-10 minutes',
+          requirements: []
+        };
+        
+        if (recoveryPoint.data.contract) {
+          simulation.recoveryActions.push('Recreate contract with original metadata');
+          simulation.requirements.push('Contract creation permissions');
+        }
+        
+        if (recoveryPoint.data.tokenTypes?.length > 0) {
+          simulation.recoveryActions.push(`Recreate ${recoveryPoint.data.tokenTypes.length} token types`);
+          simulation.requirements.push('Token type creation permissions');
+        }
+        
+        if (recoveryPoint.data.tokens?.length > 0) {
+          simulation.recoveryActions.push(`Reference to ${recoveryPoint.data.tokens.length} existing tokens (blockchain data)`);
+          simulation.requirements.push('Note: Minted tokens remain on blockchain');
+        }
+        
+        return simulation;
+      }
+    
+      generateRecoveryReport(recoveryPoints) {
+        const report = {
+          summary: {
+            totalRecoveryPoints: recoveryPoints.length,
+            oldestRecoveryPoint: recoveryPoints.length > 0 
+              ? Math.min(...recoveryPoints.map(p => new Date(p.createdAt)))
+              : null,
+            newestRecoveryPoint: recoveryPoints.length > 0
+              ? Math.max(...recoveryPoints.map(p => new Date(p.createdAt)))
+              : null
+          },
+          byContract: {},
+          recommendations: []
+        };
+        
+        // Group by contract
+        recoveryPoints.forEach(point => {
+          if (!report.byContract[point.contractAddress]) {
+            report.byContract[point.contractAddress] = [];
+          }
+          report.byContract[point.contractAddress].push(point);
+        });
+        
+        // Generate recommendations
+        if (recoveryPoints.length === 0) {
+          report.recommendations.push('No recovery points found. Consider creating recovery points before contract operations.');
+        }
+        
+        if (recoveryPoints.length > 50) {
+          report.recommendations.push('Large number of recovery points. Consider cleanup of old recovery points.');
+        }
+        
+        return report;
+      }
+    }
+    
+    // Usage
+    const recoveryManager = new ContractRecoveryManager('YOUR_API_KEY');
+    
+    // Create recovery point before deletion
+    const recoveryPointId = await recoveryManager.createRecoveryPoint('MATIC', '0xcontractaddress');
+    
+    // Later, if needed, simulate recovery
+    const simulation = await recoveryManager.simulateRecovery(recoveryPointId);
+    console.log('Recovery simulation:', simulation);
+    
+    // List all recovery points
+    const allRecoveryPoints = await recoveryManager.listRecoveryPoints();
+    const report = recoveryManager.generateRecoveryReport(allRecoveryPoints);
+    console.log('Recovery report:', report);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Contract Deletion Best Practices:**
+
+1. **Always Backup First** - Create comprehensive backups before deletion
+2. **Verify Dependencies** - Check for active integrations or dependencies
+3. **Notify Stakeholders** - Inform all relevant parties about the deletion
+4. **Use Staging Environment** - Test deletion process in staging first
+5. **Document Reasons** - Keep records of why contracts were deleted
+6. **Implement Recovery Plans** - Have rollback procedures ready
+7. **Monitor Impact** - Track effects of contract deletion on systems
+8. **Regular Cleanup** - Schedule periodic contract cleanup activities
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Contract Not Found Error" icon="exclamation-triangle">
+    **Problem:** Receiving 404 error when trying to delete contract
+    
+    **Possible Causes:**
+    - Contract address is incorrect
+    - Contract has already been deleted
+    - Wrong blockchain network specified
+    
+    **Solution:**
+    - Verify contract address and chain
+    - Check if contract exists using GET endpoint first
+    - Ensure you have the correct permissions
+  </Accordion>
+  
+  <Accordion title="Permission Denied" icon="lock">
+    **Problem:** Receiving 403 Forbidden error
+    
+    **Possible Causes:**
+    - Insufficient API permissions
+    - Contract owned by different account
+    - API key lacks deletion privileges
+    
+    **Solution:**
+    - Verify API key permissions in Developer Portal
+    - Ensure you're the contract owner
+    - Contact support if permissions are unclear
+  </Accordion>
+  
+  <Accordion title="Deletion Impact Assessment" icon="chart-line">
+    **Problem:** Unsure about the impact of deleting a contract
+    
+    **Assessment Steps:**
+    1. Check token type count
+    2. Verify minted token count
+    3. Review integration dependencies
+    4. Assess user impact
+    
+    **Tools:**
+    - Use contract analytics endpoints
+    - Review application logs
+    - Check webhook configurations
+    - Consult with development team
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Contract Management" href="/guides/nft-api/contracts/retrieve-contract" icon="folder">
+    Learn about comprehensive contract management
+  </Card>
+  <Card title="Backup Strategies" href="/guides/nft-api/contracts/create-contract" icon="download">
+    Implement robust backup and recovery procedures
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract/archive-contract" icon="book">
+    Explore the complete contract deletion API documentation
+  </Card>
+  <Card title="Best Practices" href="/guides/nft-api/overview" icon="lightbulb">
+    Review NFT API best practices and guidelines
+  </Card>
+</CardGroup>

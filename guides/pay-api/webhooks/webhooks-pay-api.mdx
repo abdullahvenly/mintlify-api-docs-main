@@ -1,0 +1,1035 @@
+---
+title: "PAY API Webhook Events"
+description: "Comprehensive guide to PAY API webhook events, payload structures, and implementation best practices"
+icon: "bell"
+---
+
+<Info>
+**Webhook Events:** Receive real-time notifications for payment events including successful payments, failures, cancellations, and checkout completions.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What are PAY Webhook Events?
+
+PAY webhook events provide real-time notifications for all payment-related activities in your application. These events are triggered automatically when specific actions occur, such as successful payments, payment failures, checkout completions, and more. By implementing webhook event handlers, you can build responsive payment workflows that react immediately to payment status changes.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Updates" icon="clock">
+    Instant notifications for all payment events
+  </Card>
+  <Card title="Comprehensive Coverage" icon="list">
+    Complete payment lifecycle event tracking
+  </Card>
+  <Card title="Reliable Delivery" icon="shield">
+    Automatic retry mechanism with 5 attempts
+  </Card>
+  <Card title="Stripe Integration" icon="credit-card">
+    Direct integration with Stripe event system
+  </Card>
+</CardGroup>
+
+## Supported Webhook Events
+
+<Tabs>
+  <Tab title="Payment Events">
+    **Core Payment Events:**
+    - **`payment_intent.created`** - Payment intent was created
+    - **`payment_intent.succeeded`** - Payment completed successfully
+    - **`payment_intent.payment_failed`** - Payment failed or was declined
+    - **`payment_intent.requires_action`** - Payment requires additional action (3D Secure, etc.)
+    
+    **Use Cases:**
+    - Order fulfillment automation
+    - Customer notification systems
+    - Inventory management updates
+    - Financial reporting
+  </Tab>
+  <Tab title="Charge Events">
+    **Charge-related Events:**
+    - **`charge.succeeded`** - Charge was processed successfully
+    - **`charge.failed`** - Charge processing failed
+    - **`charge.refunded`** - Charge was refunded
+    - **`charge.dispute.created`** - Dispute was created for a charge
+    
+    **Use Cases:**
+    - Transaction logging
+    - Refund processing
+    - Dispute management
+    - Accounting integration
+  </Tab>
+  <Tab title="Checkout Events">
+    **Checkout Session Events:**
+    - **`checkout.session.completed`** - Checkout session was completed
+    - **`checkout.session.expired`** - Checkout session expired
+    
+    **Use Cases:**
+    - Order completion workflows
+    - Abandoned cart recovery
+    - Session analytics
+    - Customer journey tracking
+  </Tab>
+</Tabs>
+
+## Portal Configuration
+
+<Steps>
+  <Step title="Access Developer Portal" icon="sign-in">
+    Navigate to the [Venly Developer Portal](https://portal.venly.io) and log in with your credentials
+  </Step>
+  <Step title="Select PAY Product" icon="credit-card">
+    Click on the **PAY** product section in the portal dashboard
+  </Step>
+  <Step title="Create Webhook" icon="plus">
+    Click **Create webhook** to start the configuration process
+  </Step>
+  <Step title="Configure Endpoint" icon="gear">
+    Enter your webhook endpoint details:
+    - **Description**: Descriptive name for the webhook
+    - **Endpoint (POST)**: Your webhook URL that accepts POST requests
+    - **Authentication Type**: Choose between Basic Authentication or API Key
+    - **Credentials**: Enter your authentication details
+  </Step>
+  <Step title="Test & Activate" icon="check">
+    Test your webhook endpoint and activate it for production use
+  </Step>
+</Steps>
+
+## Authentication Methods
+
+<Tabs>
+  <Tab title="API Key Authentication">
+    **Configuration:**
+    ```json
+    {
+      "type": "API_KEY",
+      "headerName": "X-Webhook-Key",
+      "apiKey": "your-secure-api-key"
+    }
+    ```
+    
+    **Implementation:**
+    ```javascript
+    app.post('/webhook', (req, res) => {
+      const apiKey = req.headers['x-webhook-key'];
+      
+      if (apiKey !== process.env.WEBHOOK_API_KEY) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+      
+      // Process webhook event
+      processWebhookEvent(req.body);
+      res.json({ received: true });
+    });
+    ```
+    
+    **Best for:** Modern applications with custom header authentication
+  </Tab>
+  <Tab title="Basic Authentication">
+    **Configuration:**
+    ```json
+    {
+      "type": "BASIC_AUTHENTICATION",
+      "username": "webhook_user",
+      "password": "secure_password"
+    }
+    ```
+    
+    **Implementation:**
+    ```javascript
+    app.post('/webhook', (req, res) => {
+      const auth = req.headers.authorization;
+      
+      if (!auth || !auth.startsWith('Basic ')) {
+        return res.status(401).json({ error: 'Missing authorization' });
+      }
+      
+      const credentials = Buffer.from(auth.slice(6), 'base64').toString();
+      const [username, password] = credentials.split(':');
+      
+      if (username !== process.env.WEBHOOK_USERNAME || 
+          password !== process.env.WEBHOOK_PASSWORD) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      
+      // Process webhook event
+      processWebhookEvent(req.body);
+      res.json({ received: true });
+    });
+    ```
+    
+    **Best for:** Simple setups with username/password authentication
+  </Tab>
+</Tabs>
+
+## Event Processing Implementation
+
+<CodeGroup>
+```javascript Express.js
+const express = require('express');
+const app = express();
+
+// Middleware for JSON parsing
+app.use(express.json());
+
+// Webhook endpoint
+app.post('/webhook', async (req, res) => {
+  try {
+    // Authenticate request
+    if (!authenticateWebhook(req)) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    const event = req.body;
+    
+    // Process event based on type
+    await processWebhookEvent(event);
+    
+    res.json({ received: true });
+  } catch (error) {
+    console.error('Webhook processing error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+async function processWebhookEvent(event) {
+  console.log(`Processing event: ${event.type} (${event.id})`);
+  
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      await handlePaymentSuccess(event.data.object);
+      break;
+      
+    case 'payment_intent.payment_failed':
+      await handlePaymentFailure(event.data.object);
+      break;
+      
+    case 'checkout.session.completed':
+      await handleCheckoutCompleted(event.data.object);
+      break;
+      
+    case 'charge.succeeded':
+      await handleChargeSuccess(event.data.object);
+      break;
+      
+    case 'payment_intent.requires_action':
+      await handlePaymentRequiresAction(event.data.object);
+      break;
+      
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+}
+
+async function handlePaymentSuccess(paymentIntent) {
+  console.log('Payment succeeded:', paymentIntent.id);
+  
+  // Update order status
+  await updateOrderStatus(paymentIntent.metadata.orderId, 'paid');
+  
+  // Send confirmation email
+  await sendConfirmationEmail(paymentIntent);
+  
+  // Trigger fulfillment
+  await triggerOrderFulfillment(paymentIntent);
+  
+  // Update inventory
+  await updateInventory(paymentIntent.metadata.items);
+}
+
+async function handlePaymentFailure(paymentIntent) {
+  console.log('Payment failed:', paymentIntent.id);
+  
+  // Update order status
+  await updateOrderStatus(paymentIntent.metadata.orderId, 'failed');
+  
+  // Send failure notification
+  await sendPaymentFailureNotification(paymentIntent);
+  
+  // Log failure for analytics
+  await logPaymentFailure(paymentIntent);
+}
+
+async function handleCheckoutCompleted(session) {
+  console.log('Checkout completed:', session.id);
+  
+  // Process completed checkout
+  await processCompletedCheckout(session);
+  
+  // Send receipt
+  await sendReceipt(session);
+  
+  // Update customer records
+  await updateCustomerRecords(session);
+}
+
+function authenticateWebhook(req) {
+  // Implement your authentication logic here
+  const apiKey = req.headers['x-webhook-key'];
+  return apiKey === process.env.WEBHOOK_API_KEY;
+}
+
+app.listen(3000, () => {
+  console.log('Webhook server running on port 3000');
+});
+```
+
+```python Flask
+from flask import Flask, request, jsonify
+import os
+import json
+import base64
+
+app = Flask(__name__)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    try:
+        # Authenticate request
+        if not authenticate_webhook(request):
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        event = request.get_json()
+        
+        # Process event based on type
+        process_webhook_event(event)
+        
+        return jsonify({'received': True})
+    except Exception as error:
+        print(f'Webhook processing error: {error}')
+        return jsonify({'error': 'Internal server error'}), 500
+
+def process_webhook_event(event):
+    print(f'Processing event: {event["type"]} ({event["id"]})')
+    
+    event_type = event['type']
+    event_data = event['data']['object']
+    
+    if event_type == 'payment_intent.succeeded':
+        handle_payment_success(event_data)
+    elif event_type == 'payment_intent.payment_failed':
+        handle_payment_failure(event_data)
+    elif event_type == 'checkout.session.completed':
+        handle_checkout_completed(event_data)
+    elif event_type == 'charge.succeeded':
+        handle_charge_success(event_data)
+    elif event_type == 'payment_intent.requires_action':
+        handle_payment_requires_action(event_data)
+    else:
+        print(f'Unhandled event type: {event_type}')
+
+def handle_payment_success(payment_intent):
+    print(f'Payment succeeded: {payment_intent["id"]}')
+    
+    # Update order status
+    update_order_status(payment_intent['metadata'].get('order_id'), 'paid')
+    
+    # Send confirmation email
+    send_confirmation_email(payment_intent)
+    
+    # Trigger fulfillment
+    trigger_order_fulfillment(payment_intent)
+    
+    # Update inventory
+    update_inventory(payment_intent['metadata'].get('items'))
+
+def handle_payment_failure(payment_intent):
+    print(f'Payment failed: {payment_intent["id"]}')
+    
+    # Update order status
+    update_order_status(payment_intent['metadata'].get('order_id'), 'failed')
+    
+    # Send failure notification
+    send_payment_failure_notification(payment_intent)
+    
+    # Log failure for analytics
+    log_payment_failure(payment_intent)
+
+def handle_checkout_completed(session):
+    print(f'Checkout completed: {session["id"]}')
+    
+    # Process completed checkout
+    process_completed_checkout(session)
+    
+    # Send receipt
+    send_receipt(session)
+    
+    # Update customer records
+    update_customer_records(session)
+
+def authenticate_webhook(request):
+    # API Key authentication
+    api_key = request.headers.get('X-Webhook-Key')
+    if api_key:
+        return api_key == os.getenv('WEBHOOK_API_KEY')
+    
+    # Basic authentication
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Basic '):
+        credentials = base64.b64decode(auth_header[6:]).decode('utf-8')
+        username, password = credentials.split(':', 1)
+        return (username == os.getenv('WEBHOOK_USERNAME') and 
+                password == os.getenv('WEBHOOK_PASSWORD'))
+    
+    return False
+
+if __name__ == '__main__':
+    app.run(port=3000)
+```
+
+```php PHP
+<?php
+header('Content-Type: application/json');
+
+// Get the raw POST data
+$payload = file_get_contents('php://input');
+$event = json_decode($payload, true);
+
+// Authenticate request
+if (!authenticateWebhook()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Unauthorized']);
+    exit;
+}
+
+try {
+    // Process event based on type
+    processWebhookEvent($event);
+    
+    echo json_encode(['received' => true]);
+} catch (Exception $e) {
+    error_log('Webhook processing error: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Internal server error']);
+}
+
+function processWebhookEvent($event) {
+    error_log('Processing event: ' . $event['type'] . ' (' . $event['id'] . ')');
+    
+    switch ($event['type']) {
+        case 'payment_intent.succeeded':
+            handlePaymentSuccess($event['data']['object']);
+            break;
+            
+        case 'payment_intent.payment_failed':
+            handlePaymentFailure($event['data']['object']);
+            break;
+            
+        case 'checkout.session.completed':
+            handleCheckoutCompleted($event['data']['object']);
+            break;
+            
+        case 'charge.succeeded':
+            handleChargeSuccess($event['data']['object']);
+            break;
+            
+        case 'payment_intent.requires_action':
+            handlePaymentRequiresAction($event['data']['object']);
+            break;
+            
+        default:
+            error_log('Unhandled event type: ' . $event['type']);
+    }
+}
+
+function handlePaymentSuccess($paymentIntent) {
+    error_log('Payment succeeded: ' . $paymentIntent['id']);
+    
+    // Update order status
+    updateOrderStatus($paymentIntent['metadata']['order_id'], 'paid');
+    
+    // Send confirmation email
+    sendConfirmationEmail($paymentIntent);
+    
+    // Trigger fulfillment
+    triggerOrderFulfillment($paymentIntent);
+    
+    // Update inventory
+    updateInventory($paymentIntent['metadata']['items']);
+}
+
+function handlePaymentFailure($paymentIntent) {
+    error_log('Payment failed: ' . $paymentIntent['id']);
+    
+    // Update order status
+    updateOrderStatus($paymentIntent['metadata']['order_id'], 'failed');
+    
+    // Send failure notification
+    sendPaymentFailureNotification($paymentIntent);
+    
+    // Log failure for analytics
+    logPaymentFailure($paymentIntent);
+}
+
+function handleCheckoutCompleted($session) {
+    error_log('Checkout completed: ' . $session['id']);
+    
+    // Process completed checkout
+    processCompletedCheckout($session);
+    
+    // Send receipt
+    sendReceipt($session);
+    
+    // Update customer records
+    updateCustomerRecords($session);
+}
+
+function authenticateWebhook() {
+    // API Key authentication
+    $apiKey = $_SERVER['HTTP_X_WEBHOOK_KEY'] ?? null;
+    if ($apiKey) {
+        return $apiKey === $_ENV['WEBHOOK_API_KEY'];
+    }
+    
+    // Basic authentication
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? null;
+    if ($authHeader && strpos($authHeader, 'Basic ') === 0) {
+        $credentials = base64_decode(substr($authHeader, 6));
+        list($username, $password) = explode(':', $credentials, 2);
+        return $username === $_ENV['WEBHOOK_USERNAME'] && 
+               $password === $_ENV['WEBHOOK_PASSWORD'];
+    }
+    
+    return false;
+}
+?>
+```
+</CodeGroup>
+
+## Event Payload Structure
+
+<Tabs>
+  <Tab title="Payment Intent Succeeded">
+    ```json
+    {
+      "id": "evt_3OG0NzFdbOilQPiZ0ncL2Bpn",
+      "object": "event",
+      "type": "payment_intent.succeeded",
+      "created": 1700836181,
+      "data": {
+        "object": {
+          "id": "pi_3OG0NzFdbOilQPiZ0nIyEeCl",
+          "object": "payment_intent",
+          "amount": 76000,
+          "currency": "eur",
+          "status": "succeeded",
+          "metadata": {
+            "order_id": "order_123",
+            "customer_id": "cust_456"
+          },
+          "charges": {
+            "data": [
+              {
+                "id": "ch_3OG0NzFdbOilQPiZ06dS67CY",
+                "amount": 76000,
+                "currency": "eur",
+                "status": "succeeded",
+                "payment_method_details": {
+                  "card": {
+                    "brand": "visa",
+                    "last4": "4242"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Payment Intent Failed">
+    ```json
+    {
+      "id": "evt_payment_failed",
+      "object": "event",
+      "type": "payment_intent.payment_failed",
+      "created": 1700836181,
+      "data": {
+        "object": {
+          "id": "pi_failed_payment",
+          "object": "payment_intent",
+          "amount": 50000,
+          "currency": "usd",
+          "status": "requires_payment_method",
+          "last_payment_error": {
+            "code": "card_declined",
+            "decline_code": "insufficient_funds",
+            "message": "Your card has insufficient funds."
+          },
+          "metadata": {
+            "order_id": "order_789"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Checkout Session Completed">
+    ```json
+    {
+      "id": "evt_checkout_completed",
+      "object": "event",
+      "type": "checkout.session.completed",
+      "created": 1700836181,
+      "data": {
+        "object": {
+          "id": "cs_checkout_session",
+          "object": "checkout.session",
+          "amount_total": 100000,
+          "currency": "usd",
+          "payment_status": "paid",
+          "customer_details": {
+            "email": "customer@example.com",
+            "name": "John Doe"
+          },
+          "metadata": {
+            "order_id": "order_456"
+          }
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Retry Mechanism & Reliability
+
+<AccordionGroup>
+  <Accordion title="Automatic Retry System" icon="refresh">
+    **Venly's Retry Policy:**
+    
+    - **5 retry attempts** if your endpoint is unavailable
+    - **10-second intervals** between retry attempts
+    - **Total retry window:** 50 seconds
+    - **Message dropped** after final attempt (not retrievable)
+    
+    **Implementation Considerations:**
+    ```javascript
+    class WebhookReliability {
+      constructor() {
+        this.processedEvents = new Set();
+        this.failedEvents = new Map();
+      }
+    
+      async processEvent(event) {
+        // Prevent duplicate processing
+        if (this.processedEvents.has(event.id)) {
+          console.log(`Event ${event.id} already processed`);
+          return { status: 'duplicate', processed: true };
+        }
+        
+        try {
+          // Process the event
+          await this.handleEvent(event);
+          
+          // Mark as processed
+          this.processedEvents.add(event.id);
+          
+          return { status: 'success', processed: true };
+        } catch (error) {
+          // Log failure
+          this.failedEvents.set(event.id, {
+            event,
+            error: error.message,
+            timestamp: new Date().toISOString(),
+            attempts: (this.failedEvents.get(event.id)?.attempts || 0) + 1
+          });
+          
+          throw error;
+        }
+      }
+    
+      async handleEvent(event) {
+        switch (event.type) {
+          case 'payment_intent.succeeded':
+            return this.processPaymentSuccess(event.data.object);
+          case 'payment_intent.payment_failed':
+            return this.processPaymentFailure(event.data.object);
+          default:
+            console.log(`Unhandled event: ${event.type}`);
+        }
+      }
+    
+      getFailedEvents() {
+        return Array.from(this.failedEvents.entries()).map(([id, data]) => ({
+          eventId: id,
+          ...data
+        }));
+      }
+    
+      // Fallback mechanism for missed events
+      async checkMissedEvents(sessionId) {
+        try {
+          // Call checkout status endpoint as fallback
+          const response = await fetch(`/checkout/${sessionId}/status`, {
+            headers: { 'Authorization': `Bearer ${process.env.API_KEY}` }
+          });
+          
+          const checkoutStatus = await response.json();
+          
+          if (checkoutStatus.status === 'completed' && 
+              !this.processedEvents.has(`checkout_${sessionId}`)) {
+            // Process missed completion event
+            await this.processMissedCheckoutCompletion(checkoutStatus);
+          }
+          
+          return checkoutStatus;
+        } catch (error) {
+          console.error('Failed to check missed events:', error);
+          throw error;
+        }
+      }
+    }
+    
+    // Usage
+    const reliability = new WebhookReliability();
+    
+    app.post('/webhook', async (req, res) => {
+      try {
+        const result = await reliability.processEvent(req.body);
+        res.json(result);
+      } catch (error) {
+        console.error('Webhook processing failed:', error);
+        res.status(500).json({ error: 'Processing failed' });
+      }
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Idempotency Implementation" icon="shield">
+    **Prevent duplicate event processing:**
+    
+    ```javascript
+    class IdempotentWebhookProcessor {
+      constructor() {
+        this.eventStore = new Map(); // In production, use Redis or database
+      }
+    
+      async processEvent(event) {
+        const eventKey = `${event.type}_${event.id}`;
+        
+        // Check if event was already processed
+        const existingResult = this.eventStore.get(eventKey);
+        if (existingResult) {
+          console.log(`Event ${event.id} already processed`);
+          return existingResult;
+        }
+        
+        try {
+          // Process the event
+          const result = await this.handleEventProcessing(event);
+          
+          // Store result for future duplicate checks
+          this.eventStore.set(eventKey, {
+            ...result,
+            processedAt: new Date().toISOString()
+          });
+          
+          return result;
+        } catch (error) {
+          // Don't store failed attempts to allow retries
+          console.error(`Failed to process event ${event.id}:`, error);
+          throw error;
+        }
+      }
+    
+      async handleEventProcessing(event) {
+        const startTime = Date.now();
+        
+        try {
+          let result;
+          
+          switch (event.type) {
+            case 'payment_intent.succeeded':
+              result = await this.processPaymentSuccess(event.data.object);
+              break;
+            case 'payment_intent.payment_failed':
+              result = await this.processPaymentFailure(event.data.object);
+              break;
+            case 'checkout.session.completed':
+              result = await this.processCheckoutCompleted(event.data.object);
+              break;
+            default:
+              result = { status: 'ignored', reason: 'Unhandled event type' };
+          }
+          
+          const processingTime = Date.now() - startTime;
+          
+          return {
+            ...result,
+            eventId: event.id,
+            eventType: event.type,
+            processingTimeMs: processingTime,
+            status: 'success'
+          };
+        } catch (error) {
+          const processingTime = Date.now() - startTime;
+          
+          return {
+            eventId: event.id,
+            eventType: event.type,
+            processingTimeMs: processingTime,
+            status: 'failed',
+            error: error.message
+          };
+        }
+      }
+    
+      async processPaymentSuccess(paymentIntent) {
+        // Idempotent payment processing
+        const orderId = paymentIntent.metadata.order_id;
+        
+        // Check if order is already marked as paid
+        const existingOrder = await this.getOrder(orderId);
+        if (existingOrder && existingOrder.status === 'paid') {
+          return { 
+            status: 'already_processed', 
+            orderId,
+            message: 'Order already marked as paid' 
+          };
+        }
+        
+        // Process payment
+        await this.updateOrderStatus(orderId, 'paid');
+        await this.sendConfirmationEmail(paymentIntent);
+        await this.triggerFulfillment(paymentIntent);
+        
+        return { 
+          status: 'processed', 
+          orderId,
+          actions: ['order_updated', 'email_sent', 'fulfillment_triggered']
+        };
+      }
+    
+      // Cleanup old processed events (prevent memory leaks)
+      cleanupOldEvents(maxAgeHours = 24) {
+        const cutoffTime = new Date(Date.now() - (maxAgeHours * 60 * 60 * 1000));
+        
+        for (const [key, value] of this.eventStore.entries()) {
+          if (new Date(value.processedAt) < cutoffTime) {
+            this.eventStore.delete(key);
+          }
+        }
+      }
+    }
+    
+    // Usage
+    const processor = new IdempotentWebhookProcessor();
+    
+    // Cleanup old events every hour
+    setInterval(() => {
+      processor.cleanupOldEvents(24);
+    }, 60 * 60 * 1000);
+    
+    app.post('/webhook', async (req, res) => {
+      try {
+        const result = await processor.processEvent(req.body);
+        res.json(result);
+      } catch (error) {
+        console.error('Webhook processing error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Fallback Recovery" icon="life-ring">
+    **Handle missed webhook events:**
+    
+    ```javascript
+    class WebhookFallbackSystem {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.missedEventChecks = new Map();
+      }
+    
+      // Check for missed events using checkout status API
+      async checkMissedCheckoutEvents(sessionId, expectedEvents = []) {
+        try {
+          const response = await fetch(`/checkout/${sessionId}/status`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const checkoutData = await response.json();
+          
+          // Compare expected vs actual events received
+          const missedEvents = this.identifyMissedEvents(checkoutData, expectedEvents);
+          
+          if (missedEvents.length > 0) {
+            console.log(`Found ${missedEvents.length} missed events for session ${sessionId}`);
+            
+            // Process missed events
+            for (const missedEvent of missedEvents) {
+              await this.processMissedEvent(missedEvent, checkoutData);
+            }
+          }
+          
+          return {
+            sessionId,
+            status: checkoutData.status,
+            missedEvents: missedEvents.length,
+            recovered: missedEvents.length > 0
+          };
+        } catch (error) {
+          console.error(`Failed to check missed events for session ${sessionId}:`, error);
+          throw error;
+        }
+      }
+    
+      identifyMissedEvents(checkoutData, expectedEvents) {
+        const missedEvents = [];
+        
+        // Check if checkout was completed but we didn't receive the event
+        if (checkoutData.status === 'completed' && 
+            !expectedEvents.includes('checkout.session.completed')) {
+          missedEvents.push({
+            type: 'checkout.session.completed',
+            data: checkoutData
+          });
+        }
+        
+        // Check if payment succeeded but we didn't receive the event
+        if (checkoutData.payment_status === 'paid' && 
+            !expectedEvents.includes('payment_intent.succeeded')) {
+          missedEvents.push({
+            type: 'payment_intent.succeeded',
+            data: checkoutData.payment_intent
+          });
+        }
+        
+        return missedEvents;
+      }
+    
+      async processMissedEvent(missedEvent, checkoutData) {
+        console.log(`Processing missed event: ${missedEvent.type}`);
+        
+        // Create synthetic event object
+        const syntheticEvent = {
+          id: `missed_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          type: missedEvent.type,
+          created: Math.floor(Date.now() / 1000),
+          data: {
+            object: missedEvent.data
+          },
+          synthetic: true // Mark as synthetic for tracking
+        };
+        
+        // Process the synthetic event
+        await this.processWebhookEvent(syntheticEvent);
+        
+        // Log recovery
+        this.logEventRecovery(syntheticEvent, checkoutData);
+      }
+    
+      async processWebhookEvent(event) {
+        // Standard webhook event processing
+        switch (event.type) {
+          case 'checkout.session.completed':
+            return this.handleCheckoutCompleted(event.data.object);
+          case 'payment_intent.succeeded':
+            return this.handlePaymentSuccess(event.data.object);
+          default:
+            console.log(`Unhandled event type: ${event.type}`);
+        }
+      }
+    
+      logEventRecovery(syntheticEvent, originalData) {
+        const recoveryLog = {
+          timestamp: new Date().toISOString(),
+          eventType: syntheticEvent.type,
+          eventId: syntheticEvent.id,
+          sessionId: originalData.id,
+          recoveryMethod: 'fallback_api_check',
+          originalStatus: originalData.status
+        };
+        
+        console.log('Event recovery completed:', recoveryLog);
+        
+        // Send to monitoring/analytics system
+        this.sendRecoveryMetrics(recoveryLog);
+      }
+    
+      // Scheduled fallback checks
+      async schedulePeriodicChecks(sessionIds, intervalMinutes = 5) {
+        const checkInterval = intervalMinutes * 60 * 1000;
+        
+        const intervalId = setInterval(async () => {
+          for (const sessionId of sessionIds) {
+            try {
+              await this.checkMissedCheckoutEvents(sessionId);
+            } catch (error) {
+              console.error(`Periodic check failed for session ${sessionId}:`, error);
+            }
+          }
+        }, checkInterval);
+        
+        // Stop checking after 2 hours
+        setTimeout(() => {
+          clearInterval(intervalId);
+          console.log('Stopped periodic fallback checks');
+        }, 2 * 60 * 60 * 1000);
+        
+        return intervalId;
+      }
+    
+      async sendRecoveryMetrics(recoveryLog) {
+        // Send to your monitoring system
+        try {
+          await fetch('/internal/metrics/webhook-recovery', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(recoveryLog)
+          });
+        } catch (error) {
+          console.error('Failed to send recovery metrics:', error);
+        }
+      }
+    }
+    
+    // Usage
+    const fallbackSystem = new WebhookFallbackSystem('YOUR_API_KEY');
+    
+    // Check for missed events after checkout creation
+    setTimeout(async () => {
+      await fallbackSystem.checkMissedCheckoutEvents('cs_session_123');
+    }, 30000); // Check after 30 seconds
+    
+    // Schedule periodic checks for active sessions
+    const activeSessionIds = ['cs_session_123', 'cs_session_456'];
+    fallbackSystem.schedulePeriodicChecks(activeSessionIds, 5);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Webhook Implementation Best Practices:**
+
+1. **Idempotency** - Always check for duplicate events using event IDs
+2. **Fast Response** - Respond quickly (< 10 seconds) to avoid retries
+3. **Secure Authentication** - Use strong API keys or basic auth credentials
+4. **Error Handling** - Implement robust error handling and logging
+5. **Fallback Mechanisms** - Use API polling as backup for critical events
+6. **Event Validation** - Validate event structure and required fields
+7. **Monitoring** - Track webhook delivery success rates and processing times
+8. **Testing** - Test webhook endpoints thoroughly with all event types
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Webhook Configuration" href="/guides/pay-api/webhooks/configuring-webhooks-notifications" icon="gear">
+    Set up and configure webhook endpoints
+  </Card>
+  <Card title="Payment Testing" href="/guides/pay-api/testing/testing-pay" icon="flask">
+    Test webhook events with test payments
+  </Card>
+  <Card title="Checkout Integration" href="/guides/pay-api/checkout/checkout-link-management" icon="link">
+    Create and manage checkout sessions
+  </Card>
+  <Card title="API Reference" href="/api-reference/PAY-API/webhooks" icon="book">
+    Explore the complete webhook API documentation
+  </Card>
+</CardGroup>

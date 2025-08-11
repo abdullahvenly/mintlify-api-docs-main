@@ -1,0 +1,865 @@
+---
+title: "Fiat On/Off Ramps Configuration"
+description: "Configure API keys for MoonPay, Transak, and Ramp Network to enable fiat-crypto conversion in sandbox and production environments"
+icon: "gear"
+---
+
+<Info>
+**Provider Configuration:** Set up your own API keys or use Venly's default keys for testing fiat on/off ramp integrations.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What is Fiat Ramp Configuration?
+
+Fiat ramp configuration allows you to set up API keys for three integrated providers (MoonPay, Transak, and Ramp Network) to enable cryptocurrency buying and selling through fiat currencies. You can use Venly's default keys for testing or configure your own keys for production deployment.
+
+<CardGroup cols={2}>
+  <Card title="Multiple Providers" icon="building">
+    Choose from MoonPay, Transak, and Ramp Network
+  </Card>
+  <Card title="Flexible Setup" icon="toggle-on">
+    Use default keys for testing or your own for production
+  </Card>
+  <Card title="All Plans Supported" icon="star">
+    Available for all plans, including trial accounts
+  </Card>
+  <Card title="Full Control" icon="shield">
+    Maintain compliance with your own API keys
+  </Card>
+</CardGroup>
+
+## Provider Overview
+
+<Tabs>
+  <Tab title="MoonPay">
+    **Global Coverage**
+    - 160+ countries supported
+    - 40+ fiat currencies
+    - Credit/debit cards and bank transfers
+    - Strong compliance framework
+    - Mobile-optimized experience
+  </Tab>
+  <Tab title="Transak">
+    **Comprehensive Solution**
+    - 100+ countries supported
+    - 60+ fiat currencies
+    - Multiple payment methods
+    - Competitive rates
+    - Developer-friendly APIs
+  </Tab>
+  <Tab title="Ramp Network">
+    **European Focus**
+    - Strong European presence
+    - SEPA instant transfers
+    - Low fees for EU users
+    - Quick settlement times
+    - Institutional-grade security
+  </Tab>
+</Tabs>
+
+## Environment Configuration
+
+### Sandbox Environment
+
+<Steps>
+  <Step title="Default Setup" icon="play">
+    Venly provides default API keys for all three providers in sandbox
+  </Step>
+  <Step title="Immediate Testing" icon="bolt">
+    Generate on/off ramp URLs without additional configuration
+  </Step>
+  <Step title="Optional Customization" icon="wrench">
+    Replace default keys with your own via the Developer Portal
+  </Step>
+  <Step title="Testing Ready" icon="check">
+    Start testing fiat ramp functionality immediately
+  </Step>
+</Steps>
+
+<Note>
+**Sandbox Benefits:** Default API keys allow immediate testing without provider registration, perfect for proof-of-concept development and initial integration testing.
+</Note>
+
+### Production Environment
+
+<Steps>
+  <Step title="Provider Registration" icon="user-plus">
+    Register with MoonPay, Transak, and/or Ramp Network
+  </Step>
+  <Step title="API Key Generation" icon="key">
+    Generate production API keys from each provider
+  </Step>
+  <Step title="Portal Configuration" icon="gear">
+    Configure keys in the Venly Developer Portal
+  </Step>
+  <Step title="Compliance Setup" icon="shield-check">
+    Ensure compliance requirements are met
+  </Step>
+  <Step title="Go Live" icon="rocket">
+    Deploy with your own API keys for full control
+  </Step>
+</Steps>
+
+<Warning>
+**Production Requirement:** You must configure your own API keys for production deployment. Venly does not provide production API keys to ensure you maintain full control over compliance and integration requirements.
+</Warning>
+
+## Configuration Process
+
+### Access Developer Portal
+
+<Steps>
+  <Step title="Login to Portal" icon="sign-in">
+    Navigate to the [Venly Developer Portal](https://portal.venly.io) and log in
+  </Step>
+  <Step title="Go to Integrations" icon="plug">
+    Click on the **Integrations** section in the navigation menu
+  </Step>
+  <Step title="Select Provider" icon="building">
+    Choose the provider you want to configure (MoonPay, Transak, or Ramp Network)
+  </Step>
+  <Step title="Add API Key" icon="key">
+    Enter your API key in the configuration form
+  </Step>
+  <Step title="Save Configuration" icon="floppy-disk">
+    Save your configuration and test the integration
+  </Step>
+</Steps>
+
+### Provider-Specific Setup
+
+<AccordionGroup>
+  <Accordion title="MoonPay Configuration" icon="moon">
+    **Getting MoonPay API Keys:**
+    
+    1. **Register with MoonPay**
+       - Visit [MoonPay's developer portal](https://www.moonpay.com/developers)
+       - Create a developer account
+       - Complete KYB (Know Your Business) verification
+    
+    2. **Generate API Keys**
+       - Access your MoonPay dashboard
+       - Navigate to API settings
+       - Generate sandbox and production keys
+       - Note down your publishable keys
+    
+    3. **Configure in Venly Portal**
+       - Go to Integrations → MoonPay
+       - Enter your publishable API key
+       - Select environment (sandbox/production)
+       - Save configuration
+    
+    **Key Features:**
+    - Supports both buy and sell flows
+    - Extensive global coverage
+    - Multiple payment methods
+    - Strong fraud prevention
+    
+    **Configuration Example:**
+    ```json
+    {
+      "provider": "moonpay",
+      "environment": "production",
+      "apiKey": "pk_live_your_moonpay_key_here",
+      "webhookSecret": "whsec_your_webhook_secret"
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Transak Configuration" icon="exchange">
+    **Getting Transak API Keys:**
+    
+    1. **Register with Transak**
+       - Visit [Transak's integration portal](https://integrate.transak.com/)
+       - Create a business account
+       - Complete compliance verification
+    
+    2. **API Key Setup**
+       - Access your Transak dashboard
+       - Go to API section
+       - Generate staging and production keys
+       - Configure webhook endpoints
+    
+    3. **Venly Portal Setup**
+       - Navigate to Integrations → Transak
+       - Input your API key
+       - Configure environment settings
+       - Test the integration
+    
+    **Key Features:**
+    - Global fiat-to-crypto gateway
+    - 100+ countries supported
+    - Multiple cryptocurrencies
+    - Regulatory compliant
+    
+    **Configuration Example:**
+    ```json
+    {
+      "provider": "transak",
+      "environment": "production",
+      "apiKey": "your_transak_api_key",
+      "environment": "PRODUCTION",
+      "hostURL": "https://global.transak.com"
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Ramp Network Configuration" icon="network-wired">
+    **Getting Ramp Network API Keys:**
+    
+    1. **Partner Registration**
+       - Contact [Ramp Network](https://ramp.network/partners)
+       - Complete partner application
+       - Undergo compliance review
+    
+    2. **Integration Setup**
+       - Receive API credentials
+       - Access partner dashboard
+       - Configure webhook endpoints
+       - Set up compliance settings
+    
+    3. **Portal Configuration**
+       - Go to Integrations → Ramp Network
+       - Enter your host API key
+       - Configure environment
+       - Validate setup
+    
+    **Key Features:**
+    - European market focus
+    - SEPA instant transfers
+    - Low transaction fees
+    - Institutional security
+    
+    **Configuration Example:**
+    ```json
+    {
+      "provider": "ramp",
+      "environment": "production",
+      "hostApiKey": "your_ramp_host_api_key",
+      "hostLogoUrl": "https://your-domain.com/logo.png",
+      "hostAppName": "Your App Name"
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Configuration Strategies
+
+<AccordionGroup>
+  <Accordion title="Multi-Provider Setup" icon="layer-group">
+    **Configure multiple providers for optimal coverage:**
+    
+    ```javascript
+    class MultiProviderManager {
+      constructor() {
+        this.providers = {
+          moonpay: {
+            regions: ['US', 'EU', 'UK', 'CA'],
+            strengths: ['global_coverage', 'mobile_optimized'],
+            apiKey: process.env.MOONPAY_API_KEY
+          },
+          transak: {
+            regions: ['GLOBAL'],
+            strengths: ['wide_crypto_support', 'competitive_rates'],
+            apiKey: process.env.TRANSAK_API_KEY
+          },
+          ramp: {
+            regions: ['EU'],
+            strengths: ['sepa_transfers', 'low_fees'],
+            apiKey: process.env.RAMP_API_KEY
+          }
+        };
+      }
+    
+      selectOptimalProvider(userLocation, cryptoType, amount) {
+        // Provider selection logic based on:
+        // - User location
+        // - Cryptocurrency type
+        // - Transaction amount
+        // - Provider availability
+        
+        const availableProviders = this.getAvailableProviders(userLocation);
+        const bestProvider = this.rankProviders(availableProviders, {
+          cryptoType,
+          amount,
+          userLocation
+        });
+        
+        return bestProvider;
+      }
+    
+      getAvailableProviders(userLocation) {
+        return Object.entries(this.providers)
+          .filter(([name, config]) => 
+            config.regions.includes(userLocation) || 
+            config.regions.includes('GLOBAL')
+          )
+          .map(([name, config]) => ({ name, ...config }));
+      }
+    
+      rankProviders(providers, criteria) {
+        // Implement ranking algorithm based on:
+        // - Fees
+        // - Processing time
+        // - Success rates
+        // - User preferences
+        
+        return providers.sort((a, b) => {
+          const scoreA = this.calculateProviderScore(a, criteria);
+          const scoreB = this.calculateProviderScore(b, criteria);
+          return scoreB - scoreA;
+        })[0];
+      }
+    
+      calculateProviderScore(provider, criteria) {
+        let score = 0;
+        
+        // Location preference
+        if (provider.regions.includes(criteria.userLocation)) {
+          score += 10;
+        }
+        
+        // Amount-based scoring
+        if (criteria.amount > 1000 && provider.name === 'ramp') {
+          score += 5; // Ramp better for larger amounts
+        }
+        
+        // Crypto support
+        if (criteria.cryptoType === 'BTC' && provider.name === 'moonpay') {
+          score += 3; // MoonPay has good BTC support
+        }
+        
+        return score;
+      }
+    }
+    
+    // Usage
+    const providerManager = new MultiProviderManager();
+    const bestProvider = providerManager.selectOptimalProvider('EU', 'ETH', 500);
+    console.log('Recommended provider:', bestProvider.name);
+    ```
+  </Accordion>
+  
+  <Accordion title="Environment Management" icon="server">
+    **Manage different environments effectively:**
+    
+    ```javascript
+    class EnvironmentManager {
+      constructor() {
+        this.environments = {
+          development: {
+            useVenlyDefaults: true,
+            providers: {
+              moonpay: { apiKey: 'venly_default' },
+              transak: { apiKey: 'venly_default' },
+              ramp: { apiKey: 'venly_default' }
+            }
+          },
+          staging: {
+            useVenlyDefaults: false,
+            providers: {
+              moonpay: { apiKey: process.env.MOONPAY_STAGING_KEY },
+              transak: { apiKey: process.env.TRANSAK_STAGING_KEY },
+              ramp: { apiKey: process.env.RAMP_STAGING_KEY }
+            }
+          },
+          production: {
+            useVenlyDefaults: false,
+            providers: {
+              moonpay: { apiKey: process.env.MOONPAY_PROD_KEY },
+              transak: { apiKey: process.env.TRANSAK_PROD_KEY },
+              ramp: { apiKey: process.env.RAMP_PROD_KEY }
+            }
+          }
+        };
+      }
+    
+      getProviderConfig(environment, provider) {
+        const envConfig = this.environments[environment];
+        
+        if (!envConfig) {
+          throw new Error(`Unknown environment: ${environment}`);
+        }
+        
+        if (envConfig.useVenlyDefaults) {
+          return {
+            provider,
+            apiKey: 'venly_default',
+            environment: 'sandbox'
+          };
+        }
+        
+        const providerConfig = envConfig.providers[provider];
+        if (!providerConfig || !providerConfig.apiKey) {
+          throw new Error(`API key not configured for ${provider} in ${environment}`);
+        }
+        
+        return {
+          provider,
+          apiKey: providerConfig.apiKey,
+          environment: environment === 'production' ? 'production' : 'sandbox'
+        };
+      }
+    
+      validateConfiguration(environment) {
+        const envConfig = this.environments[environment];
+        const issues = [];
+        
+        if (environment === 'production' && envConfig.useVenlyDefaults) {
+          issues.push('Production environment cannot use Venly default keys');
+        }
+        
+        Object.entries(envConfig.providers).forEach(([provider, config]) => {
+          if (!envConfig.useVenlyDefaults && !config.apiKey) {
+            issues.push(`Missing API key for ${provider} in ${environment}`);
+          }
+        });
+        
+        return {
+          valid: issues.length === 0,
+          issues
+        };
+      }
+    
+      switchEnvironment(newEnvironment) {
+        const validation = this.validateConfiguration(newEnvironment);
+        
+        if (!validation.valid) {
+          throw new Error(`Cannot switch to ${newEnvironment}: ${validation.issues.join(', ')}`);
+        }
+        
+        console.log(`Switched to ${newEnvironment} environment`);
+        return newEnvironment;
+      }
+    }
+    
+    // Usage
+    const envManager = new EnvironmentManager();
+    
+    // Get configuration for specific provider and environment
+    const moonpayConfig = envManager.getProviderConfig('production', 'moonpay');
+    
+    // Validate environment before deployment
+    const validation = envManager.validateConfiguration('production');
+    if (!validation.valid) {
+      console.error('Configuration issues:', validation.issues);
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="API Key Security" icon="lock">
+    **Implement secure API key management:**
+    
+    ```javascript
+    class SecureKeyManager {
+      constructor() {
+        this.keyStore = new Map();
+        this.encryptionKey = process.env.ENCRYPTION_KEY;
+      }
+    
+      storeApiKey(provider, environment, apiKey) {
+        const keyId = `${provider}_${environment}`;
+        const encryptedKey = this.encrypt(apiKey);
+        
+        this.keyStore.set(keyId, {
+          encrypted: encryptedKey,
+          createdAt: Date.now(),
+          lastUsed: null,
+          usageCount: 0
+        });
+        
+        console.log(`API key stored for ${provider} (${environment})`);
+      }
+    
+      getApiKey(provider, environment) {
+        const keyId = `${provider}_${environment}`;
+        const keyData = this.keyStore.get(keyId);
+        
+        if (!keyData) {
+          throw new Error(`API key not found for ${provider} (${environment})`);
+        }
+        
+        // Update usage tracking
+        keyData.lastUsed = Date.now();
+        keyData.usageCount++;
+        
+        return this.decrypt(keyData.encrypted);
+      }
+    
+      rotateApiKey(provider, environment, newApiKey) {
+        const keyId = `${provider}_${environment}`;
+        const oldKeyData = this.keyStore.get(keyId);
+        
+        if (oldKeyData) {
+          // Archive old key
+          this.keyStore.set(`${keyId}_archived_${Date.now()}`, {
+            ...oldKeyData,
+            archivedAt: Date.now()
+          });
+        }
+        
+        // Store new key
+        this.storeApiKey(provider, environment, newApiKey);
+        
+        console.log(`API key rotated for ${provider} (${environment})`);
+      }
+    
+      validateApiKey(provider, environment, apiKey) {
+        // Implement API key validation logic
+        const validationRules = {
+          moonpay: /^pk_(test|live)_[a-zA-Z0-9]{32,}$/,
+          transak: /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,
+          ramp: /^[a-zA-Z0-9]{32,}$/
+        };
+        
+        const pattern = validationRules[provider];
+        if (!pattern) {
+          throw new Error(`Unknown provider: ${provider}`);
+        }
+        
+        const isValid = pattern.test(apiKey);
+        
+        if (!isValid) {
+          throw new Error(`Invalid API key format for ${provider}`);
+        }
+        
+        // Additional environment-specific validation
+        if (environment === 'production' && provider === 'moonpay' && apiKey.startsWith('pk_test_')) {
+          throw new Error('Test API key cannot be used in production');
+        }
+        
+        return true;
+      }
+    
+      encrypt(text) {
+        // Implement encryption logic
+        // This is a simplified example
+        return Buffer.from(text).toString('base64');
+      }
+    
+      decrypt(encryptedText) {
+        // Implement decryption logic
+        // This is a simplified example
+        return Buffer.from(encryptedText, 'base64').toString();
+      }
+    
+      getUsageStatistics() {
+        const stats = {};
+        
+        this.keyStore.forEach((keyData, keyId) => {
+          if (!keyId.includes('_archived_')) {
+            stats[keyId] = {
+              usageCount: keyData.usageCount,
+              lastUsed: keyData.lastUsed,
+              createdAt: keyData.createdAt
+            };
+          }
+        });
+        
+        return stats;
+      }
+    }
+    
+    // Usage
+    const keyManager = new SecureKeyManager();
+    
+    // Store API keys securely
+    keyManager.storeApiKey('moonpay', 'production', 'pk_live_your_key_here');
+    keyManager.storeApiKey('transak', 'production', 'your-transak-uuid-key');
+    
+    // Retrieve API key when needed
+    const moonpayKey = keyManager.getApiKey('moonpay', 'production');
+    
+    // Rotate API key
+    keyManager.rotateApiKey('moonpay', 'production', 'pk_live_new_key_here');
+    ```
+  </Accordion>
+  
+  <Accordion title="Configuration Validation" icon="check-circle">
+    **Validate provider configurations:**
+    
+    ```javascript
+    class ConfigurationValidator {
+      constructor() {
+        this.validationRules = {
+          moonpay: {
+            requiredFields: ['apiKey'],
+            apiKeyPattern: /^pk_(test|live)_[a-zA-Z0-9]{32,}$/,
+            environments: ['sandbox', 'production']
+          },
+          transak: {
+            requiredFields: ['apiKey'],
+            apiKeyPattern: /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/,
+            environments: ['STAGING', 'PRODUCTION']
+          },
+          ramp: {
+            requiredFields: ['hostApiKey'],
+            apiKeyPattern: /^[a-zA-Z0-9]{32,}$/,
+            environments: ['demo', 'production']
+          }
+        };
+      }
+    
+      async validateProviderConfig(provider, config) {
+        const rules = this.validationRules[provider];
+        if (!rules) {
+          throw new Error(`Unknown provider: ${provider}`);
+        }
+    
+        const errors = [];
+        const warnings = [];
+    
+        // Check required fields
+        rules.requiredFields.forEach(field => {
+          if (!config[field]) {
+            errors.push(`Missing required field: ${field}`);
+          }
+        });
+    
+        // Validate API key format
+        if (config.apiKey || config.hostApiKey) {
+          const keyToValidate = config.apiKey || config.hostApiKey;
+          if (!rules.apiKeyPattern.test(keyToValidate)) {
+            errors.push(`Invalid API key format for ${provider}`);
+          }
+        }
+    
+        // Environment validation
+        if (config.environment && !rules.environments.includes(config.environment)) {
+          errors.push(`Invalid environment: ${config.environment}. Valid options: ${rules.environments.join(', ')}`);
+        }
+    
+        // Provider-specific validations
+        const specificValidation = await this.validateProviderSpecific(provider, config);
+        errors.push(...specificValidation.errors);
+        warnings.push(...specificValidation.warnings);
+    
+        return {
+          valid: errors.length === 0,
+          errors,
+          warnings
+        };
+      }
+    
+      async validateProviderSpecific(provider, config) {
+        const errors = [];
+        const warnings = [];
+    
+        switch (provider) {
+          case 'moonpay':
+            // Test API key connectivity
+            try {
+              await this.testMoonPayConnection(config.apiKey);
+            } catch (error) {
+              errors.push(`MoonPay API key test failed: ${error.message}`);
+            }
+            
+            // Check environment consistency
+            if (config.environment === 'production' && config.apiKey.startsWith('pk_test_')) {
+              errors.push('Test API key cannot be used in production environment');
+            }
+            break;
+    
+          case 'transak':
+            // Validate Transak-specific settings
+            if (config.environment === 'PRODUCTION' && !config.apiKey) {
+              errors.push('Production environment requires API key');
+            }
+            break;
+    
+          case 'ramp':
+            // Validate Ramp Network settings
+            if (!config.hostAppName) {
+              warnings.push('hostAppName not specified, will use default');
+            }
+            break;
+        }
+    
+        return { errors, warnings };
+      }
+    
+      async testMoonPayConnection(apiKey) {
+        // Simplified connection test
+        const testUrl = `https://api.moonpay.com/v3/currencies?apiKey=${apiKey}`;
+        
+        try {
+          const response = await fetch(testUrl);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          return true;
+        } catch (error) {
+          throw new Error(`Connection test failed: ${error.message}`);
+        }
+      }
+    
+      async validateAllConfigurations(configurations) {
+        const results = {};
+        
+        for (const [provider, config] of Object.entries(configurations)) {
+          try {
+            results[provider] = await this.validateProviderConfig(provider, config);
+          } catch (error) {
+            results[provider] = {
+              valid: false,
+              errors: [error.message],
+              warnings: []
+            };
+          }
+        }
+        
+        return results;
+      }
+    
+      generateConfigurationReport(validationResults) {
+        const report = {
+          summary: {
+            total: Object.keys(validationResults).length,
+            valid: 0,
+            invalid: 0,
+            warnings: 0
+          },
+          details: validationResults
+        };
+        
+        Object.values(validationResults).forEach(result => {
+          if (result.valid) {
+            report.summary.valid++;
+          } else {
+            report.summary.invalid++;
+          }
+          
+          if (result.warnings.length > 0) {
+            report.summary.warnings++;
+          }
+        });
+        
+        return report;
+      }
+    }
+    
+    // Usage
+    const validator = new ConfigurationValidator();
+    
+    const configurations = {
+      moonpay: {
+        apiKey: 'pk_live_your_key_here',
+        environment: 'production'
+      },
+      transak: {
+        apiKey: 'your-transak-uuid',
+        environment: 'PRODUCTION'
+      },
+      ramp: {
+        hostApiKey: 'your-ramp-key',
+        environment: 'production',
+        hostAppName: 'Your App'
+      }
+    };
+    
+    const validationResults = await validator.validateAllConfigurations(configurations);
+    const report = validator.generateConfigurationReport(validationResults);
+    
+    console.log('Configuration Report:', report);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Testing Your Configuration
+
+<Steps>
+  <Step title="Generate Test URLs" icon="link">
+    Create on/off ramp URLs using your configured providers
+  </Step>
+  <Step title="Test User Flow" icon="user">
+    Complete test transactions to verify the integration
+  </Step>
+  <Step title="Verify Webhooks" icon="webhook">
+    Ensure webhook notifications are received correctly
+  </Step>
+  <Step title="Monitor Performance" icon="chart-line">
+    Track success rates and user experience metrics
+  </Step>
+  <Step title="Production Readiness" icon="rocket">
+    Validate all configurations before going live
+  </Step>
+</Steps>
+
+## Best Practices
+
+<Tip>
+**Configuration Best Practices:**
+
+1. **Environment Separation** - Use different API keys for sandbox and production
+2. **Key Security** - Store API keys securely and rotate them regularly
+3. **Provider Testing** - Test all providers thoroughly before production
+4. **Monitoring Setup** - Implement monitoring for API key usage and success rates
+5. **Compliance Verification** - Ensure all providers meet your compliance requirements
+6. **Backup Providers** - Configure multiple providers for redundancy
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="API key validation failed">
+    **Common issues:**
+    - Incorrect API key format
+    - Using test keys in production
+    - Expired or revoked keys
+    - Wrong environment configuration
+    
+    **Solution:** Verify API key format, check environment settings, and regenerate keys if necessary.
+  </Accordion>
+  
+  <Accordion title="Provider not responding">
+    **Possible causes:**
+    - Network connectivity issues
+    - Provider service outage
+    - Rate limiting
+    - Invalid configuration
+    
+    **Solution:** Check provider status pages, verify configuration, and implement retry logic.
+  </Accordion>
+  
+  <Accordion title="Transaction failures">
+    **Common reasons:**
+    - Insufficient user verification
+    - Unsupported currency pairs
+    - Amount limits exceeded
+    - Geographic restrictions
+    
+    **Solution:** Review provider documentation, check user requirements, and verify supported regions.
+  </Accordion>
+  
+  <Accordion title="Webhook issues">
+    **Potential problems:**
+    - Incorrect webhook URL
+    - SSL certificate issues
+    - Authentication failures
+    - Payload validation errors
+    
+    **Solution:** Verify webhook configuration, check SSL setup, and validate payload handling.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Generate On-Ramp URLs" href="/guides/pay-api/fiat-ramps/fiat-on-ramps" icon="arrow-up">
+    Create URLs for users to buy cryptocurrency
+  </Card>
+  <Card title="Generate Off-Ramp URLs" href="/guides/pay-api/fiat-ramps/fiat-off-ramps" icon="arrow-down">
+    Create URLs for users to sell cryptocurrency
+  </Card>
+  <Card title="Supported Currencies" href="/PAY-API-Basic-Guides/on-ramp-off-ramp-supported-fiat-crypto-currencies" icon="list">
+    View supported fiat and crypto currencies
+  </Card>
+  <Card title="Webhook Configuration" href="/PAY-API-Basic-Guides/configuring-webhooks-notifications" icon="webhook">
+    Set up webhook notifications for transactions
+  </Card>
+</CardGroup>
+
+<Note>
+**Availability:** Fiat on/off ramp URL generation is available for all plans, including trial accounts, making it easy to test and integrate these features into your application.
+</Note>

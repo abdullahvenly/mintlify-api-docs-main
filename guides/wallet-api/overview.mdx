@@ -1,0 +1,491 @@
+---
+title: "Wallet API Overview"
+description: "Comprehensive overview of Venly's Wallet API - complete blockchain wallet infrastructure for developers with multi-chain support"
+icon: "wallet"
+---
+
+<Info>
+**Venly Wallet API** provides complete blockchain wallet infrastructure, enabling developers to integrate wallet functionality without building everything from scratch.
+</Info>
+
+## What is the Wallet API?
+
+The **Wallet API** allows developers to interact with blockchain networks and offer wallet functionality to their users without having to build everything from scratch. This includes account creation, transaction management, balance inquiries, and more.
+
+The Wallet API serves as a comprehensive blockchain infrastructure solution that abstracts the complexity of blockchain interactions while providing enterprise-grade security and scalability.
+
+<CardGroup cols={2}>
+  <Card title="Wallet Management" icon="wallet">
+    Create, manage, and secure wallets for your users
+  </Card>
+  <Card title="Multi-Chain Support" icon="link">
+    Support for 17+ blockchain networks in one API
+  </Card>
+  <Card title="Transaction Services" icon="paper-plane">
+    Initiate and monitor blockchain transactions
+  </Card>
+  <Card title="Enterprise Security" icon="shield">
+    Bank-grade security with advanced signing methods
+  </Card>
+</CardGroup>
+
+## Key Features & Capabilities
+
+<Tabs>
+  <Tab title="Core Features">
+    | Feature | Description |
+    |---------|-------------|
+    | **Wallet Management** | Create, manage, and secure wallets for your users |
+    | **Transaction Services** | Initiate and monitor blockchain transactions |
+    | **Token Support** | Handle various tokens and assets on supported networks |
+    | **Blockchain Interactions** | Read/write data to blockchains and interact with smart contracts |
+    | **Security Features** | Advanced security with multiple signing methods |
+    | **User Experience Enhancement** | Smooth blockchain application interactions |
+    | **Multi-Blockchain Support** | Support for 17+ blockchain networks |
+  </Tab>
+  <Tab title="Advanced Capabilities">
+    | Feature | Description |
+    |---------|-------------|
+    | **Smart Contract Interaction** | Deploy and interact with smart contracts |
+    | **NFT Management** | Complete NFT handling and metadata management |
+    | **Token Swapping** | Built-in DEX integration for token exchanges |
+    | **Gas Management** | Automatic gas estimation and optimization |
+    | **Signature Services** | Advanced cryptographic signing capabilities |
+    | **Webhook Integration** | Real-time event notifications |
+    | **Balance Tracking** | Real-time balance updates across all chains |
+  </Tab>
+</Tabs>
+
+## Supported Blockchains
+
+<Note>
+The Wallet API currently supports 17+ blockchain networks, providing comprehensive multi-chain functionality.
+</Note>
+
+<CardGroup cols={3}>
+  <Card title="Ethereum" icon="ethereum">
+    **ETH**
+    - Most established network
+    - Largest DeFi ecosystem
+    - Smart contract platform
+    - ERC-20/721/1155 support
+  </Card>
+  <Card title="Polygon" icon="polygon">
+    **MATIC**
+    - Low gas fees
+    - Fast transactions
+    - Ethereum compatibility
+    - Scaling solution
+  </Card>
+  <Card title="Binance Smart Chain" icon="binance">
+    **BSC**
+    - High throughput
+    - Low costs
+    - DeFi ecosystem
+    - Cross-chain bridges
+  </Card>
+  <Card title="Avalanche" icon="avalanche">
+    **AVAX**
+    - Sub-second finality
+    - High throughput
+    - Eco-friendly
+    - Subnet architecture
+  </Card>
+  <Card title="Arbitrum" icon="arbitrum">
+    **ARB**
+    - Ethereum Layer 2
+    - Reduced gas costs
+    - Full EVM compatibility
+    - Optimistic rollups
+  </Card>
+  <Card title="Optimism" icon="optimism">
+    **OP**
+    - Ethereum scaling
+    - Low transaction fees
+    - Fast confirmations
+    - EVM equivalent
+  </Card>
+  <Card title="Base" icon="base">
+    **BASE**
+    - Coinbase L2
+    - Low fees
+    - Developer friendly
+    - Growing ecosystem
+  </Card>
+  <Card title="Hedera" icon="hedera">
+    **HBAR**
+    - Enterprise grade
+    - Fast & secure
+    - Low fees
+    - Hashgraph consensus
+  </Card>
+  <Card title="Bitcoin" icon="bitcoin">
+    **BTC**
+    - Digital gold
+    - Store of value
+    - Peer-to-peer
+    - Decentralized
+  </Card>
+  <Card title="Solana" icon="solana">
+    **SOL**
+    - High performance
+    - Low costs
+    - Fast transactions
+    - Growing ecosystem
+  </Card>
+  <Card title="Immutable" icon="immutable">
+    **IMX**
+    - Gaming focused
+    - Zero gas fees
+    - Ethereum security
+    - NFT optimized
+  </Card>
+  <Card title="VeChain" icon="vechain">
+    **VET**
+    - Supply chain focus
+    - Enterprise adoption
+    - Sustainability
+    - IoT integration
+  </Card>
+</CardGroup>
+
+<AccordionGroup>
+  <Accordion title="Complete Blockchain List" icon="list">
+    **All Supported Networks:**
+    - **Ethereum** - The foundational smart contract platform
+    - **Polygon (MATIC)** - Ethereum scaling solution with low fees
+    - **Binance Smart Chain** - High-performance blockchain
+    - **Avalanche** - Fast, eco-friendly blockchain platform
+    - **Arbitrum** - Ethereum Layer 2 scaling solution
+    - **Hedera** - Enterprise-grade distributed ledger
+    - **Base** - Coinbase's Layer 2 solution
+    - **Aeternity** - Scalable blockchain with state channels
+    - **Bitcoin** - The original cryptocurrency
+    - **LiteCoin** - Silver to Bitcoin's gold
+    - **GoChain** - Ethereum-compatible blockchain
+    - **VeChain** - Supply chain and IoT focused
+    - **NEO** - Smart economy platform
+    - **Optimism** - Ethereum Layer 2 solution
+    - **Immutable** - Gaming and NFT focused
+    - **XPLA** - Gaming blockchain platform
+    - **Solana** - High-performance blockchain
+    
+    Learn more about [supported blockchain networks](https://docs.venly.io/docs/environments#blockchain-networks).
+  </Accordion>
+</AccordionGroup>
+
+## Use Cases & Applications
+
+<AccordionGroup>
+  <Accordion title="DeFi Applications" icon="chart-line">
+    **Decentralized Finance Solutions**
+    - Multi-chain DeFi protocol integration
+    - Automated yield farming and staking
+    - Cross-chain asset management
+    - Liquidity provision and management
+    
+    **Implementation Benefits:**
+    - Access to multiple DeFi protocols
+    - Automated portfolio rebalancing
+    - Cross-chain arbitrage opportunities
+    - Simplified user experience
+  </Accordion>
+  
+  <Accordion title="Gaming Platforms" icon="gamepad">
+    **Blockchain Gaming Infrastructure**
+    - In-game asset management
+    - Player wallet creation and management
+    - NFT trading and marketplace integration
+    - Cross-game asset interoperability
+    
+    **Implementation Benefits:**
+    - Seamless player onboarding
+    - True asset ownership
+    - Cross-platform compatibility
+    - Monetization opportunities
+  </Accordion>
+  
+  <Accordion title="NFT Marketplaces" icon="image">
+    **Digital Asset Trading Platforms**
+    - NFT minting and management
+    - Marketplace wallet integration
+    - Royalty distribution systems
+    - Cross-chain NFT support
+    
+    **Implementation Benefits:**
+    - Complete NFT lifecycle management
+    - Multi-chain marketplace support
+    - Automated royalty payments
+    - Enhanced user experience
+  </Accordion>
+  
+  <Accordion title="Enterprise Solutions" icon="building">
+    **Corporate Blockchain Integration**
+    - Employee wallet management
+    - Corporate treasury solutions
+    - Supply chain tracking
+    - Digital identity management
+    
+    **Implementation Benefits:**
+    - Enterprise-grade security
+    - Compliance and audit trails
+    - Scalable infrastructure
+    - Custom integration options
+  </Accordion>
+  
+  <Accordion title="Fintech Applications" icon="credit-card">
+    **Financial Technology Solutions**
+    - Digital payment systems
+    - Remittance and cross-border payments
+    - Cryptocurrency exchanges
+    - Investment platforms
+    
+    **Implementation Benefits:**
+    - Reduced transaction costs
+    - Faster settlement times
+    - Global accessibility
+    - Regulatory compliance
+  </Accordion>
+</AccordionGroup>
+
+## API Architecture & Components
+
+### User Management
+- **User Creation** - Create and manage user accounts
+- **Signing Methods** - Multiple authentication options (PIN, Biometric, Emergency)
+- **User Profiles** - Customizable user data and preferences
+- **Access Control** - Role-based permissions and security
+
+### Wallet Infrastructure
+- **Multi-Chain Wallets** - Support for 17+ blockchain networks
+- **Wallet Types** - Custodial and non-custodial options
+- **Backup & Recovery** - Secure wallet backup and restoration
+- **Wallet Linking** - Connect multiple wallets to users
+
+### Transaction Management
+- **Transaction Building** - Construct transactions for any supported chain
+- **Gas Optimization** - Automatic gas estimation and optimization
+- **Transaction Monitoring** - Real-time status tracking
+- **Batch Transactions** - Execute multiple transactions efficiently
+
+### Token & Asset Support
+- **Native Tokens** - Support for all native blockchain tokens
+- **ERC-20 Tokens** - Complete ERC-20 token management
+- **NFTs** - ERC-721 and ERC-1155 support
+- **Custom Tokens** - Support for custom token standards
+
+### Smart Contract Integration
+- **Contract Deployment** - Deploy smart contracts
+- **Contract Interaction** - Read and write contract data
+- **Event Monitoring** - Listen to contract events
+- **ABI Management** - Handle contract interfaces
+
+## Security Features
+
+<Tabs>
+  <Tab title="Authentication">
+    **Multi-Factor Authentication**
+    - PIN-based authentication
+    - Biometric authentication
+    - Emergency code recovery
+    - Hardware security module integration
+    
+    **Access Control**
+    - Role-based permissions
+    - API key management
+    - IP whitelisting
+    - Rate limiting
+  </Tab>
+  <Tab title="Wallet Security">
+    **Cryptographic Security**
+    - Industry-standard encryption
+    - Secure key generation
+    - Hardware security modules
+    - Multi-signature support
+    
+    **Backup & Recovery**
+    - Encrypted backup systems
+    - Multiple recovery methods
+    - Secure key storage
+    - Disaster recovery procedures
+  </Tab>
+  <Tab title="Transaction Security">
+    **Transaction Validation**
+    - Multi-signature requirements
+    - Transaction limits
+    - Fraud detection
+    - Real-time monitoring
+    
+    **Network Security**
+    - Secure API endpoints
+    - TLS encryption
+    - DDoS protection
+    - Intrusion detection
+  </Tab>
+</Tabs>
+
+## Getting Started
+
+<Steps>
+  <Step title="Account Setup" icon="user-plus">
+    Create your Venly developer account and get API credentials
+  </Step>
+  <Step title="Authentication" icon="key">
+    Set up API authentication with your client credentials
+  </Step>
+  <Step title="Create Users" icon="users">
+    Create user accounts for your application users
+  </Step>
+  <Step title="Set Up Signing Methods" icon="fingerprint">
+    Configure authentication methods for your users
+  </Step>
+  <Step title="Create Wallets" icon="wallet">
+    Create blockchain wallets for your users
+  </Step>
+  <Step title="Execute Transactions" icon="paper-plane">
+    Start sending transactions and managing assets
+  </Step>
+  <Step title="Monitor & Scale" icon="chart-line">
+    Monitor usage and scale your application
+  </Step>
+</Steps>
+
+## API Capabilities Deep Dive
+
+### Balance Management
+- **Real-time Balances** - Live balance updates across all chains
+- **Token Discovery** - Automatic token detection and metadata
+- **Portfolio Tracking** - Complete asset portfolio management
+- **Historical Data** - Transaction and balance history
+
+### Transaction Services
+- **Transaction Types** - Support for all transaction types
+- **Fee Estimation** - Accurate gas and fee calculations
+- **Transaction Queuing** - Manage transaction sequences
+- **Retry Logic** - Automatic transaction retry mechanisms
+
+### Smart Contract Features
+- **Contract Templates** - Pre-built contract templates
+- **Custom Contracts** - Deploy and manage custom contracts
+- **Event Listening** - Real-time contract event monitoring
+- **Contract Verification** - Verify contract source code
+
+### Integration Features
+- **Webhook Support** - Real-time event notifications
+- **SDK Availability** - Multiple programming language SDKs
+- **API Documentation** - Comprehensive API reference
+- **Developer Tools** - Testing and debugging utilities
+
+## Advanced Features
+
+<AccordionGroup>
+  <Accordion title="Token Swapping" icon="arrows-rotate">
+    **Built-in DEX Integration**
+    - Cross-chain token swaps
+    - Best price routing
+    - Slippage protection
+    - MEV protection
+    
+    **Supported DEXs:**
+    - Uniswap and forks
+    - 1inch aggregation
+    - Cross-chain bridges
+    - Custom liquidity sources
+  </Accordion>
+  
+  <Accordion title="NFT Management" icon="image">
+    **Complete NFT Infrastructure**
+    - NFT minting and management
+    - Metadata handling
+    - Royalty management
+    - Cross-chain NFT support
+    
+    **NFT Features:**
+    - ERC-721 and ERC-1155 support
+    - Batch operations
+    - Metadata validation
+    - IPFS integration
+  </Accordion>
+  
+  <Accordion title="Signature Services" icon="signature">
+    **Advanced Cryptographic Operations**
+    - Message signing
+    - Typed data signing
+    - Multi-signature support
+    - Hardware wallet integration
+    
+    **Signature Types:**
+    - Personal messages
+    - EIP-712 typed data
+    - Transaction signatures
+    - Custom signature schemes
+  </Accordion>
+  
+  <Accordion title="Analytics & Monitoring" icon="chart-bar">
+    **Comprehensive Analytics**
+    - Transaction analytics
+    - User behavior tracking
+    - Performance monitoring
+    - Cost analysis
+    
+    **Monitoring Features:**
+    - Real-time dashboards
+    - Alert systems
+    - Performance metrics
+    - Usage statistics
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Wallet API Best Practices:**
+
+1. **Security First** - Always use secure signing methods and validate transactions
+2. **Error Handling** - Implement comprehensive error handling and retry logic
+3. **Gas Management** - Monitor and optimize gas usage across transactions
+4. **User Experience** - Provide clear feedback and status updates to users
+5. **Testing** - Thoroughly test on testnets before mainnet deployment
+6. **Monitoring** - Implement proper logging and monitoring systems
+7. **Backup Strategies** - Ensure proper wallet backup and recovery procedures
+8. **Compliance** - Maintain compliance with relevant regulations
+</Tip>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" href="/guides/wallet-api/quickstart" icon="rocket">
+    Follow our step-by-step guide to create your first wallet
+  </Card>
+  <Card title="User Management" href="/Wallet-API-Basic-Guides/create-a-user" icon="users">
+    Learn how to create and manage users
+  </Card>
+  <Card title="Wallet Creation" href="/Wallet-API-Basic-Guides/create-a-wallet" icon="wallet">
+    Create and manage blockchain wallets
+  </Card>
+  <Card title="Transaction Guide" href="/Wallet-API-Basic-Guides/transfer-a-native-token-1" icon="paper-plane">
+    Execute your first blockchain transaction
+  </Card>
+</CardGroup>
+
+## Support & Resources
+
+<AccordionGroup>
+  <Accordion title="API Reference" icon="book">
+    Complete API documentation with all endpoints, parameters, and examples available in our [API Reference](https://docs.venly.io/reference).
+  </Accordion>
+  
+  <Accordion title="Developer Portal" icon="portal">
+    Access your API keys, monitor usage, and manage your applications in the [Venly Portal](https://portal.venly.io).
+  </Accordion>
+  
+  <Accordion title="SDKs & Libraries" icon="code">
+    Official SDKs available for multiple programming languages including JavaScript, Python, Java, and more.
+  </Accordion>
+  
+  <Accordion title="Community Support" icon="users">
+    Join our developer community for support, discussions, and updates on new features and best practices.
+  </Accordion>
+</AccordionGroup>
+
+---

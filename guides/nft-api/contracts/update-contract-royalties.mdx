@@ -1,0 +1,2107 @@
+---
+title: "Update Contract Royalties"
+description: "Comprehensive guide to managing NFT contract royalties with revenue tracking, multi-recipient support, and automated distribution systems"
+icon: "coins"
+---
+
+<Info>
+**Royalty Management:** Configure and update NFT contract royalties with automated revenue tracking, multi-recipient support, and comprehensive analytics.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What are NFT Contract Royalties?
+
+NFT contract royalties are automatic payments made to creators or rights holders whenever their NFTs are sold on secondary markets. These royalties ensure ongoing revenue for creators and can be configured with specific percentages and recipient addresses. Proper royalty management is essential for sustainable creator economics and long-term project success.
+
+<CardGroup cols={2}>
+  <Card title="Creator Revenue" icon="money-bill">
+    Ongoing income from secondary market sales
+  </Card>
+  <Card title="Automated Distribution" icon="gear">
+    Automatic royalty payments without manual intervention
+  </Card>
+  <Card title="Multi-recipient Support" icon="users">
+    Split royalties between multiple parties
+  </Card>
+  <Card title="Revenue Analytics" icon="chart-line">
+    Track and analyze royalty performance over time
+  </Card>
+</CardGroup>
+
+## Royalty Configuration Options
+
+<Tabs>
+  <Tab title="Basic Royalties">
+    **Single Recipient Setup:**
+    - One recipient address for all royalties
+    - Fixed percentage (0-100% with 2 decimal precision)
+    - Simple configuration and management
+    - Ideal for individual creators
+    
+    **Use Cases:**
+    - Solo artist collections
+    - Simple creator royalties
+    - Straightforward revenue models
+    - Basic NFT projects
+  </Tab>
+  <Tab title="Multi-Recipient Royalties">
+    **Split Royalty Distribution:**
+    - Multiple recipient addresses
+    - Percentage allocation per recipient
+    - Complex revenue sharing models
+    - Team-based collections
+    
+    **Use Cases:**
+    - Collaborative art projects
+    - Team-based NFT collections
+    - Publisher-creator partnerships
+    - Complex revenue sharing agreements
+  </Tab>
+  <Tab title="Dynamic Royalties">
+    **Advanced Royalty Models:**
+    - Time-based royalty changes
+    - Performance-based adjustments
+    - Conditional royalty structures
+    - Smart contract integration
+    
+    **Use Cases:**
+    - Evolving creator compensation
+    - Performance incentives
+    - Complex business models
+    - Advanced DeFi integration
+  </Tab>
+</Tabs>
+
+## Update Contract Royalties
+
+<Steps>
+  <Step title="Plan Royalty Structure" icon="calculator">
+    Define royalty percentages and recipient addresses
+    
+    ```javascript
+    const royaltyConfig = {
+      receiver: "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+      percentage: 2.5, // 2.5% royalty
+      
+      // For multi-recipient (advanced)
+      recipients: [
+        { address: "0x...", percentage: 1.5 }, // Creator: 1.5%
+        { address: "0x...", percentage: 1.0 }  // Platform: 1.0%
+      ]
+    };
+    ```
+  </Step>
+  <Step title="Validate Configuration" icon="check">
+    Ensure addresses are valid and percentages sum correctly
+  </Step>
+  <Step title="Update Royalties" icon="upload">
+    Submit the royalty update to the blockchain
+  </Step>
+  <Step title="Monitor Performance" icon="chart-line">
+    Track royalty payments and revenue analytics
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Update contract royalties
+const updateContractRoyalties = async (chain, contractAddress, royalties) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}/royalties`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ royalties })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Contract royalties updated successfully');
+      console.log('Transaction hash:', data.result.transactionHash);
+      return data.result;
+    } else {
+      throw new Error('Failed to update contract royalties');
+    }
+  } catch (error) {
+    console.error('Error updating contract royalties:', error);
+    throw error;
+  }
+};
+
+// Enhanced royalty management system
+class RoyaltyManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.royaltyHistory = new Map();
+    this.revenueTracking = new Map();
+    this.validationRules = this.initializeValidationRules();
+  }
+
+  initializeValidationRules() {
+    return {
+      percentage: {
+        min: 0,
+        max: 100,
+        decimals: 2
+      },
+      receiver: {
+        required: true,
+        format: /^0x[a-fA-F0-9]{40}$/
+      }
+    };
+  }
+
+  async updateRoyalties(chain, contractAddress, royaltyConfig, options = {}) {
+    const {
+      validateConfig = true,
+      trackRevenue = true,
+      notifyRecipients = false,
+      createBackup = true
+    } = options;
+
+    try {
+      // Create backup of current royalties
+      let currentRoyalties = null;
+      if (createBackup) {
+        currentRoyalties = await this.getCurrentRoyalties(chain, contractAddress);
+      }
+
+      // Validate royalty configuration
+      if (validateConfig) {
+        this.validateRoyaltyConfig(royaltyConfig);
+      }
+
+      // Calculate revenue impact
+      const revenueImpact = this.calculateRevenueImpact(currentRoyalties, royaltyConfig);
+
+      // Update royalties
+      const result = await updateContractRoyalties(chain, contractAddress, royaltyConfig);
+
+      // Record royalty change
+      this.recordRoyaltyChange(chain, contractAddress, {
+        previousRoyalties: currentRoyalties,
+        newRoyalties: royaltyConfig,
+        transactionHash: result.transactionHash,
+        timestamp: new Date().toISOString(),
+        revenueImpact
+      });
+
+      // Initialize revenue tracking
+      if (trackRevenue) {
+        this.initializeRevenueTracking(chain, contractAddress, royaltyConfig);
+      }
+
+      // Notify recipients if requested
+      if (notifyRecipients) {
+        await this.notifyRoyaltyRecipients(chain, contractAddress, royaltyConfig);
+      }
+
+      console.log('Royalty update completed successfully');
+      return result;
+
+    } catch (error) {
+      console.error('Royalty update failed:', error);
+      throw error;
+    }
+  }
+
+  validateRoyaltyConfig(config) {
+    const errors = [];
+
+    // Validate receiver address
+    if (!config.receiver) {
+      errors.push('Receiver address is required');
+    } else if (!this.validationRules.receiver.format.test(config.receiver)) {
+      errors.push('Invalid receiver address format');
+    }
+
+    // Validate percentage
+    if (config.percentage === undefined || config.percentage === null) {
+      errors.push('Royalty percentage is required');
+    } else {
+      const percentage = parseFloat(config.percentage);
+      
+      if (isNaN(percentage)) {
+        errors.push('Royalty percentage must be a number');
+      } else if (percentage < this.validationRules.percentage.min) {
+        errors.push(`Royalty percentage cannot be less than ${this.validationRules.percentage.min}%`);
+      } else if (percentage > this.validationRules.percentage.max) {
+        errors.push(`Royalty percentage cannot exceed ${this.validationRules.percentage.max}%`);
+      } else {
+        // Check decimal places
+        const decimalPlaces = (percentage.toString().split('.')[1] || '').length;
+        if (decimalPlaces > this.validationRules.percentage.decimals) {
+          errors.push(`Royalty percentage can have at most ${this.validationRules.percentage.decimals} decimal places`);
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Validation failed: ${errors.join(', ')}`);
+    }
+
+    return true;
+  }
+
+  async getCurrentRoyalties(chain, contractAddress) {
+    try {
+      const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+        headers: { 'Authorization': `Bearer ${this.apiKey}` }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch current contract details');
+      }
+
+      const data = await response.json();
+      return data.success ? data.result.royalties : null;
+    } catch (error) {
+      console.warn('Could not fetch current royalties:', error);
+      return null;
+    }
+  }
+
+  calculateRevenueImpact(currentRoyalties, newRoyalties) {
+    const current = currentRoyalties ? parseFloat(currentRoyalties.percentage) : 0;
+    const updated = parseFloat(newRoyalties.percentage);
+    
+    return {
+      previousPercentage: current,
+      newPercentage: updated,
+      percentageChange: updated - current,
+      relativeChange: current > 0 ? ((updated - current) / current) * 100 : null,
+      impact: updated > current ? 'increase' : updated < current ? 'decrease' : 'no_change'
+    };
+  }
+
+  recordRoyaltyChange(chain, contractAddress, changeData) {
+    const key = `${chain}:${contractAddress}`;
+    
+    if (!this.royaltyHistory.has(key)) {
+      this.royaltyHistory.set(key, []);
+    }
+    
+    const history = this.royaltyHistory.get(key);
+    history.push(changeData);
+    
+    // Keep only last 100 changes
+    if (history.length > 100) {
+      history.splice(0, history.length - 100);
+    }
+  }
+
+  initializeRevenueTracking(chain, contractAddress, royaltyConfig) {
+    const key = `${chain}:${contractAddress}`;
+    
+    this.revenueTracking.set(key, {
+      royaltyConfig,
+      totalRevenue: 0,
+      paymentCount: 0,
+      lastPayment: null,
+      monthlyRevenue: {},
+      recipientBreakdown: {},
+      startDate: new Date().toISOString()
+    });
+  }
+
+  async simulateRoyaltyRevenue(chain, contractAddress, salesData) {
+    const royalties = await this.getCurrentRoyalties(chain, contractAddress);
+    
+    if (!royalties) {
+      throw new Error('No royalties configured for this contract');
+    }
+
+    const simulation = {
+      totalSales: salesData.length,
+      totalVolume: 0,
+      totalRoyalties: 0,
+      averageRoyaltyPerSale: 0,
+      projectedMonthlyRevenue: 0,
+      breakdown: []
+    };
+
+    salesData.forEach(sale => {
+      const salePrice = parseFloat(sale.price);
+      const royaltyAmount = (salePrice * parseFloat(royalties.percentage)) / 100;
+      
+      simulation.totalVolume += salePrice;
+      simulation.totalRoyalties += royaltyAmount;
+      
+      simulation.breakdown.push({
+        salePrice,
+        royaltyAmount,
+        royaltyPercentage: royalties.percentage,
+        recipient: royalties.receiver,
+        timestamp: sale.timestamp
+      });
+    });
+
+    simulation.averageRoyaltyPerSale = simulation.totalRoyalties / simulation.totalSales;
+    
+    // Project monthly revenue based on current data
+    const timeSpan = salesData.length > 1 ? 
+      new Date(salesData[salesData.length - 1].timestamp) - new Date(salesData[0].timestamp) : 
+      30 * 24 * 60 * 60 * 1000; // Default to 30 days
+    
+    const monthlyMultiplier = (30 * 24 * 60 * 60 * 1000) / timeSpan;
+    simulation.projectedMonthlyRevenue = simulation.totalRoyalties * monthlyMultiplier;
+
+    return simulation;
+  }
+
+  async batchUpdateRoyalties(updates) {
+    const results = [];
+    const errors = [];
+
+    for (const update of updates) {
+      try {
+        const result = await this.updateRoyalties(
+          update.chain,
+          update.contractAddress,
+          update.royaltyConfig,
+          update.options
+        );
+        
+        results.push({
+          chain: update.chain,
+          contractAddress: update.contractAddress,
+          success: true,
+          result
+        });
+      } catch (error) {
+        errors.push({
+          chain: update.chain,
+          contractAddress: update.contractAddress,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+
+    return {
+      successful: results.length,
+      failed: errors.length,
+      results,
+      errors
+    };
+  }
+
+  async notifyRoyaltyRecipients(chain, contractAddress, royaltyConfig) {
+    const notification = {
+      type: 'royalty_update',
+      chain,
+      contractAddress,
+      royaltyConfig,
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('Notifying royalty recipients:', notification);
+    
+    // Implementation would depend on your notification system
+    // await sendNotification(notification);
+  }
+
+  generateRoyaltyReport(chain, contractAddress) {
+    const historyKey = `${chain}:${contractAddress}`;
+    const revenueKey = `${chain}:${contractAddress}`;
+    
+    const history = this.royaltyHistory.get(historyKey) || [];
+    const revenue = this.revenueTracking.get(revenueKey);
+    
+    const currentRoyalties = history.length > 0 ? 
+      history[history.length - 1].newRoyalties : null;
+
+    return {
+      contractAddress,
+      chain,
+      currentRoyalties,
+      totalUpdates: history.length,
+      lastUpdate: history.length > 0 ? history[history.length - 1].timestamp : null,
+      revenueTracking: revenue,
+      updateHistory: history.map(h => ({
+        timestamp: h.timestamp,
+        previousPercentage: h.previousRoyalties?.percentage || 0,
+        newPercentage: h.newRoyalties.percentage,
+        receiver: h.newRoyalties.receiver,
+        transactionHash: h.transactionHash,
+        impact: h.revenueImpact.impact
+      })),
+      analytics: this.generateRoyaltyAnalytics(history)
+    };
+  }
+
+  generateRoyaltyAnalytics(history) {
+    if (history.length === 0) return null;
+
+    const percentages = history.map(h => parseFloat(h.newRoyalties.percentage));
+    const changes = history.map(h => h.revenueImpact.percentageChange);
+
+    return {
+      averageRoyalty: (percentages.reduce((a, b) => a + b, 0) / percentages.length).toFixed(2),
+      highestRoyalty: Math.max(...percentages),
+      lowestRoyalty: Math.min(...percentages),
+      totalIncreases: changes.filter(c => c > 0).length,
+      totalDecreases: changes.filter(c => c < 0).length,
+      averageChange: (changes.reduce((a, b) => a + b, 0) / changes.length).toFixed(2),
+      updateFrequency: this.calculateUpdateFrequency(history)
+    };
+  }
+
+  calculateUpdateFrequency(history) {
+    if (history.length < 2) return 'Insufficient data';
+
+    const firstUpdate = new Date(history[0].timestamp);
+    const lastUpdate = new Date(history[history.length - 1].timestamp);
+    const daysDiff = (lastUpdate - firstUpdate) / (1000 * 60 * 60 * 24);
+
+    if (daysDiff === 0) return 'Multiple updates today';
+    
+    const frequency = history.length / daysDiff;
+    
+    if (frequency > 1) return `${frequency.toFixed(1)} updates per day`;
+    if (frequency > 0.14) return `${(frequency * 7).toFixed(1)} updates per week`;
+    return `${(frequency * 30).toFixed(1)} updates per month`;
+  }
+
+  getRoyaltyHistory(chain, contractAddress) {
+    const key = `${chain}:${contractAddress}`;
+    return this.royaltyHistory.get(key) || [];
+  }
+
+  getRevenueTracking(chain, contractAddress) {
+    const key = `${chain}:${contractAddress}`;
+    return this.revenueTracking.get(key);
+  }
+}
+
+// Usage examples
+const royaltyManager = new RoyaltyManager('YOUR_API_KEY');
+
+// Simple royalty update
+const royaltyConfig = {
+  receiver: "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+  percentage: 2.5
+};
+
+const result = await royaltyManager.updateRoyalties(
+  'MATIC',
+  '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+  royaltyConfig
+);
+
+console.log('Royalty update result:', result);
+
+// Generate comprehensive report
+const report = royaltyManager.generateRoyaltyReport(
+  'MATIC',
+  '0x44260f782c8ae2cf62e31051920d206d19b475e5'
+);
+
+console.log('Royalty report:', report);
+
+// Simulate revenue based on sales data
+const salesData = [
+  { price: 100, timestamp: '2024-01-01T00:00:00Z' },
+  { price: 150, timestamp: '2024-01-02T00:00:00Z' },
+  { price: 200, timestamp: '2024-01-03T00:00:00Z' }
+];
+
+const simulation = await royaltyManager.simulateRoyaltyRevenue(
+  'MATIC',
+  '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+  salesData
+);
+
+console.log('Revenue simulation:', simulation);
+```
+
+```python Python
+import requests
+import re
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timedelta
+
+class RoyaltyManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.royalty_history = {}
+        self.revenue_tracking = {}
+        self.validation_rules = self._initialize_validation_rules()
+    
+    def _initialize_validation_rules(self) -> Dict[str, Dict]:
+        return {
+            'percentage': {
+                'min': 0,
+                'max': 100,
+                'decimals': 2
+            },
+            'receiver': {
+                'required': True,
+                'format': r'^0x[a-fA-F0-9]{40}$'
+            }
+        }
+    
+    def update_royalties(self, chain: str, contract_address: str, royalty_config: Dict[str, Any], 
+                        options: Dict[str, bool] = None) -> Dict[str, Any]:
+        """Update contract royalties with validation and tracking"""
+        if options is None:
+            options = {}
+        
+        validate_config = options.get('validate_config', True)
+        track_revenue = options.get('track_revenue', True)
+        notify_recipients = options.get('notify_recipients', False)
+        create_backup = options.get('create_backup', True)
+        
+        try:
+            # Create backup of current royalties
+            current_royalties = None
+            if create_backup:
+                current_royalties = self._get_current_royalties(chain, contract_address)
+            
+            # Validate royalty configuration
+            if validate_config:
+                self.validate_royalty_config(royalty_config)
+            
+            # Calculate revenue impact
+            revenue_impact = self.calculate_revenue_impact(current_royalties, royalty_config)
+            
+            # Update royalties
+            result = self._update_contract_royalties(chain, contract_address, royalty_config)
+            
+            # Record royalty change
+            self._record_royalty_change(chain, contract_address, {
+                'previous_royalties': current_royalties,
+                'new_royalties': royalty_config,
+                'transaction_hash': result['transactionHash'],
+                'timestamp': datetime.now().isoformat(),
+                'revenue_impact': revenue_impact
+            })
+            
+            # Initialize revenue tracking
+            if track_revenue:
+                self._initialize_revenue_tracking(chain, contract_address, royalty_config)
+            
+            # Notify recipients if requested
+            if notify_recipients:
+                self._notify_royalty_recipients(chain, contract_address, royalty_config)
+            
+            print('Royalty update completed successfully')
+            return result
+            
+        except Exception as error:
+            print(f'Royalty update failed: {error}')
+            raise error
+    
+    def _update_contract_royalties(self, chain: str, contract_address: str, royalty_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Internal method to call the API"""
+        url = f'{self.base_url}/contracts/{chain}/{contract_address}/royalties'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {'royalties': royalty_config}
+        
+        try:
+            response = requests.put(url, headers=headers, json=data)
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            if result.get('success'):
+                return result['result']
+            else:
+                raise Exception('Failed to update contract royalties')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error updating contract royalties: {error}')
+            raise error
+    
+    def validate_royalty_config(self, config: Dict[str, Any]) -> bool:
+        """Validate royalty configuration"""
+        errors = []
+        
+        # Validate receiver address
+        if not config.get('receiver'):
+            errors.append('Receiver address is required')
+        elif not re.match(self.validation_rules['receiver']['format'], config['receiver']):
+            errors.append('Invalid receiver address format')
+        
+        # Validate percentage
+        if 'percentage' not in config or config['percentage'] is None:
+            errors.append('Royalty percentage is required')
+        else:
+            try:
+                percentage = float(config['percentage'])
+                
+                if percentage < self.validation_rules['percentage']['min']:
+                    errors.append(f"Royalty percentage cannot be less than {self.validation_rules['percentage']['min']}%")
+                elif percentage > self.validation_rules['percentage']['max']:
+                    errors.append(f"Royalty percentage cannot exceed {self.validation_rules['percentage']['max']}%")
+                else:
+                    # Check decimal places
+                    decimal_places = len(str(percentage).split('.')[1]) if '.' in str(percentage) else 0
+                    if decimal_places > self.validation_rules['percentage']['decimals']:
+                        errors.append(f"Royalty percentage can have at most {self.validation_rules['percentage']['decimals']} decimal places")
+                        
+            except (ValueError, TypeError):
+                errors.append('Royalty percentage must be a number')
+        
+        if errors:
+            raise Exception(f"Validation failed: {', '.join(errors)}")
+        
+        return True
+    
+    def _get_current_royalties(self, chain: str, contract_address: str) -> Optional[Dict[str, Any]]:
+        """Get current contract royalties"""
+        try:
+            url = f'{self.base_url}/contracts/{chain}/{contract_address}'
+            headers = {'Authorization': f'Bearer {self.api_key}'}
+            
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            data = response.json()
+            return data['result'].get('royalties') if data.get('success') else None
+            
+        except Exception as error:
+            print(f'Could not fetch current royalties: {error}')
+            return None
+    
+    def calculate_revenue_impact(self, current_royalties: Optional[Dict[str, Any]], new_royalties: Dict[str, Any]) -> Dict[str, Any]:
+        """Calculate revenue impact of royalty changes"""
+        current = float(current_royalties['percentage']) if current_royalties else 0
+        updated = float(new_royalties['percentage'])
+        
+        return {
+            'previous_percentage': current,
+            'new_percentage': updated,
+            'percentage_change': updated - current,
+            'relative_change': ((updated - current) / current) * 100 if current > 0 else None,
+            'impact': 'increase' if updated > current else 'decrease' if updated < current else 'no_change'
+        }
+    
+    def _record_royalty_change(self, chain: str, contract_address: str, change_data: Dict[str, Any]):
+        """Record royalty change in history"""
+        key = f"{chain}:{contract_address}"
+        
+        if key not in self.royalty_history:
+            self.royalty_history[key] = []
+        
+        history = self.royalty_history[key]
+        history.append(change_data)
+        
+        # Keep only last 100 changes
+        if len(history) > 100:
+            self.royalty_history[key] = history[-100:]
+    
+    def _initialize_revenue_tracking(self, chain: str, contract_address: str, royalty_config: Dict[str, Any]):
+        """Initialize revenue tracking for contract"""
+        key = f"{chain}:{contract_address}"
+        
+        self.revenue_tracking[key] = {
+            'royalty_config': royalty_config,
+            'total_revenue': 0,
+            'payment_count': 0,
+            'last_payment': None,
+            'monthly_revenue': {},
+            'recipient_breakdown': {},
+            'start_date': datetime.now().isoformat()
+        }
+    
+    def simulate_royalty_revenue(self, chain: str, contract_address: str, sales_data: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Simulate royalty revenue based on sales data"""
+        current_royalties = self._get_current_royalties(chain, contract_address)
+        
+        if not current_royalties:
+            raise Exception('No royalties configured for this contract')
+        
+        simulation = {
+            'total_sales': len(sales_data),
+            'total_volume': 0,
+            'total_royalties': 0,
+            'average_royalty_per_sale': 0,
+            'projected_monthly_revenue': 0,
+            'breakdown': []
+        }
+        
+        for sale in sales_data:
+            sale_price = float(sale['price'])
+            royalty_amount = (sale_price * float(current_royalties['percentage'])) / 100
+            
+            simulation['total_volume'] += sale_price
+            simulation['total_royalties'] += royalty_amount
+            
+            simulation['breakdown'].append({
+                'sale_price': sale_price,
+                'royalty_amount': royalty_amount,
+                'royalty_percentage': current_royalties['percentage'],
+                'recipient': current_royalties['receiver'],
+                'timestamp': sale['timestamp']
+            })
+        
+        if simulation['total_sales'] > 0:
+            simulation['average_royalty_per_sale'] = simulation['total_royalties'] / simulation['total_sales']
+        
+        # Project monthly revenue based on current data
+        if len(sales_data) > 1:
+            time_span = (datetime.fromisoformat(sales_data[-1]['timestamp'].replace('Z', '+00:00')) - 
+                        datetime.fromisoformat(sales_data[0]['timestamp'].replace('Z', '+00:00'))).total_seconds()
+        else:
+            time_span = 30 * 24 * 60 * 60  # Default to 30 days
+        
+        monthly_multiplier = (30 * 24 * 60 * 60) / time_span
+        simulation['projected_monthly_revenue'] = simulation['total_royalties'] * monthly_multiplier
+        
+        return simulation
+    
+    def batch_update_royalties(self, updates: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Update multiple contract royalties in batch"""
+        results = []
+        errors = []
+        
+        for update in updates:
+            try:
+                result = self.update_royalties(
+                    update['chain'],
+                    update['contract_address'],
+                    update['royalty_config'],
+                    update.get('options', {})
+                )
+                
+                results.append({
+                    'chain': update['chain'],
+                    'contract_address': update['contract_address'],
+                    'success': True,
+                    'result': result
+                })
+                
+            except Exception as error:
+                errors.append({
+                    'chain': update['chain'],
+                    'contract_address': update['contract_address'],
+                    'success': False,
+                    'error': str(error)
+                })
+        
+        return {
+            'successful': len(results),
+            'failed': len(errors),
+            'results': results,
+            'errors': errors
+        }
+    
+    def _notify_royalty_recipients(self, chain: str, contract_address: str, royalty_config: Dict[str, Any]):
+        """Notify royalty recipients of update"""
+        notification = {
+            'type': 'royalty_update',
+            'chain': chain,
+            'contract_address': contract_address,
+            'royalty_config': royalty_config,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        print('Notifying royalty recipients:', notification)
+        # Implementation would depend on your notification system
+    
+    def generate_royalty_report(self, chain: str, contract_address: str) -> Dict[str, Any]:
+        """Generate comprehensive royalty report"""
+        history_key = f"{chain}:{contract_address}"
+        
+        history = self.royalty_history.get(history_key, [])
+        revenue = self.revenue_tracking.get(history_key)
+        
+        current_royalties = history[-1]['new_royalties'] if history else None
+        
+        return {
+            'contract_address': contract_address,
+            'chain': chain,
+            'current_royalties': current_royalties,
+            'total_updates': len(history),
+            'last_update': history[-1]['timestamp'] if history else None,
+            'revenue_tracking': revenue,
+            'update_history': [
+                {
+                    'timestamp': h['timestamp'],
+                    'previous_percentage': h['previous_royalties']['percentage'] if h['previous_royalties'] else 0,
+                    'new_percentage': h['new_royalties']['percentage'],
+                    'receiver': h['new_royalties']['receiver'],
+                    'transaction_hash': h['transaction_hash'],
+                    'impact': h['revenue_impact']['impact']
+                }
+                for h in history
+            ],
+            'analytics': self._generate_royalty_analytics(history)
+        }
+    
+    def _generate_royalty_analytics(self, history: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+        """Generate royalty analytics from history"""
+        if not history:
+            return None
+        
+        percentages = [float(h['new_royalties']['percentage']) for h in history]
+        changes = [h['revenue_impact']['percentage_change'] for h in history]
+        
+        return {
+            'average_royalty': round(sum(percentages) / len(percentages), 2),
+            'highest_royalty': max(percentages),
+            'lowest_royalty': min(percentages),
+            'total_increases': len([c for c in changes if c > 0]),
+            'total_decreases': len([c for c in changes if c < 0]),
+            'average_change': round(sum(changes) / len(changes), 2),
+            'update_frequency': self._calculate_update_frequency(history)
+        }
+    
+    def _calculate_update_frequency(self, history: List[Dict[str, Any]]) -> str:
+        """Calculate update frequency from history"""
+        if len(history) < 2:
+            return 'Insufficient data'
+        
+        first_update = datetime.fromisoformat(history[0]['timestamp'])
+        last_update = datetime.fromisoformat(history[-1]['timestamp'])
+        days_diff = (last_update - first_update).days
+        
+        if days_diff == 0:
+            return 'Multiple updates today'
+        
+        frequency = len(history) / days_diff
+        
+        if frequency > 1:
+            return f'{frequency:.1f} updates per day'
+        elif frequency > 0.14:
+            return f'{frequency * 7:.1f} updates per week'
+        else:
+            return f'{frequency * 30:.1f} updates per month'
+
+# Usage
+royalty_manager = RoyaltyManager('YOUR_API_KEY')
+
+# Simple royalty update
+royalty_config = {
+    'receiver': '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9',
+    'percentage': 2.5
+}
+
+result = royalty_manager.update_royalties(
+    'MATIC',
+    '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+    royalty_config
+)
+
+print('Royalty update result:', result)
+
+# Generate comprehensive report
+report = royalty_manager.generate_royalty_report(
+    'MATIC',
+    '0x44260f782c8ae2cf62e31051920d206d19b475e5'
+)
+
+print('Royalty report:', report)
+```
+
+```bash cURL
+# Update contract royalties
+curl -X PUT '/api/v3/erc1155/contracts/MATIC/0x44260f782c8ae2cf62e31051920d206d19b475e5/royalties' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "royalties": {
+      "receiver": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+      "percentage": 2.5
+    }
+  }'
+
+# Batch royalty updates script
+#!/bin/bash
+API_KEY="YOUR_API_KEY"
+CONTRACTS=(
+  "MATIC:0xcontract1:0xreceiver1:2.5"
+  "ETH:0xcontract2:0xreceiver2:5.0"
+  "BSC:0xcontract3:0xreceiver3:1.0"
+)
+
+echo "Starting batch royalty updates..."
+
+for contract_info in "${CONTRACTS[@]}"; do
+  IFS=':' read -r chain contract_address receiver percentage <<< "$contract_info"
+  
+  echo "Updating royalties for $contract_address on $chain..."
+  
+  response=$(curl -s -X PUT "/api/v3/erc1155/contracts/$chain/$contract_address/royalties" \
+    -H "Authorization: Bearer $API_KEY" \
+    -H 'Content-Type: application/json' \
+    -d "{\"royalties\": {\"receiver\": \"$receiver\", \"percentage\": $percentage}}")
+  
+  success=$(echo "$response" | jq -r '.success')
+  
+  if [ "$success" = "true" ]; then
+    tx_hash=$(echo "$response" | jq -r '.result.transactionHash')
+    echo "✓ Success: Transaction hash $tx_hash"
+  else
+    echo "✗ Failed to update royalties for $contract_address"
+  fi
+  
+  echo "Waiting 5 seconds before next update..."
+  sleep 5
+done
+
+echo "Batch royalty updates completed!"
+```
+
+```php PHP
+<?php
+class RoyaltyManager {
+    private $apiKey;
+    private $baseUrl;
+    private $royaltyHistory;
+    private $validationRules;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+        $this->royaltyHistory = [];
+        $this->validationRules = $this->initializeValidationRules();
+    }
+    
+    private function initializeValidationRules() {
+        return [
+            'percentage' => [
+                'min' => 0,
+                'max' => 100,
+                'decimals' => 2
+            ],
+            'receiver' => [
+                'required' => true,
+                'format' => '/^0x[a-fA-F0-9]{40}$/'
+            ]
+        ];
+    }
+    
+    public function updateRoyalties($chain, $contractAddress, $royaltyConfig, $options = []) {
+        $validateConfig = $options['validate_config'] ?? true;
+        $trackRevenue = $options['track_revenue'] ?? true;
+        $createBackup = $options['create_backup'] ?? true;
+        
+        try {
+            // Create backup of current royalties
+            $currentRoyalties = null;
+            if ($createBackup) {
+                $currentRoyalties = $this->getCurrentRoyalties($chain, $contractAddress);
+            }
+            
+            // Validate royalty configuration
+            if ($validateConfig) {
+                $this->validateRoyaltyConfig($royaltyConfig);
+            }
+            
+            // Calculate revenue impact
+            $revenueImpact = $this->calculateRevenueImpact($currentRoyalties, $royaltyConfig);
+            
+            // Update royalties
+            $result = $this->updateContractRoyalties($chain, $contractAddress, $royaltyConfig);
+            
+            // Record royalty change
+            $this->recordRoyaltyChange($chain, $contractAddress, [
+                'previous_royalties' => $currentRoyalties,
+                'new_royalties' => $royaltyConfig,
+                'transaction_hash' => $result['transactionHash'],
+                'timestamp' => date('c'),
+                'revenue_impact' => $revenueImpact
+            ]);
+            
+            echo "Royalty update completed successfully\n";
+            return $result;
+            
+        } catch (Exception $error) {
+            echo "Royalty update failed: " . $error->getMessage() . "\n";
+            throw $error;
+        }
+    }
+    
+    private function updateContractRoyalties($chain, $contractAddress, $royaltyConfig) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}/royalties";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['royalties' => $royaltyConfig]));
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to update contract royalties");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if ($data['success']) {
+            return $data['result'];
+        } else {
+            throw new Exception('Failed to update contract royalties');
+        }
+    }
+    
+    private function validateRoyaltyConfig($config) {
+        $errors = [];
+        
+        // Validate receiver address
+        if (empty($config['receiver'])) {
+            $errors[] = 'Receiver address is required';
+        } elseif (!preg_match($this->validationRules['receiver']['format'], $config['receiver'])) {
+            $errors[] = 'Invalid receiver address format';
+        }
+        
+        // Validate percentage
+        if (!isset($config['percentage']) || $config['percentage'] === null) {
+            $errors[] = 'Royalty percentage is required';
+        } else {
+            $percentage = floatval($config['percentage']);
+            
+            if ($percentage < $this->validationRules['percentage']['min']) {
+                $errors[] = "Royalty percentage cannot be less than {$this->validationRules['percentage']['min']}%";
+            } elseif ($percentage > $this->validationRules['percentage']['max']) {
+                $errors[] = "Royalty percentage cannot exceed {$this->validationRules['percentage']['max']}%";
+            } else {
+                // Check decimal places
+                $decimalPlaces = strlen(substr(strrchr($percentage, "."), 1));
+                if ($decimalPlaces > $this->validationRules['percentage']['decimals']) {
+                    $errors[] = "Royalty percentage can have at most {$this->validationRules['percentage']['decimals']} decimal places";
+                }
+            }
+        }
+        
+        if (!empty($errors)) {
+            throw new Exception('Validation failed: ' . implode(', ', $errors));
+        }
+        
+        return true;
+    }
+    
+    private function getCurrentRoyalties($chain, $contractAddress) {
+        try {
+            $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}";
+            
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                "Authorization: Bearer {$this->apiKey}"
+            ]);
+            
+            $response = curl_exec($ch);
+            curl_close($ch);
+            
+            $data = json_decode($response, true);
+            return $data['success'] ? ($data['result']['royalties'] ?? null) : null;
+            
+        } catch (Exception $error) {
+            echo "Could not fetch current royalties: " . $error->getMessage() . "\n";
+            return null;
+        }
+    }
+    
+    private function calculateRevenueImpact($currentRoyalties, $newRoyalties) {
+        $current = $currentRoyalties ? floatval($currentRoyalties['percentage']) : 0;
+        $updated = floatval($newRoyalties['percentage']);
+        
+        return [
+            'previous_percentage' => $current,
+            'new_percentage' => $updated,
+            'percentage_change' => $updated - $current,
+            'relative_change' => $current > 0 ? (($updated - $current) / $current) * 100 : null,
+            'impact' => $updated > $current ? 'increase' : ($updated < $current ? 'decrease' : 'no_change')
+        ];
+    }
+    
+    private function recordRoyaltyChange($chain, $contractAddress, $changeData) {
+        $key = "{$chain}:{$contractAddress}";
+        
+        if (!isset($this->royaltyHistory[$key])) {
+            $this->royaltyHistory[$key] = [];
+        }
+        
+        $this->royaltyHistory[$key][] = $changeData;
+        
+        // Keep only last 100 changes
+        if (count($this->royaltyHistory[$key]) > 100) {
+            $this->royaltyHistory[$key] = array_slice($this->royaltyHistory[$key], -100);
+        }
+    }
+    
+    public function generateRoyaltyReport($chain, $contractAddress) {
+        $historyKey = "{$chain}:{$contractAddress}";
+        $history = $this->royaltyHistory[$historyKey] ?? [];
+        
+        $currentRoyalties = !empty($history) ? end($history)['new_royalties'] : null;
+        
+        return [
+            'contract_address' => $contractAddress,
+            'chain' => $chain,
+            'current_royalties' => $currentRoyalties,
+            'total_updates' => count($history),
+            'last_update' => !empty($history) ? end($history)['timestamp'] : null,
+            'update_history' => array_map(function($h) {
+                return [
+                    'timestamp' => $h['timestamp'],
+                    'previous_percentage' => $h['previous_royalties']['percentage'] ?? 0,
+                    'new_percentage' => $h['new_royalties']['percentage'],
+                    'receiver' => $h['new_royalties']['receiver'],
+                    'transaction_hash' => $h['transaction_hash'],
+                    'impact' => $h['revenue_impact']['impact']
+                ];
+            }, $history)
+        ];
+    }
+}
+
+// Usage
+$royaltyManager = new RoyaltyManager('YOUR_API_KEY');
+
+try {
+    $royaltyConfig = [
+        'receiver' => '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9',
+        'percentage' => 2.5
+    ];
+    
+    $result = $royaltyManager->updateRoyalties(
+        'MATIC',
+        '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+        $royaltyConfig
+    );
+    
+    echo "Royalty update result: " . json_encode($result) . "\n";
+    
+    $report = $royaltyManager->generateRoyaltyReport(
+        'MATIC',
+        '0x44260f782c8ae2cf62e31051920d206d19b475e5'
+    );
+    
+    echo "Royalty report: " . json_encode($report, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `royalties.receiver` | string | ✅ | Wallet address to receive royalty payments |
+| `royalties.percentage` | number | ✅ | Royalty percentage (0-100 with up to 2 decimal places) |
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | Blockchain network (MATIC, ETH, BSC, etc.) |
+| `contractAddress` | string | ✅ | Contract address to update royalties for |
+
+### Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "transactionHash": "0x7bfb36e8b18e5d5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e5c5e"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Error Response">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "INVALID_ROYALTY_PERCENTAGE",
+        "message": "Royalty percentage must be between 0 and 100"
+      }
+    }
+    ```
+    
+    **Common Error Codes:**
+    - `INVALID_ROYALTY_PERCENTAGE` - Percentage outside valid range
+    - `INVALID_RECEIVER_ADDRESS` - Malformed receiver address
+    - `CONTRACT_NOT_FOUND` - Contract doesn't exist
+    - `UNAUTHORIZED` - Invalid or missing API key
+  </Tab>
+</Tabs>
+
+## Advanced Royalty Management
+
+<AccordionGroup>
+  <Accordion title="Multi-Recipient Royalty Splitting" icon="users">
+    **Implement complex royalty distribution:**
+    
+    ```javascript
+    class MultiRecipientRoyaltyManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.splitterContracts = new Map();
+      }
+    
+      async createRoyaltySplitter(recipients, percentages) {
+        // Validate recipients and percentages
+        this.validateSplitConfiguration(recipients, percentages);
+        
+        // Deploy royalty splitter contract
+        const splitterContract = await this.deployRoyaltySplitter(recipients, percentages);
+        
+        return splitterContract;
+      }
+    
+      validateSplitConfiguration(recipients, percentages) {
+        if (recipients.length !== percentages.length) {
+          throw new Error('Recipients and percentages arrays must have same length');
+        }
+        
+        const totalPercentage = percentages.reduce((sum, pct) => sum + pct, 0);
+        if (Math.abs(totalPercentage - 100) > 0.01) {
+          throw new Error('Percentages must sum to 100%');
+        }
+        
+        recipients.forEach(recipient => {
+          if (!/^0x[a-fA-F0-9]{40}$/.test(recipient)) {
+            throw new Error(`Invalid recipient address: ${recipient}`);
+          }
+        });
+        
+        percentages.forEach(percentage => {
+          if (percentage <= 0 || percentage > 100) {
+            throw new Error(`Invalid percentage: ${percentage}. Must be between 0 and 100`);
+          }
+        });
+      }
+    
+      async deployRoyaltySplitter(recipients, percentages) {
+        // This would deploy a smart contract for royalty splitting
+        // Implementation depends on your smart contract infrastructure
+        
+        const splitterConfig = {
+          recipients: recipients.map((address, index) => ({
+            address,
+            percentage: percentages[index]
+          })),
+          totalRecipients: recipients.length,
+          deployedAt: new Date().toISOString()
+        };
+        
+        // Mock deployment - in reality, this would interact with blockchain
+        const contractAddress = `0x${Math.random().toString(16).substr(2, 40)}`;
+        
+        this.splitterContracts.set(contractAddress, splitterConfig);
+        
+        return {
+          contractAddress,
+          config: splitterConfig,
+          gasUsed: 250000, // Estimated gas usage
+          deploymentCost: 0.05 // Estimated cost in ETH
+        };
+      }
+    
+      async updateNFTContractWithSplitter(chain, nftContractAddress, splitterAddress, totalRoyaltyPercentage) {
+        // Update NFT contract to use the splitter contract as royalty receiver
+        const royaltyConfig = {
+          receiver: splitterAddress,
+          percentage: totalRoyaltyPercentage
+        };
+        
+        return await updateContractRoyalties(chain, nftContractAddress, royaltyConfig);
+      }
+    
+      async simulateRoyaltyDistribution(splitterAddress, totalRoyaltyAmount) {
+        const splitterConfig = this.splitterContracts.get(splitterAddress);
+        
+        if (!splitterConfig) {
+          throw new Error('Splitter contract not found');
+        }
+        
+        const distribution = splitterConfig.recipients.map(recipient => ({
+          address: recipient.address,
+          percentage: recipient.percentage,
+          amount: (totalRoyaltyAmount * recipient.percentage) / 100,
+          amountFormatted: `${((totalRoyaltyAmount * recipient.percentage) / 100).toFixed(4)} ETH`
+        }));
+        
+        return {
+          totalAmount: totalRoyaltyAmount,
+          distribution,
+          gasEstimate: distribution.length * 21000, // Rough estimate for transfers
+          summary: {
+            totalRecipients: distribution.length,
+            largestShare: Math.max(...distribution.map(d => d.amount)),
+            smallestShare: Math.min(...distribution.map(d => d.amount)),
+            averageShare: totalRoyaltyAmount / distribution.length
+          }
+        };
+      }
+    
+      generateSplitterReport(splitterAddress) {
+        const config = this.splitterContracts.get(splitterAddress);
+        
+        if (!config) {
+          throw new Error('Splitter contract not found');
+        }
+        
+        return {
+          contractAddress: splitterAddress,
+          totalRecipients: config.totalRecipients,
+          recipients: config.recipients,
+          deployedAt: config.deployedAt,
+          efficiency: {
+            gasPerRecipient: 21000,
+            totalGasPerDistribution: config.totalRecipients * 21000,
+            costEfficiency: config.totalRecipients <= 5 ? 'High' : config.totalRecipients <= 10 ? 'Medium' : 'Low'
+          }
+        };
+      }
+    }
+    
+    // Usage
+    const multiRoyaltyManager = new MultiRecipientRoyaltyManager('YOUR_API_KEY');
+    
+    // Create royalty splitter
+    const recipients = [
+      '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9', // Artist: 60%
+      '0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5', // Platform: 30%
+      '0x1234567890123456789012345678901234567890'  // Charity: 10%
+    ];
+    
+    const percentages = [60, 30, 10];
+    
+    const splitter = await multiRoyaltyManager.createRoyaltySplitter(recipients, percentages);
+    console.log('Royalty splitter created:', splitter);
+    
+    // Update NFT contract to use splitter
+    await multiRoyaltyManager.updateNFTContractWithSplitter(
+      'MATIC',
+      '0xnftcontractaddress',
+      splitter.contractAddress,
+      5.0 // 5% total royalty
+    );
+    
+    // Simulate distribution
+    const simulation = await multiRoyaltyManager.simulateRoyaltyDistribution(
+      splitter.contractAddress,
+      1.0 // 1 ETH in royalties
+    );
+    
+    console.log('Distribution simulation:', simulation);
+    ```
+  </Accordion>
+  
+  <Accordion title="Dynamic Royalty Adjustments" icon="chart-line">
+    **Implement performance-based royalty adjustments:**
+    
+    ```javascript
+    class DynamicRoyaltyManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.performanceMetrics = new Map();
+        this.adjustmentRules = new Map();
+      }
+    
+      setPerformanceBasedRoyalty(chain, contractAddress, rules) {
+        const adjustmentRule = {
+          baseRoyalty: rules.baseRoyalty,
+          performanceThresholds: rules.thresholds,
+          adjustmentType: rules.adjustmentType, // 'volume', 'sales_count', 'time_based'
+          maxRoyalty: rules.maxRoyalty || 10,
+          minRoyalty: rules.minRoyalty || 0,
+          evaluationPeriod: rules.evaluationPeriod || 30, // days
+          lastEvaluation: null,
+          nextEvaluation: new Date(Date.now() + rules.evaluationPeriod * 24 * 60 * 60 * 1000)
+        };
+        
+        this.adjustmentRules.set(`${chain}:${contractAddress}`, adjustmentRule);
+        
+        return adjustmentRule;
+      }
+    
+      async evaluatePerformanceAdjustment(chain, contractAddress, performanceData) {
+        const rule = this.adjustmentRules.get(`${chain}:${contractAddress}`);
+        
+        if (!rule) {
+          throw new Error('No adjustment rule found for this contract');
+        }
+        
+        let newRoyaltyPercentage = rule.baseRoyalty;
+        let adjustmentReason = 'Base royalty maintained';
+        
+        switch (rule.adjustmentType) {
+          case 'volume':
+            const volumeAdjustment = this.calculateVolumeBasedAdjustment(performanceData.totalVolume, rule.performanceThresholds);
+            newRoyaltyPercentage = Math.min(rule.maxRoyalty, Math.max(rule.minRoyalty, rule.baseRoyalty + volumeAdjustment.adjustment));
+            adjustmentReason = volumeAdjustment.reason;
+            break;
+            
+          case 'sales_count':
+            const salesAdjustment = this.calculateSalesBasedAdjustment(performanceData.salesCount, rule.performanceThresholds);
+            newRoyaltyPercentage = Math.min(rule.maxRoyalty, Math.max(rule.minRoyalty, rule.baseRoyalty + salesAdjustment.adjustment));
+            adjustmentReason = salesAdjustment.reason;
+            break;
+            
+          case 'time_based':
+            const timeAdjustment = this.calculateTimeBasedAdjustment(performanceData.contractAge, rule.performanceThresholds);
+            newRoyaltyPercentage = Math.min(rule.maxRoyalty, Math.max(rule.minRoyalty, rule.baseRoyalty + timeAdjustment.adjustment));
+            adjustmentReason = timeAdjustment.reason;
+            break;
+        }
+        
+        const evaluation = {
+          contractAddress,
+          chain,
+          currentRoyalty: rule.baseRoyalty,
+          recommendedRoyalty: newRoyaltyPercentage,
+          adjustment: newRoyaltyPercentage - rule.baseRoyalty,
+          adjustmentReason,
+          performanceData,
+          evaluatedAt: new Date().toISOString(),
+          shouldUpdate: Math.abs(newRoyaltyPercentage - rule.baseRoyalty) >= 0.1 // Only update if change is >= 0.1%
+        };
+        
+        // Update rule with new evaluation
+        rule.lastEvaluation = evaluation;
+        rule.nextEvaluation = new Date(Date.now() + rule.evaluationPeriod * 24 * 60 * 60 * 1000);
+        
+        return evaluation;
+      }
+    
+      calculateVolumeBasedAdjustment(totalVolume, thresholds) {
+        for (const threshold of thresholds.sort((a, b) => b.volume - a.volume)) {
+          if (totalVolume >= threshold.volume) {
+            return {
+              adjustment: threshold.royaltyAdjustment,
+              reason: `High volume performance: ${totalVolume} ETH >= ${threshold.volume} ETH threshold`
+            };
+          }
+        }
+        
+        return { adjustment: 0, reason: 'Volume below performance thresholds' };
+      }
+    
+      calculateSalesBasedAdjustment(salesCount, thresholds) {
+        for (const threshold of thresholds.sort((a, b) => b.sales - a.sales)) {
+          if (salesCount >= threshold.sales) {
+            return {
+              adjustment: threshold.royaltyAdjustment,
+              reason: `High sales performance: ${salesCount} sales >= ${threshold.sales} sales threshold`
+            };
+          }
+        }
+        
+        return { adjustment: 0, reason: 'Sales below performance thresholds' };
+      }
+    
+      calculateTimeBasedAdjustment(contractAgeInDays, thresholds) {
+        for (const threshold of thresholds.sort((a, b) => b.days - a.days)) {
+          if (contractAgeInDays >= threshold.days) {
+            return {
+              adjustment: threshold.royaltyAdjustment,
+              reason: `Contract maturity bonus: ${contractAgeInDays} days >= ${threshold.days} days threshold`
+            };
+          }
+        }
+        
+        return { adjustment: 0, reason: 'Contract too new for maturity bonus' };
+      }
+    
+      async autoAdjustRoyalties(chain, contractAddress, performanceData) {
+        const evaluation = await this.evaluatePerformanceAdjustment(chain, contractAddress, performanceData);
+        
+        if (evaluation.shouldUpdate) {
+          const royaltyConfig = {
+            receiver: performanceData.currentReceiver,
+            percentage: evaluation.recommendedRoyalty
+          };
+          
+          const updateResult = await updateContractRoyalties(chain, contractAddress, royaltyConfig);
+          
+          // Update base royalty in rule
+          const rule = this.adjustmentRules.get(`${chain}:${contractAddress}`);
+          rule.baseRoyalty = evaluation.recommendedRoyalty;
+          
+          return {
+            updated: true,
+            evaluation,
+            updateResult,
+            newRoyalty: evaluation.recommendedRoyalty
+          };
+        }
+        
+        return {
+          updated: false,
+          evaluation,
+          reason: 'Adjustment too small to warrant update'
+        };
+      }
+    
+      schedulePerformanceEvaluations() {
+        setInterval(async () => {
+          const now = new Date();
+          
+          for (const [contractKey, rule] of this.adjustmentRules) {
+            if (rule.nextEvaluation <= now) {
+              try {
+                const [chain, contractAddress] = contractKey.split(':');
+                
+                // Fetch performance data (implementation depends on your data source)
+                const performanceData = await this.fetchPerformanceData(chain, contractAddress);
+                
+                const result = await this.autoAdjustRoyalties(chain, contractAddress, performanceData);
+                
+                console.log(`Performance evaluation completed for ${contractKey}:`, result);
+                
+              } catch (error) {
+                console.error(`Error evaluating performance for ${contractKey}:`, error);
+              }
+            }
+          }
+        }, 60 * 60 * 1000); // Check every hour
+      }
+    
+      async fetchPerformanceData(chain, contractAddress) {
+        // This would fetch real performance data from your analytics system
+        // Mock implementation for example
+        return {
+          totalVolume: Math.random() * 1000,
+          salesCount: Math.floor(Math.random() * 500),
+          contractAge: Math.floor(Math.random() * 365),
+          currentReceiver: '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9'
+        };
+      }
+    }
+    
+    // Usage
+    const dynamicRoyaltyManager = new DynamicRoyaltyManager('YOUR_API_KEY');
+    
+    // Set up performance-based royalty adjustment
+    const performanceRules = {
+      baseRoyalty: 2.5,
+      adjustmentType: 'volume',
+      thresholds: [
+        { volume: 100, royaltyAdjustment: 0.5 },  // +0.5% if volume >= 100 ETH
+        { volume: 500, royaltyAdjustment: 1.0 },  // +1.0% if volume >= 500 ETH
+        { volume: 1000, royaltyAdjustment: 2.0 }  // +2.0% if volume >= 1000 ETH
+      ],
+      maxRoyalty: 7.5,
+      minRoyalty: 1.0,
+      evaluationPeriod: 7 // Evaluate weekly
+    };
+    
+    dynamicRoyaltyManager.setPerformanceBasedRoyalty(
+      'MATIC',
+      '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+      performanceRules
+    );
+    
+    // Start automated evaluations
+    dynamicRoyaltyManager.schedulePerformanceEvaluations();
+    
+    // Manual evaluation
+    const performanceData = {
+      totalVolume: 750, // 750 ETH volume
+      salesCount: 300,
+      contractAge: 45,
+      currentReceiver: '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9'
+    };
+    
+    const evaluation = await dynamicRoyaltyManager.evaluatePerformanceAdjustment(
+      'MATIC',
+      '0x44260f782c8ae2cf62e31051920d206d19b475e5',
+      performanceData
+    );
+    
+    console.log('Performance evaluation:', evaluation);
+    ```
+  </Accordion>
+  
+  <Accordion title="Revenue Analytics and Reporting" icon="chart-bar">
+    **Track and analyze royalty revenue performance:**
+    
+    ```javascript
+    class RoyaltyAnalytics {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.revenueData = new Map();
+        this.analyticsCache = new Map();
+      }
+    
+      async trackRoyaltyPayment(chain, contractAddress, paymentData) {
+        const key = `${chain}:${contractAddress}`;
+        
+        if (!this.revenueData.has(key)) {
+          this.revenueData.set(key, {
+            totalRevenue: 0,
+            paymentCount: 0,
+            payments: [],
+            monthlyBreakdown: {},
+            recipientBreakdown: {}
+          });
+        }
+        
+        const revenue = this.revenueData.get(key);
+        
+        // Add payment to tracking
+        revenue.payments.push({
+          ...paymentData,
+          timestamp: new Date().toISOString()
+        });
+        
+        revenue.totalRevenue += paymentData.amount;
+        revenue.paymentCount++;
+        
+        // Update monthly breakdown
+        const month = new Date().toISOString().slice(0, 7); // YYYY-MM
+        if (!revenue.monthlyBreakdown[month]) {
+          revenue.monthlyBreakdown[month] = { amount: 0, count: 0 };
+        }
+        revenue.monthlyBreakdown[month].amount += paymentData.amount;
+        revenue.monthlyBreakdown[month].count++;
+        
+        // Update recipient breakdown
+        const recipient = paymentData.recipient;
+        if (!revenue.recipientBreakdown[recipient]) {
+          revenue.recipientBreakdown[recipient] = { amount: 0, count: 0 };
+        }
+        revenue.recipientBreakdown[recipient].amount += paymentData.amount;
+        revenue.recipientBreakdown[recipient].count++;
+        
+        // Clear analytics cache
+        this.analyticsCache.delete(key);
+        
+        return revenue;
+      }
+    
+      generateRevenueReport(chain, contractAddress, timeframe = 'all') {
+        const key = `${chain}:${contractAddress}`;
+        const revenue = this.revenueData.get(key);
+        
+        if (!revenue) {
+          return null;
+        }
+        
+        const now = new Date();
+        let filteredPayments = revenue.payments;
+        
+        // Apply timeframe filter
+        if (timeframe !== 'all') {
+          const cutoffDate = new Date();
+          switch (timeframe) {
+            case '7d':
+              cutoffDate.setDate(now.getDate() - 7);
+              break;
+            case '30d':
+              cutoffDate.setDate(now.getDate() - 30);
+              break;
+            case '90d':
+              cutoffDate.setDate(now.getDate() - 90);
+              break;
+            case '1y':
+              cutoffDate.setFullYear(now.getFullYear() - 1);
+              break;
+          }
+          
+          filteredPayments = revenue.payments.filter(p => 
+            new Date(p.timestamp) >= cutoffDate
+          );
+        }
+        
+        const report = {
+          contractAddress,
+          chain,
+          timeframe,
+          summary: {
+            totalRevenue: filteredPayments.reduce((sum, p) => sum + p.amount, 0),
+            paymentCount: filteredPayments.length,
+            averagePayment: filteredPayments.length > 0 ? 
+              filteredPayments.reduce((sum, p) => sum + p.amount, 0) / filteredPayments.length : 0,
+            firstPayment: filteredPayments.length > 0 ? filteredPayments[0].timestamp : null,
+            lastPayment: filteredPayments.length > 0 ? filteredPayments[filteredPayments.length - 1].timestamp : null
+          },
+          trends: this.calculateRevenueTrends(filteredPayments),
+          topSales: this.getTopSales(filteredPayments, 10),
+          monthlyBreakdown: this.calculateMonthlyBreakdown(filteredPayments),
+          projections: this.calculateProjections(filteredPayments)
+        };
+        
+        return report;
+      }
+    
+      calculateRevenueTrends(payments) {
+        if (payments.length < 2) {
+          return { trend: 'insufficient_data', growth: 0 };
+        }
+        
+        // Calculate weekly trends
+        const weeks = {};
+        payments.forEach(payment => {
+          const weekStart = new Date(payment.timestamp);
+          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+          const weekKey = weekStart.toISOString().slice(0, 10);
+          
+          if (!weeks[weekKey]) {
+            weeks[weekKey] = { amount: 0, count: 0 };
+          }
+          weeks[weekKey].amount += payment.amount;
+          weeks[weekKey].count++;
+        });
+        
+        const weeklyData = Object.entries(weeks)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([week, data]) => ({ week, ...data }));
+        
+        if (weeklyData.length < 2) {
+          return { trend: 'insufficient_data', growth: 0 };
+        }
+        
+        const recentWeeks = weeklyData.slice(-4); // Last 4 weeks
+        const earlierWeeks = weeklyData.slice(-8, -4); // Previous 4 weeks
+        
+        const recentAverage = recentWeeks.reduce((sum, w) => sum + w.amount, 0) / recentWeeks.length;
+        const earlierAverage = earlierWeeks.length > 0 ? 
+          earlierWeeks.reduce((sum, w) => sum + w.amount, 0) / earlierWeeks.length : recentAverage;
+        
+        const growth = earlierAverage > 0 ? ((recentAverage - earlierAverage) / earlierAverage) * 100 : 0;
+        
+        return {
+          trend: growth > 5 ? 'increasing' : growth < -5 ? 'decreasing' : 'stable',
+          growth: Math.round(growth * 100) / 100,
+          recentAverage: Math.round(recentAverage * 10000) / 10000,
+          earlierAverage: Math.round(earlierAverage * 10000) / 10000,
+          weeklyData
+        };
+      }
+    
+      getTopSales(payments, limit = 10) {
+        return payments
+          .sort((a, b) => b.amount - a.amount)
+          .slice(0, limit)
+          .map(payment => ({
+            amount: payment.amount,
+            salePrice: payment.salePrice,
+            royaltyPercentage: payment.royaltyPercentage,
+            timestamp: payment.timestamp,
+            tokenId: payment.tokenId,
+            marketplace: payment.marketplace
+          }));
+      }
+    
+      calculateMonthlyBreakdown(payments) {
+        const months = {};
+        
+        payments.forEach(payment => {
+          const month = payment.timestamp.slice(0, 7); // YYYY-MM
+          
+          if (!months[month]) {
+            months[month] = { amount: 0, count: 0, averagePayment: 0 };
+          }
+          months[month].amount += payment.amount;
+          months[month].count++;
+        });
+        
+        // Calculate averages
+        Object.keys(months).forEach(month => {
+          months[month].averagePayment = months[month].amount / months[month].count;
+        });
+        
+        return months;
+      }
+    
+      calculateProjections(payments) {
+        if (payments.length < 30) {
+          return { projection: 'insufficient_data' };
+        }
+        
+        const last30Days = payments.slice(-30);
+        const dailyAverage = last30Days.reduce((sum, p) => sum + p.amount, 0) / 30;
+        
+        return {
+          dailyAverage: Math.round(dailyAverage * 10000) / 10000,
+          projectedMonthly: Math.round(dailyAverage * 30 * 10000) / 10000,
+          projectedYearly: Math.round(dailyAverage * 365 * 10000) / 10000,
+          confidence: payments.length >= 90 ? 'high' : payments.length >= 60 ? 'medium' : 'low'
+        };
+      }
+    
+      async generateComprehensiveAnalytics(chain, contractAddress) {
+        const key = `${chain}:${contractAddress}`;
+        
+        // Check cache
+        if (this.analyticsCache.has(key)) {
+          const cached = this.analyticsCache.get(key);
+          if (Date.now() - cached.timestamp < 300000) { // 5 minutes cache
+            return cached.data;
+          }
+        }
+        
+        const revenue = this.revenueData.get(key);
+        if (!revenue) {
+          return null;
+        }
+        
+        const analytics = {
+          overview: {
+            totalRevenue: revenue.totalRevenue,
+            paymentCount: revenue.paymentCount,
+            averagePayment: revenue.paymentCount > 0 ? revenue.totalRevenue / revenue.paymentCount : 0,
+            uniqueRecipients: Object.keys(revenue.recipientBreakdown).length
+          },
+          performance: {
+            last7Days: this.generateRevenueReport(chain, contractAddress, '7d'),
+            last30Days: this.generateRevenueReport(chain, contractAddress, '30d'),
+            last90Days: this.generateRevenueReport(chain, contractAddress, '90d')
+          },
+          recipients: Object.entries(revenue.recipientBreakdown).map(([address, data]) => ({
+            address,
+            totalReceived: data.amount,
+            paymentCount: data.count,
+            averagePayment: data.amount / data.count,
+            percentage: (data.amount / revenue.totalRevenue) * 100
+          })).sort((a, b) => b.totalReceived - a.totalReceived),
+          insights: this.generateInsights(revenue),
+          recommendations: this.generateRecommendations(revenue)
+        };
+        
+        // Cache the result
+        this.analyticsCache.set(key, {
+          data: analytics,
+          timestamp: Date.now()
+        });
+        
+        return analytics;
+      }
+    
+      generateInsights(revenue) {
+        const insights = [];
+        
+        // Revenue concentration
+        const recipients = Object.values(revenue.recipientBreakdown);
+        if (recipients.length > 1) {
+          const topRecipient = Math.max(...recipients.map(r => r.amount));
+          const concentration = (topRecipient / revenue.totalRevenue) * 100;
+          
+          if (concentration > 80) {
+            insights.push({
+              type: 'concentration',
+              message: `${concentration.toFixed(1)}% of royalties go to a single recipient`,
+              severity: 'info'
+            });
+          }
+        }
+        
+        // Payment frequency
+        if (revenue.payments.length > 10) {
+          const timeSpan = new Date(revenue.payments[revenue.payments.length - 1].timestamp) - 
+                          new Date(revenue.payments[0].timestamp);
+          const avgDaysBetweenPayments = timeSpan / (1000 * 60 * 60 * 24) / revenue.payments.length;
+          
+          if (avgDaysBetweenPayments < 1) {
+            insights.push({
+              type: 'frequency',
+              message: 'High payment frequency indicates strong secondary market activity',
+              severity: 'positive'
+            });
+          } else if (avgDaysBetweenPayments > 30) {
+            insights.push({
+              type: 'frequency',
+              message: 'Low payment frequency may indicate limited secondary market activity',
+              severity: 'warning'
+            });
+          }
+        }
+        
+        // Revenue growth
+        const trends = this.calculateRevenueTrends(revenue.payments);
+        if (trends.growth > 20) {
+          insights.push({
+            type: 'growth',
+            message: `Strong revenue growth of ${trends.growth}% in recent weeks`,
+            severity: 'positive'
+          });
+        } else if (trends.growth < -20) {
+          insights.push({
+            type: 'growth',
+            message: `Revenue decline of ${Math.abs(trends.growth)}% in recent weeks`,
+            severity: 'warning'
+          });
+        }
+        
+        return insights;
+      }
+    
+      generateRecommendations(revenue) {
+        const recommendations = [];
+        
+        // Low revenue
+        if (revenue.totalRevenue < 1) {
+          recommendations.push({
+            type: 'marketing',
+            priority: 'medium',
+            message: 'Consider marketing efforts to increase secondary market activity',
+            action: 'Implement marketing campaigns or partnerships'
+          });
+        }
+        
+        // Single recipient
+        if (Object.keys(revenue.recipientBreakdown).length === 1) {
+          recommendations.push({
+            type: 'diversification',
+            priority: 'low',
+            message: 'Consider implementing royalty splitting for better revenue distribution',
+            action: 'Set up multi-recipient royalty structure'
+          });
+        }
+        
+        // High average payment
+        const avgPayment = revenue.totalRevenue / revenue.paymentCount;
+        if (avgPayment > 10) {
+          recommendations.push({
+            type: 'optimization',
+            priority: 'low',
+            message: 'High-value sales indicate premium positioning - consider increasing royalty percentage',
+            action: 'Evaluate royalty percentage optimization'
+          });
+        }
+        
+        return recommendations;
+      }
+    }
+    
+    // Usage
+    const analytics = new RoyaltyAnalytics('YOUR_API_KEY');
+    
+    // Track a royalty payment
+    await analytics.trackRoyaltyPayment('MATIC', '0xcontractaddress', {
+      amount: 0.25, // 0.25 ETH royalty
+      salePrice: 10, // 10 ETH sale price
+      royaltyPercentage: 2.5,
+      recipient: '0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9',
+      tokenId: '123',
+      marketplace: 'OpenSea'
+    });
+    
+    // Generate comprehensive analytics
+    const comprehensiveAnalytics = await analytics.generateComprehensiveAnalytics(
+      'MATIC',
+      '0xcontractaddress'
+    );
+    
+    console.log('Comprehensive Analytics:', comprehensiveAnalytics);
+    
+    // Generate specific timeframe report
+    const monthlyReport = analytics.generateRevenueReport(
+      'MATIC',
+      '0xcontractaddress',
+      '30d'
+    );
+    
+    console.log('30-day Revenue Report:', monthlyReport);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Royalty Management Best Practices:**
+
+1. **Reasonable Percentages** - Keep royalties between 2.5-10% to maintain market appeal
+2. **Valid Addresses** - Always verify recipient addresses before updating
+3. **Market Research** - Study competitor royalty rates in your category
+4. **Revenue Tracking** - Monitor royalty performance and adjust accordingly
+5. **Multi-Recipient Planning** - Consider future revenue sharing needs
+6. **Gas Optimization** - Batch royalty updates to save on transaction costs
+7. **Legal Compliance** - Ensure royalty structures comply with local regulations
+8. **Transparent Communication** - Clearly communicate royalty changes to stakeholders
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invalid Royalty Percentage" icon="exclamation-triangle">
+    **Problem:** Receiving "Invalid royalty percentage" error
+    
+    **Common Causes:**
+    - Percentage outside 0-100 range
+    - Too many decimal places (max 2)
+    - Non-numeric value provided
+    
+    **Solution:**
+    - Ensure percentage is between 0 and 100
+    - Round to maximum 2 decimal places
+    - Validate input is numeric before submission
+    - Use parseFloat() to convert strings to numbers
+  </Accordion>
+  
+  <Accordion title="Royalty Payments Not Received" icon="money-bill">
+    **Problem:** Royalty recipient not receiving payments
+    
+    **Investigation Steps:**
+    - Verify recipient address is correct
+    - Check if marketplace supports royalties
+    - Confirm contract royalty configuration
+    - Review marketplace-specific requirements
+    
+    **Resolution:**
+    - Update recipient address if incorrect
+    - Contact marketplace support for royalty issues
+    - Implement EIP-2981 standard for better compatibility
+    - Consider multiple marketplace integrations
+  </Accordion>
+  
+  <Accordion title="High Gas Costs" icon="gas-pump">
+    **Problem:** Expensive transaction fees for royalty updates
+    
+    **Optimization Strategies:**
+    - Batch multiple royalty updates together
+    - Update during low network congestion periods
+    - Use layer 2 solutions when available
+    - Plan royalty changes in advance to minimize updates
+    
+    **Cost Management:**
+    - Monitor gas prices and update during optimal times
+    - Consider the cost-benefit of frequent adjustments
+    - Use gas estimation tools before transactions
+    - Implement gas price alerts for optimal timing
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Revenue Analytics" href="/guides/nft-api/overview" icon="chart-line">
+    Implement comprehensive royalty revenue tracking
+  </Card>
+  <Card title="Contract Management" href="/guides/nft-api/contracts/retrieve-contract" icon="folder">
+    Learn about complete contract management workflows
+  </Card>
+  <Card title="Multi-Recipient Setup" href="/guides/nft-api/overview" icon="users">
+    Configure complex royalty distribution systems
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract/update-royalty-for-nft-contract" icon="book">
+    Explore the complete royalty management API documentation
+  </Card>
+</CardGroup>

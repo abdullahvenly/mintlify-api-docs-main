@@ -1,0 +1,914 @@
+---
+title: "Retrieve ERC20 Token Contracts"
+description: "View and manage your deployed ERC20 token contracts with detailed information and filtering options"
+icon: "list"
+---
+
+<Info>
+**Contract Management:** Access comprehensive information about your deployed ERC20 token contracts for monitoring and management purposes.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Contract Retrieval?
+
+Contract retrieval allows you to access detailed information about your deployed ERC20 token contracts. You can retrieve a specific contract by its address or get a complete list of all your contracts across different blockchains.
+
+<CardGroup cols={2}>
+  <Card title="Specific Contract" icon="crosshairs">
+    Get detailed info for a single contract
+  </Card>
+  <Card title="All Contracts" icon="list">
+    View all your deployed contracts
+  </Card>
+  <Card title="Multi-Chain Support" icon="link">
+    Contracts across different blockchains
+  </Card>
+  <Card title="Real-time Status" icon="chart-line">
+    Current on-chain status information
+  </Card>
+</CardGroup>
+
+## Use Cases
+
+<Tabs>
+  <Tab title="Portfolio Management">
+    **Contract Overview**
+    - Monitor all deployed contracts
+    - Track contract performance
+    - Manage token portfolios
+    - Audit contract deployments
+  </Tab>
+  <Tab title="Integration">
+    **Application Integration**
+    - Populate contract dropdowns
+    - Display user's tokens
+    - Contract selection interfaces
+    - Dashboard implementations
+  </Tab>
+  <Tab title="Analytics">
+    **Business Intelligence**
+    - Contract usage analytics
+    - Supply tracking
+    - Owner management
+    - Cross-chain analysis
+  </Tab>
+</Tabs>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Deployed Contracts" icon="file-contract">
+    You need to have deployed ERC20 contracts using the Token API
+  </Step>
+  <Step title="API Access" icon="key">
+    Valid API credentials for accessing contract information
+  </Step>
+  <Step title="Contract Details" icon="info">
+    For specific retrieval: chain and contract address
+  </Step>
+</Steps>
+
+## Get Specific Contract
+
+Retrieve detailed information about a specific ERC20 token contract.
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const chain = "MATIC";
+const contractAddress = "0x1e857475040b732d5adf3f8b2e7cd712914cdd23";
+
+const response = await fetch(`/api/v3/erc20/contracts/${chain}/${contractAddress}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Contract details:', data.result);
+```
+
+```python Python
+import requests
+
+chain = "MATIC"
+contract_address = "0x1e857475040b732d5adf3f8b2e7cd712914cdd23"
+
+response = requests.get(
+    f'/api/v3/erc20/contracts/{chain}/{contract_address}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Contract details:', data['result'])
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc20/contracts/MATIC/0x1e857475040b732d5adf3f8b2e7cd712914cdd23' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | The blockchain identifier (MATIC, ETHEREUM, etc.) |
+| `contractAddress` | string | ✅ | The deployed contract address |
+
+<Tip>
+**Chain Identifiers:**
+- **MATIC** - Polygon network
+- **ETHEREUM** - Ethereum mainnet
+- **BSC** - Binance Smart Chain
+- **AVAC** - Avalanche network
+</Tip>
+
+### Response Example
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "chain": "MATIC",
+        "address": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+        "name": "Infinity Token",
+        "symbol": "IFT",
+        "maxSupply": 100,
+        "burnable": true,
+        "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+        "onChainStatus": "SUCCEEDED"
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Contract information:**
+    - **`chain`** - Blockchain network
+    - **`address`** - Contract address
+    - **`name`** - Token name
+    - **`symbol`** - Token symbol
+    - **`maxSupply`** - Maximum token supply
+    - **`burnable`** - Whether tokens can be burned
+    - **`owner`** - Contract owner address
+    - **`onChainStatus`** - Current deployment status
+  </Tab>
+</Tabs>
+
+## Get All Contracts
+
+Retrieve a list of all your deployed ERC20 token contracts.
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/api/v3/erc20/contracts', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('All contracts:', data.result);
+console.log(`Total contracts: ${data.result.length}`);
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    '/api/v3/erc20/contracts',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('All contracts:', data['result'])
+print(f'Total contracts: {len(data["result"])}')
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc20/contracts' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Response Example
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": [
+        {
+          "chain": "MATIC",
+          "address": "0x693a40fc73c8f024684775e04d3b4e30144b569a",
+          "name": "Test Token X",
+          "symbol": "TTX",
+          "maxSupply": 20,
+          "burnable": true,
+          "owner": "0xca1d904420698464386C8a0B39eB4f176F6Ff450",
+          "onChainStatus": "SUCCEEDED"
+        },
+        {
+          "chain": "AVAC",
+          "address": "0x9f0f5807e97f5114c2bba8cd86f0d603b053fd91",
+          "name": "Zap",
+          "symbol": "ZZZ",
+          "maxSupply": 1000000000000000000000000,
+          "burnable": true,
+          "owner": "0xb636F53AFc9Fe7fa7246E1c220DF2436936b4315",
+          "onChainStatus": "SUCCEEDED"
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab title="Array Response">
+    **Returns an array of contract objects, each containing:**
+    - Complete contract information
+    - Cross-chain contracts included
+    - Sorted by creation date (newest first)
+    - All deployment statuses included
+  </Tab>
+</Tabs>
+
+## Contract Analysis & Filtering
+
+Process and analyze your contract data:
+
+<CodeGroup>
+```javascript JavaScript
+async function analyzeContracts() {
+  const response = await fetch('/api/v3/erc20/contracts', {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+  
+  const data = await response.json();
+  const contracts = data.result;
+  
+  // Group by chain
+  const contractsByChain = contracts.reduce((acc, contract) => {
+    if (!acc[contract.chain]) acc[contract.chain] = [];
+    acc[contract.chain].push(contract);
+    return acc;
+  }, {});
+  
+  // Filter by status
+  const successfulContracts = contracts.filter(c => c.onChainStatus === 'SUCCEEDED');
+  const failedContracts = contracts.filter(c => c.onChainStatus === 'FAILED');
+  
+  // Group by owner
+  const contractsByOwner = contracts.reduce((acc, contract) => {
+    if (!acc[contract.owner]) acc[contract.owner] = [];
+    acc[contract.owner].push(contract);
+    return acc;
+  }, {});
+  
+  // Calculate total supply across all contracts
+  const totalSupply = contracts.reduce((sum, contract) => {
+    return sum + (contract.maxSupply || 0);
+  }, 0);
+  
+  return {
+    total: contracts.length,
+    byChain: contractsByChain,
+    successful: successfulContracts.length,
+    failed: failedContracts.length,
+    byOwner: contractsByOwner,
+    totalSupply
+  };
+}
+
+// Usage
+const analysis = await analyzeContracts();
+console.log('Contract Analysis:', analysis);
+```
+
+```python Python
+import requests
+from collections import defaultdict
+
+def analyze_contracts():
+    response = requests.get(
+        '/api/v3/erc20/contracts',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'}
+    )
+    
+    data = response.json()
+    contracts = data['result']
+    
+    # Group by chain
+    contracts_by_chain = defaultdict(list)
+    for contract in contracts:
+        contracts_by_chain[contract['chain']].append(contract)
+    
+    # Filter by status
+    successful_contracts = [c for c in contracts if c['onChainStatus'] == 'SUCCEEDED']
+    failed_contracts = [c for c in contracts if c['onChainStatus'] == 'FAILED']
+    
+    # Group by owner
+    contracts_by_owner = defaultdict(list)
+    for contract in contracts:
+        contracts_by_owner[contract['owner']].append(contract)
+    
+    # Calculate total supply
+    total_supply = sum(contract.get('maxSupply', 0) for contract in contracts)
+    
+    return {
+        'total': len(contracts),
+        'by_chain': dict(contracts_by_chain),
+        'successful': len(successful_contracts),
+        'failed': len(failed_contracts),
+        'by_owner': dict(contracts_by_owner),
+        'total_supply': total_supply
+    }
+
+# Usage
+analysis = analyze_contracts()
+print('Contract Analysis:', analysis)
+```
+</CodeGroup>
+
+## Advanced Contract Management
+
+<AccordionGroup>
+  <Accordion title="Contract Dashboard" icon="chart-bar">
+    **Build a comprehensive contract dashboard:**
+    
+    ```javascript
+    class ContractDashboard {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.contracts = [];
+      }
+    
+      async loadContracts() {
+        const response = await fetch('/api/v3/erc20/contracts', {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        this.contracts = data.result;
+        return this.contracts;
+      }
+    
+      getContractsByChain(chain) {
+        return this.contracts.filter(c => c.chain === chain);
+      }
+    
+      getContractsByOwner(owner) {
+        return this.contracts.filter(c => c.owner.toLowerCase() === owner.toLowerCase());
+      }
+    
+      getBurnableContracts() {
+        return this.contracts.filter(c => c.burnable);
+      }
+    
+      getContractsBySupplyRange(min, max) {
+        return this.contracts.filter(c => 
+          c.maxSupply >= min && c.maxSupply <= max
+        );
+      }
+    
+      searchContracts(query) {
+        const lowerQuery = query.toLowerCase();
+        return this.contracts.filter(c => 
+          c.name.toLowerCase().includes(lowerQuery) ||
+          c.symbol.toLowerCase().includes(lowerQuery) ||
+          c.address.toLowerCase().includes(lowerQuery)
+        );
+      }
+    
+      getStatistics() {
+        const stats = {
+          total: this.contracts.length,
+          chains: {},
+          totalSupply: 0,
+          burnableCount: 0,
+          averageSupply: 0
+        };
+    
+        this.contracts.forEach(contract => {
+          // Chain distribution
+          stats.chains[contract.chain] = (stats.chains[contract.chain] || 0) + 1;
+          
+          // Supply calculations
+          stats.totalSupply += contract.maxSupply || 0;
+          
+          // Burnable count
+          if (contract.burnable) stats.burnableCount++;
+        });
+    
+        stats.averageSupply = stats.totalSupply / stats.total;
+        return stats;
+      }
+    }
+    
+    // Usage
+    const dashboard = new ContractDashboard('YOUR_API_KEY');
+    await dashboard.loadContracts();
+    
+    const polygonContracts = dashboard.getContractsByChain('MATIC');
+    const burnableContracts = dashboard.getBurnableContracts();
+    const stats = dashboard.getStatistics();
+    ```
+  </Accordion>
+  
+  <Accordion title="Contract Monitoring" icon="eye">
+    **Monitor contract health and status:**
+    
+    ```javascript
+    class ContractMonitor {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.monitoredContracts = new Map();
+      }
+    
+      async addContract(chain, address) {
+        try {
+          const response = await fetch(`/api/v3/erc20/contracts/${chain}/${address}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          const contract = data.result;
+          
+          this.monitoredContracts.set(`${chain}-${address}`, {
+            ...contract,
+            lastChecked: Date.now(),
+            alerts: []
+          });
+          
+          return contract;
+        } catch (error) {
+          console.error('Failed to add contract:', error);
+          throw error;
+        }
+      }
+    
+      async checkContractHealth(chain, address) {
+        const key = `${chain}-${address}`;
+        const monitored = this.monitoredContracts.get(key);
+        
+        if (!monitored) {
+          throw new Error('Contract not being monitored');
+        }
+    
+        try {
+          const response = await fetch(`/api/v3/erc20/contracts/${chain}/${address}`, {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          const currentContract = data.result;
+          
+          // Check for changes
+          const changes = this.detectChanges(monitored, currentContract);
+          
+          // Update monitored contract
+          this.monitoredContracts.set(key, {
+            ...currentContract,
+            lastChecked: Date.now(),
+            alerts: changes.length > 0 ? [...monitored.alerts, ...changes] : monitored.alerts
+          });
+          
+          return { contract: currentContract, changes };
+        } catch (error) {
+          console.error('Health check failed:', error);
+          throw error;
+        }
+      }
+    
+      detectChanges(old, current) {
+        const changes = [];
+        
+        if (old.owner !== current.owner) {
+          changes.push({
+            type: 'OWNER_CHANGED',
+            from: old.owner,
+            to: current.owner,
+            timestamp: Date.now()
+          });
+        }
+        
+        if (old.onChainStatus !== current.onChainStatus) {
+          changes.push({
+            type: 'STATUS_CHANGED',
+            from: old.onChainStatus,
+            to: current.onChainStatus,
+            timestamp: Date.now()
+          });
+        }
+        
+        return changes;
+      }
+    
+      async monitorAll() {
+        const results = [];
+        
+        for (const [key, contract] of this.monitoredContracts) {
+          const [chain, address] = key.split('-');
+          try {
+            const result = await this.checkContractHealth(chain, address);
+            results.push({ key, ...result });
+          } catch (error) {
+            results.push({ key, error: error.message });
+          }
+        }
+        
+        return results;
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Contract Export" icon="download">
+    **Export contract data for analysis:**
+    
+    ```javascript
+    async function exportContracts(format = 'json') {
+      const response = await fetch('/api/v3/erc20/contracts', {
+        headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+      });
+      
+      const data = await response.json();
+      const contracts = data.result;
+      
+      switch (format.toLowerCase()) {
+        case 'csv':
+          return exportToCSV(contracts);
+        case 'json':
+          return JSON.stringify(contracts, null, 2);
+        case 'excel':
+          return exportToExcel(contracts);
+        default:
+          throw new Error('Unsupported format');
+      }
+    }
+    
+    function exportToCSV(contracts) {
+      const headers = ['Chain', 'Address', 'Name', 'Symbol', 'Max Supply', 'Burnable', 'Owner', 'Status'];
+      const rows = contracts.map(c => [
+        c.chain,
+        c.address,
+        c.name,
+        c.symbol,
+        c.maxSupply,
+        c.burnable,
+        c.owner,
+        c.onChainStatus
+      ]);
+      
+      const csvContent = [headers, ...rows]
+        .map(row => row.map(field => `"${field}"`).join(','))
+        .join('\n');
+      
+      return csvContent;
+    }
+    
+    // Usage
+    const jsonExport = await exportContracts('json');
+    const csvExport = await exportContracts('csv');
+    ```
+  </Accordion>
+  
+  <Accordion title="Contract Search & Filter" icon="search">
+    **Advanced search and filtering:**
+    
+    ```javascript
+    class ContractSearch {
+      constructor(contracts) {
+        this.contracts = contracts;
+      }
+    
+      search(criteria) {
+        let results = [...this.contracts];
+    
+        // Text search
+        if (criteria.query) {
+          const query = criteria.query.toLowerCase();
+          results = results.filter(c => 
+            c.name.toLowerCase().includes(query) ||
+            c.symbol.toLowerCase().includes(query) ||
+            c.address.toLowerCase().includes(query)
+          );
+        }
+    
+        // Chain filter
+        if (criteria.chains && criteria.chains.length > 0) {
+          results = results.filter(c => criteria.chains.includes(c.chain));
+        }
+    
+        // Supply range filter
+        if (criteria.minSupply !== undefined) {
+          results = results.filter(c => c.maxSupply >= criteria.minSupply);
+        }
+        if (criteria.maxSupply !== undefined) {
+          results = results.filter(c => c.maxSupply <= criteria.maxSupply);
+        }
+    
+        // Burnable filter
+        if (criteria.burnable !== undefined) {
+          results = results.filter(c => c.burnable === criteria.burnable);
+        }
+    
+        // Owner filter
+        if (criteria.owner) {
+          results = results.filter(c => 
+            c.owner.toLowerCase() === criteria.owner.toLowerCase()
+          );
+        }
+    
+        // Status filter
+        if (criteria.status) {
+          results = results.filter(c => c.onChainStatus === criteria.status);
+        }
+    
+        // Sort results
+        if (criteria.sortBy) {
+          results.sort((a, b) => {
+            const aVal = a[criteria.sortBy];
+            const bVal = b[criteria.sortBy];
+            
+            if (criteria.sortOrder === 'desc') {
+              return bVal > aVal ? 1 : -1;
+            }
+            return aVal > bVal ? 1 : -1;
+          });
+        }
+    
+        return results;
+      }
+    }
+    
+    // Usage
+    const searcher = new ContractSearch(contracts);
+    
+    const results = searcher.search({
+      query: 'token',
+      chains: ['MATIC', 'ETHEREUM'],
+      minSupply: 1000,
+      burnable: true,
+      sortBy: 'maxSupply',
+      sortOrder: 'desc'
+    });
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<Tabs>
+  <Tab title="React Component">
+    ```javascript
+    import React, { useState, useEffect } from 'react';
+    
+    function ContractList() {
+      const [contracts, setContracts] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [filter, setFilter] = useState('all');
+      const [searchTerm, setSearchTerm] = useState('');
+    
+      useEffect(() => {
+        loadContracts();
+      }, []);
+    
+      const loadContracts = async () => {
+        try {
+          const response = await fetch('/api/v3/erc20/contracts', {
+            headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+          });
+          
+          const data = await response.json();
+          setContracts(data.result);
+        } catch (error) {
+          console.error('Failed to load contracts:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      const filteredContracts = contracts.filter(contract => {
+        const matchesSearch = contract.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                             contract.symbol.toLowerCase().includes(searchTerm.toLowerCase());
+        
+        const matchesFilter = filter === 'all' || contract.chain === filter;
+        
+        return matchesSearch && matchesFilter;
+      });
+    
+      if (loading) return <div>Loading contracts...</div>;
+    
+      return (
+        <div>
+          <div className="filters">
+            <input
+              type="text"
+              placeholder="Search contracts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+              <option value="all">All Chains</option>
+              <option value="MATIC">Polygon</option>
+              <option value="ETHEREUM">Ethereum</option>
+              <option value="BSC">BSC</option>
+              <option value="AVAC">Avalanche</option>
+            </select>
+          </div>
+    
+          <div className="contract-grid">
+            {filteredContracts.map(contract => (
+              <div key={`${contract.chain}-${contract.address}`} className="contract-card">
+                <h3>{contract.name} ({contract.symbol})</h3>
+                <p>Chain: {contract.chain}</p>
+                <p>Supply: {contract.maxSupply?.toLocaleString()}</p>
+                <p>Burnable: {contract.burnable ? 'Yes' : 'No'}</p>
+                <p>Status: {contract.onChainStatus}</p>
+                <code>{contract.address}</code>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    ```
+  </Tab>
+  <Tab title="Express.js API">
+    ```javascript
+    const express = require('express');
+    const app = express();
+    
+    // Get all contracts with filtering
+    app.get('/api/contracts', async (req, res) => {
+      try {
+        const { chain, owner, burnable, search } = req.query;
+        
+        const response = await fetch('/api/v3/erc20/contracts', {
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+        });
+        
+        const data = await response.json();
+        let contracts = data.result;
+        
+        // Apply filters
+        if (chain) {
+          contracts = contracts.filter(c => c.chain === chain);
+        }
+        
+        if (owner) {
+          contracts = contracts.filter(c => 
+            c.owner.toLowerCase() === owner.toLowerCase()
+          );
+        }
+        
+        if (burnable !== undefined) {
+          contracts = contracts.filter(c => c.burnable === (burnable === 'true'));
+        }
+        
+        if (search) {
+          const searchLower = search.toLowerCase();
+          contracts = contracts.filter(c => 
+            c.name.toLowerCase().includes(searchLower) ||
+            c.symbol.toLowerCase().includes(searchLower) ||
+            c.address.toLowerCase().includes(searchLower)
+          );
+        }
+        
+        res.json({
+          contracts,
+          total: contracts.length,
+          filters: { chain, owner, burnable, search }
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    // Get specific contract
+    app.get('/api/contracts/:chain/:address', async (req, res) => {
+      try {
+        const { chain, address } = req.params;
+        
+        const response = await fetch(`/api/v3/erc20/contracts/${chain}/${address}`, {
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+        });
+        
+        const data = await response.json();
+        res.json(data.result);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    // Get contract statistics
+    app.get('/api/contracts/stats', async (req, res) => {
+      try {
+        const response = await fetch('/api/v3/erc20/contracts', {
+          headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+        });
+        
+        const data = await response.json();
+        const contracts = data.result;
+        
+        const stats = {
+          total: contracts.length,
+          byChain: {},
+          totalSupply: 0,
+          burnableCount: 0
+        };
+        
+        contracts.forEach(contract => {
+          stats.byChain[contract.chain] = (stats.byChain[contract.chain] || 0) + 1;
+          stats.totalSupply += contract.maxSupply || 0;
+          if (contract.burnable) stats.burnableCount++;
+        });
+        
+        res.json(stats);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Contract Management Best Practices:**
+
+1. **Regular Monitoring** - Check contract status periodically
+2. **Organized Storage** - Keep contract addresses and details organized
+3. **Access Control** - Secure API keys and limit access appropriately
+4. **Data Backup** - Export and backup contract information regularly
+5. **Status Tracking** - Monitor on-chain status for all contracts
+6. **Documentation** - Document contract purposes and configurations
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Contract not found">
+    **Error:** Contract not found for given chain and address
+    
+    **Causes:**
+    - Incorrect contract address
+    - Wrong chain identifier
+    - Contract not deployed by your account
+    - Contract deployment still pending
+    
+    **Solution:** Verify the contract address and chain, ensure the contract was deployed successfully.
+  </Accordion>
+  
+  <Accordion title="Empty contract list">
+    **Issue:** No contracts returned from API
+    
+    **Possible causes:**
+    - No contracts deployed yet
+    - API key doesn't have access
+    - Wrong environment (testnet vs mainnet)
+    
+    **Solution:** Verify you have deployed contracts and are using the correct API credentials.
+  </Accordion>
+  
+  <Accordion title="Outdated contract information">
+    **Problem:** Contract information seems outdated
+    
+    **Causes:**
+    - Recent changes not yet reflected
+    - Caching delays
+    - Network synchronization issues
+    
+    **Solution:** Wait a few minutes and retry, or check the contract directly on a blockchain explorer.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create New Contract" href="/guides/token-api/contracts/create-erc20-token-contract" icon="plus">
+    Deploy additional ERC20 token contracts
+  </Card>
+  <Card title="Mint Tokens" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Mint tokens for your deployed contracts
+  </Card>
+  <Card title="Update Contract Owner" href="/Token-API-Basic-Guides/update-contract-owner-erc20" icon="crown">
+    Transfer ownership of your contracts
+  </Card>
+  <Card title="Set Up Webhooks" href="/guides/token-api/advanced/webhooks-token-api" icon="webhook">
+    Get notifications for contract events
+  </Card>
+</CardGroup>
+
+<Warning>
+**Important:** Contract information is retrieved in real-time from the blockchain. Ensure you're using the correct chain identifiers and contract addresses for accurate results.
+</Warning>

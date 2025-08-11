@@ -1,33 +1,103 @@
 ---
-title: 'Introduction'
-description: 'Example section for showcasing API endpoints'
+title: 'API Reference'
+description: 'Comprehensive API documentation for Venly blockchain development platform'
 ---
 
-<Note>
-  If you're not looking to build API reference documentation, you can delete
-  this section by removing the api-reference folder.
-</Note>
+## Welcome to Venly APIs
 
-## Welcome
+Venly provides a comprehensive suite of blockchain APIs that enable developers to build powerful Web3 applications without the complexity of managing blockchain infrastructure directly.
 
-There are two ways to build API documentation: [OpenAPI](https://mintlify.com/docs/api-playground/openapi/setup) and [MDX components](https://mintlify.com/docs/api-playground/mdx/configuration). For the starter kit, we are using the following OpenAPI specification.
+Our API suite includes:
 
-<Card
-  title="Plant Store Endpoints"
-  icon="leaf"
-  href="https://github.com/mintlify/starter/blob/main/api-reference/openapi.json"
->
-  View the OpenAPI specification file
-</Card>
+<CardGroup cols={2}>
+  <Card
+    title="NFT API"
+    icon="image"
+    href="/api-reference/NFT-API/contract/create-contract"
+  >
+    Create, mint, and manage NFTs with comprehensive metadata support
+  </Card>
+  <Card
+    title="Token API"
+    icon="coins"
+    href="/api-reference/Token-API/erc20-contract/create-contract"
+  >
+    Deploy and manage ERC20 tokens with advanced minting capabilities
+  </Card>
+  <Card
+    title="PAY API"
+    icon="credit-card"
+    href="/api-reference/PAY-API/checkout/create-checkout-link"
+  >
+    Integrate crypto payments and fiat on/off ramps seamlessly
+  </Card>
+  <Card
+    title="Wallet API"
+    icon="wallet"
+    href="/api-reference/Wallet-API/user/create-user"
+  >
+    Build wallet functionality with user management and transaction handling
+  </Card>
+</CardGroup>
 
-## Authentication
+## Getting Started
 
-All API endpoints are authenticated using Bearer tokens and picked up from the specification file.
+All Venly API endpoints require authentication using API keys. You can obtain your API keys from the [Venly Console](https://portal.venly.io/).
 
-```json
-"security": [
-  {
-    "bearerAuth": []
-  }
-]
+### Authentication
+
+All API endpoints are authenticated using Bearer tokens in the Authorization header:
+
+```bash
+curl -X GET "https://api.venly.io/api/endpoint" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json"
 ```
+
+### Base URLs
+
+- **Production**: `https://api.venly.io`
+- **Staging**: `https://api-staging.venly.io`
+
+### Rate Limits
+
+API requests are subject to rate limiting to ensure fair usage across all users. Rate limit information is included in response headers.
+
+## API Specifications
+
+Our APIs are documented using OpenAPI specifications for each service:
+
+<CardGroup cols={2}>
+  <Card
+    title="NFT API Specification"
+    icon="file-code"
+    href="/api-reference/NFT-API-V3-Specs.yaml"
+  >
+    Complete OpenAPI spec for NFT operations
+  </Card>
+  <Card
+    title="Token API Specification"
+    icon="file-code"
+    href="/api-reference/Token-API-V3-Specs.yaml"
+  >
+    Complete OpenAPI spec for Token operations
+  </Card>
+  <Card
+    title="PAY API Specification"
+    icon="file-code"
+    href="/api-reference/PAY-API-1.0-Specs.yaml"
+  >
+    Complete OpenAPI spec for Payment operations
+  </Card>
+  <Card
+    title="Wallet API Specification"
+    icon="file-code"
+    href="/api-reference/Wallet-API-0.43.0-Specs.yaml"
+  >
+    Complete OpenAPI spec for Wallet operations
+  </Card>
+</CardGroup>
+
+## Support
+
+Need help? Visit our [Support Portal](https://portal.venly.io/) or check out our comprehensive [guides](/guides/nft-api/overview) to get started with specific use cases.

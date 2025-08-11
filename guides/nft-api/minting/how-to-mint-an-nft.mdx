@@ -1,0 +1,484 @@
+---
+title: "Mint Your First NFT"
+description: "Complete guide to minting NFTs - from contract creation to token distribution"
+icon: "coins"
+---
+
+<Info>
+**Complete NFT Creation Workflow:** Learn the entire process from creating a smart contract to minting and distributing your first NFTs.
+
+**Time required:** ~20 minutes
+</Info>
+
+## NFT Creation Overview
+
+Creating an NFT involves three main steps that work together to bring your digital asset to life on the blockchain:
+
+<Steps>
+  <Step title="Create Smart Contract" icon="file-contract">
+    Deploy a collection contract that will hold all your NFTs
+  </Step>
+  <Step title="Define Token Types" icon="shapes">
+    Create templates with metadata, images, and attributes
+  </Step>
+  <Step title="Mint NFTs" icon="coins">
+    Create actual tokens on the blockchain and distribute them
+  </Step>
+</Steps>
+
+<Note>
+Think of this process like creating a book series: first you establish the series (contract), then you write individual book templates (token types), and finally you print and distribute copies (mint tokens).
+</Note>
+
+## Step 1: Create Your NFT Collection Contract
+
+The smart contract acts as your NFT collection on the blockchain. Each contract represents a distinct collection that will appear on marketplaces like OpenSea.
+
+<Tabs>
+  <Tab title="Collection Examples">
+    **Real-world examples:**
+    - [Venly Metaring Collection](https://venly.market/collections/metaring)
+    - [OpenSea Metaring](https://opensea.io/collection/metaring)
+    
+    Each collection has its own contract address and appears as a unified collection across all NFT platforms.
+  </Tab>
+  <Tab title="Contract Standards">
+    **ERC-1155 Standard:**
+    - Supports both fungible and non-fungible tokens
+    - Gas-efficient batch operations
+    - Fully audited by Least Authority and Nonce Audit
+    - Battle-tested in production
+  </Tab>
+</Tabs>
+
+### Create Contract API Call
+
+<CodeGroup>
+```javascript JavaScript
+const contractResponse = await fetch('/api/v3/erc1155/contracts/deployments', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    name: "My Gaming Collection",
+    description: "Unique gaming assets and collectibles",
+    image: "https://example.com/collection-cover.jpg",
+    chain: "MATIC",
+    externalUrl: "https://mygame.com"
+  })
+});
+
+const contract = await contractResponse.json();
+console.log('Contract ID:', contract.result.id);
+```
+
+```python Python
+import requests
+
+contract_response = requests.post(
+    '/api/v3/erc1155/contracts/deployments',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'name': 'My Gaming Collection',
+        'description': 'Unique gaming assets and collectibles',
+        'image': 'https://example.com/collection-cover.jpg',
+        'chain': 'MATIC',
+        'externalUrl': 'https://mygame.com'
+    }
+)
+
+contract = contract_response.json()
+print('Contract ID:', contract['result']['id'])
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc1155/contracts/deployments' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "My Gaming Collection",
+    "description": "Unique gaming assets and collectibles",
+    "image": "https://example.com/collection-cover.jpg",
+    "chain": "MATIC",
+    "externalUrl": "https://mygame.com"
+  }'
+```
+</CodeGroup>
+
+<Check>
+**Save the contract address** from the response - you'll need it for the next steps!
+</Check>
+
+## Step 2: Create Token Types (NFT Templates)
+
+Token types define what your NFTs will look like. Each unique design, image, or set of attributes requires its own token type.
+
+<CardGroup cols={2}>
+  <Card title="Non-Fungible Tokens" icon="gem">
+    **Unique items** - Each mint gets a unique token ID
+    Perfect for: Art, collectibles, unique game items
+  </Card>
+  <Card title="Fungible Tokens" icon="coins">
+    **Identical items** - All mints share the same token ID
+    Perfect for: Currency, consumables, common resources
+  </Card>
+</CardGroup>
+
+### Create Token Type API Call
+
+<CodeGroup>
+```javascript JavaScript
+const tokenTypeResponse = await fetch('/api/v3/erc1155/token-types/creations', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contractAddress: "0x30d6cff9cb268c59c75a94755b2c60e118d65657",
+    chain: "MATIC",
+    name: "Legendary Sword",
+    description: "A powerful weapon forged in dragon fire",
+    image: "https://example.com/legendary-sword.jpg",
+    fungible: false,
+    maxSupply: 100,
+    attributes: [
+      {
+        type: "property",
+        name: "Rarity",
+        value: "Legendary"
+      },
+      {
+        type: "stat",
+        name: "Attack Power",
+        value: "95",
+        maxValue: "100"
+      }
+    ]
+  })
+});
+
+const tokenType = await tokenTypeResponse.json();
+console.log('Token Type ID:', tokenType.result.id);
+```
+
+```python Python
+token_type_response = requests.post(
+    '/api/v3/erc1155/token-types/creations',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'contractAddress': '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        'chain': 'MATIC',
+        'name': 'Legendary Sword',
+        'description': 'A powerful weapon forged in dragon fire',
+        'image': 'https://example.com/legendary-sword.jpg',
+        'fungible': False,
+        'maxSupply': 100,
+        'attributes': [
+            {
+                'type': 'property',
+                'name': 'Rarity',
+                'value': 'Legendary'
+            },
+            {
+                'type': 'stat',
+                'name': 'Attack Power',
+                'value': '95',
+                'maxValue': '100'
+            }
+        ]
+    }
+)
+
+token_type = token_type_response.json()
+print('Token Type ID:', token_type['result']['id'])
+```
+</CodeGroup>
+
+<Warning>
+**Important:** Token types only define the NFT template. No tokens are created on the blockchain yet - that happens in the minting step.
+</Warning>
+
+## Step 3: Mint Your NFTs
+
+The final step creates actual tokens on the blockchain using your token type template. You can mint multiple copies and send them directly to recipients.
+
+### Minting Options
+
+<Tabs>
+  <Tab title="Single Recipient">
+    Mint one or more NFTs to a single wallet address
+  </Tab>
+  <Tab title="Multiple Recipients">
+    Distribute NFTs to multiple wallets in one transaction
+  </Tab>
+  <Tab title="Email Distribution">
+    Use Venly's NFT2Email service to send NFTs via email
+  </Tab>
+</Tabs>
+
+### Mint NFTs API Call
+
+<CodeGroup>
+```javascript JavaScript
+const mintResponse = await fetch('/api/v3/erc1155/tokens/mints', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contractAddress: "0x30d6cff9cb268c59c75a94755b2c60e118d65657",
+    chain: "MATIC",
+    tokenTypeId: "3",
+    destinations: [
+      {
+        address: "0x9282fc38931A3a613b8566b3E6a1027e49ABb712",
+        amount: 1
+      },
+      {
+        address: "player2@example.com", // Email address
+        amount: 2
+      },
+      {
+        address: "0x329CdCBBD82c934fe32322b423bD8fBd30b4EEB6",
+        amount: 3
+      }
+    ]
+  })
+});
+
+const mintResult = await mintResponse.json();
+console.log('Mint IDs:', mintResult.result.mints.map(m => m.id));
+```
+
+```python Python
+mint_response = requests.post(
+    '/api/v3/erc1155/tokens/mints',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'contractAddress': '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        'chain': 'MATIC',
+        'tokenTypeId': '3',
+        'destinations': [
+            {
+                'address': '0x9282fc38931A3a613b8566b3E6a1027e49ABb712',
+                'amount': 1
+            },
+            {
+                'address': 'player2@example.com',  # Email address
+                'amount': 2
+            },
+            {
+                'address': '0x329CdCBBD82c934fe32322b423bD8fBd30b4EEB6',
+                'amount': 3
+            }
+        ]
+    }
+)
+
+mint_result = mint_response.json()
+print('Mint IDs:', [m['id'] for m in mint_result['result']['mints']])
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc1155/tokens/mints' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "contractAddress": "0x30d6cff9cb268c59c75a94755b2c60e118d65657",
+    "chain": "MATIC",
+    "tokenTypeId": "3",
+    "destinations": [
+      {
+        "address": "0x9282fc38931A3a613b8566b3E6a1027e49ABb712",
+        "amount": 1
+      },
+      {
+        "address": "player2@example.com",
+        "amount": 2
+      }
+    ]
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `contractAddress` | string | ✅ | The deployed contract address |
+| `chain` | string | ✅ | Blockchain network (e.g., "MATIC") |
+| `tokenTypeId` | string | ✅ | ID from token type creation response |
+| `destinations` | array | ✅ | Array of recipient addresses and amounts |
+| `destinations.address` | string | ✅ | Wallet address or email |
+| `destinations.amount` | integer | ✅ | Number of NFTs to mint |
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Mint Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "mints": [
+          {
+            "id": "01d678f4-f8d7-4acf-b7d0-4fb801cd091c",
+            "status": "PENDING",
+            "destination": {
+              "address": "0x9282fc38931A3a613b8566b3E6a1027e49ABb712",
+              "amount": 1
+            }
+          }
+        ],
+        "metadata": {
+          "name": "Legendary Sword",
+          "description": "A powerful weapon forged in dragon fire",
+          "image": "https://example.com/legendary-sword.jpg",
+          "attributes": [...]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Key Fields">
+    **Important response fields:**
+    - `mints[].id` - Track individual mint requests
+    - `mints[].status` - Current minting status
+    - `metadata` - Complete NFT metadata
+    - `contract` - Contract information
+  </Tab>
+</Tabs>
+
+<Check>
+**Track your mints:** Save the mint IDs to monitor minting progress and verify completion.
+</Check>
+
+## Fungible vs Non-Fungible Tokens
+
+<AccordionGroup>
+  <Accordion title="Non-Fungible Tokens (NFTs)" icon="gem">
+    **Characteristics:**
+    - Each mint receives a unique token ID
+    - Perfect for unique items like art, collectibles
+    - Distinguishable from each other
+    - Higher gas costs per mint
+    
+    **Use cases:**
+    - Digital art and collectibles
+    - Unique game items (legendary weapons)
+    - Certificates and credentials
+    - Real estate or asset tokenization
+  </Accordion>
+  
+  <Accordion title="Fungible Tokens" icon="coins">
+    **Characteristics:**
+    - All mints share the same token ID
+    - Identical and interchangeable
+    - Lower gas costs for batch operations
+    - Efficient for large quantities
+    
+    **Use cases:**
+    - In-game currencies
+    - Consumable items (potions, ammo)
+    - Loyalty points or rewards
+    - Utility tokens
+  </Accordion>
+</AccordionGroup>
+
+## Batch Minting Best Practices
+
+<Tip>
+**Optimization Tips:**
+
+1. **Batch Operations** - Mint to multiple recipients in one transaction
+2. **Gas Efficiency** - Use fungible tokens for identical items
+3. **Email Distribution** - Leverage NFT2Email for user onboarding
+4. **Status Monitoring** - Track mint IDs to ensure completion
+5. **Error Handling** - Implement retry logic for failed mints
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Minting failed">
+    **Common causes:**
+    - Invalid contract address or token type ID
+    - Insufficient permissions
+    - Network congestion
+    - Invalid recipient addresses
+    
+    **Solution:** Verify all parameters and check mint status using the mint ID.
+  </Accordion>
+  
+  <Accordion title="Email addresses not working">
+    **Requirements:**
+    - Valid email format
+    - NFT2Email service enabled
+    - Recipient will receive email with claim instructions
+    
+    **Solution:** Ensure email addresses are properly formatted and the service is configured.
+  </Accordion>
+  
+  <Accordion title="High gas fees">
+    **Optimization strategies:**
+    - Use testnets for development
+    - Mint during low network activity
+    - Batch multiple recipients together
+    - Consider Layer 2 solutions like Polygon
+    
+    **Solution:** Monitor network conditions and optimize batch sizes.
+  </Accordion>
+</AccordionGroup>
+
+## View Your NFTs
+
+Once minted, your NFTs will be visible on various platforms:
+
+<CardGroup cols={2}>
+  <Card title="Venly Market" href="https://venly.market" icon="store">
+    View and trade your NFTs on Venly's marketplace
+  </Card>
+  <Card title="OpenSea" href="https://opensea.io" icon="water">
+    Your collection will appear automatically on OpenSea
+  </Card>
+  <Card title="Blockchain Explorer" icon="magnifying-glass">
+    View transaction details on Polygonscan or Etherscan
+  </Card>
+  <Card title="Wallet Apps" icon="wallet">
+    NFTs appear in MetaMask, Trust Wallet, and other Web3 wallets
+  </Card>
+</CardGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Batch Mint NFTs" href="/guides/nft-api/minting/how-to-batch-mint-nfts-to-multiple-destinations" icon="layer-group">
+    Learn advanced batch minting techniques
+  </Card>
+  <Card title="Update NFT Metadata" href="/guides/nft-api/metadata/update-nft-metadata" icon="pen">
+    Modify NFT properties after minting
+  </Card>
+  <Card title="Add Media Files" href="/guides/nft-api/media/store-nft-image-and-media" icon="image">
+    Upload and manage NFT images and videos
+  </Card>
+  <Card title="Set Up Webhooks" href="/guides/nft-api/advanced/webhooks-nft-api" icon="webhook">
+    Get notified about minting events
+  </Card>
+</CardGroup>
+
+<Warning>
+**Cost Consideration:** Each mint operation costs gas fees. Test thoroughly on testnets before minting on mainnet to avoid unexpected costs.
+</Warning>

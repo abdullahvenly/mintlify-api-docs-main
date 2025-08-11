@@ -1,0 +1,1258 @@
+---
+title: "Retrieve NFT Contracts"
+description: "Comprehensive guide to retrieving NFT contract information with advanced filtering, monitoring, and analytics capabilities"
+icon: "magnifying-glass"
+---
+
+<Info>
+**Contract Retrieval:** Access detailed information about your NFT contracts including metadata, deployment status, ownership details, and blockchain information.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Contract Retrieval?
+
+Contract retrieval allows you to fetch detailed information about your NFT contracts, either individually by specifying chain and contract address, or in bulk to get an overview of all your contracts. This is essential for contract management, monitoring deployment status, tracking ownership, and integrating contract data into your applications.
+
+<CardGroup cols={2}>
+  <Card title="Individual Contract" icon="file">
+    Get detailed information about a specific contract
+  </Card>
+  <Card title="Bulk Retrieval" icon="list">
+    Retrieve all contracts with filtering and pagination
+  </Card>
+  <Card title="Real-time Status" icon="clock">
+    Monitor deployment status and on-chain information
+  </Card>
+  <Card title="Rich Metadata" icon="tags">
+    Access complete contract metadata and media
+  </Card>
+</CardGroup>
+
+## Contract Information Overview
+
+<Tabs>
+  <Tab title="Basic Information">
+    **Core Contract Data:**
+    - Contract address and blockchain network
+    - Deployment status (SUCCEEDED, FAILED, PENDING)
+    - Contract owner address
+    - Contract URI for metadata
+    
+    **Use Cases:**
+    - Contract verification and validation
+    - Ownership confirmation
+    - Integration with external systems
+    - Status monitoring and alerts
+  </Tab>
+  <Tab title="Metadata Details">
+    **Rich Contract Metadata:**
+    - Name, symbol, and description
+    - Images and media assets
+    - External links and social media
+    - Custom properties and attributes
+    
+    **Use Cases:**
+    - Display in marketplaces and galleries
+    - Brand consistency verification
+    - Content management systems
+    - SEO and marketing integration
+  </Tab>
+  <Tab title="Financial Information">
+    **Royalty and Revenue Data:**
+    - Royalty percentage and receiver
+    - Revenue tracking capabilities
+    - Payment distribution settings
+    - Financial analytics integration
+    
+    **Use Cases:**
+    - Revenue management
+    - Creator compensation
+    - Financial reporting
+    - Tax compliance
+  </Tab>
+</Tabs>
+
+## Retrieve Specific Contract
+
+<Steps>
+  <Step title="Identify Contract" icon="search">
+    Locate the contract using chain and contract address
+    
+    ```javascript
+    const contractInfo = {
+      chain: 'MATIC',
+      contractAddress: '0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a'
+    };
+    ```
+  </Step>
+  <Step title="Make API Request" icon="code">
+    Call the API endpoint with the contract details
+  </Step>
+  <Step title="Process Response" icon="gear">
+    Handle the returned contract information and metadata
+  </Step>
+  <Step title="Implement Logic" icon="check">
+    Use the contract data in your application logic
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve specific NFT contract
+const getContract = async (chain, contractAddress) => {
+  try {
+    const response = await fetch(`/api/v3/erc1155/contracts/${chain}/${contractAddress}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log('Contract retrieved successfully:', data.result);
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve contract');
+    }
+  } catch (error) {
+    console.error('Error retrieving contract:', error);
+    throw error;
+  }
+};
+
+// Usage
+const contract = await getContract('MATIC', '0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a');
+console.log('Contract details:', contract);
+
+// Enhanced usage with error handling
+const getContractWithRetry = async (chain, contractAddress, maxRetries = 3) => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await getContract(chain, contractAddress);
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw new Error(`Failed to retrieve contract after ${maxRetries} attempts: ${error.message}`);
+      }
+      
+      console.warn(`Attempt ${attempt} failed, retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+};
+```
+
+```python Python
+import requests
+import time
+from typing import Optional, Dict, Any
+
+def get_contract(chain: str, contract_address: str, api_key: str) -> Dict[Any, Any]:
+    """Retrieve specific NFT contract information"""
+    url = f'/api/v3/erc1155/contracts/{chain}/{contract_address}'
+    
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json'
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        
+        data = response.json()
+        
+        if data.get('success'):
+            print(f'Contract retrieved successfully: {contract_address}')
+            return data['result']
+        else:
+            raise Exception('Failed to retrieve contract')
+            
+    except requests.exceptions.RequestException as error:
+        print(f'Error retrieving contract: {error}')
+        raise error
+
+def get_contract_with_retry(chain: str, contract_address: str, api_key: str, max_retries: int = 3) -> Dict[Any, Any]:
+    """Retrieve contract with retry logic"""
+    for attempt in range(1, max_retries + 1):
+        try:
+            return get_contract(chain, contract_address, api_key)
+        except Exception as error:
+            if attempt == max_retries:
+                raise Exception(f'Failed to retrieve contract after {max_retries} attempts: {error}')
+            
+            print(f'Attempt {attempt} failed, retrying...')
+            time.sleep(attempt)
+
+# Usage
+contract = get_contract('MATIC', '0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a', 'YOUR_API_KEY')
+print('Contract details:', contract)
+
+# Enhanced contract analysis
+def analyze_contract(contract_data: Dict[Any, Any]) -> Dict[str, Any]:
+    """Analyze contract data and extract key insights"""
+    analysis = {
+        'deployment_status': contract_data.get('onChainStatus'),
+        'has_royalties': bool(contract_data.get('royalties')),
+        'royalty_percentage': contract_data.get('royalties', {}).get('percentage', 0),
+        'has_metadata': bool(contract_data.get('metadata')),
+        'has_image': bool(contract_data.get('metadata', {}).get('image')),
+        'social_media_links': len(contract_data.get('metadata', {}).get('media', [])),
+        'is_verified': contract_data.get('onChainStatus') == 'SUCCEEDED'
+    }
+    
+    return analysis
+
+# Analyze retrieved contract
+contract_analysis = analyze_contract(contract)
+print('Contract analysis:', contract_analysis)
+```
+
+```bash cURL
+# Retrieve specific NFT contract
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# With error handling and formatting
+curl -X GET '/api/v3/erc1155/contracts/MATIC/0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -w "HTTP Status: %{http_code}\nResponse Time: %{time_total}s\n" \
+  -s | jq '.'
+```
+
+```php PHP
+<?php
+class ContractRetriever {
+    private $apiKey;
+    private $baseUrl;
+    
+    public function __construct($apiKey, $baseUrl = '/api/v3/erc1155') {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = $baseUrl;
+    }
+    
+    public function getContract($chain, $contractAddress) {
+        $url = "{$this->baseUrl}/contracts/{$chain}/{$contractAddress}";
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            "Content-Type: application/json"
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to retrieve contract");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if (!$data['success']) {
+            throw new Exception('Failed to retrieve contract');
+        }
+        
+        return $data['result'];
+    }
+    
+    public function getContractWithRetry($chain, $contractAddress, $maxRetries = 3) {
+        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+            try {
+                return $this->getContract($chain, $contractAddress);
+            } catch (Exception $error) {
+                if ($attempt === $maxRetries) {
+                    throw new Exception("Failed to retrieve contract after {$maxRetries} attempts: " . $error->getMessage());
+                }
+                
+                echo "Attempt {$attempt} failed, retrying...\n";
+                sleep($attempt);
+            }
+        }
+    }
+    
+    public function analyzeContract($contractData) {
+        return [
+            'deployment_status' => $contractData['onChainStatus'] ?? 'UNKNOWN',
+            'has_royalties' => !empty($contractData['royalties']),
+            'royalty_percentage' => $contractData['royalties']['percentage'] ?? 0,
+            'has_metadata' => !empty($contractData['metadata']),
+            'has_image' => !empty($contractData['metadata']['image']),
+            'social_media_links' => count($contractData['metadata']['media'] ?? []),
+            'is_verified' => ($contractData['onChainStatus'] ?? '') === 'SUCCEEDED'
+        ];
+    }
+}
+
+// Usage
+$retriever = new ContractRetriever('YOUR_API_KEY');
+
+try {
+    $contract = $retriever->getContract('MATIC', '0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a');
+    echo "Contract retrieved successfully\n";
+    
+    $analysis = $retriever->analyzeContract($contract);
+    echo "Contract analysis: " . json_encode($analysis, JSON_PRETTY_PRINT) . "\n";
+    
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | The blockchain network (MATIC, ETH, BSC, AVAC, etc.) |
+| `contractAddress` | string | ✅ | The contract address to retrieve |
+
+### Response Structure
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "chain": "MATIC",
+        "address": "0xfe70a8d4c3c1c53aea3753d38eec27d7f5137b3a",
+        "contractUri": "https://metadata-staging.venly.io/metadata/contracts/70858",
+        "onChainStatus": "SUCCEEDED",
+        "owner": "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+        "royalties": {
+          "percentage": 21.50,
+          "receiver": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9"
+        },
+        "metadata": {
+          "name": "Updated Contract Name",
+          "description": "Updated description.",
+          "symbol": "ABCD",
+          "externalUrl": "https://www.venly.io/",
+          "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+          "media": [
+            {
+              "type": "instagram",
+              "value": "https://www.instagram.com/venly.market/"
+            }
+          ],
+          "external_link": "https://www.venly.io/"
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Error Response">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "CONTRACT_NOT_FOUND",
+        "message": "Contract not found or access denied"
+      }
+    }
+    ```
+    
+    **Common Error Codes:**
+    - `CONTRACT_NOT_FOUND` - Contract doesn't exist or is not accessible
+    - `INVALID_CHAIN` - Unsupported blockchain network
+    - `INVALID_ADDRESS` - Malformed contract address
+    - `UNAUTHORIZED` - Invalid or missing API key
+  </Tab>
+</Tabs>
+
+## Retrieve All Contracts
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Retrieve all NFT contracts
+const getAllContracts = async (options = {}) => {
+  const {
+    limit = 50,
+    offset = 0,
+    chain = null,
+    status = null,
+    sortBy = 'createdAt',
+    sortOrder = 'desc'
+  } = options;
+
+  try {
+    let url = '/api/v3/erc1155/contracts';
+    const params = new URLSearchParams();
+    
+    if (limit) params.append('limit', limit.toString());
+    if (offset) params.append('offset', offset.toString());
+    if (chain) params.append('chain', chain);
+    if (status) params.append('status', status);
+    if (sortBy) params.append('sortBy', sortBy);
+    if (sortOrder) params.append('sortOrder', sortOrder);
+    
+    if (params.toString()) {
+      url += '?' + params.toString();
+    }
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      console.log(`Retrieved ${data.result.length} contracts`);
+      return data.result;
+    } else {
+      throw new Error('Failed to retrieve contracts');
+    }
+  } catch (error) {
+    console.error('Error retrieving contracts:', error);
+    throw error;
+  }
+};
+
+// Enhanced contract management
+class ContractManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.cache = new Map();
+    this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
+  }
+
+  async getAllContracts(options = {}) {
+    const cacheKey = JSON.stringify(options);
+    const cached = this.cache.get(cacheKey);
+    
+    if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
+      console.log('Returning cached contracts');
+      return cached.data;
+    }
+
+    const contracts = await getAllContracts(options);
+    
+    this.cache.set(cacheKey, {
+      data: contracts,
+      timestamp: Date.now()
+    });
+
+    return contracts;
+  }
+
+  async getContractsByChain(chain) {
+    return this.getAllContracts({ chain });
+  }
+
+  async getSuccessfulContracts() {
+    const contracts = await this.getAllContracts();
+    return contracts.filter(contract => contract.onChainStatus === 'SUCCEEDED');
+  }
+
+  async getFailedContracts() {
+    const contracts = await this.getAllContracts();
+    return contracts.filter(contract => contract.onChainStatus === 'FAILED');
+  }
+
+  async getContractsWithRoyalties() {
+    const contracts = await this.getAllContracts();
+    return contracts.filter(contract => contract.royalties && contract.royalties.percentage > 0);
+  }
+
+  generateContractSummary(contracts) {
+    const summary = {
+      total: contracts.length,
+      byChain: {},
+      byStatus: {},
+      withRoyalties: 0,
+      averageRoyalty: 0,
+      totalRoyaltyRevenue: 0
+    };
+
+    let totalRoyaltyPercentage = 0;
+    let contractsWithRoyalties = 0;
+
+    contracts.forEach(contract => {
+      // Count by chain
+      summary.byChain[contract.chain] = (summary.byChain[contract.chain] || 0) + 1;
+      
+      // Count by status
+      summary.byStatus[contract.onChainStatus] = (summary.byStatus[contract.onChainStatus] || 0) + 1;
+      
+      // Royalty analysis
+      if (contract.royalties && contract.royalties.percentage > 0) {
+        summary.withRoyalties++;
+        contractsWithRoyalties++;
+        totalRoyaltyPercentage += contract.royalties.percentage;
+      }
+    });
+
+    if (contractsWithRoyalties > 0) {
+      summary.averageRoyalty = (totalRoyaltyPercentage / contractsWithRoyalties).toFixed(2);
+    }
+
+    return summary;
+  }
+
+  clearCache() {
+    this.cache.clear();
+  }
+}
+
+// Usage
+const contractManager = new ContractManager('YOUR_API_KEY');
+
+// Get all contracts
+const allContracts = await contractManager.getAllContracts();
+console.log('All contracts:', allContracts);
+
+// Get contracts by specific chain
+const maticContracts = await contractManager.getContractsByChain('MATIC');
+console.log('MATIC contracts:', maticContracts);
+
+// Get successful contracts only
+const successfulContracts = await contractManager.getSuccessfulContracts();
+console.log('Successful contracts:', successfulContracts);
+
+// Generate summary
+const summary = contractManager.generateContractSummary(allContracts);
+console.log('Contract summary:', summary);
+```
+
+```python Python
+import requests
+from typing import List, Dict, Any, Optional
+from datetime import datetime, timedelta
+import json
+
+class ContractManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.cache = {}
+        self.cache_expiry = timedelta(minutes=5)
+    
+    def get_all_contracts(self, options: Dict[str, Any] = None) -> List[Dict[str, Any]]:
+        """Retrieve all NFT contracts with optional filtering"""
+        if options is None:
+            options = {}
+        
+        # Check cache
+        cache_key = json.dumps(options, sort_keys=True)
+        if cache_key in self.cache:
+            cached_data, timestamp = self.cache[cache_key]
+            if datetime.now() - timestamp < self.cache_expiry:
+                print('Returning cached contracts')
+                return cached_data
+        
+        url = f'{self.base_url}/contracts'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        params = {}
+        if 'limit' in options:
+            params['limit'] = options['limit']
+        if 'offset' in options:
+            params['offset'] = options['offset']
+        if 'chain' in options:
+            params['chain'] = options['chain']
+        if 'status' in options:
+            params['status'] = options['status']
+        
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                contracts = data['result']
+                print(f'Retrieved {len(contracts)} contracts')
+                
+                # Cache the result
+                self.cache[cache_key] = (contracts, datetime.now())
+                
+                return contracts
+            else:
+                raise Exception('Failed to retrieve contracts')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error retrieving contracts: {error}')
+            raise error
+    
+    def get_contracts_by_chain(self, chain: str) -> List[Dict[str, Any]]:
+        """Get contracts for a specific blockchain"""
+        return self.get_all_contracts({'chain': chain})
+    
+    def get_successful_contracts(self) -> List[Dict[str, Any]]:
+        """Get only successfully deployed contracts"""
+        contracts = self.get_all_contracts()
+        return [c for c in contracts if c.get('onChainStatus') == 'SUCCEEDED']
+    
+    def get_failed_contracts(self) -> List[Dict[str, Any]]:
+        """Get failed contract deployments"""
+        contracts = self.get_all_contracts()
+        return [c for c in contracts if c.get('onChainStatus') == 'FAILED']
+    
+    def get_contracts_with_royalties(self) -> List[Dict[str, Any]]:
+        """Get contracts that have royalties configured"""
+        contracts = self.get_all_contracts()
+        return [c for c in contracts if c.get('royalties') and c['royalties'].get('percentage', 0) > 0]
+    
+    def generate_contract_summary(self, contracts: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Generate comprehensive summary of contracts"""
+        summary = {
+            'total': len(contracts),
+            'by_chain': {},
+            'by_status': {},
+            'with_royalties': 0,
+            'average_royalty': 0,
+            'chains_used': set(),
+            'status_distribution': {}
+        }
+        
+        total_royalty_percentage = 0
+        contracts_with_royalties = 0
+        
+        for contract in contracts:
+            # Count by chain
+            chain = contract.get('chain', 'UNKNOWN')
+            summary['by_chain'][chain] = summary['by_chain'].get(chain, 0) + 1
+            summary['chains_used'].add(chain)
+            
+            # Count by status
+            status = contract.get('onChainStatus', 'UNKNOWN')
+            summary['by_status'][status] = summary['by_status'].get(status, 0) + 1
+            
+            # Royalty analysis
+            royalties = contract.get('royalties')
+            if royalties and royalties.get('percentage', 0) > 0:
+                summary['with_royalties'] += 1
+                contracts_with_royalties += 1
+                total_royalty_percentage += royalties['percentage']
+        
+        # Calculate average royalty
+        if contracts_with_royalties > 0:
+            summary['average_royalty'] = round(total_royalty_percentage / contracts_with_royalties, 2)
+        
+        # Convert set to list for JSON serialization
+        summary['chains_used'] = list(summary['chains_used'])
+        
+        # Calculate status distribution percentages
+        for status, count in summary['by_status'].items():
+            summary['status_distribution'][status] = round((count / len(contracts)) * 100, 2)
+        
+        return summary
+    
+    def clear_cache(self):
+        """Clear the contract cache"""
+        self.cache.clear()
+
+# Usage
+contract_manager = ContractManager('YOUR_API_KEY')
+
+# Get all contracts
+all_contracts = contract_manager.get_all_contracts()
+print(f'Retrieved {len(all_contracts)} contracts')
+
+# Get contracts by chain
+matic_contracts = contract_manager.get_contracts_by_chain('MATIC')
+print(f'MATIC contracts: {len(matic_contracts)}')
+
+# Get successful contracts
+successful_contracts = contract_manager.get_successful_contracts()
+print(f'Successful contracts: {len(successful_contracts)}')
+
+# Generate and display summary
+summary = contract_manager.generate_contract_summary(all_contracts)
+print('Contract Summary:')
+print(json.dumps(summary, indent=2))
+```
+
+```bash cURL
+# Get all contracts
+curl -X GET '/api/v3/erc1155/contracts' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get contracts with pagination
+curl -X GET '/api/v3/erc1155/contracts?limit=10&offset=0' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get contracts for specific chain
+curl -X GET '/api/v3/erc1155/contracts?chain=MATIC' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+
+# Get contracts with specific status
+curl -X GET '/api/v3/erc1155/contracts?status=SUCCEEDED' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json'
+```
+</CodeGroup>
+
+### Response Structure
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": [
+        {
+          "chain": "BSC",
+          "address": "0x21e55c3dbcd38da726c6cc4c0242d0fdcf962feb",
+          "contractUri": "https://metadata-staging.venly.io/metadata/contracts/68287",
+          "name": "Venly NFT Collection",
+          "symbol": "VENFCO",
+          "image": "https://techround.co.uk/wp-content/uploads/2022/01/Venly-logo.png",
+          "onChainStatus": "SUCCEEDED"
+        },
+        {
+          "chain": "MATIC",
+          "contractUri": "https://metadata-staging.venly.io/metadata/contracts/68285",
+          "name": "Venly Test Collection",
+          "symbol": "VETECO",
+          "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/fe1ae5254854c3871817c1ba8f7b827e75a18cce.png",
+          "onChainStatus": "FAILED"
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab title="Filtered Response">
+    ```json
+    {
+      "success": true,
+      "result": [
+        {
+          "chain": "MATIC",
+          "address": "0xdc944ec4c805feadd9aa1548d4861b58750ba9ac",
+          "contractUri": "https://metadata-staging.venly.io/metadata/contracts/65730",
+          "name": "My First NFT Collection",
+          "symbol": "MYFINFCO",
+          "image": "https://techround.co.uk/wp-content/uploads/2022/01/Venly-logo.png",
+          "onChainStatus": "SUCCEEDED"
+        }
+      ],
+      "pagination": {
+        "limit": 10,
+        "offset": 0,
+        "total": 1,
+        "hasMore": false
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Advanced Contract Analytics
+
+<AccordionGroup>
+  <Accordion title="Contract Performance Monitoring" icon="chart-line">
+    **Monitor contract performance and health:**
+    
+    ```javascript
+    class ContractAnalytics {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.metrics = new Map();
+      }
+    
+      async analyzeContractPerformance(contracts) {
+        const analysis = {
+          overview: this.generateOverview(contracts),
+          chainDistribution: this.analyzeChainDistribution(contracts),
+          deploymentSuccess: this.analyzeDeploymentSuccess(contracts),
+          royaltyAnalysis: this.analyzeRoyalties(contracts),
+          metadataQuality: this.analyzeMetadataQuality(contracts),
+          recommendations: []
+        };
+        
+        // Generate recommendations based on analysis
+        analysis.recommendations = this.generateRecommendations(analysis);
+        
+        return analysis;
+      }
+    
+      generateOverview(contracts) {
+        return {
+          totalContracts: contracts.length,
+          successfulDeployments: contracts.filter(c => c.onChainStatus === 'SUCCEEDED').length,
+          failedDeployments: contracts.filter(c => c.onChainStatus === 'FAILED').length,
+          pendingDeployments: contracts.filter(c => c.onChainStatus === 'PENDING').length,
+          successRate: ((contracts.filter(c => c.onChainStatus === 'SUCCEEDED').length / contracts.length) * 100).toFixed(2) + '%'
+        };
+      }
+    
+      analyzeChainDistribution(contracts) {
+        const distribution = {};
+        const chainPerformance = {};
+        
+        contracts.forEach(contract => {
+          const chain = contract.chain;
+          
+          if (!distribution[chain]) {
+            distribution[chain] = { total: 0, successful: 0, failed: 0 };
+          }
+          
+          distribution[chain].total++;
+          
+          if (contract.onChainStatus === 'SUCCEEDED') {
+            distribution[chain].successful++;
+          } else if (contract.onChainStatus === 'FAILED') {
+            distribution[chain].failed++;
+          }
+        });
+        
+        // Calculate success rates per chain
+        Object.keys(distribution).forEach(chain => {
+          const data = distribution[chain];
+          chainPerformance[chain] = {
+            ...data,
+            successRate: ((data.successful / data.total) * 100).toFixed(2) + '%'
+          };
+        });
+        
+        return chainPerformance;
+      }
+    
+      analyzeDeploymentSuccess(contracts) {
+        const timeBasedAnalysis = {};
+        const failureReasons = {};
+        
+        contracts.forEach(contract => {
+          // Analyze by deployment status
+          if (contract.onChainStatus === 'FAILED') {
+            // In a real implementation, you'd have access to failure reasons
+            const reason = 'Unknown'; // This would come from error logs
+            failureReasons[reason] = (failureReasons[reason] || 0) + 1;
+          }
+        });
+        
+        return {
+          failureReasons,
+          totalFailures: contracts.filter(c => c.onChainStatus === 'FAILED').length,
+          failureRate: ((contracts.filter(c => c.onChainStatus === 'FAILED').length / contracts.length) * 100).toFixed(2) + '%'
+        };
+      }
+    
+      analyzeRoyalties(contracts) {
+        const royaltyData = {
+          contractsWithRoyalties: 0,
+          totalRoyaltyPercentage: 0,
+          averageRoyalty: 0,
+          royaltyDistribution: {},
+          topRoyaltyEarners: []
+        };
+        
+        const royaltyContracts = [];
+        
+        contracts.forEach(contract => {
+          if (contract.royalties && contract.royalties.percentage > 0) {
+            royaltyData.contractsWithRoyalties++;
+            royaltyData.totalRoyaltyPercentage += contract.royalties.percentage;
+            
+            const percentage = contract.royalties.percentage;
+            const range = this.getRoyaltyRange(percentage);
+            royaltyData.royaltyDistribution[range] = (royaltyData.royaltyDistribution[range] || 0) + 1;
+            
+            royaltyContracts.push({
+              address: contract.address,
+              chain: contract.chain,
+              name: contract.metadata?.name || 'Unnamed',
+              royaltyPercentage: percentage,
+              receiver: contract.royalties.receiver
+            });
+          }
+        });
+        
+        if (royaltyData.contractsWithRoyalties > 0) {
+          royaltyData.averageRoyalty = (royaltyData.totalRoyaltyPercentage / royaltyData.contractsWithRoyalties).toFixed(2);
+        }
+        
+        // Sort by royalty percentage and get top earners
+        royaltyData.topRoyaltyEarners = royaltyContracts
+          .sort((a, b) => b.royaltyPercentage - a.royaltyPercentage)
+          .slice(0, 5);
+        
+        return royaltyData;
+      }
+      
+      getRoyaltyRange(percentage) {
+        if (percentage <= 2.5) return '0-2.5%';
+        if (percentage <= 5) return '2.5-5%';
+        if (percentage <= 10) return '5-10%';
+        if (percentage <= 15) return '10-15%';
+        return '15%+';
+      }
+      
+      analyzeMetadataQuality(contracts) {
+        const quality = {
+          withImages: 0,
+          withDescriptions: 0,
+          withExternalLinks: 0,
+          withSocialMedia: 0,
+          completeMetadata: 0,
+          qualityScore: 0
+        };
+        
+        contracts.forEach(contract => {
+          const metadata = contract.metadata || {};
+          
+          if (metadata.image) quality.withImages++;
+          if (metadata.description) quality.withDescriptions++;
+          if (metadata.externalUrl || metadata.external_link) quality.withExternalLinks++;
+          if (metadata.media && metadata.media.length > 0) quality.withSocialMedia++;
+          
+          // Complete metadata check
+          if (metadata.image && metadata.description && (metadata.externalUrl || metadata.external_link)) {
+            quality.completeMetadata++;
+          }
+        });
+        
+        // Calculate overall quality score (0-100)
+        const totalContracts = contracts.length;
+        if (totalContracts > 0) {
+          quality.qualityScore = Math.round(
+            ((quality.withImages + quality.withDescriptions + quality.withExternalLinks + quality.withSocialMedia) / (totalContracts * 4)) * 100
+          );
+        }
+        
+        return quality;
+      }
+      
+      generateRecommendations(analysis) {
+        const recommendations = [];
+        
+        // Deployment success recommendations
+        if (parseFloat(analysis.overview.successRate) < 90) {
+          recommendations.push({
+            type: 'deployment',
+            priority: 'high',
+            message: 'Consider reviewing deployment parameters to improve success rate',
+            action: 'Review failed deployments and optimize gas settings'
+          });
+        }
+        
+        // Chain distribution recommendations
+        const chainData = analysis.chainDistribution;
+        Object.keys(chainData).forEach(chain => {
+          if (parseFloat(chainData[chain].successRate) < 80) {
+            recommendations.push({
+              type: 'chain',
+              priority: 'medium',
+              message: `Low success rate on ${chain} network`,
+              action: `Review ${chain} network configuration and gas settings`
+            });
+          }
+        });
+        
+        // Royalty recommendations
+        if (analysis.royaltyAnalysis.contractsWithRoyalties === 0) {
+          recommendations.push({
+            type: 'royalty',
+            priority: 'low',
+            message: 'No contracts have royalties configured',
+            action: 'Consider adding royalties to generate ongoing revenue'
+          });
+        }
+        
+        // Metadata quality recommendations
+        if (analysis.metadataQuality.qualityScore < 70) {
+          recommendations.push({
+            type: 'metadata',
+            priority: 'medium',
+            message: 'Metadata quality could be improved',
+            action: 'Add missing images, descriptions, and external links to contracts'
+          });
+        }
+        
+        return recommendations;
+      }
+    }
+    
+    // Usage
+    const analytics = new ContractAnalytics('YOUR_API_KEY');
+    const contracts = await getAllContracts();
+    const analysis = await analytics.analyzeContractPerformance(contracts);
+    
+    console.log('Contract Performance Analysis:', analysis);
+    ```
+  </Accordion>
+  
+  <Accordion title="Contract Monitoring and Alerts" icon="bell">
+    **Set up monitoring and alerts for contract changes:**
+    
+    ```javascript
+    class ContractMonitor {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.watchedContracts = new Map();
+        this.alertHandlers = [];
+        this.monitoringInterval = null;
+      }
+      
+      addContractToWatch(chain, contractAddress, alertTypes = ['status', 'ownership', 'metadata']) {
+        const key = `${chain}:${contractAddress}`;
+        this.watchedContracts.set(key, {
+          chain,
+          contractAddress,
+          alertTypes,
+          lastKnownState: null,
+          lastChecked: null
+        });
+      }
+      
+      removeContractFromWatch(chain, contractAddress) {
+        const key = `${chain}:${contractAddress}`;
+        this.watchedContracts.delete(key);
+      }
+      
+      addAlertHandler(handler) {
+        this.alertHandlers.push(handler);
+      }
+      
+      async startMonitoring(intervalMs = 60000) {
+        if (this.monitoringInterval) {
+          clearInterval(this.monitoringInterval);
+        }
+        
+        this.monitoringInterval = setInterval(async () => {
+          await this.checkAllContracts();
+        }, intervalMs);
+        
+        console.log(`Started monitoring ${this.watchedContracts.size} contracts`);
+      }
+      
+      stopMonitoring() {
+        if (this.monitoringInterval) {
+          clearInterval(this.monitoringInterval);
+          this.monitoringInterval = null;
+        }
+        console.log('Stopped contract monitoring');
+      }
+      
+      async checkAllContracts() {
+        for (const [key, watchData] of this.watchedContracts) {
+          try {
+            await this.checkContract(watchData);
+          } catch (error) {
+            console.error(`Error checking contract ${key}:`, error);
+          }
+        }
+      }
+      
+      async checkContract(watchData) {
+        const { chain, contractAddress, alertTypes, lastKnownState } = watchData;
+        
+        const currentState = await getContract(chain, contractAddress);
+        
+        if (lastKnownState) {
+          const changes = this.detectChanges(lastKnownState, currentState, alertTypes);
+          
+          if (changes.length > 0) {
+            await this.triggerAlerts(chain, contractAddress, changes, currentState);
+          }
+        }
+        
+        watchData.lastKnownState = currentState;
+        watchData.lastChecked = new Date().toISOString();
+      }
+      
+      detectChanges(oldState, newState, alertTypes) {
+        const changes = [];
+        
+        if (alertTypes.includes('status') && oldState.onChainStatus !== newState.onChainStatus) {
+          changes.push({
+            type: 'status',
+            field: 'onChainStatus',
+            oldValue: oldState.onChainStatus,
+            newValue: newState.onChainStatus,
+            severity: newState.onChainStatus === 'FAILED' ? 'high' : 'medium'
+          });
+        }
+        
+        if (alertTypes.includes('ownership') && oldState.owner !== newState.owner) {
+          changes.push({
+            type: 'ownership',
+            field: 'owner',
+            oldValue: oldState.owner,
+            newValue: newState.owner,
+            severity: 'high'
+          });
+        }
+        
+        if (alertTypes.includes('metadata')) {
+          const metadataChanges = this.detectMetadataChanges(oldState.metadata, newState.metadata);
+          changes.push(...metadataChanges);
+        }
+        
+        return changes;
+      }
+      
+      detectMetadataChanges(oldMetadata, newMetadata) {
+        const changes = [];
+        const fieldsToCheck = ['name', 'description', 'image', 'externalUrl'];
+        
+        fieldsToCheck.forEach(field => {
+          if (oldMetadata?.[field] !== newMetadata?.[field]) {
+            changes.push({
+              type: 'metadata',
+              field: `metadata.${field}`,
+              oldValue: oldMetadata?.[field],
+              newValue: newMetadata?.[field],
+              severity: 'low'
+            });
+          }
+        });
+        
+        return changes;
+      }
+      
+      async triggerAlerts(chain, contractAddress, changes, currentState) {
+        const alert = {
+          timestamp: new Date().toISOString(),
+          chain,
+          contractAddress,
+          contractName: currentState.metadata?.name || 'Unnamed Contract',
+          changes,
+          currentState
+        };
+        
+        for (const handler of this.alertHandlers) {
+          try {
+            await handler(alert);
+          } catch (error) {
+            console.error('Error in alert handler:', error);
+          }
+        }
+      }
+    }
+    
+    // Usage
+    const monitor = new ContractMonitor('YOUR_API_KEY');
+    
+    // Add contracts to watch
+    monitor.addContractToWatch('MATIC', '0xcontract1', ['status', 'ownership']);
+    monitor.addContractToWatch('ETH', '0xcontract2', ['metadata']);
+    
+    // Add alert handlers
+    monitor.addAlertHandler(async (alert) => {
+      console.log('Contract Alert:', alert);
+      // Send email, Slack notification, etc.
+    });
+    
+    // Start monitoring
+    await monitor.startMonitoring(30000); // Check every 30 seconds
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Contract Retrieval Best Practices:**
+
+1. **Caching Strategy** - Implement caching to reduce API calls and improve performance
+2. **Error Handling** - Always handle network errors and API failures gracefully
+3. **Pagination** - Use pagination for large contract lists to avoid timeouts
+4. **Filtering** - Apply filters to reduce data transfer and processing time
+5. **Monitoring** - Set up monitoring for critical contract status changes
+6. **Data Validation** - Validate contract data before using in your application
+7. **Rate Limiting** - Respect API rate limits to avoid throttling
+8. **Backup Plans** - Have fallback mechanisms for when API is unavailable
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Contract Not Found" icon="exclamation-triangle">
+    **Problem:** Receiving "Contract not found" error
+    
+    **Common Causes:**
+    - Incorrect contract address
+    - Wrong blockchain network
+    - Contract not deployed yet
+    - Access permissions issue
+    
+    **Solution:**
+    - Verify contract address format and checksum
+    - Confirm correct blockchain network
+    - Check contract deployment status
+    - Verify API key permissions
+  </Accordion>
+  
+  <Accordion title="Slow Response Times" icon="clock">
+    **Problem:** API responses are slow or timing out
+    
+    **Possible Causes:**
+    - Large number of contracts
+    - Network congestion
+    - Server overload
+    - Missing pagination
+    
+    **Solution:**
+    - Implement pagination with smaller page sizes
+    - Use caching for frequently accessed data
+    - Add request timeouts and retry logic
+    - Filter results to reduce data size
+  </Accordion>
+  
+  <Accordion title="Incomplete Contract Data" icon="database">
+    **Problem:** Some contract information is missing
+    
+    **Investigation Steps:**
+    - Check contract deployment status
+    - Verify metadata URI accessibility
+    - Confirm on-chain data availability
+    - Review API response structure
+    
+    **Resolution:**
+    - Wait for contract deployment completion
+    - Update metadata if corrupted
+    - Contact support for persistent issues
+    - Implement fallback data sources
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Contract Management" href="/guides/nft-api/contracts/update-contract-owner" icon="user-crown">
+    Learn how to update contract ownership and management
+  </Card>
+  <Card title="Contract Metadata" href="/guides/nft-api/metadata/retrieve-contract-metadata" icon="tags">
+    Retrieve and manage contract metadata
+  </Card>
+  <Card title="Token Types" href="/guides/nft-api/token-types/retrieve-token-types" icon="shapes">
+    Explore token types within your contracts
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract/get-contract-by-chain-and-contract-address" icon="book">
+    Explore the complete contract retrieval API documentation
+  </Card>
+</CardGroup>

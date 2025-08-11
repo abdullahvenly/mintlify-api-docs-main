@@ -1,0 +1,488 @@
+---
+title: "Checkout Management"
+description: "Learn how to create checkout sessions and manage payment status for your products and services"
+icon: "credit-card"
+---
+
+<Info>
+**Payment Processing:** Create secure checkout sessions for single or multiple products and track payment status in real-time.
+
+**Time required:** ~15 minutes
+</Info>
+
+## What is Checkout Management?
+
+Checkout management allows you to create secure payment sessions for your products or services. Built on Stripe's infrastructure, it provides a complete payment flow with customizable success and cancel URLs.
+
+<CardGroup cols={2}>
+  <Card title="Secure Payments" icon="shield">
+    PCI-compliant payment processing with Stripe
+  </Card>
+  <Card title="Flexible Products" icon="box">
+    Support for single or multiple product checkout
+  </Card>
+  <Card title="Real-time Status" icon="chart-line">
+    Track payment status and completion
+  </Card>
+  <Card title="Custom Redirects" icon="arrow-right">
+    Define success and cancel URLs for your flow
+  </Card>
+</CardGroup>
+
+## Use Cases
+
+<Tabs>
+  <Tab title="Digital Products">
+    **NFTs & Digital Assets**
+    - NFT marketplace transactions
+    - Digital art sales
+    - Gaming item purchases
+    - Software licenses
+  </Tab>
+  <Tab title="Physical Products">
+    **E-commerce**
+    - Product sales
+    - Subscription services
+    - Merchandise
+    - Event tickets
+  </Tab>
+  <Tab title="Services">
+    **Professional Services**
+    - Consulting fees
+    - API access plans
+    - Premium features
+    - Course enrollments
+  </Tab>
+</Tabs>
+
+## Create Checkout Session
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/checkout/sessions', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    line_items: [
+      {
+        price_data: {
+          product_data: {
+            name: "Ring NFT"
+          },
+          unit_amount: 2000,
+          currency: "EUR"
+        },
+        quantity: 1
+      }
+    ],
+    success_url: "https://www.venly.io/success",
+    cancel_url: "https://www.venly.io/cancel",
+    mode: "payment"
+  })
+});
+
+const data = await response.json();
+console.log('Checkout session:', data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/checkout/sessions',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'line_items': [
+            {
+                'price_data': {
+                    'product_data': {
+                        'name': 'Ring NFT'
+                    },
+                    'unit_amount': 2000,
+                    'currency': 'EUR'
+                },
+                'quantity': 1
+            }
+        ],
+        'success_url': 'https://www.venly.io/success',
+        'cancel_url': 'https://www.venly.io/cancel',
+        'mode': 'payment'
+    }
+)
+
+data = response.json()
+print('Checkout session:', data)
+```
+
+```bash cURL
+curl -X POST '/checkout/sessions' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "line_items": [
+      {
+        "price_data": {
+          "product_data": {
+            "name": "Ring NFT"
+          },
+          "unit_amount": 2000,
+          "currency": "EUR"
+        },
+        "quantity": 1
+      }
+    ],
+    "success_url": "https://www.venly.io/success",
+    "cancel_url": "https://www.venly.io/cancel",
+    "mode": "payment"
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `line_items.price_data.product_data.name` | string | ✅ | Product name displayed to customers (e.g., "Ring NFT") |
+| `line_items.price_data.unit_amount` | integer | ✅ | Price in cents (2000 = €20.00) |
+| `line_items.price_data.currency` | string | ✅ | Three-letter ISO currency code (EUR, USD, etc.) |
+| `line_items.quantity` | integer | ✅ | Number of items to purchase |
+| `success_url` | string | ✅ | Redirect URL for successful payments |
+| `cancel_url` | string | ✅ | Redirect URL for cancelled payments |
+| `mode` | string | ✅ | Payment mode (only "payment" supported) |
+| `expires_at` | datetime | ❌ | Session expiration (30 min - 24 hours, default: 24h) |
+| `client_reference_id` | string | ❌ | Your internal reference ID |
+| `customer.id` | string | ❌ | Customer ID for this checkout |
+
+<Tip>
+**Pricing Guidelines:**
+- Use cents for amounts (2000 = €20.00)
+- URLs must start with `http://` or `https://`
+- Sessions expire after 24 hours by default
+- Save the session ID and URL from the response
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "id": "cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf",
+      "object": "checkout.session",
+      "amount_subtotal": 2000,
+      "amount_total": 2000,
+      "currency": "eur",
+      "expires_at": 1692871532,
+      "mode": "payment",
+      "payment_status": "unpaid",
+      "status": "open",
+      "success_url": "https://www.venly.io/",
+      "cancel_url": "https://www.venly.io/",
+      "url": "https://checkout.stripe.com/c/pay/cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf#..."
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields to save:**
+    - **`id`** - Session ID for status checking
+    - **`url`** - Checkout URL to redirect customers
+    - **`payment_status`** - Current payment status
+    - **`status`** - Session status (open/complete/expired)
+    - **`expires_at`** - Session expiration timestamp
+  </Tab>
+</Tabs>
+
+<Check>
+**Save These Values:** Store the `id` (session ID) for status tracking and the `url` for redirecting customers to the checkout page.
+</Check>
+
+## Multiple Products Checkout
+
+<AccordionGroup>
+  <Accordion title="Multiple Items Example" icon="shopping-cart">
+    **Create checkout for multiple products:**
+    
+    ```javascript
+    {
+      "line_items": [
+        {
+          "price_data": {
+            "product_data": { "name": "Ring NFT" },
+            "unit_amount": 2000,
+            "currency": "EUR"
+          },
+          "quantity": 2
+        },
+        {
+          "price_data": {
+            "product_data": { "name": "Sword NFT" },
+            "unit_amount": 5000,
+            "currency": "EUR"
+          },
+          "quantity": 1
+        }
+      ],
+      "success_url": "https://yoursite.com/success",
+      "cancel_url": "https://yoursite.com/cancel",
+      "mode": "payment"
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Advanced Configuration" icon="gear">
+    **Additional options:**
+    
+    ```javascript
+    {
+      "line_items": [...],
+      "success_url": "https://yoursite.com/success?session_id={CHECKOUT_SESSION_ID}",
+      "cancel_url": "https://yoursite.com/cancel",
+      "mode": "payment",
+      "expires_at": "2024-12-31T23:59:59Z",
+      "client_reference_id": "order_12345",
+      "customer": {
+        "id": "customer_abc123"
+      }
+    }
+    ```
+    
+    **Features:**
+    - Session ID in success URL for tracking
+    - Custom expiration time
+    - Internal reference ID
+    - Customer association
+  </Accordion>
+</AccordionGroup>
+
+## Check Payment Status
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const sessionId = "cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf";
+
+const response = await fetch(`/checkout/sessions/${sessionId}`, {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Payment status:', data.payment_status);
+console.log('Session status:', data.status);
+```
+
+```python Python
+session_id = "cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf"
+
+response = requests.get(
+    f'/checkout/sessions/{session_id}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Payment status:', data['payment_status'])
+print('Session status:', data['status'])
+```
+
+```bash cURL
+curl -X GET '/checkout/sessions/cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Status Values
+
+<Tabs>
+  <Tab title="Payment Status">
+    | Status | Description |
+    |--------|-------------|
+    | `unpaid` | Payment not yet completed |
+    | `paid` | Payment successful, funds available |
+  </Tab>
+  <Tab title="Session Status">
+    | Status | Description |
+    |--------|-------------|
+    | `open` | Session active, payment in progress |
+    | `complete` | Session completed (payment may still process) |
+    | `expired` | Session expired, no further processing |
+  </Tab>
+</Tabs>
+
+## Retrieve Line Items
+
+Get detailed information about purchased items:
+
+<CodeGroup>
+```javascript JavaScript
+const sessionId = "cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf";
+
+const response = await fetch(`/checkout/sessions/${sessionId}/line_items`, {
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Line items:', data.result.data);
+```
+
+```python Python
+session_id = "cs_test_a1tpJvmnmcQtoBZmIR9jsTLNg07T8N6OgPLPdYJ9uwiE6I9JQqEcEmFFUf"
+
+response = requests.get(
+    f'/checkout/sessions/{session_id}/line_items',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Line items:', data['result']['data'])
+```
+</CodeGroup>
+
+## Payment Flow Integration
+
+<Steps>
+  <Step title="Create Checkout Session" icon="plus">
+    Call the checkout API with product details and redirect URLs
+  </Step>
+  <Step title="Redirect Customer" icon="arrow-right">
+    Send customer to the checkout URL from the response
+  </Step>
+  <Step title="Handle Redirects" icon="check">
+    Process success/cancel redirects on your website
+  </Step>
+  <Step title="Verify Payment" icon="magnifying-glass">
+    Check payment status using the session ID
+  </Step>
+  <Step title="Fulfill Order" icon="package">
+    Deliver products/services after payment confirmation
+  </Step>
+</Steps>
+
+## Webhook Integration
+
+<Note>
+For real-time payment notifications, set up [webhooks](https://docs.venly.io/docs/webhooks-pay-api) to receive automatic updates when payments complete.
+</Note>
+
+<CodeGroup>
+```javascript JavaScript
+// Webhook handler for payment events
+app.post('/webhooks/pay-api', (req, res) => {
+  const { type, data } = req.body;
+  
+  if (type === 'checkout.session.completed') {
+    const session = data.object;
+    console.log('Payment completed:', session.id);
+    
+    // Fulfill the order
+    fulfillOrder(session);
+  }
+  
+  res.status(200).send('OK');
+});
+```
+
+```python Python
+from flask import Flask, request
+
+@app.route('/webhooks/pay-api', methods=['POST'])
+def handle_webhook():
+    data = request.get_json()
+    event_type = data.get('type')
+    
+    if event_type == 'checkout.session.completed':
+        session = data['data']['object']
+        print('Payment completed:', session['id'])
+        
+        # Fulfill the order
+        fulfill_order(session)
+    
+    return {'status': 'success'}, 200
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Checkout Optimization:**
+
+1. **Clear Product Names** - Use descriptive, customer-friendly names
+2. **Appropriate Pricing** - Display prices clearly in the correct currency
+3. **Meaningful URLs** - Use branded success/cancel URLs
+4. **Session Management** - Set appropriate expiration times
+5. **Status Verification** - Always verify payment status before fulfillment
+6. **Error Handling** - Handle expired sessions and failed payments gracefully
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Session creation failed">
+    **Common causes:**
+    - Invalid currency code
+    - Malformed URLs
+    - Missing required parameters
+    - Invalid amount format
+    
+    **Solution:** Verify all parameters match the API specification and use valid ISO currency codes.
+  </Accordion>
+  
+  <Accordion title="Payment status not updating">
+    **Possible causes:**
+    - Payment still processing
+    - Network delays
+    - Webhook delivery issues
+    
+    **Solution:** Wait a few minutes and check again, or implement webhook notifications for real-time updates.
+  </Accordion>
+  
+  <Accordion title="Session expired">
+    **Causes:**
+    - Customer took too long to complete payment
+    - Session exceeded expiration time
+    
+    **Solution:** Create a new checkout session with the same parameters.
+  </Accordion>
+  
+  <Accordion title="Redirect URLs not working">
+    **Common issues:**
+    - URLs don't start with http/https
+    - URLs are not accessible
+    - Incorrect URL format
+    
+    **Solution:** Ensure URLs are properly formatted and publicly accessible.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Customize Checkout" href="/PAY-API-Basic-Guides/checkout-link-branding" icon="palette">
+    Brand your checkout pages with custom styling
+  </Card>
+  <Card title="Set Up Webhooks" href="/PAY-API-Basic-Guides/webhooks-pay-api" icon="webhook">
+    Get real-time payment notifications
+  </Card>
+  <Card title="Fiat On-Ramps" href="/PAY-API-Basic-Guides/fiat-on-ramps" icon="arrow-up">
+    Enable cryptocurrency purchases
+  </Card>
+  <Card title="Stripe Dashboard" href="/PAY-API-Basic-Guides/fetch-stripe-dashboard" icon="chart-bar">
+    Access detailed payment analytics
+  </Card>
+</CardGroup>
+
+<Warning>
+**Security Note:** Always verify payment status on your server before fulfilling orders. Never rely solely on client-side confirmation.
+</Warning>

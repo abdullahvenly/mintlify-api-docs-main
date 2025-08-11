@@ -1,0 +1,748 @@
+---
+title: "Webhooks"
+description: "Configure and use webhooks for real-time NFT-API notifications"
+icon: "webhook"
+---
+
+<Info>
+**Real-time Notifications:** Set up webhooks to receive instant notifications for contract creations, token-type creations, and token mints - both successful and failed events.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What are Webhooks?
+
+Webhooks allow you to configure your endpoint URL and receive real-time notifications for all your NFT assets. Instead of constantly polling our API for status updates, webhooks push notifications directly to your server when events occur.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Updates" icon="bolt">
+    Get instant notifications when events happen
+  </Card>
+  <Card title="Reliable Delivery" icon="shield-check">
+    Built-in retry mechanism ensures message delivery
+  </Card>
+  <Card title="Comprehensive Coverage" icon="list-check">
+    Covers all contract, token-type, and mint events
+  </Card>
+  <Card title="Easy Integration" icon="plug">
+    Simple POST requests to your endpoint
+  </Card>
+</CardGroup>
+
+## Supported Events
+
+The NFT-API webhooks notify you about the following events:
+
+<Tabs>
+  <Tab title="Success Events">
+    - **Contract Creation Succeeded**
+    - **Token-type Creation Succeeded**
+    - **Token Mint Succeeded**
+  </Tab>
+  <Tab title="Failure Events">
+    - **Contract Creation Failed**
+    - **Token-type Creation Failed**
+    - **Token Mint Failed**
+  </Tab>
+</Tabs>
+
+<Note>
+Look for `eventType` and `result.status` in the payloads you receive to identify the specific event and outcome.
+</Note>
+
+## Retry Mechanism
+
+<Warning>
+**Reliability Guarantee:** If your endpoint URL is down, Venly will attempt to resend the notification message **5 times** with **10-second intervals** to ensure delivery.
+</Warning>
+
+### Backup Status Checking
+
+If your endpoint is down for more than **50 seconds** and you miss the webhook notification, you can use these status check endpoints:
+
+<AccordionGroup>
+  <Accordion title="Check Contract Status" icon="file-contract">
+    Use the contract deployment `id` from your creation response:
+    
+    ```javascript
+    const response = await fetch(`/api/v3/erc1155/contracts/deployments/${deploymentId}`, {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    });
+    ```
+    
+    [API Reference](https://docs.venly.io/reference/getcontract_1-1)
+  </Accordion>
+  
+  <Accordion title="Check Token-type Status" icon="shapes">
+    Use the token-type creation `id` from your creation response:
+    
+    ```javascript
+    const response = await fetch(`/api/v3/erc1155/token-types/creations/${creationId}`, {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    });
+    ```
+    
+    [API Reference](https://docs.venly.io/reference/gettokentype)
+  </Accordion>
+  
+  <Accordion title="Check Token Mint Status" icon="coins">
+    Use the mint `id` from your minting response:
+    
+    ```javascript
+    const response = await fetch(`/api/v3/erc1155/tokens/mints/${mintId}`, {
+      headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+    });
+    ```
+    
+    [API Reference](https://docs.venly.io/reference/gettokenmint)
+  </Accordion>
+</AccordionGroup>
+
+## Video Tutorial
+
+<iframe 
+  src="https://www.loom.com/embed/ca8b6560fc234186868d8c0b18d0ae16?sid=1361c639-6e3a-4542-a31d-baa18354702c" 
+  frameborder="0" 
+  webkitallowfullscreen 
+  mozallowfullscreen 
+  allowfullscreen 
+  style="width: 100%; height: 400px;">
+</iframe>
+
+## How to Configure Webhooks
+
+<Steps>
+  <Step title="Access Developer Portal" icon="external-link">
+    Navigate to the [Developer Portal](https://portal.venly.io/) and sign in to your account
+  </Step>
+  
+  <Step title="Select NFT API Configuration" icon="gear">
+    Under **Configuration**, click on **NFT API** to access webhook settings
+  </Step>
+  
+  <Step title="Create New Webhook" icon="plus">
+    Scroll down and click on **Create webhook** to start the setup process
+  </Step>
+  
+  <Step title="Configure Webhook Details" icon="form">
+    Fill in the webhook configuration form with your endpoint details
+  </Step>
+  
+  <Step title="Test and Activate" icon="check">
+    Save your webhook configuration and test the integration
+  </Step>
+</Steps>
+
+### Webhook Configuration Form
+
+When creating a webhook, you'll need to provide:
+
+| Field | Description | Required |
+|-------|-------------|----------|
+| **Description** | Any descriptive name for the webhook | ✅ |
+| **Endpoint (POST)** | Your server endpoint URL that accepts POST requests | ✅ |
+| **Type** | Authentication type (Basic Auth, API Key, etc.) | ✅ |
+| **Username/Header name** | Authentication username or custom header name | ✅ |
+| **Password/API key** | Authentication password or API key value | ✅ |
+
+<Tip>
+**Authentication Setup:** You need to set up authentication on your endpoint to verify that calls are coming from Venly. This ensures security and prevents unauthorized webhook calls.
+</Tip>
+
+## Webhook Management
+
+<Tabs>
+  <Tab title="Create Webhook">
+    ![Creating a new Webhook for NFT API](https://files.readme.io/6188f00-image.png)
+    
+    Click **Create webhook** to start the configuration process.
+  </Tab>
+  
+  <Tab title="Configure Details">
+    ![Adding details for the Webhook](https://files.readme.io/833b176-image.png)
+    
+    Fill in all required fields including endpoint URL and authentication details.
+  </Tab>
+  
+  <Tab title="Webhook Created">
+    ![Webhook created successfully](https://files.readme.io/7327980-image.png)
+    
+    Your webhook is now active and ready to receive notifications.
+  </Tab>
+  
+  <Tab title="Manage Webhook">
+    ![Update or Delete Webhook](https://files.readme.io/99c0816-image.png)
+    
+    Use the three dots menu to update or delete existing webhooks.
+  </Tab>
+</Tabs>
+
+## Successful Payload Examples
+
+Here are examples of payloads you'll receive for successful events:
+
+<Tabs>
+  <Tab title="Successful Token Mint">
+    ```json
+    {
+      "eventType": "TOKEN_CREATION_SUCCEEDED",
+      "result": {
+        "id": "3eab2361-5f0e-4122-8fe9-74b6f1fe0a88",
+        "tokenId": 2,
+        "status": "SUCCEEDED",
+        "transactionHash": "0x407845cb6ce187a9f982aa00f4870851fe8877ef599e9d28084210373619dc14",
+        "destination": {
+          "address": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+          "amount": 1
+        },
+        "metadata": {
+          "name": "Test Token-type",
+          "description": "Test token-type creation",
+          "image": "https://play-lh.googleusercontent.com/ugkfJ2icapJi3vuS3WQfls6b8aM_YgcA_2Np18pg28vTLLbpeS2UEOWz9NvtB8oYGw=w240-h480-rw",
+          "imagePreview": "https://play-lh.googleusercontent.com/ugkfJ2icapJi3vuS3WQfls6b8aM_YgcA_2Np18pg28vTLLbpeS2UEOWz9NvtB8oYGw=w240-h480-rw",
+          "imageThumbnail": "https://play-lh.googleusercontent.com/ugkfJ2icapJi3vuS3WQfls6b8aM_YgcA_2Np18pg28vTLLbpeS2UEOWz9NvtB8oYGw=w240-h480-rw",
+          "externalUrl": "www.venly.io",
+          "external_url": "www.venly.io",
+          "animationUrls": [],
+          "attributes": [
+            {
+              "type": "stat",
+              "name": "Health",
+              "value": "98",
+              "maxValue": "100",
+              "displayType": "number",
+              "display_type": "number",
+              "traitType": "Health",
+              "trait_type": "Health"
+            },
+            {
+              "type": "system",
+              "name": "tokenTypeId",
+              "value": "1",
+              "traitType": "Token Type ID",
+              "trait_type": "Token Type ID"
+            },
+            {
+              "type": "property",
+              "name": "maxSupply",
+              "value": "50",
+              "traitType": "Max Supply",
+              "trait_type": "Max Supply"
+            },
+            {
+              "type": "property",
+              "name": "mintNumber",
+              "value": "1",
+              "traitType": "Mint Number",
+              "trait_type": "Mint Number"
+            }
+          ],
+          "contract": {
+            "address": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+            "name": "Test",
+            "symbol": "TE",
+            "image": "string",
+            "imageUrl": "string",
+            "image_url": "string",
+            "description": "Testing",
+            "externalLink": "www.venly.io",
+            "external_link": "www.venly.io",
+            "externalUrl": "www.venly.io",
+            "external_url": "www.venly.io",
+            "media": [],
+            "type": "ERC_1155"
+          },
+          "fungible": false
+        }
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Successful Token-type Creation">
+    ```json
+    {
+      "eventType": "TOKEN_TYPE_CREATION_SUCCEEDED",
+      "result": {
+        "id": "6852f668-2609-43fb-869e-a1de2e429ea9",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x04778d3c6dfa2418a55fe53317520744b0e00100ff4453fd7892fa28f0f146fe",
+        "tokenTypeId": 1,
+        "metadata": {
+          "name": "Test Token-type",
+          "description": "Test token-type creation",
+          "image": "https://play-lh.googleusercontent.com/ugkfJ2icapJi3vuS3WQfls6b8aM_YgcA_2Np18pg28vTLLbpeS2UEOWz9NvtB8oYGw=w240-h480-rw",
+          "imagePreview": "https://play-lh.googleusercontent.com/ugkfJ2icapJi3vuS3WQfls6b8aM_YgcA_2Np18pg28vTLLbpeS2UEOWz9NvtB8oYGw=w240-h480-rw",
+          "imageThumbnail": "https://play-lh.googleusercontent.com/ugkfJ2icapJi3vuS3WQfls6b8aM_YgcA_2Np18pg28vTLLbpeS2UEOWz9NvtB8oYGw=w240-h480-rw",
+          "externalUrl": "www.venly.io",
+          "external_url": "www.venly.io",
+          "animationUrls": [],
+          "attributes": [
+            {
+              "type": "stat",
+              "name": "Health",
+              "value": "98",
+              "maxValue": "100",
+              "displayType": "number",
+              "display_type": "number",
+              "traitType": "Health",
+              "trait_type": "Health"
+            },
+            {
+              "type": "system",
+              "name": "tokenTypeId",
+              "value": "1",
+              "traitType": "Token Type ID",
+              "trait_type": "Token Type ID"
+            },
+            {
+              "type": "property",
+              "name": "maxSupply",
+              "value": "50",
+              "traitType": "Max Supply",
+              "trait_type": "Max Supply"
+            }
+          ],
+          "contract": {
+            "address": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+            "name": "Test",
+            "symbol": "TE",
+            "image": "string",
+            "imageUrl": "string",
+            "image_url": "string",
+            "description": "Testing",
+            "externalLink": "www.venly.io",
+            "external_link": "www.venly.io",
+            "externalUrl": "www.venly.io",
+            "external_url": "www.venly.io",
+            "media": [],
+            "type": "ERC_1155"
+          },
+          "fungible": false
+        }
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Successful Contract Creation">
+    ```json
+    {
+      "eventType": "CONTRACT_CREATION_SUCCEEDED",
+      "result": {
+        "name": "Test",
+        "description": "Testing",
+        "address": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+        "id": "a46bef57-c2b9-4eb7-8819-d0b38c445809",
+        "secretType": "MATIC",
+        "symbol": "TE",
+        "externalUrl": "www.venly.io",
+        "image": "string",
+        "media": [],
+        "transactionHash": "0xad5633541e106be988c30e51b2fcb2a997ac80610d095bfcf5c363d0df8fbea3",
+        "status": "SUCCEEDED",
+        "storage": {
+          "type": "cloud",
+          "location": "https://metadata-qa.arkane.network/metadata/contracts/10816"
+        },
+        "contractUri": "https://metadata-qa.arkane.network/metadata/contracts/10816",
+        "external_link": "www.venly.io"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Failed Payload Examples
+
+Here are examples of payloads you'll receive for failed events:
+
+<Tabs>
+  <Tab title="Failed Token Mint">
+    ```json
+    {
+      "eventType": "TOKEN_CREATION_FAILED",
+      "result": {
+        "id": "f9754e80-ebb0-4cf9-8e82-c4191dd0b44f",
+        "tokenId": 20,
+        "status": "FAILED",
+        "transactionHash": "0x98cfcd58282edc8a6d3f329a01a7350b7f148c31546b1a5c29e0311f339eb8e8",
+        "destination": {
+          "address": "0x6490d80c70990f27f50fee6189829cefe584998a",
+          "amount": 1
+        },
+        "metadata": {
+          "name": "DAR-TOKTYP-56",
+          "description": "DAR-TOKEN-TYPE-56",
+          "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+          "imagePreview": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+          "imageThumbnail": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+          "backgroundColor": "#021200",
+          "background_color": "#021200",
+          "animationUrl": "https://i.pinimg.com/originals/6a/34/9e/6a349ef34e90c467cf7bd5804de6b095.gif",
+          "animation_url": "https://i.pinimg.com/originals/6a/34/9e/6a349ef34e90c467cf7bd5804de6b095.gif",
+          "externalUrl": "https://en.wikipedia.org/wiki/Space_Chickens_in_Space",
+          "external_url": "https://en.wikipedia.org/wiki/Space_Chickens_in_Space",
+          "animationUrls": [
+            {
+              "type": "GIF",
+              "value": "https://i.pinimg.com/originals/6a/34/9e/6a349ef34e90c467cf7bd5804de6b095.gif"
+            }
+          ],
+          "attributes": [
+            {
+              "type": "property",
+              "name": "Gold",
+              "value": "8",
+              "maxValue": "10",
+              "traitType": "Gold",
+              "trait_type": "Gold"
+            },
+            {
+              "type": "property",
+              "name": "Silver",
+              "value": "2",
+              "maxValue": "200",
+              "traitType": "Silver",
+              "trait_type": "Silver"
+            },
+            {
+              "type": "system",
+              "name": "tokenTypeId",
+              "value": "16",
+              "traitType": "Token Type ID",
+              "trait_type": "Token Type ID"
+            },
+            {
+              "type": "property",
+              "name": "maxSupply",
+              "value": "25",
+              "traitType": "Max Supply",
+              "trait_type": "Max Supply"
+            }
+          ],
+          "contract": {
+            "address": "0x6490d80c70990f27f50fee6189829cefe584998a",
+            "name": "DAR-CONTR-49",
+            "symbol": "DC42",
+            "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+            "imageUrl": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+            "image_url": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+            "description": "DAR-CONTRACT-49",
+            "externalLink": "https://en.wikipedia.org/wiki/Stick_figure",
+            "external_link": "https://en.wikipedia.org/wiki/Stick_figure",
+            "externalUrl": "https://en.wikipedia.org/wiki/Stick_figure",
+            "external_url": "https://en.wikipedia.org/wiki/Stick_figure",
+            "media": [],
+            "type": "ERC_1155"
+          },
+          "fungible": false
+        },
+        "errorMessage": "Transaction failed"
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Failed Token-type Creation">
+    ```json
+    {
+      "eventType": "TOKEN_TYPE_CREATION_FAILED",
+      "result": {
+        "id": "e2abb6d1-26c6-422c-9643-b42c17c5c705",
+        "status": "FAILED",
+        "tokenTypeId": 34,
+        "metadata": {
+          "name": "string",
+          "description": "PLEASE_FAIL",
+          "image": "string",
+          "imagePreview": "string",
+          "imageThumbnail": "string",
+          "backgroundColor": "string",
+          "background_color": "string",
+          "animationUrl": "string",
+          "animation_url": "string",
+          "externalUrl": "string",
+          "external_url": "string",
+          "animationUrls": [
+            {
+              "type": "string",
+              "value": "string"
+            }
+          ],
+          "attributes": [
+            {
+              "type": "stat",
+              "name": "string",
+              "value": "string",
+              "maxValue": "string",
+              "displayType": "number",
+              "display_type": "number",
+              "traitType": "string",
+              "trait_type": "string"
+            },
+            {
+              "type": "system",
+              "name": "tokenTypeId",
+              "value": "34",
+              "traitType": "Token Type ID",
+              "trait_type": "Token Type ID"
+            },
+            {
+              "type": "property",
+              "name": "maxSupply",
+              "value": "1034534534634256245643564562456245645624562456245645624562546425645642562546245624564562645625",
+              "traitType": "Max Supply",
+              "trait_type": "Max Supply"
+            }
+          ],
+          "contract": {
+            "address": "0xde4cefc86a28c9a13d4a0846f322b9b5713b1a57",
+            "name": "Kurt Remarque - updated",
+            "symbol": "KURE",
+            "image": "https://storage-qa.venly.io/applications/d047a0a7-bf8f-46e4-a3fd-561a94bfd114/matic.png",
+            "imageUrl": "https://storage-qa.venly.io/applications/d047a0a7-bf8f-46e4-a3fd-561a94bfd114/matic.png",
+            "image_url": "https://storage-qa.venly.io/applications/d047a0a7-bf8f-46e4-a3fd-561a94bfd114/matic.png",
+            "description": "Modi qui id maiores.",
+            "externalLink": "https://en.wikipedia.org/wiki/Stick_figure",
+            "external_link": "https://en.wikipedia.org/wiki/Stick_figure",
+            "externalUrl": "https://en.wikipedia.org/wiki/Stick_figure",
+            "external_url": "https://en.wikipedia.org/wiki/Stick_figure",
+            "media": [],
+            "type": "ERC_1155"
+          },
+          "fungible": true
+        },
+        "errorMessage": "Could not prepare transaction. Bit size must be 8 bit aligned, and in range 0 < bitSize <= 256"
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Failed Contract Creation">
+    ```json
+    {
+      "eventType": "CONTRACT_CREATION_FAILED",
+      "result": {
+        "name": "DAR-CONTR-69",
+        "description": "DAR-CONTRACT-69",
+        "id": "3fe78ac7-f8e9-4f60-acfe-8829df5bcca0",
+        "secretType": "MATIC",
+        "symbol": "DC62",
+        "externalUrl": "https://en.wikipedia.org/wiki/Stick_figure",
+        "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/coll_marvel.png",
+        "media": [],
+        "status": "FAILED",
+        "owner": "0x075Eea524899C9dEF536D327A27Efce4fC9795ca",
+        "storage": {
+          "type": "cloud",
+          "location": "https://metadata-staging.arkane.network/metadata/contracts/64653"
+        },
+        "contractUri": "https://metadata-staging.arkane.network/metadata/contracts/64653",
+        "external_link": "https://en.wikipedia.org/wiki/Stick_figure"
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Implementing Webhook Endpoints
+
+<CodeGroup>
+```javascript Node.js/Express
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+// Webhook endpoint
+app.post('/webhooks/nft-api', (req, res) => {
+  const { eventType, result } = req.body;
+  
+  console.log(`Received webhook: ${eventType}`);
+  console.log(`Status: ${result.status}`);
+  
+  // Process the webhook based on event type
+  switch (eventType) {
+    case 'CONTRACT_CREATION_SUCCEEDED':
+      handleContractSuccess(result);
+      break;
+    case 'TOKEN_TYPE_CREATION_SUCCEEDED':
+      handleTokenTypeSuccess(result);
+      break;
+    case 'TOKEN_CREATION_SUCCEEDED':
+      handleTokenMintSuccess(result);
+      break;
+    case 'CONTRACT_CREATION_FAILED':
+    case 'TOKEN_TYPE_CREATION_FAILED':
+    case 'TOKEN_CREATION_FAILED':
+      handleFailure(eventType, result);
+      break;
+  }
+  
+  // Always respond with 200 to acknowledge receipt
+  res.status(200).send('OK');
+});
+
+function handleContractSuccess(result) {
+  console.log(`Contract deployed: ${result.address}`);
+  // Update your database, notify users, etc.
+}
+
+function handleTokenTypeSuccess(result) {
+  console.log(`Token-type created: ${result.tokenTypeId}`);
+  // Update your database, notify users, etc.
+}
+
+function handleTokenMintSuccess(result) {
+  console.log(`Token minted: ${result.tokenId}`);
+  // Update your database, notify users, etc.
+}
+
+function handleFailure(eventType, result) {
+  console.error(`Failed event: ${eventType}`);
+  console.error(`Error: ${result.errorMessage}`);
+  // Handle failure, retry logic, user notification, etc.
+}
+
+app.listen(3000, () => {
+  console.log('Webhook server running on port 3000');
+});
+```
+
+```python Python/Flask
+from flask import Flask, request, jsonify
+import logging
+
+app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+
+@app.route('/webhooks/nft-api', methods=['POST'])
+def handle_webhook():
+    data = request.get_json()
+    event_type = data.get('eventType')
+    result = data.get('result')
+    
+    logging.info(f"Received webhook: {event_type}")
+    logging.info(f"Status: {result.get('status')}")
+    
+    # Process the webhook based on event type
+    if event_type == 'CONTRACT_CREATION_SUCCEEDED':
+        handle_contract_success(result)
+    elif event_type == 'TOKEN_TYPE_CREATION_SUCCEEDED':
+        handle_token_type_success(result)
+    elif event_type == 'TOKEN_CREATION_SUCCEEDED':
+        handle_token_mint_success(result)
+    elif event_type in ['CONTRACT_CREATION_FAILED', 'TOKEN_TYPE_CREATION_FAILED', 'TOKEN_CREATION_FAILED']:
+        handle_failure(event_type, result)
+    
+    # Always respond with 200 to acknowledge receipt
+    return jsonify({'status': 'success'}), 200
+
+def handle_contract_success(result):
+    logging.info(f"Contract deployed: {result.get('address')}")
+    # Update your database, notify users, etc.
+
+def handle_token_type_success(result):
+    logging.info(f"Token-type created: {result.get('tokenTypeId')}")
+    # Update your database, notify users, etc.
+
+def handle_token_mint_success(result):
+    logging.info(f"Token minted: {result.get('tokenId')}")
+    # Update your database, notify users, etc.
+
+def handle_failure(event_type, result):
+    logging.error(f"Failed event: {event_type}")
+    logging.error(f"Error: {result.get('errorMessage')}")
+    # Handle failure, retry logic, user notification, etc.
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=3000)
+```
+</CodeGroup>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Endpoint Security" icon="shield">
+    **Security Recommendations:**
+    - Use HTTPS for your webhook endpoints
+    - Implement proper authentication verification
+    - Validate webhook signatures if provided
+    - Rate limit your webhook endpoints
+    - Log all webhook events for debugging
+  </Accordion>
+  
+  <Accordion title="Error Handling" icon="exclamation-triangle">
+    **Robust Error Handling:**
+    - Always respond with HTTP 200 for successful processing
+    - Implement idempotency to handle duplicate webhooks
+    - Use try-catch blocks around webhook processing
+    - Log errors for debugging and monitoring
+    - Have fallback mechanisms for critical operations
+  </Accordion>
+  
+  <Accordion title="Performance Optimization" icon="rocket">
+    **Performance Tips:**
+    - Process webhooks asynchronously when possible
+    - Use queues for heavy processing tasks
+    - Respond quickly to avoid timeouts
+    - Implement proper database indexing
+    - Monitor webhook processing times
+  </Accordion>
+  
+  <Accordion title="Testing and Monitoring" icon="chart-line">
+    **Testing Strategy:**
+    - Test webhook endpoints thoroughly
+    - Use webhook testing tools like ngrok for local development
+    - Monitor webhook delivery success rates
+    - Set up alerts for webhook failures
+    - Implement health checks for your endpoints
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhook not receiving notifications">
+    **Possible causes:**
+    - Endpoint URL is not accessible
+    - Authentication configuration is incorrect
+    - Firewall blocking incoming requests
+    - Server is down or responding with errors
+    
+    **Solution:** Verify your endpoint is accessible, check authentication settings, and ensure your server responds with HTTP 200.
+  </Accordion>
+  
+  <Accordion title="Duplicate webhook notifications">
+    **Possible causes:**
+    - Network issues causing retries
+    - Server responding with non-200 status codes
+    - Processing taking too long
+    
+    **Solution:** Implement idempotency checks using the event ID and ensure quick response times.
+  </Accordion>
+  
+  <Accordion title="Missing webhook events">
+    **Possible causes:**
+    - Endpoint was down during event
+    - All retry attempts failed
+    - Webhook configuration was disabled
+    
+    **Solution:** Use the status check endpoints as backup and ensure high availability for your webhook endpoints.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Status Check Endpoints" href="/NFT-API-Basic-Guides/check-contract-status" icon="magnifying-glass">
+    Learn about backup status checking methods
+  </Card>
+  <Card title="Error Handling Guide" href="/guides/nft-api/getting-started/authentication" icon="exclamation-triangle">
+    Implement robust error handling patterns
+  </Card>
+  <Card title="API Reference" href="/api-reference/NFT-API/contract/create-contract" icon="book">
+    Explore the complete NFT-API documentation
+  </Card>
+</CardGroup>

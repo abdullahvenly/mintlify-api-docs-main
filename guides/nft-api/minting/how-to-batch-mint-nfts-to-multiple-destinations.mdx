@@ -1,0 +1,483 @@
+---
+title: "Batch Mint NFTs"
+description: "Learn how to mint and send NFTs to multiple wallets in a single batch operation for efficient distribution"
+icon: "layer-group"
+---
+
+<Info>
+**Advanced Minting:** Distribute different amounts of NFTs to multiple wallet addresses in one efficient API call - perfect for airdrops, rewards, and bulk distributions.
+
+**Time required:** ~10 minutes
+</Info>
+
+## Scenario Overview
+
+This guide covers an advanced NFT minting use case where you want to distribute a specific type of NFT immediately to several different wallet addresses, with potentially different amounts for each recipient.
+
+<CardGroup cols={2}>
+  <Card title="Bulk Distribution" icon="users">
+    Send NFTs to up to 100 different addresses at once
+  </Card>
+  <Card title="Variable Amounts" icon="calculator">
+    Specify different quantities for each recipient
+  </Card>
+  <Card title="Cost Efficient" icon="dollar-sign">
+    Reduce gas costs with batch operations
+  </Card>
+  <Card title="Time Saving" icon="clock">
+    Complete mass distribution in a single API call
+  </Card>
+</CardGroup>
+
+![Batch Minting NFTs](https://files.readme.io/d995044-01-How-to-batch-mint-NFTs.png)
+
+## End Result
+
+You'll be able to mint different amounts of an NFT to multiple wallet addresses in one call, perfect for:
+
+<Tabs>
+  <Tab title="Airdrops">
+    **Mass Distribution**
+    - Community rewards
+    - Marketing campaigns
+    - Token launches
+    - User acquisition
+  </Tab>
+  <Tab title="Gaming">
+    **Player Rewards**
+    - Achievement badges
+    - In-game items
+    - Tournament prizes
+    - Level completion rewards
+  </Tab>
+  <Tab title="Events">
+    **Event Distribution**
+    - Conference tickets
+    - Membership passes
+    - Exclusive access tokens
+    - Commemorative NFTs
+  </Tab>
+</Tabs>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Venly Account" icon="user">
+    Register in our [Developer Portal](https://portal.venly.io) or follow our [Getting Started guide](https://venly.readme.io/docs/getting-started)
+  </Step>
+  <Step title="API Credentials" icon="key">
+    Obtain your **Client ID** and **Client Secret** from the Portal
+  </Step>
+  <Step title="Contract & Token-Type" icon="file-contract">
+    Have a deployed contract with `contractAddress` and token-type with `tokenTypeId`
+  </Step>
+  <Step title="Recipient Addresses" icon="wallet">
+    Prepare the list of wallet addresses for distribution
+  </Step>
+</Steps>
+
+<Note>
+Need help with prerequisites? Learn how to [create a contract](https://docs.venly.io/docs/create-contract) and [create a token-type](https://docs.venly.io/docs/create-nft-template).
+</Note>
+
+## Batch Minting API Call
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const response = await fetch('/api/v3/erc1155/tokens/mints', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contractAddress: "0x30d6cff9cb268c59c75a94755b2c60e118d65657",
+    chain: "MATIC",
+    tokenTypeId: "3",
+    destinations: [
+      {
+        address: "0x9282fc38931A3a613b8566b3E6a1027e49ABb712",
+        amount: 1
+      },
+      {
+        address: "0xe396E30554F97088FA6f9297339c3bDc575ba306",
+        amount: 2
+      },
+      {
+        address: "0x329CdCBBD82c934fe32322b423bD8fBd30b4EEB6",
+        amount: 3
+      }
+    ]
+  })
+});
+
+const data = await response.json();
+console.log('Batch mint result:', data);
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    '/api/v3/erc1155/tokens/mints',
+    headers={
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+    },
+    json={
+        'contractAddress': '0x30d6cff9cb268c59c75a94755b2c60e118d65657',
+        'chain': 'MATIC',
+        'tokenTypeId': '3',
+        'destinations': [
+            {
+                'address': '0x9282fc38931A3a613b8566b3E6a1027e49ABb712',
+                'amount': 1
+            },
+            {
+                'address': '0xe396E30554F97088FA6f9297339c3bDc575ba306',
+                'amount': 2
+            },
+            {
+                'address': '0x329CdCBBD82c934fe32322b423bD8fBd30b4EEB6',
+                'amount': 3
+            }
+        ]
+    }
+)
+
+data = response.json()
+print('Batch mint result:', data)
+```
+
+```bash cURL
+curl -X POST '/api/v3/erc1155/tokens/mints' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "contractAddress": "0x30d6cff9cb268c59c75a94755b2c60e118d65657",
+    "chain": "MATIC",
+    "tokenTypeId": "3",
+    "destinations": [
+      {
+        "address": "0x9282fc38931A3a613b8566b3E6a1027e49ABb712",
+        "amount": 1
+      },
+      {
+        "address": "0xe396E30554F97088FA6f9297339c3bDc575ba306",
+        "amount": 2
+      },
+      {
+        "address": "0x329CdCBBD82c934fe32322b423bD8fBd30b4EEB6",
+        "amount": 3
+      }
+    ]
+  }'
+```
+</CodeGroup>
+
+### Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `contractAddress` | string | ✅ | The contract address |
+| `chain` | string | ✅ | The blockchain of the contract |
+| `tokenTypeId` | string | ✅ | The ID of the token-type (from token-type creation response) |
+| `destinations` | array | ✅ | Array of wallet/email addresses and amounts to mint |
+| `destinations.address` | string | ✅ | The wallet address to mint and send the NFT |
+| `destinations.amount` | integer | ✅ | The number of NFTs you want to mint and send |
+
+<Tip>
+**Scaling Up:** You can add up to **100 different wallet addresses** by following the same syntax in the destinations array. Each destination can specify a different amount of NFTs to mint.
+</Tip>
+
+## Understanding the Response
+
+<Tabs>
+  <Tab title="Response Structure">
+    ```json
+    {
+      "success": true,
+      "result": {
+        "mints": [
+          {
+            "id": "01d678f4-f8d7-4acf-b7d0-4fb801cd091c",
+            "status": "PENDING",
+            "destination": {
+              "address": "0x9282fc38931A3a613b8566b3E6a1027e49ABb712",
+              "amount": 1
+            }
+          },
+          {
+            "id": "2ef89e28-93cc-4afc-8a32-ad0f1db4a58c",
+            "status": "PENDING",
+            "destination": {
+              "address": "0xe396E30554F97088FA6f9297339c3bDc575ba306",
+              "amount": 1
+            }
+          },
+          {
+            "id": "9426c547-7a9b-4702-b154-a3f5bf105bc4",
+            "status": "PENDING",
+            "destination": {
+              "address": "0xe396E30554F97088FA6f9297339c3bDc575ba306",
+              "amount": 1
+            }
+          }
+        ],
+        "metadata": {
+          "name": "NFT with metadata on IPFS",
+          "description": "This NFTs metadata is stored on IPFS",
+          "image": "https://static.wikia.nocookie.net/parody/images/4/42/74915084_10162764640400387_6139958579186106368_o.jpg",
+          "attributes": [...],
+          "contract": {...}
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Key Response Fields">
+    **Important fields to track:**
+    - **`mints[].id`** - Unique ID for each individual mint request
+    - **`mints[].status`** - Current minting status (PENDING → SUCCESS)
+    - **`mints[].destination`** - Recipient address and amount
+    - **`metadata`** - Complete NFT metadata and contract information
+  </Tab>
+</Tabs>
+
+<Check>
+**Track Individual Mints:** Under the `mints` array, you'll find individual `id` for each minted NFT listed with the wallet address. Use these unique IDs to track the status of each mint request.
+</Check>
+
+## Batch Minting Strategies
+
+<AccordionGroup>
+  <Accordion title="Equal Distribution" icon="balance-scale">
+    **Same amount to all recipients:**
+    ```json
+    {
+      "destinations": [
+        {"address": "0x123...", "amount": 1},
+        {"address": "0x456...", "amount": 1},
+        {"address": "0x789...", "amount": 1}
+      ]
+    }
+    ```
+    Perfect for airdrops and equal rewards.
+  </Accordion>
+  
+  <Accordion title="Tiered Distribution" icon="layer-group">
+    **Different amounts based on tiers:**
+    ```json
+    {
+      "destinations": [
+        {"address": "0x123...", "amount": 5},  // VIP tier
+        {"address": "0x456...", "amount": 3},  // Premium tier
+        {"address": "0x789...", "amount": 1}   // Basic tier
+      ]
+    }
+    ```
+    Great for loyalty programs and membership levels.
+  </Accordion>
+  
+  <Accordion title="Email Distribution" icon="envelope">
+    **Send to email addresses:**
+    ```json
+    {
+      "destinations": [
+        {"address": "user1@example.com", "amount": 1},
+        {"address": "user2@example.com", "amount": 2},
+        {"address": "0x123...", "amount": 1}
+      ]
+    }
+    ```
+    Mix wallet addresses and emails using NFT2Email service.
+  </Accordion>
+  
+  <Accordion title="Large Scale Distribution" icon="users">
+    **Up to 100 recipients:**
+    ```javascript
+    const destinations = [];
+    for (let i = 0; i < 100; i++) {
+      destinations.push({
+        address: walletAddresses[i],
+        amount: amounts[i] || 1
+      });
+    }
+    ```
+    Programmatically build large distribution lists.
+  </Accordion>
+</AccordionGroup>
+
+## Monitoring Batch Mints
+
+### Track Individual Mint Status
+
+<CodeGroup>
+```javascript JavaScript
+// Track each mint individually
+const mintIds = data.result.mints.map(mint => mint.id);
+
+for (const mintId of mintIds) {
+  const statusResponse = await fetch(`/api/v3/erc1155/tokens/mints/${mintId}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+  
+  const status = await statusResponse.json();
+  console.log(`Mint ${mintId}: ${status.result.status}`);
+}
+```
+
+```python Python
+# Track each mint individually
+mint_ids = [mint['id'] for mint in data['result']['mints']]
+
+for mint_id in mint_ids:
+    status_response = requests.get(
+        f'/api/v3/erc1155/tokens/mints/{mint_id}',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'}
+    )
+    
+    status = status_response.json()
+    print(f"Mint {mint_id}: {status['result']['status']}")
+```
+</CodeGroup>
+
+### Batch Status Summary
+
+<Tabs>
+  <Tab title="Status Types">
+    | Status | Description |
+    |--------|-------------|
+    | `PENDING` | Mint is being processed on the blockchain |
+    | `SUCCESS` | NFT successfully minted and transferred |
+    | `FAILED` | Mint failed - check error details |
+  </Tab>
+  <Tab title="Success Tracking">
+    ```javascript
+    const successfulMints = data.result.mints.filter(mint => 
+      mint.status === 'SUCCESS'
+    ).length;
+    
+    const totalMints = data.result.mints.length;
+    console.log(`${successfulMints}/${totalMints} mints completed`);
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices for Batch Minting
+
+<Tip>
+**Optimization Strategies:**
+
+1. **Batch Size Management** - Use optimal batch sizes (50-100 recipients)
+2. **Gas Fee Optimization** - Mint during low network activity
+3. **Error Handling** - Implement retry logic for failed mints
+4. **Status Monitoring** - Track individual mint progress
+5. **Address Validation** - Verify all recipient addresses before minting
+6. **Amount Planning** - Calculate total supply requirements
+</Tip>
+
+## Common Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Community Airdrops" icon="parachute-box">
+    Reward community members with exclusive NFTs based on participation levels
+  </Card>
+  <Card title="Gaming Rewards" icon="gamepad">
+    Distribute in-game items, achievements, or collectibles to players
+  </Card>
+  <Card title="Event Tickets" icon="ticket">
+    Issue event passes or access tokens to multiple attendees
+  </Card>
+  <Card title="Loyalty Programs" icon="star">
+    Reward customers with tiered NFT benefits based on loyalty status
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Some mints failed">
+    **Possible causes:**
+    - Invalid recipient addresses
+    - Insufficient token supply
+    - Network congestion
+    - Gas estimation errors
+    
+    **Solution:** Check individual mint statuses and retry failed mints with corrected parameters.
+  </Accordion>
+  
+  <Accordion title="High gas fees">
+    **Optimization strategies:**
+    - Use Layer 2 solutions like Polygon
+    - Mint during off-peak hours
+    - Optimize batch sizes
+    - Consider fungible tokens for identical items
+    
+    **Solution:** Monitor network conditions and adjust timing accordingly.
+  </Accordion>
+  
+  <Accordion title="Address validation errors">
+    **Common issues:**
+    - Invalid address format
+    - Mixing different blockchain addresses
+    - Using contract addresses instead of wallet addresses
+    
+    **Solution:** Validate all addresses before submitting the batch mint request.
+  </Accordion>
+  
+  <Accordion title="Batch size limitations">
+    **Current limits:**
+    - Maximum 100 destinations per batch
+    - Each destination can specify different amounts
+    - Total gas limit considerations
+    
+    **Solution:** Split large distributions into multiple batches if needed.
+  </Accordion>
+</AccordionGroup>
+
+## View Your NFTs
+
+<Note>
+Learn how to [view your NFT on sandbox/testnet](https://docs.venly.io/docs/view-nft-on-sandboxtestnet) to verify successful minting.
+</Note>
+
+Once minted, your NFTs will be visible across various platforms:
+
+<CardGroup cols={2}>
+  <Card title="Venly Market" href="https://venly.market" icon="store">
+    View and manage your distributed NFTs
+  </Card>
+  <Card title="OpenSea" href="https://opensea.io" icon="water">
+    NFTs appear automatically on OpenSea
+  </Card>
+  <Card title="Recipient Wallets" icon="wallet">
+    NFTs appear in recipients' Web3 wallets
+  </Card>
+  <Card title="Blockchain Explorer" icon="magnifying-glass">
+    Track transactions on Polygonscan or Etherscan
+  </Card>
+</CardGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Monitor Mint Status" href="/NFT-API-Basic-Guides/check-token-mint-status" icon="chart-line">
+    Learn how to track minting progress
+  </Card>
+  <Card title="Manage NFT Metadata" href="/NFT-API-Basic-Guides/update-nft-metadata" icon="database">
+    Update NFT properties after minting
+  </Card>
+  <Card title="Set Up Webhooks" href="/guides/nft-api/advanced/webhooks-nft-api" icon="webhook">
+    Get real-time notifications for mint events
+  </Card>
+  <Card title="View NFT Collections" href="/NFT-API-Basic-Guides/retrieve-nfts-by-a-wallet-address" icon="collection">
+    Query NFTs by wallet address
+  </Card>
+</CardGroup>
+
+<Warning>
+**Cost Consideration:** Batch minting can result in significant gas fees on mainnet. Always test on testnets first and consider using Layer 2 solutions for cost-effective distribution.
+</Warning>

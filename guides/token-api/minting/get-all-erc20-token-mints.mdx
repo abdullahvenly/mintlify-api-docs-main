@@ -1,0 +1,1085 @@
+---
+title: "Get All ERC20 Token Mints"
+description: "Retrieve and analyze all your ERC20 token minting operations with advanced filtering and pagination"
+icon: "list-check"
+---
+
+<Info>
+**Mint History Management:** Access comprehensive information about all your ERC20 token minting operations with powerful filtering and sorting capabilities.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Mint History Retrieval?
+
+This endpoint allows you to retrieve all your ERC20 token mint requests with comprehensive filtering options. You can analyze minting patterns, track success rates, and manage your token distribution history across all contracts and chains.
+
+<CardGroup cols={2}>
+  <Card title="Complete History" icon="history">
+    View all your token minting operations
+  </Card>
+  <Card title="Advanced Filtering" icon="filter">
+    Filter by status, dates, contracts, and more
+  </Card>
+  <Card title="Pagination Support" icon="pages">
+    Handle large datasets efficiently
+  </Card>
+  <Card title="Analytics Ready" icon="chart-bar">
+    Perfect for reporting and analysis
+  </Card>
+</CardGroup>
+
+## Use Cases
+
+<Tabs>
+  <Tab title="Operations Management">
+    **Mint Tracking**
+    - Monitor all minting activities
+    - Track success and failure rates
+    - Audit token distribution
+    - Performance analysis
+  </Tab>
+  <Tab title="Financial Reporting">
+    **Business Intelligence**
+    - Generate mint reports
+    - Analyze distribution patterns
+    - Track token allocation
+    - Cost analysis
+  </Tab>
+  <Tab title="Troubleshooting">
+    **Issue Resolution**
+    - Identify failed mints
+    - Debug distribution problems
+    - Monitor specific contracts
+    - User support queries
+  </Tab>
+</Tabs>
+
+## Prerequisites
+
+<Steps>
+  <Step title="Token Mints" icon="coins">
+    You need to have performed ERC20 token minting operations
+  </Step>
+  <Step title="API Access" icon="key">
+    Valid API credentials for accessing mint history
+  </Step>
+  <Step title="Filter Criteria" icon="filter">
+    Optional: Specific filtering requirements (dates, contracts, etc.)
+  </Step>
+</Steps>
+
+## Get All Token Mints
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+// Basic request - get all mints
+const response = await fetch('/api/v3/erc20/tokens/mints', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('All mints:', data.result);
+console.log(`Total mints: ${data.result.length}`);
+```
+
+```python Python
+import requests
+
+# Basic request - get all mints
+response = requests.get(
+    '/api/v3/erc20/tokens/mints',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('All mints:', data['result'])
+print(f'Total mints: {len(data["result"])}')
+```
+
+```bash cURL
+curl -X GET '/api/v3/erc20/tokens/mints' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `companyId` | string | ❌ | Filter by company ID |
+| `contractAddress` | string | ❌ | Filter by specific contract address |
+| `destinationAddress` | string | ❌ | Filter by destination wallet (partial match supported) |
+| `createdOnFrom` | string | ❌ | Start date filter (ISO 8601 format) |
+| `createdOnTo` | string | ❌ | End date filter (ISO 8601 format) |
+| `mintIds` | array | ❌ | Filter by specific mint IDs |
+| `status` | string | ❌ | Filter by status: `SUCCEEDED`, `PENDING`, `FAILED` |
+| `page` | integer | ❌ | Page number for pagination |
+| `size` | integer | ❌ | Number of items per page |
+| `sortOn` | string | ❌ | Field to sort by |
+| `sortOrder` | string | ❌ | Sort order: `asc` or `desc` |
+
+<Tip>
+**Filtering Tips:**
+- Use `destinationAddress` with partial matches to find all mints to similar addresses
+- Combine `createdOnFrom` and `createdOnTo` for date range filtering
+- Use `status` to quickly identify failed mints that need attention
+</Tip>
+
+## Advanced Filtering Examples
+
+<CodeGroup>
+```javascript JavaScript
+// Filter by date range and status
+const filterByDateAndStatus = async () => {
+  const params = new URLSearchParams({
+    createdOnFrom: '2024-01-01T00:00:00Z',
+    createdOnTo: '2024-12-31T23:59:59Z',
+    status: 'SUCCEEDED',
+    page: '1',
+    size: '50',
+    sortOn: 'createdOn',
+    sortOrder: 'desc'
+  });
+
+  const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+
+  const data = await response.json();
+  return data.result;
+};
+
+// Filter by specific contract
+const filterByContract = async (contractAddress) => {
+  const params = new URLSearchParams({
+    contractAddress,
+    sortOn: 'createdOn',
+    sortOrder: 'desc'
+  });
+
+  const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+
+  const data = await response.json();
+  return data.result;
+};
+
+// Filter failed mints for troubleshooting
+const getFailedMints = async () => {
+  const params = new URLSearchParams({
+    status: 'FAILED',
+    sortOn: 'createdOn',
+    sortOrder: 'desc'
+  });
+
+  const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+  });
+
+  const data = await response.json();
+  return data.result;
+};
+
+// Usage
+const successfulMints = await filterByDateAndStatus();
+const contractMints = await filterByContract('0x1e857475040b732d5adf3f8b2e7cd712914cdd23');
+const failedMints = await getFailedMints();
+```
+
+```python Python
+import requests
+from urllib.parse import urlencode
+from datetime import datetime, timezone
+
+def filter_by_date_and_status():
+    """Filter by date range and status"""
+    params = {
+        'createdOnFrom': '2024-01-01T00:00:00Z',
+        'createdOnTo': '2024-12-31T23:59:59Z',
+        'status': 'SUCCEEDED',
+        'page': 1,
+        'size': 50,
+        'sortOn': 'createdOn',
+        'sortOrder': 'desc'
+    }
+    
+    response = requests.get(
+        f'/api/v3/erc20/tokens/mints?{urlencode(params)}',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'}
+    )
+    
+    return response.json()['result']
+
+def filter_by_contract(contract_address):
+    """Filter by specific contract"""
+    params = {
+        'contractAddress': contract_address,
+        'sortOn': 'createdOn',
+        'sortOrder': 'desc'
+    }
+    
+    response = requests.get(
+        f'/api/v3/erc20/tokens/mints?{urlencode(params)}',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'}
+    )
+    
+    return response.json()['result']
+
+def get_failed_mints():
+    """Get failed mints for troubleshooting"""
+    params = {
+        'status': 'FAILED',
+        'sortOn': 'createdOn',
+        'sortOrder': 'desc'
+    }
+    
+    response = requests.get(
+        f'/api/v3/erc20/tokens/mints?{urlencode(params)}',
+        headers={'Authorization': 'Bearer YOUR_API_KEY'}
+    )
+    
+    return response.json()['result']
+
+# Usage
+successful_mints = filter_by_date_and_status()
+contract_mints = filter_by_contract('0x1e857475040b732d5adf3f8b2e7cd712914cdd23')
+failed_mints = get_failed_mints()
+```
+</CodeGroup>
+
+## Response Structure
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "success": true,
+      "result": [
+        {
+          "id": "ea9a149f-cdad-44d6-ab0e-55a8a7490429",
+          "chain": "AVAC",
+          "contractAddress": "0xb1c62e4dc8dfab73c0fe12ba1736ddb976a485c0",
+          "createdOn": "2024-09-26T11:16:18.256375",
+          "status": "SUCCEEDED",
+          "transactionHash": "0x8a84df811b33f908cd31f6694ba621b9bef8e6617245970fad2d5627e8bdc1a2",
+          "destination": {
+            "address": "0x6296E346abb7Ecf72308c34de2F5a8888403a6b8",
+            "amount": 450
+          }
+        },
+        {
+          "id": "7f78e6ed-d733-430c-83a4-5fc28032e667",
+          "chain": "MATIC",
+          "contractAddress": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+          "createdOn": "2024-09-23T09:28:49.562087",
+          "status": "SUCCEEDED",
+          "transactionHash": "0x95dba6ba9c8bae1d3179486e00eeb778fb9d2435741226e4d98b59e38cf7e875",
+          "destination": {
+            "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+            "amount": 35
+          }
+        }
+      ]
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Mint information:**
+    - **`id`** - Unique mint ID
+    - **`chain`** - Blockchain network
+    - **`contractAddress`** - Token contract address
+    - **`createdOn`** - Mint creation timestamp
+    - **`status`** - Current mint status
+    - **`transactionHash`** - Blockchain transaction hash
+    - **`destination.address`** - Recipient address
+    - **`destination.amount`** - Number of tokens minted
+  </Tab>
+</Tabs>
+
+## Mint Analytics & Reporting
+
+<CodeGroup>
+```javascript JavaScript
+class MintAnalytics {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+  }
+
+  async getAllMints() {
+    const response = await fetch('/api/v3/erc20/tokens/mints', {
+      headers: { 'Authorization': `Bearer ${this.apiKey}` }
+    });
+    
+    const data = await response.json();
+    return data.result;
+  }
+
+  async generateReport(dateFrom, dateTo) {
+    const params = new URLSearchParams({
+      createdOnFrom: dateFrom,
+      createdOnTo: dateTo,
+      size: '1000' // Get more results for analysis
+    });
+
+    const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+      headers: { 'Authorization': `Bearer ${this.apiKey}` }
+    });
+
+    const data = await response.json();
+    const mints = data.result;
+
+    return this.analyzeMints(mints);
+  }
+
+  analyzeMints(mints) {
+    const analysis = {
+      total: mints.length,
+      successful: 0,
+      failed: 0,
+      pending: 0,
+      totalTokensMinted: 0,
+      byChain: {},
+      byContract: {},
+      byStatus: {},
+      topRecipients: {},
+      dailyVolume: {},
+      averageAmount: 0
+    };
+
+    mints.forEach(mint => {
+      // Status analysis
+      analysis.byStatus[mint.status] = (analysis.byStatus[mint.status] || 0) + 1;
+      
+      if (mint.status === 'SUCCEEDED') {
+        analysis.successful++;
+        analysis.totalTokensMinted += mint.destination.amount;
+      } else if (mint.status === 'FAILED') {
+        analysis.failed++;
+      } else if (mint.status === 'PENDING') {
+        analysis.pending++;
+      }
+
+      // Chain analysis
+      analysis.byChain[mint.chain] = (analysis.byChain[mint.chain] || 0) + 1;
+
+      // Contract analysis
+      analysis.byContract[mint.contractAddress] = (analysis.byContract[mint.contractAddress] || 0) + 1;
+
+      // Recipient analysis
+      const recipient = mint.destination.address;
+      analysis.topRecipients[recipient] = (analysis.topRecipients[recipient] || 0) + mint.destination.amount;
+
+      // Daily volume analysis
+      const date = mint.createdOn.split('T')[0];
+      if (!analysis.dailyVolume[date]) {
+        analysis.dailyVolume[date] = { count: 0, amount: 0 };
+      }
+      analysis.dailyVolume[date].count++;
+      if (mint.status === 'SUCCEEDED') {
+        analysis.dailyVolume[date].amount += mint.destination.amount;
+      }
+    });
+
+    // Calculate averages
+    analysis.averageAmount = analysis.successful > 0 ? analysis.totalTokensMinted / analysis.successful : 0;
+    analysis.successRate = analysis.total > 0 ? (analysis.successful / analysis.total * 100).toFixed(2) : 0;
+
+    // Sort top recipients
+    analysis.topRecipients = Object.entries(analysis.topRecipients)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 10)
+      .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+
+    return analysis;
+  }
+
+  async getContractPerformance() {
+    const mints = await this.getAllMints();
+    const contractStats = {};
+
+    mints.forEach(mint => {
+      const contract = mint.contractAddress;
+      if (!contractStats[contract]) {
+        contractStats[contract] = {
+          total: 0,
+          successful: 0,
+          failed: 0,
+          pending: 0,
+          totalAmount: 0,
+          chain: mint.chain
+        };
+      }
+
+      contractStats[contract].total++;
+      contractStats[contract][mint.status.toLowerCase()]++;
+      
+      if (mint.status === 'SUCCEEDED') {
+        contractStats[contract].totalAmount += mint.destination.amount;
+      }
+    });
+
+    // Calculate success rates
+    Object.keys(contractStats).forEach(contract => {
+      const stats = contractStats[contract];
+      stats.successRate = stats.total > 0 ? (stats.successful / stats.total * 100).toFixed(2) : 0;
+      stats.averageAmount = stats.successful > 0 ? stats.totalAmount / stats.successful : 0;
+    });
+
+    return contractStats;
+  }
+}
+
+// Usage
+const analytics = new MintAnalytics('YOUR_API_KEY');
+
+// Generate monthly report
+const monthlyReport = await analytics.generateReport(
+  '2024-01-01T00:00:00Z',
+  '2024-01-31T23:59:59Z'
+);
+
+console.log('Monthly Report:', monthlyReport);
+
+// Get contract performance
+const contractPerformance = await analytics.getContractPerformance();
+console.log('Contract Performance:', contractPerformance);
+```
+
+```python Python
+import requests
+from collections import defaultdict
+from datetime import datetime
+from urllib.parse import urlencode
+
+class MintAnalytics:
+    def __init__(self, api_key):
+        self.api_key = api_key
+    
+    def get_all_mints(self):
+        """Get all mints"""
+        response = requests.get(
+            '/api/v3/erc20/tokens/mints',
+            headers={'Authorization': f'Bearer {self.api_key}'}
+        )
+        return response.json()['result']
+    
+    def generate_report(self, date_from, date_to):
+        """Generate comprehensive mint report"""
+        params = {
+            'createdOnFrom': date_from,
+            'createdOnTo': date_to,
+            'size': 1000
+        }
+        
+        response = requests.get(
+            f'/api/v3/erc20/tokens/mints?{urlencode(params)}',
+            headers={'Authorization': f'Bearer {self.api_key}'}
+        )
+        
+        mints = response.json()['result']
+        return self.analyze_mints(mints)
+    
+    def analyze_mints(self, mints):
+        """Analyze mint data"""
+        analysis = {
+            'total': len(mints),
+            'successful': 0,
+            'failed': 0,
+            'pending': 0,
+            'total_tokens_minted': 0,
+            'by_chain': defaultdict(int),
+            'by_contract': defaultdict(int),
+            'by_status': defaultdict(int),
+            'top_recipients': defaultdict(int),
+            'daily_volume': defaultdict(lambda: {'count': 0, 'amount': 0}),
+            'average_amount': 0
+        }
+        
+        for mint in mints:
+            # Status analysis
+            status = mint['status']
+            analysis['by_status'][status] += 1
+            
+            if status == 'SUCCEEDED':
+                analysis['successful'] += 1
+                analysis['total_tokens_minted'] += mint['destination']['amount']
+            elif status == 'FAILED':
+                analysis['failed'] += 1
+            elif status == 'PENDING':
+                analysis['pending'] += 1
+            
+            # Chain analysis
+            analysis['by_chain'][mint['chain']] += 1
+            
+            # Contract analysis
+            analysis['by_contract'][mint['contractAddress']] += 1
+            
+            # Recipient analysis
+            recipient = mint['destination']['address']
+            analysis['top_recipients'][recipient] += mint['destination']['amount']
+            
+            # Daily volume analysis
+            date = mint['createdOn'].split('T')[0]
+            analysis['daily_volume'][date]['count'] += 1
+            if status == 'SUCCEEDED':
+                analysis['daily_volume'][date]['amount'] += mint['destination']['amount']
+        
+        # Calculate averages and rates
+        if analysis['successful'] > 0:
+            analysis['average_amount'] = analysis['total_tokens_minted'] / analysis['successful']
+        
+        if analysis['total'] > 0:
+            analysis['success_rate'] = round(analysis['successful'] / analysis['total'] * 100, 2)
+        
+        # Convert defaultdicts to regular dicts and sort top recipients
+        analysis['by_chain'] = dict(analysis['by_chain'])
+        analysis['by_contract'] = dict(analysis['by_contract'])
+        analysis['by_status'] = dict(analysis['by_status'])
+        analysis['daily_volume'] = dict(analysis['daily_volume'])
+        
+        # Sort top recipients
+        analysis['top_recipients'] = dict(
+            sorted(analysis['top_recipients'].items(), key=lambda x: x[1], reverse=True)[:10]
+        )
+        
+        return analysis
+
+# Usage
+analytics = MintAnalytics('YOUR_API_KEY')
+
+# Generate monthly report
+monthly_report = analytics.generate_report(
+    '2024-01-01T00:00:00Z',
+    '2024-01-31T23:59:59Z'
+)
+
+print('Monthly Report:', monthly_report)
+```
+</CodeGroup>
+
+## Pagination & Large Datasets
+
+<AccordionGroup>
+  <Accordion title="Efficient Pagination" icon="pages">
+    **Handle large datasets with pagination:**
+    
+    ```javascript
+    async function getAllMintsWithPagination(apiKey, filters = {}) {
+      const allMints = [];
+      let page = 1;
+      const size = 100; // Adjust based on your needs
+      let hasMore = true;
+      
+      while (hasMore) {
+        const params = new URLSearchParams({
+          ...filters,
+          page: page.toString(),
+          size: size.toString()
+        });
+        
+        try {
+          const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+            headers: { 'Authorization': `Bearer ${apiKey}` }
+          });
+          
+          const data = await response.json();
+          const mints = data.result;
+          
+          if (mints.length === 0) {
+            hasMore = false;
+          } else {
+            allMints.push(...mints);
+            page++;
+            
+            // If we got fewer results than requested, we've reached the end
+            if (mints.length < size) {
+              hasMore = false;
+            }
+          }
+          
+          console.log(`Loaded page ${page - 1}, total mints: ${allMints.length}`);
+          
+        } catch (error) {
+          console.error('Error fetching page:', error);
+          hasMore = false;
+        }
+      }
+      
+      return allMints;
+    }
+    
+    // Usage
+    const allMints = await getAllMintsWithPagination('YOUR_API_KEY', {
+      status: 'SUCCEEDED',
+      createdOnFrom: '2024-01-01T00:00:00Z'
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Streaming Data Processing" icon="stream">
+    **Process large datasets efficiently:**
+    
+    ```javascript
+    class MintDataProcessor {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+      }
+      
+      async processMintsInBatches(filters, batchSize = 100, processor) {
+        let page = 1;
+        let hasMore = true;
+        let totalProcessed = 0;
+        
+        while (hasMore) {
+          const params = new URLSearchParams({
+            ...filters,
+            page: page.toString(),
+            size: batchSize.toString()
+          });
+          
+          try {
+            const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+              headers: { 'Authorization': `Bearer ${this.apiKey}` }
+            });
+            
+            const data = await response.json();
+            const mints = data.result;
+            
+            if (mints.length === 0) {
+              hasMore = false;
+            } else {
+              // Process this batch
+              await processor(mints, page);
+              totalProcessed += mints.length;
+              
+              console.log(`Processed batch ${page}, items: ${mints.length}, total: ${totalProcessed}`);
+              
+              page++;
+              
+              if (mints.length < batchSize) {
+                hasMore = false;
+              }
+            }
+          } catch (error) {
+            console.error('Error processing batch:', error);
+            hasMore = false;
+          }
+        }
+        
+        return totalProcessed;
+      }
+    }
+    
+    // Usage - Export to CSV in batches
+    const processor = new MintDataProcessor('YOUR_API_KEY');
+    
+    let csvContent = 'ID,Chain,Contract,Created,Status,Amount,Recipient\n';
+    
+    await processor.processMintsInBatches(
+      { status: 'SUCCEEDED' },
+      50,
+      async (mints, page) => {
+        mints.forEach(mint => {
+          csvContent += [
+            mint.id,
+            mint.chain,
+            mint.contractAddress,
+            mint.createdOn,
+            mint.status,
+            mint.destination.amount,
+            mint.destination.address
+          ].join(',') + '\n';
+        });
+        
+        // Optionally save intermediate results
+        if (page % 10 === 0) {
+          console.log(`Processed ${page * 50} mints so far...`);
+        }
+      }
+    );
+    
+    console.log('CSV export complete');
+    ```
+  </Accordion>
+  
+  <Accordion title="Real-time Monitoring" icon="eye">
+    **Monitor mint operations in real-time:**
+    
+    ```javascript
+    class MintMonitor {
+      constructor(apiKey, pollInterval = 30000) {
+        this.apiKey = apiKey;
+        this.pollInterval = pollInterval;
+        this.isMonitoring = false;
+        this.lastCheck = new Date();
+      }
+      
+      async startMonitoring(callback) {
+        this.isMonitoring = true;
+        console.log('Starting mint monitoring...');
+        
+        while (this.isMonitoring) {
+          try {
+            await this.checkForNewMints(callback);
+            await this.sleep(this.pollInterval);
+          } catch (error) {
+            console.error('Monitoring error:', error);
+            await this.sleep(this.pollInterval);
+          }
+        }
+      }
+      
+      async checkForNewMints(callback) {
+        const params = new URLSearchParams({
+          createdOnFrom: this.lastCheck.toISOString(),
+          sortOn: 'createdOn',
+          sortOrder: 'desc',
+          size: '50'
+        });
+        
+        const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        const newMints = data.result;
+        
+        if (newMints.length > 0) {
+          console.log(`Found ${newMints.length} new mints`);
+          await callback(newMints);
+          this.lastCheck = new Date();
+        }
+      }
+      
+      stopMonitoring() {
+        this.isMonitoring = false;
+        console.log('Stopping mint monitoring...');
+      }
+      
+      sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+    
+    // Usage
+    const monitor = new MintMonitor('YOUR_API_KEY', 30000); // Check every 30 seconds
+    
+    monitor.startMonitoring(async (newMints) => {
+      newMints.forEach(mint => {
+        console.log(`New mint: ${mint.id} - ${mint.status} - ${mint.destination.amount} tokens`);
+        
+        if (mint.status === 'FAILED') {
+          console.log('⚠️ Failed mint detected, investigating...');
+          // Handle failed mint
+        }
+      });
+    });
+    
+    // Stop monitoring after some time
+    setTimeout(() => monitor.stopMonitoring(), 300000); // Stop after 5 minutes
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<Tabs>
+  <Tab title="React Dashboard">
+    ```javascript
+    import React, { useState, useEffect } from 'react';
+    
+    function MintDashboard() {
+      const [mints, setMints] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [filters, setFilters] = useState({
+        status: 'all',
+        chain: 'all',
+        dateFrom: '',
+        dateTo: ''
+      });
+      const [stats, setStats] = useState({});
+    
+      useEffect(() => {
+        loadMints();
+      }, [filters]);
+    
+      const loadMints = async () => {
+        setLoading(true);
+        try {
+          const params = new URLSearchParams();
+          
+          if (filters.status !== 'all') params.append('status', filters.status);
+          if (filters.chain !== 'all') params.append('chain', filters.chain);
+          if (filters.dateFrom) params.append('createdOnFrom', filters.dateFrom);
+          if (filters.dateTo) params.append('createdOnTo', filters.dateTo);
+          
+          params.append('size', '100');
+          params.append('sortOn', 'createdOn');
+          params.append('sortOrder', 'desc');
+          
+          const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+            headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
+          });
+          
+          const data = await response.json();
+          setMints(data.result);
+          calculateStats(data.result);
+        } catch (error) {
+          console.error('Failed to load mints:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      const calculateStats = (mintsData) => {
+        const stats = {
+          total: mintsData.length,
+          successful: mintsData.filter(m => m.status === 'SUCCEEDED').length,
+          failed: mintsData.filter(m => m.status === 'FAILED').length,
+          pending: mintsData.filter(m => m.status === 'PENDING').length,
+          totalAmount: mintsData
+            .filter(m => m.status === 'SUCCEEDED')
+            .reduce((sum, m) => sum + m.destination.amount, 0)
+        };
+        
+        stats.successRate = stats.total > 0 ? (stats.successful / stats.total * 100).toFixed(1) : 0;
+        setStats(stats);
+      };
+    
+      if (loading) return <div>Loading mints...</div>;
+    
+      return (
+        <div className="mint-dashboard">
+          <div className="stats-grid">
+            <div className="stat-card">
+              <h3>Total Mints</h3>
+              <p>{stats.total}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Success Rate</h3>
+              <p>{stats.successRate}%</p>
+            </div>
+            <div className="stat-card">
+              <h3>Total Tokens</h3>
+              <p>{stats.totalAmount?.toLocaleString()}</p>
+            </div>
+            <div className="stat-card">
+              <h3>Failed Mints</h3>
+              <p>{stats.failed}</p>
+            </div>
+          </div>
+    
+          <div className="filters">
+            <select 
+              value={filters.status} 
+              onChange={(e) => setFilters({...filters, status: e.target.value})}
+            >
+              <option value="all">All Status</option>
+              <option value="SUCCEEDED">Succeeded</option>
+              <option value="FAILED">Failed</option>
+              <option value="PENDING">Pending</option>
+            </select>
+            
+            <input
+              type="datetime-local"
+              value={filters.dateFrom}
+              onChange={(e) => setFilters({...filters, dateFrom: e.target.value})}
+              placeholder="From Date"
+            />
+            
+            <input
+              type="datetime-local"
+              value={filters.dateTo}
+              onChange={(e) => setFilters({...filters, dateTo: e.target.value})}
+              placeholder="To Date"
+            />
+          </div>
+    
+          <div className="mint-list">
+            {mints.map(mint => (
+              <div key={mint.id} className={`mint-item ${mint.status.toLowerCase()}`}>
+                <div className="mint-header">
+                  <span className="mint-id">{mint.id}</span>
+                  <span className={`status ${mint.status.toLowerCase()}`}>{mint.status}</span>
+                </div>
+                <div className="mint-details">
+                  <p><strong>Chain:</strong> {mint.chain}</p>
+                  <p><strong>Amount:</strong> {mint.destination.amount.toLocaleString()}</p>
+                  <p><strong>Recipient:</strong> {mint.destination.address}</p>
+                  <p><strong>Created:</strong> {new Date(mint.createdOn).toLocaleString()}</p>
+                  {mint.transactionHash && (
+                    <p><strong>Transaction:</strong> 
+                      <a href={`https://explorer.com/tx/${mint.transactionHash}`} target="_blank" rel="noopener noreferrer">
+                        {mint.transactionHash.slice(0, 10)}...
+                      </a>
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    export default MintDashboard;
+    ```
+  </Tab>
+  
+  <Tab title="Express.js API">
+    ```javascript
+    const express = require('express');
+    const app = express();
+    
+    // Get mints with advanced filtering
+    app.get('/api/mints', async (req, res) => {
+      try {
+        const {
+          status,
+          chain,
+          contractAddress,
+          dateFrom,
+          dateTo,
+          page = 1,
+          size = 50
+        } = req.query;
+        
+        // Build query parameters
+        const params = new URLSearchParams({
+          page: page.toString(),
+          size: size.toString(),
+          sortOn: 'createdOn',
+          sortOrder: 'desc'
+        });
+        
+        if (status && status !== 'all') params.append('status', status);
+        if (chain && chain !== 'all') params.append('chain', chain);
+        if (contractAddress) params.append('contractAddress', contractAddress);
+        if (dateFrom) params.append('createdOnFrom', dateFrom);
+        if (dateTo) params.append('createdOnTo', dateTo);
+        
+        const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+          headers: { 'Authorization': `Bearer ${process.env.API_KEY}` }
+        });
+        
+        const data = await response.json();
+        
+        // Add analytics
+        const analytics = calculateMintAnalytics(data.result);
+        
+        res.json({
+          mints: data.result,
+          analytics,
+          pagination: {
+            page: parseInt(page),
+            size: parseInt(size),
+            hasMore: data.result.length === parseInt(size)
+          }
+        });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    // Get mint analytics
+    app.get('/api/mints/analytics', async (req, res) => {
+      try {
+        const { dateFrom, dateTo } = req.query;
+        
+        const params = new URLSearchParams({
+          size: '1000' // Get more data for analytics
+        });
+        
+        if (dateFrom) params.append('createdOnFrom', dateFrom);
+        if (dateTo) params.append('createdOnTo', dateTo);
+        
+        const response = await fetch(`/api/v3/erc20/tokens/mints?${params}`, {
+          headers: { 'Authorization': `Bearer ${process.env.API_KEY}` }
+        });
+        
+        const data = await response.json();
+        const analytics = calculateMintAnalytics(data.result);
+        
+        res.json(analytics);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    function calculateMintAnalytics(mints) {
+      const analytics = {
+        total: mints.length,
+        successful: 0,
+        failed: 0,
+        pending: 0,
+        totalTokens: 0,
+        byChain: {},
+        byContract: {},
+        successRate: 0
+      };
+      
+      mints.forEach(mint => {
+        if (mint.status === 'SUCCEEDED') {
+          analytics.successful++;
+          analytics.totalTokens += mint.destination.amount;
+        } else if (mint.status === 'FAILED') {
+          analytics.failed++;
+        } else if (mint.status === 'PENDING') {
+          analytics.pending++;
+        }
+        
+        analytics.byChain[mint.chain] = (analytics.byChain[mint.chain] || 0) + 1;
+        analytics.byContract[mint.contractAddress] = (analytics.byContract[mint.contractAddress] || 0) + 1;
+      });
+      
+      analytics.successRate = analytics.total > 0 ? 
+        (analytics.successful / analytics.total * 100).toFixed(2) : 0;
+      
+      return analytics;
+    }
+    
+    app.listen(3000, () => {
+      console.log('Mint analytics API running on port 3000');
+    });
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Mint History Best Practices:**
+
+1. **Use Pagination** - Always use pagination for large datasets to avoid timeouts
+2. **Filter Strategically** - Use specific filters to reduce data transfer and improve performance
+3. **Cache Results** - Cache frequently accessed data to reduce API calls
+4. **Monitor Failed Mints** - Regularly check for failed mints and investigate causes
+5. **Date Range Limits** - Use reasonable date ranges to avoid overwhelming responses
+6. **Sort Consistently** - Use consistent sorting for predictable results
+7. **Handle Errors** - Implement robust error handling for network issues
+8. **Rate Limiting** - Respect API rate limits when processing large datasets
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Mint ERC20 Tokens" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Create new token mint requests
+  </Card>
+  <Card title="Check Mint Status" href="/guides/token-api/minting/check-erc20-token-mint-request" icon="clock">
+    Monitor individual mint request status
+  </Card>
+  <Card title="Contract Management" href="/guides/token-api/contracts/retrieve-erc20-token-contracts" icon="list">
+    Manage your ERC20 contracts
+  </Card>
+  <Card title="API Reference" href="/api-reference/Token-API/mint-erc20-tokens/get-all-erc20-token-mints" icon="book">
+    Explore the complete mint retrieval API documentation
+  </Card>
+</CardGroup>

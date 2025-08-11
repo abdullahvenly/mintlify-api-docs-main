@@ -1,0 +1,971 @@
+---
+title: "Configure PAY API Webhooks"
+description: "Set up webhook endpoints to receive real-time notifications for payment events and transaction updates"
+icon: "webhook"
+---
+
+<Warning>
+**API Deprecation Notice:** Configuring webhooks via API has been deprecated. Please use the [Venly Portal](https://portal.venly.io) to configure PAY webhooks instead.
+
+This guide is maintained for reference purposes and existing webhook management.
+</Warning>
+
+<Info>
+**Webhook Notifications:** Receive real-time notifications for payment events, transaction updates, and checkout completions through secure webhook endpoints.
+
+**Time required:** ~10 minutes
+</Info>
+
+## What are PAY API Webhooks?
+
+PAY API webhooks allow you to receive real-time notifications when payment events occur in your application. Instead of continuously polling for updates, webhooks push event data directly to your specified endpoint, enabling immediate response to payment completions, failures, and other transaction events.
+
+<CardGroup cols={2}>
+  <Card title="Real-time Notifications" icon="bell">
+    Instant updates when payments are processed
+  </Card>
+  <Card title="Secure Authentication" icon="shield">
+    Multiple authentication methods for endpoint security
+  </Card>
+  <Card title="Event-driven Architecture" icon="bolt">
+    Build responsive payment workflows
+  </Card>
+  <Card title="Stripe Integration" icon="credit-card">
+    Direct integration with Stripe webhook events
+  </Card>
+</CardGroup>
+
+## Why Use Webhooks?
+
+<Tabs>
+  <Tab title="Real-time Processing">
+    **Immediate Response**
+    - Instant payment confirmations
+    - Real-time order fulfillment
+    - Immediate user notifications
+    - Live dashboard updates
+  </Tab>
+  <Tab title="Reliability">
+    **Robust Event Handling**
+    - Guaranteed event delivery
+    - Automatic retry mechanisms
+    - Event deduplication
+    - Failure handling strategies
+  </Tab>
+  <Tab title="Scalability">
+    **Efficient Architecture**
+    - No polling overhead
+    - Reduced API calls
+    - Event-driven workflows
+    - Asynchronous processing
+  </Tab>
+</Tabs>
+
+## Webhook Configuration (Portal Method)
+
+<Note>
+**Recommended Approach:** Use the [Venly Portal](https://portal.venly.io) to configure webhooks. This is the current supported method for webhook management.
+</Note>
+
+<Steps>
+  <Step title="Access Portal" icon="sign-in">
+    Log in to the [Venly Portal](https://portal.venly.io) with your account credentials
+  </Step>
+  <Step title="Navigate to Webhooks" icon="webhook">
+    Go to the PAY API section and select "Webhooks" from the menu
+  </Step>
+  <Step title="Add Webhook Endpoint" icon="plus">
+    Click "Add Webhook" and enter your endpoint URL and authentication details
+  </Step>
+  <Step title="Configure Events" icon="gear">
+    Select which payment events you want to receive notifications for
+  </Step>
+  <Step title="Test Configuration" icon="check">
+    Use the test functionality to verify your webhook endpoint is working
+  </Step>
+</Steps>
+
+## Legacy API Reference
+
+<Warning>
+**Deprecated:** The following API endpoints are deprecated but maintained for reference and existing integrations.
+</Warning>
+
+### Create Webhook (Deprecated)
+
+<CodeGroup>
+```javascript JavaScript
+// DEPRECATED - Use Portal instead
+const webhookData = {
+  url: "https://your-domain.com/webhook",
+  name: "PAY Webhook",
+  companyId: "your-company-id",
+  authenticationMethod: {
+    type: "API_KEY",
+    headerName: "X-API-Key",
+    apiKey: "your-secure-api-key"
+  }
+};
+
+const response = await fetch('/webhooks', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(webhookData)
+});
+
+const result = await response.json();
+console.log('Webhook created:', result);
+```
+
+```python Python
+# DEPRECATED - Use Portal instead
+import requests
+
+webhook_data = {
+    "url": "https://your-domain.com/webhook",
+    "name": "PAY Webhook",
+    "companyId": "your-company-id",
+    "authenticationMethod": {
+        "type": "BASIC_AUTHENTICATION",
+        "username": "webhook_user",
+        "password": "secure_password"
+    }
+}
+
+response = requests.post(
+    '/webhooks',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'},
+    json=webhook_data
+)
+
+result = response.json()
+print('Webhook created:', result)
+```
+
+```bash cURL
+# DEPRECATED - Use Portal instead
+curl -X POST '/webhooks' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://your-domain.com/webhook",
+    "name": "PAY Webhook",
+    "companyId": "your-company-id",
+    "authenticationMethod": {
+      "type": "API_KEY",
+      "headerName": "X-API-Key",
+      "apiKey": "your-secure-api-key"
+    }
+  }'
+```
+</CodeGroup>
+
+### Authentication Methods
+
+<Tabs>
+  <Tab title="API Key Authentication">
+    ```json
+    {
+      "authenticationMethod": {
+        "type": "API_KEY",
+        "headerName": "X-API-Key",
+        "apiKey": "your-secure-api-key"
+      }
+    }
+    ```
+    
+    **Best for:** Modern applications with custom authentication headers
+  </Tab>
+  <Tab title="Basic Authentication">
+    ```json
+    {
+      "authenticationMethod": {
+        "type": "BASIC_AUTHENTICATION",
+        "username": "webhook_user",
+        "password": "secure_password"
+      }
+    }
+    ```
+    
+    **Best for:** Simple setups with username/password authentication
+  </Tab>
+</Tabs>
+
+## Webhook Event Handling
+
+### Event Types
+
+<AccordionGroup>
+  <Accordion title="Payment Events" icon="credit-card">
+    **Core Payment Events:**
+    
+    - **`payment_intent.succeeded`** - Payment completed successfully
+    - **`payment_intent.payment_failed`** - Payment failed or declined
+    - **`payment_intent.canceled`** - Payment was canceled
+    - **`payment_intent.processing`** - Payment is being processed
+    
+    **Event Structure:**
+    ```json
+    {
+      "id": "evt_3OG0NzFdbOilQPiZ0ncL2Bpn",
+      "object": "event",
+      "type": "payment_intent.succeeded",
+      "data": {
+        "object": {
+          "id": "pi_3OG0NzFdbOilQPiZ0nIyEeCl",
+          "amount": 76000,
+          "currency": "eur",
+          "status": "succeeded",
+          "charges": { /* charge details */ }
+        }
+      },
+      "created": 1700836181
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Charge Events" icon="bolt">
+    **Charge-related Events:**
+    
+    - **`charge.succeeded`** - Charge was successful
+    - **`charge.failed`** - Charge failed
+    - **`charge.refunded`** - Charge was refunded
+    - **`charge.dispute.created`** - Dispute was created
+    
+    **Processing Logic:**
+    ```javascript
+    function handleChargeEvent(event) {
+      const charge = event.data.object;
+      
+      switch (event.type) {
+        case 'charge.succeeded':
+          return processSuccessfulCharge(charge);
+        case 'charge.failed':
+          return handleFailedCharge(charge);
+        case 'charge.refunded':
+          return processRefund(charge);
+        default:
+          console.log(`Unhandled charge event: ${event.type}`);
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Customer Events" icon="user">
+    **Customer-related Events:**
+    
+    - **`customer.created`** - New customer created
+    - **`customer.updated`** - Customer information updated
+    - **`customer.deleted`** - Customer was deleted
+    
+    **Customer Data:**
+    ```json
+    {
+      "type": "customer.created",
+      "data": {
+        "object": {
+          "id": "cus_customer_id",
+          "email": "customer@example.com",
+          "created": 1700836181,
+          "metadata": {}
+        }
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Webhook Endpoint Implementation
+
+<CodeGroup>
+```javascript Express.js
+const express = require('express');
+const crypto = require('crypto');
+const app = express();
+
+// Middleware for raw body parsing (needed for signature verification)
+app.use('/webhook', express.raw({ type: 'application/json' }));
+
+// Webhook endpoint
+app.post('/webhook', (req, res) => {
+  const sig = req.get('stripe-signature');
+  const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  
+  let event;
+  
+  try {
+    // Verify webhook signature
+    event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+  } catch (err) {
+    console.error('Webhook signature verification failed:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+  
+  // Handle the event
+  switch (event.type) {
+    case 'payment_intent.succeeded':
+      handlePaymentSuccess(event.data.object);
+      break;
+    case 'payment_intent.payment_failed':
+      handlePaymentFailure(event.data.object);
+      break;
+    case 'charge.dispute.created':
+      handleDispute(event.data.object);
+      break;
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+  
+  res.json({ received: true });
+});
+
+async function handlePaymentSuccess(paymentIntent) {
+  console.log('Payment succeeded:', paymentIntent.id);
+  
+  // Update order status
+  await updateOrderStatus(paymentIntent.metadata.orderId, 'paid');
+  
+  // Send confirmation email
+  await sendConfirmationEmail(paymentIntent);
+  
+  // Trigger fulfillment
+  await triggerFulfillment(paymentIntent);
+}
+
+async function handlePaymentFailure(paymentIntent) {
+  console.log('Payment failed:', paymentIntent.id);
+  
+  // Update order status
+  await updateOrderStatus(paymentIntent.metadata.orderId, 'failed');
+  
+  // Send failure notification
+  await sendFailureNotification(paymentIntent);
+}
+
+app.listen(3000, () => {
+  console.log('Webhook server running on port 3000');
+});
+```
+
+```python Flask
+from flask import Flask, request, jsonify
+import stripe
+import os
+import json
+
+app = Flask(__name__)
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    payload = request.get_data()
+    sig_header = request.headers.get('Stripe-Signature')
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return jsonify({'error': 'Invalid payload'}), 400
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return jsonify({'error': 'Invalid signature'}), 400
+    
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        handle_payment_success(event['data']['object'])
+    elif event['type'] == 'payment_intent.payment_failed':
+        handle_payment_failure(event['data']['object'])
+    elif event['type'] == 'charge.dispute.created':
+        handle_dispute(event['data']['object'])
+    else:
+        print(f'Unhandled event type: {event["type"]}')
+    
+    return jsonify({'status': 'success'})
+
+def handle_payment_success(payment_intent):
+    print(f'Payment succeeded: {payment_intent["id"]}')
+    
+    # Update order status
+    update_order_status(payment_intent['metadata'].get('order_id'), 'paid')
+    
+    # Send confirmation email
+    send_confirmation_email(payment_intent)
+    
+    # Trigger fulfillment
+    trigger_fulfillment(payment_intent)
+
+def handle_payment_failure(payment_intent):
+    print(f'Payment failed: {payment_intent["id"]}')
+    
+    # Update order status
+    update_order_status(payment_intent['metadata'].get('order_id'), 'failed')
+    
+    # Send failure notification
+    send_failure_notification(payment_intent)
+
+if __name__ == '__main__':
+    app.run(port=3000)
+```
+
+```php PHP
+<?php
+require_once 'vendor/autoload.php';
+
+\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+$endpoint_secret = $_ENV['STRIPE_WEBHOOK_SECRET'];
+
+$payload = @file_get_contents('php://input');
+$sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+
+try {
+    $event = \Stripe\Webhook::constructEvent(
+        $payload, $sig_header, $endpoint_secret
+    );
+} catch(\UnexpectedValueException $e) {
+    // Invalid payload
+    http_response_code(400);
+    exit();
+} catch(\Stripe\Exception\SignatureVerificationException $e) {
+    // Invalid signature
+    http_response_code(400);
+    exit();
+}
+
+// Handle the event
+switch ($event->type) {
+    case 'payment_intent.succeeded':
+        handlePaymentSuccess($event->data->object);
+        break;
+    case 'payment_intent.payment_failed':
+        handlePaymentFailure($event->data->object);
+        break;
+    case 'charge.dispute.created':
+        handleDispute($event->data->object);
+        break;
+    default:
+        echo 'Received unknown event type ' . $event->type;
+}
+
+function handlePaymentSuccess($paymentIntent) {
+    error_log('Payment succeeded: ' . $paymentIntent->id);
+    
+    // Update order status
+    updateOrderStatus($paymentIntent->metadata->order_id, 'paid');
+    
+    // Send confirmation email
+    sendConfirmationEmail($paymentIntent);
+    
+    // Trigger fulfillment
+    triggerFulfillment($paymentIntent);
+}
+
+function handlePaymentFailure($paymentIntent) {
+    error_log('Payment failed: ' . $paymentIntent->id);
+    
+    // Update order status
+    updateOrderStatus($paymentIntent->metadata->order_id, 'failed');
+    
+    // Send failure notification
+    sendFailureNotification($paymentIntent);
+}
+
+http_response_code(200);
+?>
+```
+</CodeGroup>
+
+## Advanced Webhook Management
+
+<AccordionGroup>
+  <Accordion title="Webhook Security" icon="shield">
+    **Implement robust security measures:**
+    
+    ```javascript
+    class WebhookSecurity {
+      constructor(endpointSecret) {
+        this.endpointSecret = endpointSecret;
+        this.processedEvents = new Set();
+      }
+    
+      verifySignature(payload, signature) {
+        const elements = signature.split(',');
+        const signatureElements = {};
+        
+        elements.forEach(element => {
+          const [key, value] = element.split('=');
+          signatureElements[key] = value;
+        });
+        
+        const timestamp = signatureElements.t;
+        const signatures = [signatureElements.v1];
+        
+        // Check timestamp (prevent replay attacks)
+        const timestampThreshold = 300; // 5 minutes
+        const currentTime = Math.floor(Date.now() / 1000);
+        
+        if (currentTime - timestamp > timestampThreshold) {
+          throw new Error('Webhook timestamp too old');
+        }
+        
+        // Verify signature
+        const payloadForSignature = timestamp + '.' + payload;
+        const expectedSignature = crypto
+          .createHmac('sha256', this.endpointSecret)
+          .update(payloadForSignature, 'utf8')
+          .digest('hex');
+        
+        const signatureMatches = signatures.some(sig => 
+          crypto.timingSafeEqual(
+            Buffer.from(expectedSignature, 'hex'),
+            Buffer.from(sig, 'hex')
+          )
+        );
+        
+        if (!signatureMatches) {
+          throw new Error('Invalid webhook signature');
+        }
+        
+        return true;
+      }
+    
+      preventReplay(eventId) {
+        if (this.processedEvents.has(eventId)) {
+          throw new Error('Event already processed');
+        }
+        
+        this.processedEvents.add(eventId);
+        
+        // Clean up old events (prevent memory leak)
+        if (this.processedEvents.size > 10000) {
+          const eventsArray = Array.from(this.processedEvents);
+          this.processedEvents = new Set(eventsArray.slice(-5000));
+        }
+      }
+    
+      validateEventStructure(event) {
+        const requiredFields = ['id', 'object', 'type', 'data', 'created'];
+        
+        for (const field of requiredFields) {
+          if (!event[field]) {
+            throw new Error(`Missing required field: ${field}`);
+          }
+        }
+        
+        if (event.object !== 'event') {
+          throw new Error('Invalid event object type');
+        }
+        
+        return true;
+      }
+    }
+    
+    // Usage
+    const webhookSecurity = new WebhookSecurity(process.env.STRIPE_WEBHOOK_SECRET);
+    
+    app.post('/webhook', (req, res) => {
+      try {
+        // Verify signature
+        webhookSecurity.verifySignature(req.body, req.get('stripe-signature'));
+        
+        const event = JSON.parse(req.body);
+        
+        // Validate event structure
+        webhookSecurity.validateEventStructure(event);
+        
+        // Prevent replay attacks
+        webhookSecurity.preventReplay(event.id);
+        
+        // Process event
+        processWebhookEvent(event);
+        
+        res.json({ received: true });
+      } catch (error) {
+        console.error('Webhook security error:', error.message);
+        res.status(400).json({ error: error.message });
+      }
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Event Processing Queue" icon="list">
+    **Implement reliable event processing:**
+    
+    ```javascript
+    const Queue = require('bull');
+    const webhookQueue = new Queue('webhook processing');
+    
+    class WebhookProcessor {
+      constructor() {
+        this.setupQueue();
+      }
+    
+      setupQueue() {
+        // Process webhook events
+        webhookQueue.process('payment_event', async (job) => {
+          const { event } = job.data;
+          return this.processPaymentEvent(event);
+        });
+        
+        // Handle failed jobs
+        webhookQueue.on('failed', (job, err) => {
+          console.error(`Webhook job ${job.id} failed:`, err);
+          this.handleFailedJob(job, err);
+        });
+        
+        // Handle completed jobs
+        webhookQueue.on('completed', (job) => {
+          console.log(`Webhook job ${job.id} completed`);
+        });
+      }
+    
+      async queueEvent(event) {
+        const jobOptions = {
+          attempts: 3,
+          backoff: {
+            type: 'exponential',
+            delay: 2000
+          },
+          removeOnComplete: 100,
+          removeOnFail: 50
+        };
+        
+        await webhookQueue.add('payment_event', { event }, jobOptions);
+      }
+    
+      async processPaymentEvent(event) {
+        console.log(`Processing event: ${event.type} (${event.id})`);
+        
+        switch (event.type) {
+          case 'payment_intent.succeeded':
+            return this.handlePaymentSuccess(event.data.object);
+          case 'payment_intent.payment_failed':
+            return this.handlePaymentFailure(event.data.object);
+          case 'charge.dispute.created':
+            return this.handleDispute(event.data.object);
+          default:
+            console.log(`Unhandled event type: ${event.type}`);
+            return { status: 'ignored' };
+        }
+      }
+    
+      async handlePaymentSuccess(paymentIntent) {
+        // Idempotent processing
+        const existingRecord = await this.findExistingPayment(paymentIntent.id);
+        if (existingRecord && existingRecord.status === 'processed') {
+          return { status: 'already_processed' };
+        }
+        
+        // Process payment
+        await this.updateOrderStatus(paymentIntent.metadata.orderId, 'paid');
+        await this.sendConfirmationEmail(paymentIntent);
+        await this.triggerFulfillment(paymentIntent);
+        
+        // Mark as processed
+        await this.markPaymentProcessed(paymentIntent.id);
+        
+        return { status: 'processed' };
+      }
+    
+      async handleFailedJob(job, error) {
+        const { event } = job.data;
+        
+        // Log failure
+        console.error(`Failed to process event ${event.id}:`, error);
+        
+        // Send alert if all retries exhausted
+        if (job.attemptsMade >= job.opts.attempts) {
+          await this.sendFailureAlert(event, error);
+        }
+      }
+    
+      async sendFailureAlert(event, error) {
+        // Send alert to monitoring system
+        console.error('ALERT: Webhook processing failed permanently', {
+          eventId: event.id,
+          eventType: event.type,
+          error: error.message
+        });
+      }
+    }
+    
+    // Usage
+    const processor = new WebhookProcessor();
+    
+    app.post('/webhook', async (req, res) => {
+      try {
+        const event = JSON.parse(req.body);
+        
+        // Queue event for processing
+        await processor.queueEvent(event);
+        
+        res.json({ received: true });
+      } catch (error) {
+        console.error('Webhook queueing error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+    ```
+  </Accordion>
+  
+  <Accordion title="Webhook Testing" icon="flask">
+    **Test webhook implementations thoroughly:**
+    
+    ```javascript
+    class WebhookTester {
+      constructor(webhookUrl, authMethod) {
+        this.webhookUrl = webhookUrl;
+        this.authMethod = authMethod;
+      }
+    
+      async testWebhookEndpoint() {
+        const testEvents = [
+          this.createTestEvent('payment_intent.succeeded'),
+          this.createTestEvent('payment_intent.payment_failed'),
+          this.createTestEvent('charge.dispute.created')
+        ];
+        
+        const results = [];
+        
+        for (const event of testEvents) {
+          try {
+            const result = await this.sendTestEvent(event);
+            results.push({
+              eventType: event.type,
+              status: 'success',
+              response: result
+            });
+          } catch (error) {
+            results.push({
+              eventType: event.type,
+              status: 'failed',
+              error: error.message
+            });
+          }
+        }
+        
+        return this.generateTestReport(results);
+      }
+    
+      createTestEvent(eventType) {
+        const baseEvent = {
+          id: `evt_test_${Date.now()}`,
+          object: 'event',
+          api_version: '2020-08-27',
+          created: Math.floor(Date.now() / 1000),
+          livemode: false,
+          pending_webhooks: 1,
+          request: {
+            id: `req_test_${Date.now()}`,
+            idempotency_key: null
+          },
+          type: eventType
+        };
+        
+        switch (eventType) {
+          case 'payment_intent.succeeded':
+            baseEvent.data = {
+              object: {
+                id: 'pi_test_succeeded',
+                object: 'payment_intent',
+                amount: 2000,
+                currency: 'usd',
+                status: 'succeeded',
+                metadata: { orderId: 'test_order_123' }
+              }
+            };
+            break;
+            
+          case 'payment_intent.payment_failed':
+            baseEvent.data = {
+              object: {
+                id: 'pi_test_failed',
+                object: 'payment_intent',
+                amount: 2000,
+                currency: 'usd',
+                status: 'requires_payment_method',
+                last_payment_error: {
+                  code: 'card_declined',
+                  message: 'Your card was declined.'
+                }
+              }
+            };
+            break;
+            
+          case 'charge.dispute.created':
+            baseEvent.data = {
+              object: {
+                id: 'dp_test_dispute',
+                object: 'dispute',
+                amount: 2000,
+                currency: 'usd',
+                reason: 'fraudulent',
+                status: 'warning_needs_response'
+              }
+            };
+            break;
+        }
+        
+        return baseEvent;
+      }
+    
+      async sendTestEvent(event) {
+        const headers = {
+          'Content-Type': 'application/json',
+          'User-Agent': 'Stripe/1.0 (+https://stripe.com/docs/webhooks)'
+        };
+        
+        // Add authentication headers
+        if (this.authMethod.type === 'API_KEY') {
+          headers[this.authMethod.headerName] = this.authMethod.apiKey;
+        } else if (this.authMethod.type === 'BASIC_AUTHENTICATION') {
+          const credentials = Buffer.from(
+            `${this.authMethod.username}:${this.authMethod.password}`
+          ).toString('base64');
+          headers['Authorization'] = `Basic ${credentials}`;
+        }
+        
+        const response = await fetch(this.webhookUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(event)
+        });
+        
+        return {
+          status: response.status,
+          statusText: response.statusText,
+          body: await response.text()
+        };
+      }
+    
+      generateTestReport(results) {
+        const successful = results.filter(r => r.status === 'success').length;
+        const failed = results.filter(r => r.status === 'failed').length;
+        
+        return {
+          summary: {
+            total: results.length,
+            successful,
+            failed,
+            successRate: (successful / results.length * 100).toFixed(2)
+          },
+          details: results,
+          recommendations: this.generateRecommendations(results)
+        };
+      }
+    
+      generateRecommendations(results) {
+        const recommendations = [];
+        
+        const failedResults = results.filter(r => r.status === 'failed');
+        
+        if (failedResults.length > 0) {
+          recommendations.push('Fix failed webhook endpoints before going live');
+        }
+        
+        if (results.some(r => r.response && r.response.status >= 500)) {
+          recommendations.push('Implement proper error handling for server errors');
+        }
+        
+        if (results.some(r => r.response && r.response.status === 401)) {
+          recommendations.push('Check webhook authentication configuration');
+        }
+        
+        return recommendations;
+      }
+    }
+    
+    // Usage
+    const tester = new WebhookTester('https://your-domain.com/webhook', {
+      type: 'API_KEY',
+      headerName: 'X-API-Key',
+      apiKey: 'your-test-key'
+    });
+    
+    const testReport = await tester.testWebhookEndpoint();
+    console.log('Webhook test report:', testReport);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Webhook Best Practices:**
+
+1. **Idempotency** - Handle duplicate events gracefully
+2. **Security** - Always verify webhook signatures
+3. **Reliability** - Implement retry mechanisms and queuing
+4. **Monitoring** - Log all webhook events and failures
+5. **Testing** - Thoroughly test webhook endpoints before production
+6. **Performance** - Respond quickly (within 20 seconds) to avoid retries
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Webhook not receiving events">
+    **Common causes:**
+    - Incorrect webhook URL
+    - Firewall blocking requests
+    - SSL certificate issues
+    - Authentication failures
+    
+    **Solution:** Verify URL accessibility, check SSL configuration, and validate authentication setup.
+  </Accordion>
+  
+  <Accordion title="Signature verification failed">
+    **Possible issues:**
+    - Wrong endpoint secret
+    - Modified request body
+    - Timestamp too old
+    - Incorrect signature calculation
+    
+    **Solution:** Verify endpoint secret, ensure raw body parsing, and check timestamp handling.
+  </Accordion>
+  
+  <Accordion title="Duplicate event processing">
+    **Common problems:**
+    - No idempotency checks
+    - Multiple webhook endpoints
+    - Retry mechanism issues
+    
+    **Solution:** Implement event ID tracking, ensure single endpoint per event type, and add idempotency keys.
+  </Accordion>
+  
+  <Accordion title="High webhook failure rate">
+    **Potential causes:**
+    - Server overload
+    - Database connection issues
+    - Long processing times
+    - Network connectivity problems
+    
+    **Solution:** Implement queuing, optimize processing logic, add monitoring, and ensure reliable infrastructure.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Portal Configuration" href="https://portal.venly.io" icon="gear">
+    Configure webhooks using the Venly Portal
+  </Card>
+  <Card title="Webhook Events" href="/PAY-API-Basic-Guides/webhooks-pay-api" icon="list">
+    Learn about specific webhook event types
+  </Card>
+  <Card title="Testing PAY" href="/PAY-API-Basic-Guides/testing-pay" icon="flask">
+    Test your PAY API integration
+  </Card>
+  <Card title="Stripe Documentation" href="https://stripe.com/docs/webhooks" icon="book">
+    View Stripe webhook documentation
+  </Card>
+</CardGroup>
+
+<Note>
+**Migration Notice:** If you're currently using the deprecated API endpoints, plan to migrate your webhook configuration to the Portal method. The API endpoints will be removed in a future version.
+</Note>

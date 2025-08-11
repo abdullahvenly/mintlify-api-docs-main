@@ -1,0 +1,1017 @@
+---
+title: "Delete ERC20 Token Contract"
+description: "Archive ERC20 token contracts to remove them from API responses while preserving blockchain data"
+icon: "trash"
+---
+
+<Info>
+**Contract Archival:** Archive ERC20 contracts to remove them from API responses while maintaining blockchain integrity.
+
+**Time required:** ~5 minutes
+</Info>
+
+## What is Contract Deletion/Archival?
+
+Contract deletion (archival) removes an ERC20 contract from all API responses, making it inaccessible through Venly's API while preserving the contract and its data on the blockchain. This is useful for cleaning up test contracts, discontinued projects, or organizing your contract portfolio.
+
+<CardGroup cols={2}>
+  <Card title="API Removal" icon="eye-slash">
+    Contract becomes invisible in API responses
+  </Card>
+  <Card title="Blockchain Preserved" icon="link">
+    Contract remains on blockchain permanently
+  </Card>
+  <Card title="Minting Disabled" icon="ban">
+    No new tokens can be minted
+  </Card>
+  <Card title="Immediate Effect" icon="bolt">
+    Changes take effect immediately
+  </Card>
+</CardGroup>
+
+## Why Archive Contracts?
+
+<Tabs>
+  <Tab title="Project Management">
+    **Organization Benefits**
+    - Clean up test contracts
+    - Remove discontinued projects
+    - Organize active contracts
+    - Simplify contract management
+  </Tab>
+  <Tab title="Development Lifecycle">
+    **Development Phases**
+    - Archive development contracts
+    - Remove staging environments
+    - Clean up after testing
+    - Prepare for production
+  </Tab>
+  <Tab title="Business Operations">
+    **Operational Reasons**
+    - End-of-life products
+    - Regulatory compliance
+    - Portfolio optimization
+    - Cost management
+  </Tab>
+</Tabs>
+
+## Important Considerations
+
+<Warning>
+**Critical Information:**
+- **Irreversible Action** - Archived contracts cannot be restored through the API
+- **Blockchain Persistence** - Contract remains on blockchain and is still functional
+- **Token Access** - All minted tokens become inaccessible via API
+- **Minting Disabled** - No new tokens can be minted through the API
+</Warning>
+
+<Steps>
+  <Step title="Contract Ownership" icon="crown">
+    You must be the current owner of the ERC20 contract
+  </Step>
+  <Step title="Impact Assessment" icon="exclamation-triangle">
+    Understand that all associated tokens will also be archived
+  </Step>
+  <Step title="Backup Data" icon="download">
+    Export any important contract or token data before archival
+  </Step>
+  <Step title="Confirm Decision" icon="check">
+    Ensure you want to permanently remove API access
+  </Step>
+</Steps>
+
+## Delete/Archive Contract
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+const chain = "MATIC";
+const contractAddress = "0x022a39f06413e249b3739c573bdb28b98eac051b";
+
+const response = await fetch(`/api/v3/erc20/contracts/${chain}/${contractAddress}`, {
+  method: 'DELETE',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+if (response.ok) {
+  console.log('Contract archived successfully');
+} else {
+  console.error('Failed to archive contract');
+}
+```
+
+```python Python
+import requests
+
+chain = "MATIC"
+contract_address = "0x022a39f06413e249b3739c573bdb28b98eac051b"
+
+response = requests.delete(
+    f'/api/v3/erc20/contracts/{chain}/{contract_address}',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+if response.status_code == 200:
+    print('Contract archived successfully')
+else:
+    print('Failed to archive contract')
+```
+
+```bash cURL
+curl -X DELETE '/api/v3/erc20/contracts/MATIC/0x022a39f06413e249b3739c573bdb28b98eac051b' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+</CodeGroup>
+
+### Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `chain` | string | ✅ | Blockchain identifier (MATIC, ETHEREUM, etc.) |
+| `contractAddress` | string | ✅ | ERC20 contract address to archive |
+
+<Tip>
+**Chain Identifiers:**
+- **MATIC** - Polygon network
+- **ETHEREUM** - Ethereum mainnet
+- **BSC** - Binance Smart Chain
+- **AVAC** - Avalanche network
+</Tip>
+
+### Response
+
+<Tabs>
+  <Tab title="Success Response">
+    ```http
+    HTTP/1.1 200 OK
+    ```
+    
+    **Success Indicators:**
+    - HTTP 200 OK status code
+    - Contract is immediately removed from API responses
+    - All associated tokens are also archived
+  </Tab>
+  <Tab title="Error Responses">
+    **Common Error Codes:**
+    - **404 Not Found** - Contract doesn't exist or already archived
+    - **403 Forbidden** - Not the contract owner
+    - **400 Bad Request** - Invalid parameters
+  </Tab>
+</Tabs>
+
+<Check>
+**Verification:** After successful archival, the contract will no longer appear in contract listing APIs or be accessible through contract retrieval endpoints.
+</Check>
+
+## Advanced Contract Management
+
+<AccordionGroup>
+  <Accordion title="Batch Contract Archival" icon="list">
+    **Archive multiple contracts efficiently:**
+    
+    ```javascript
+    class BatchContractArchiver {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.archivalQueue = [];
+        this.results = [];
+      }
+    
+      addContractToQueue(chain, contractAddress, metadata = {}) {
+        this.archivalQueue.push({
+          chain,
+          contractAddress,
+          metadata,
+          status: 'PENDING'
+        });
+      }
+    
+      async executeBatchArchival(options = {}) {
+        const { 
+          batchSize = 5, 
+          delayBetweenBatches = 10000,
+          continueOnError = true 
+        } = options;
+        
+        console.log(`Starting batch archival of ${this.archivalQueue.length} contracts`);
+        
+        for (let i = 0; i < this.archivalQueue.length; i += batchSize) {
+          const batch = this.archivalQueue.slice(i, i + batchSize);
+          
+          console.log(`Processing batch ${Math.floor(i / batchSize) + 1}...`);
+          
+          const batchPromises = batch.map(contract => 
+            this.archiveContract(contract).catch(error => ({
+              ...contract,
+              error: error.message,
+              status: 'FAILED'
+            }))
+          );
+          
+          const batchResults = await Promise.all(batchPromises);
+          this.results.push(...batchResults);
+          
+          // Update queue status
+          batch.forEach((contract, index) => {
+            contract.status = batchResults[index].status || 'ARCHIVED';
+            contract.result = batchResults[index];
+          });
+          
+          // Delay between batches
+          if (i + batchSize < this.archivalQueue.length) {
+            console.log(`Waiting ${delayBetweenBatches / 1000} seconds before next batch...`);
+            await new Promise(resolve => setTimeout(resolve, delayBetweenBatches));
+          }
+        }
+        
+        return this.generateBatchReport();
+      }
+    
+      async archiveContract(contract) {
+        try {
+          const response = await fetch(`/api/v3/erc20/contracts/${contract.chain}/${contract.contractAddress}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${this.apiKey}`
+            }
+          });
+          
+          if (response.ok) {
+            return {
+              ...contract,
+              status: 'ARCHIVED',
+              timestamp: new Date().toISOString()
+            };
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          throw new Error(`Archival failed for ${contract.contractAddress}: ${error.message}`);
+        }
+      }
+    
+      generateBatchReport() {
+        const successful = this.results.filter(r => r.status === 'ARCHIVED');
+        const failed = this.results.filter(r => r.status === 'FAILED');
+        
+        return {
+          total: this.results.length,
+          successful: successful.length,
+          failed: failed.length,
+          successRate: (successful.length / this.results.length * 100).toFixed(2),
+          results: this.results,
+          summary: {
+            archivedContracts: successful.map(r => ({
+              contract: r.contractAddress,
+              chain: r.chain,
+              metadata: r.metadata
+            })),
+            failedArchivals: failed.map(r => ({
+              contract: r.contractAddress,
+              error: r.error
+            }))
+          }
+        };
+      }
+    }
+    
+    // Usage
+    const archiver = new BatchContractArchiver('YOUR_API_KEY');
+    
+    // Add contracts to archival queue
+    archiver.addContractToQueue('MATIC', '0x123...', { project: 'TestTokenA' });
+    archiver.addContractToQueue('MATIC', '0x456...', { project: 'TestTokenB' });
+    archiver.addContractToQueue('ETHEREUM', '0x789...', { project: 'DevToken' });
+    
+    // Execute batch archival
+    const report = await archiver.executeBatchArchival({
+      batchSize: 3,
+      delayBetweenBatches: 15000,
+      continueOnError: true
+    });
+    
+    console.log('Batch archival report:', report);
+    ```
+  </Accordion>
+  
+  <Accordion title="Pre-Archival Data Export" icon="download">
+    **Export contract and token data before archival:**
+    
+    ```javascript
+    class ContractDataExporter {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+      }
+    
+      async exportContractData(chain, contractAddress, options = {}) {
+        const {
+          includeTokens = true,
+          includeMints = true,
+          includeMetadata = true,
+          format = 'json'
+        } = options;
+        
+        console.log(`Exporting data for contract ${contractAddress}...`);
+        
+        const exportData = {
+          contract: null,
+          tokens: [],
+          mints: [],
+          metadata: {},
+          exportTimestamp: new Date().toISOString()
+        };
+        
+        try {
+          // Export contract information
+          exportData.contract = await this.getContractInfo(chain, contractAddress);
+          
+          // Export tokens if requested
+          if (includeTokens) {
+            exportData.tokens = await this.getContractTokens(chain, contractAddress);
+          }
+          
+          // Export mint history if requested
+          if (includeMints) {
+            exportData.mints = await this.getContractMints(contractAddress);
+          }
+          
+          // Export metadata if requested
+          if (includeMetadata) {
+            exportData.metadata = await this.getContractMetadata(chain, contractAddress);
+          }
+          
+          // Format and return data
+          return this.formatExportData(exportData, format);
+          
+        } catch (error) {
+          throw new Error(`Export failed: ${error.message}`);
+        }
+      }
+    
+      async getContractInfo(chain, contractAddress) {
+        const response = await fetch(`/api/v3/erc20/contracts/${chain}/${contractAddress}`, {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        return data.result;
+      }
+    
+      async getContractTokens(chain, contractAddress) {
+        // This would typically involve querying blockchain or other APIs
+        // since archived tokens won't be available via API
+        console.log('Exporting token data...');
+        return []; // Placeholder
+      }
+    
+      async getContractMints(contractAddress) {
+        const response = await fetch(`/api/v3/erc20/tokens/mints?contractAddress=${contractAddress}`, {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        return data.result;
+      }
+    
+      async getContractMetadata(chain, contractAddress) {
+        // Export any additional metadata
+        return {
+          exportedAt: new Date().toISOString(),
+          chain,
+          contractAddress
+        };
+      }
+    
+      formatExportData(data, format) {
+        switch (format.toLowerCase()) {
+          case 'json':
+            return JSON.stringify(data, null, 2);
+          case 'csv':
+            return this.convertToCSV(data);
+          default:
+            return data;
+        }
+      }
+    
+      convertToCSV(data) {
+        // Convert contract data to CSV format
+        const csvLines = [];
+        
+        // Contract info
+        if (data.contract) {
+          csvLines.push('Contract Information');
+          csvLines.push(`Name,${data.contract.name}`);
+          csvLines.push(`Symbol,${data.contract.symbol}`);
+          csvLines.push(`Address,${data.contract.address}`);
+          csvLines.push(`Owner,${data.contract.owner}`);
+          csvLines.push('');
+        }
+        
+        // Mint history
+        if (data.mints && data.mints.length > 0) {
+          csvLines.push('Mint History');
+          csvLines.push('ID,Amount,Destination,Status,Created');
+          data.mints.forEach(mint => {
+            csvLines.push(`${mint.id},${mint.destination.amount},${mint.destination.address},${mint.status},${mint.createdOn}`);
+          });
+        }
+        
+        return csvLines.join('\n');
+      }
+    }
+    
+    // Usage
+    const exporter = new ContractDataExporter('YOUR_API_KEY');
+    
+    // Export contract data before archival
+    const exportedData = await exporter.exportContractData('MATIC', contractAddress, {
+      includeTokens: true,
+      includeMints: true,
+      format: 'json'
+    });
+    
+    // Save exported data
+    console.log('Exported data:', exportedData);
+    ```
+  </Accordion>
+  
+  <Accordion title="Archival Confirmation System" icon="shield-check">
+    **Implement confirmation system for safe archival:**
+    
+    ```javascript
+    class SafeContractArchiver {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.pendingArchivals = new Map();
+      }
+    
+      async initiateArchival(chain, contractAddress, reason = '') {
+        const archivalId = this.generateArchivalId();
+        
+        // Get contract information
+        const contractInfo = await this.getContractInfo(chain, contractAddress);
+        
+        // Create archival request
+        const archivalRequest = {
+          id: archivalId,
+          chain,
+          contractAddress,
+          contractInfo,
+          reason,
+          initiatedAt: Date.now(),
+          status: 'PENDING_CONFIRMATION',
+          confirmationRequired: true,
+          expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+        };
+        
+        this.pendingArchivals.set(archivalId, archivalRequest);
+        
+        // Send confirmation request
+        await this.sendConfirmationRequest(archivalRequest);
+        
+        return archivalRequest;
+      }
+    
+      async confirmArchival(archivalId, confirmationCode) {
+        const archival = this.pendingArchivals.get(archivalId);
+        
+        if (!archival) {
+          throw new Error('Archival request not found or expired');
+        }
+        
+        if (Date.now() > archival.expiresAt) {
+          this.pendingArchivals.delete(archivalId);
+          throw new Error('Archival request has expired');
+        }
+        
+        // Verify confirmation code
+        const expectedCode = this.generateConfirmationCode(archival);
+        if (confirmationCode !== expectedCode) {
+          throw new Error('Invalid confirmation code');
+        }
+        
+        // Export data before archival
+        console.log('Exporting contract data before archival...');
+        const exportedData = await this.exportContractData(archival);
+        
+        // Execute archival
+        const result = await this.executeArchival(archival);
+        
+        // Update status
+        archival.status = 'COMPLETED';
+        archival.completedAt = Date.now();
+        archival.exportedData = exportedData;
+        archival.result = result;
+        
+        // Clean up
+        this.pendingArchivals.delete(archivalId);
+        
+        return archival;
+      }
+    
+      async executeArchival(archival) {
+        try {
+          const response = await fetch(`/api/v3/erc20/contracts/${archival.chain}/${archival.contractAddress}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${this.apiKey}`
+            }
+          });
+          
+          if (response.ok) {
+            return {
+              success: true,
+              archivedAt: new Date().toISOString(),
+              message: 'Contract archived successfully'
+            };
+          } else {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+        } catch (error) {
+          throw new Error(`Archival execution failed: ${error.message}`);
+        }
+      }
+    
+      generateArchivalId() {
+        return `arch_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      }
+    
+      generateConfirmationCode(archival) {
+        // Generate a simple confirmation code based on contract address
+        const hash = archival.contractAddress.slice(-8).toUpperCase();
+        return `CONFIRM_${hash}`;
+      }
+    
+      async sendConfirmationRequest(archival) {
+        console.log(`
+          Archival Confirmation Required
+          ==============================
+          Contract: ${archival.contractInfo.name} (${archival.contractInfo.symbol})
+          Address: ${archival.contractAddress}
+          Chain: ${archival.chain}
+          Reason: ${archival.reason}
+          
+          To confirm archival, call confirmArchival() with code: ${this.generateConfirmationCode(archival)}
+          
+          WARNING: This action cannot be undone!
+        `);
+      }
+    
+      async getContractInfo(chain, contractAddress) {
+        const response = await fetch(`/api/v3/erc20/contracts/${chain}/${contractAddress}`, {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        return data.result;
+      }
+    
+      async exportContractData(archival) {
+        // Export contract data before archival
+        return {
+          contract: archival.contractInfo,
+          exportedAt: new Date().toISOString(),
+          reason: archival.reason
+        };
+      }
+    }
+    
+    // Usage
+    const safeArchiver = new SafeContractArchiver('YOUR_API_KEY');
+    
+    // Initiate archival with confirmation
+    const archivalRequest = await safeArchiver.initiateArchival(
+      'MATIC',
+      '0x022a39f06413e249b3739c573bdb28b98eac051b',
+      'Test contract no longer needed'
+    );
+    
+    console.log('Archival initiated:', archivalRequest.id);
+    
+    // Confirm archival (would typically be done after user confirmation)
+    const confirmationCode = 'CONFIRM_AC051B'; // From the confirmation request
+    const result = await safeArchiver.confirmArchival(archivalRequest.id, confirmationCode);
+    
+    console.log('Archival completed:', result);
+    ```
+  </Accordion>
+  
+  <Accordion title="Contract Lifecycle Management" icon="recycle">
+    **Manage complete contract lifecycle:**
+    
+    ```javascript
+    class ContractLifecycleManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.lifecycleStages = {
+          DEVELOPMENT: 'development',
+          TESTING: 'testing',
+          STAGING: 'staging',
+          PRODUCTION: 'production',
+          DEPRECATED: 'deprecated',
+          ARCHIVED: 'archived'
+        };
+      }
+    
+      async transitionToArchival(contractAddress, currentStage) {
+        const transitionPlan = this.createTransitionPlan(currentStage);
+        
+        console.log(`Transitioning contract ${contractAddress} from ${currentStage} to archived`);
+        
+        for (const step of transitionPlan) {
+          console.log(`Executing step: ${step.name}`);
+          await step.action(contractAddress);
+        }
+        
+        // Final archival
+        await this.archiveContract(contractAddress);
+        
+        return {
+          contractAddress,
+          fromStage: currentStage,
+          toStage: this.lifecycleStages.ARCHIVED,
+          transitionedAt: new Date().toISOString()
+        };
+      }
+    
+      createTransitionPlan(currentStage) {
+        const basePlan = [
+          {
+            name: 'Export contract data',
+            action: async (contractAddress) => {
+              await this.exportContractData(contractAddress);
+            }
+          },
+          {
+            name: 'Notify stakeholders',
+            action: async (contractAddress) => {
+              await this.notifyStakeholders(contractAddress, 'archival_pending');
+            }
+          }
+        ];
+        
+        // Add stage-specific steps
+        switch (currentStage) {
+          case this.lifecycleStages.PRODUCTION:
+            basePlan.unshift({
+              name: 'Deprecation notice',
+              action: async (contractAddress) => {
+                await this.sendDeprecationNotice(contractAddress);
+                // Wait for deprecation period
+                await this.waitForDeprecationPeriod();
+              }
+            });
+            break;
+            
+          case this.lifecycleStages.TESTING:
+            basePlan.unshift({
+              name: 'Clean up test data',
+              action: async (contractAddress) => {
+                await this.cleanupTestData(contractAddress);
+              }
+            });
+            break;
+        }
+        
+        return basePlan;
+      }
+    
+      async archiveContract(contractAddress) {
+        // Implementation would determine chain from contract address
+        const chain = await this.determineChain(contractAddress);
+        
+        const response = await fetch(`/api/v3/erc20/contracts/${chain}/${contractAddress}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Archival failed: ${response.statusText}`);
+        }
+        
+        return true;
+      }
+    
+      async exportContractData(contractAddress) {
+        console.log(`Exporting data for contract ${contractAddress}`);
+        // Implementation would export all relevant data
+      }
+    
+      async notifyStakeholders(contractAddress, eventType) {
+        console.log(`Notifying stakeholders about ${eventType} for ${contractAddress}`);
+        // Implementation would send notifications
+      }
+    
+      async sendDeprecationNotice(contractAddress) {
+        console.log(`Sending deprecation notice for ${contractAddress}`);
+        // Implementation would send deprecation notices
+      }
+    
+      async waitForDeprecationPeriod() {
+        console.log('Waiting for deprecation period...');
+        // Implementation would wait for appropriate period
+      }
+    
+      async cleanupTestData(contractAddress) {
+        console.log(`Cleaning up test data for ${contractAddress}`);
+        // Implementation would clean up test-related data
+      }
+    
+      async determineChain(contractAddress) {
+        // Implementation would determine chain from contract address
+        return 'MATIC'; // Placeholder
+      }
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Integration Examples
+
+<Tabs>
+  <Tab title="React Component">
+    ```javascript
+    import React, { useState } from 'react';
+    
+    function ContractArchiver({ contract, onArchived }) {
+      const [loading, setLoading] = useState(false);
+      const [confirmationStep, setConfirmationStep] = useState(0);
+      const [confirmationText, setConfirmationText] = useState('');
+      const [error, setError] = useState(null);
+    
+      const requiredConfirmation = `DELETE ${contract.symbol}`;
+    
+      const handleArchive = async () => {
+        if (confirmationStep === 0) {
+          setConfirmationStep(1);
+          return;
+        }
+    
+        if (confirmationText !== requiredConfirmation) {
+          setError('Confirmation text does not match');
+          return;
+        }
+    
+        setLoading(true);
+        setError(null);
+    
+        try {
+          const response = await fetch(`/api/v3/erc20/contracts/${contract.chain}/${contract.address}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': 'Bearer YOUR_API_KEY'
+            }
+          });
+    
+          if (response.ok) {
+            onArchived(contract);
+          } else {
+            setError('Failed to archive contract');
+          }
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+    
+      const handleCancel = () => {
+        setConfirmationStep(0);
+        setConfirmationText('');
+        setError(null);
+      };
+    
+      return (
+        <div className="contract-archiver">
+          <div className="contract-info">
+            <h3>{contract.name} ({contract.symbol})</h3>
+            <p>Address: <code>{contract.address}</code></p>
+            <p>Chain: {contract.chain}</p>
+          </div>
+    
+          {confirmationStep === 0 && (
+            <div className="initial-step">
+              <div className="warning">
+                <h4>⚠️ Warning</h4>
+                <p>Archiving this contract will:</p>
+                <ul>
+                  <li>Remove it from all API responses</li>
+                  <li>Disable new token minting</li>
+                  <li>Archive all associated tokens</li>
+                  <li>Cannot be undone through the API</li>
+                </ul>
+              </div>
+              
+              <button 
+                onClick={handleArchive}
+                className="btn-danger"
+                disabled={loading}
+              >
+                Continue to Archive
+              </button>
+            </div>
+          )}
+    
+          {confirmationStep === 1 && (
+            <div className="confirmation-step">
+              <div className="confirmation-required">
+                <h4>Confirmation Required</h4>
+                <p>Type <strong>{requiredConfirmation}</strong> to confirm:</p>
+                
+                <input
+                  type="text"
+                  value={confirmationText}
+                  onChange={(e) => setConfirmationText(e.target.value)}
+                  placeholder={requiredConfirmation}
+                  disabled={loading}
+                />
+                
+                <div className="actions">
+                  <button 
+                    onClick={handleArchive}
+                    disabled={loading || confirmationText !== requiredConfirmation}
+                    className="btn-danger"
+                  >
+                    {loading ? 'Archiving...' : 'Archive Contract'}
+                  </button>
+                  
+                  <button 
+                    onClick={handleCancel}
+                    disabled={loading}
+                    className="btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+    
+          {error && (
+            <div className="error">
+              Error: {error}
+            </div>
+          )}
+        </div>
+      );
+    }
+    ```
+  </Tab>
+  <Tab title="Express.js API">
+    ```javascript
+    const express = require('express');
+    const app = express();
+    
+    // Archive contract endpoint with safety checks
+    app.delete('/api/contracts/:chain/:address', async (req, res) => {
+      try {
+        const { chain, address } = req.params;
+        const { confirmation, reason } = req.body;
+        
+        // Verify contract exists and user owns it
+        const contractInfo = await getContractInfo(chain, address);
+        if (!contractInfo) {
+          return res.status(404).json({ error: 'Contract not found' });
+        }
+        
+        // Require confirmation
+        if (!confirmation || confirmation !== 'CONFIRM_ARCHIVE') {
+          return res.status(400).json({ 
+            error: 'Confirmation required',
+            requiredConfirmation: 'CONFIRM_ARCHIVE'
+          });
+        }
+        
+        // Export data before archival
+        const exportedData = await exportContractData(chain, address);
+        
+        // Execute archival
+        const response = await fetch(`/api/v3/erc20/contracts/${chain}/${address}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer YOUR_API_KEY'
+          }
+        });
+        
+        if (response.ok) {
+          // Log the archival
+          await logContractArchival({
+            chain,
+            contractAddress: address,
+            contractInfo,
+            reason,
+            exportedData,
+            archivedAt: new Date(),
+            archivedBy: req.user.id
+          });
+          
+          res.json({
+            success: true,
+            message: 'Contract archived successfully',
+            exportedData: exportedData ? 'Data exported before archival' : null
+          });
+        } else {
+          res.status(500).json({ error: 'Archival failed' });
+        }
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    // Get archival history
+    app.get('/api/contracts/archived', async (req, res) => {
+      try {
+        const archivedContracts = await getArchivedContractHistory();
+        res.json({ archivedContracts });
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    });
+    
+    async function exportContractData(chain, address) {
+      try {
+        // Export contract and mint data
+        const contractData = await getContractInfo(chain, address);
+        const mintData = await getContractMints(address);
+        
+        return {
+          contract: contractData,
+          mints: mintData,
+          exportedAt: new Date().toISOString()
+        };
+      } catch (error) {
+        console.error('Data export failed:', error);
+        return null;
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**Contract Archival Best Practices:**
+
+1. **Export Data First** - Always export contract and token data before archival
+2. **Confirm Ownership** - Verify you own the contract before archiving
+3. **Document Reason** - Keep records of why contracts were archived
+4. **Notify Stakeholders** - Inform relevant parties before archiving production contracts
+5. **Test Environment** - Practice archival process in test environments
+6. **Backup Strategy** - Maintain backups of important contract data
+</Tip>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Archival failed">
+    **Common causes:**
+    - Not the contract owner
+    - Contract already archived
+    - Invalid contract address
+    - Network connectivity issues
+    
+    **Solution:** Verify ownership, check contract status, and ensure correct parameters.
+  </Accordion>
+  
+  <Accordion title="Contract not found after archival">
+    **Expected behavior:**
+    - Contract should not appear in API responses
+    - All associated tokens are also archived
+    - Contract remains on blockchain
+    
+    **Verification:** Check blockchain explorer to confirm contract still exists on-chain.
+  </Accordion>
+  
+  <Accordion title="Accidental archival">
+    **Recovery options:**
+    - Contract cannot be restored via API
+    - Blockchain contract remains functional
+    - Can interact directly with blockchain
+    - Consider creating new API contract reference
+    
+    **Prevention:** Always use confirmation systems and export data first.
+  </Accordion>
+</AccordionGroup>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Create New Contract" href="/guides/token-api/contracts/create-erc20-token-contract" icon="plus">
+    Create a new ERC20 token contract
+  </Card>
+  <Card title="Contract Management" href="/guides/token-api/contracts/retrieve-erc20-token-contracts" icon="list">
+    View and manage your active contracts
+  </Card>
+  <Card title="Token Minting" href="/guides/token-api/minting/mint-erc20-tokens" icon="coins">
+    Mint tokens from your contracts
+  </Card>
+  <Card title="API Reference" href="/api-reference/Token-API/erc20-contract/archive-contract" icon="book">
+    Explore the complete contract archival API documentation
+  </Card>
+</CardGroup>

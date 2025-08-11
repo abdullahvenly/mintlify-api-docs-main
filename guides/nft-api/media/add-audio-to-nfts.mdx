@@ -1,0 +1,1298 @@
+---
+title: "Add Audio to NFTs"
+description: "Comprehensive guide to adding audio files to NFTs with advanced media management, validation, and multi-format support"
+icon: "volume-high"
+---
+
+<Info>
+**Audio NFT Creation:** Add audio files to your NFTs with comprehensive media management, format validation, and advanced audio processing capabilities.
+
+**Time required:** ~6 minutes
+</Info>
+
+## What is Audio NFT Creation?
+
+Audio NFT creation allows you to embed audio files directly into your NFTs during token type creation. This enables music NFTs, sound effects, podcasts, and other audio-based digital assets. Essential for musicians, audio creators, and multimedia NFT projects.
+
+<CardGroup cols={2}>
+  <Card title="Music NFTs" icon="music">
+    Create music and audio-based NFTs
+  </Card>
+  <Card title="Multi-Format Support" icon="file-audio">
+    Support for MP3, WAV, OGG, and more
+  </Card>
+  <Card title="Media Validation" icon="shield-check">
+    Comprehensive audio file validation
+  </Card>
+  <Card title="Batch Processing" icon="layer-group">
+    Add multiple audio files efficiently
+  </Card>
+</CardGroup>
+
+## Audio NFT Capabilities
+
+<Tabs>
+  <Tab title="Supported Formats">
+    **Audio Formats:**
+    - MP3 - Most common, good compression
+    - WAV - High quality, uncompressed
+    - OGG - Open source, good compression
+    - AAC - Advanced audio coding
+    - FLAC - Lossless compression
+    
+    **Use Cases:**
+    - Music albums and singles
+    - Podcast episodes
+    - Sound effects libraries
+    - Audio books and narrations
+  </Tab>
+  <Tab title="Quality Guidelines">
+    **Recommended Settings:**
+    - **Bitrate:** 320 kbps for MP3, 44.1 kHz for WAV
+    - **Duration:** Consider file size limits
+    - **Format:** MP3 for compatibility, WAV for quality
+    - **Size:** Optimize for web delivery
+    
+    **Best Practices:**
+    - Test playback on different platforms
+    - Provide multiple quality options
+    - Include metadata and artwork
+    - Consider streaming vs download
+  </Tab>
+  <Tab title="Integration Options">
+    **Implementation Methods:**
+    - Single audio file per NFT
+    - Multiple audio tracks (albums)
+    - Combined with visual media
+    - Interactive audio experiences
+    
+    **Platform Considerations:**
+    - Marketplace compatibility
+    - Wallet display support
+    - Mobile playback optimization
+    - Streaming performance
+  </Tab>
+</Tabs>
+
+## Add Audio to NFTs
+
+<Steps>
+  <Step title="Prepare Audio File" icon="file-audio">
+    Upload your audio file and get the URL
+    
+    ```javascript
+    const audioUrl = "https://storage.venly.io/audio/my-music.mp3";
+    ```
+  </Step>
+  <Step title="Configure Animation URLs" icon="sliders">
+    Set up the animationUrls array with audio configuration
+  </Step>
+  <Step title="Create Token Type" icon="plus">
+    Create the NFT token type with audio included
+  </Step>
+  <Step title="Verify Audio" icon="check">
+    Test the audio playback and metadata
+  </Step>
+</Steps>
+
+### API Implementation
+
+<CodeGroup>
+```javascript JavaScript
+// Create NFT token type with audio
+const createAudioNFT = async (contractAddress, audioConfig) => {
+  try {
+    const response = await fetch('/api/v3/erc1155/token-types/creations', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chain: audioConfig.chain,
+        contractAddress: contractAddress,
+        creations: [{
+          name: audioConfig.name,
+          description: audioConfig.description,
+          image: audioConfig.coverImage,
+          externalUrl: audioConfig.externalUrl,
+          animationUrls: audioConfig.animationUrls
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.success) {
+      return data.result;
+    } else {
+      throw new Error('Failed to create audio NFT');
+    }
+  } catch (error) {
+    console.error('Error creating audio NFT:', error);
+    throw error;
+  }
+};
+
+// Enhanced audio NFT management system
+class AudioNFTManager {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.supportedFormats = ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a'];
+    this.maxFileSize = 100 * 1024 * 1024; // 100MB
+    this.audioCache = new Map();
+    this.validationRules = new Map();
+  }
+
+  async createAudioNFT(contractAddress, audioConfig, options = {}) {
+    const {
+      validateAudio = true,
+      optimizeForWeb = true,
+      generatePreview = false,
+      addMetadata = true
+    } = options;
+
+    try {
+      // Validate audio configuration
+      if (validateAudio) {
+        const validation = await this.validateAudioConfig(audioConfig);
+        if (!validation.isValid) {
+          throw new Error(`Audio validation failed: ${validation.errors.join(', ')}`);
+        }
+      }
+
+      // Optimize audio URLs if requested
+      if (optimizeForWeb) {
+        audioConfig.animationUrls = await this.optimizeAudioUrls(audioConfig.animationUrls);
+      }
+
+      // Generate preview if requested
+      if (generatePreview) {
+        audioConfig.previewUrl = await this.generateAudioPreview(audioConfig.animationUrls[0]);
+      }
+
+      // Add audio metadata
+      if (addMetadata) {
+        audioConfig.attributes = await this.extractAudioMetadata(audioConfig.animationUrls);
+      }
+
+      // Create the NFT
+      const result = await createAudioNFT(contractAddress, audioConfig);
+
+      // Cache the result
+      this.cacheAudioNFT(result);
+
+      return {
+        success: true,
+        result,
+        audioAnalysis: await this.analyzeAudioFiles(audioConfig.animationUrls),
+        recommendations: this.generateAudioRecommendations(audioConfig)
+      };
+
+    } catch (error) {
+      console.error('Failed to create audio NFT:', error);
+      throw error;
+    }
+  }
+
+  async createMusicAlbum(contractAddress, albumConfig, options = {}) {
+    const {
+      createIndividualTracks = true,
+      createAlbumNFT = true,
+      addTrackNumbers = true,
+      generatePlaylist = true
+    } = options;
+
+    const results = {
+      album: null,
+      tracks: [],
+      playlist: null,
+      totalDuration: 0
+    };
+
+    try {
+      // Create individual track NFTs
+      if (createIndividualTracks) {
+        for (let i = 0; i < albumConfig.tracks.length; i++) {
+          const track = albumConfig.tracks[i];
+          
+          const trackConfig = {
+            chain: albumConfig.chain,
+            name: `${albumConfig.albumName} - Track ${i + 1}: ${track.title}`,
+            description: `Track ${i + 1} from the album "${albumConfig.albumName}" by ${albumConfig.artist}`,
+            coverImage: track.coverImage || albumConfig.albumCover,
+            externalUrl: albumConfig.externalUrl,
+            animationUrls: [{
+              type: 'audio',
+              value: track.audioUrl,
+              title: track.title,
+              duration: track.duration,
+              trackNumber: addTrackNumbers ? i + 1 : undefined
+            }]
+          };
+
+          const trackResult = await this.createAudioNFT(contractAddress, trackConfig);
+          results.tracks.push(trackResult);
+          results.totalDuration += track.duration || 0;
+        }
+      }
+
+      // Create album NFT with all tracks
+      if (createAlbumNFT) {
+        const albumNFTConfig = {
+          chain: albumConfig.chain,
+          name: albumConfig.albumName,
+          description: `Complete album "${albumConfig.albumName}" by ${albumConfig.artist}. Contains ${albumConfig.tracks.length} tracks.`,
+          coverImage: albumConfig.albumCover,
+          externalUrl: albumConfig.externalUrl,
+          animationUrls: albumConfig.tracks.map((track, index) => ({
+            type: 'audio',
+            value: track.audioUrl,
+            title: track.title,
+            duration: track.duration,
+            trackNumber: addTrackNumbers ? index + 1 : undefined
+          }))
+        };
+
+        results.album = await this.createAudioNFT(contractAddress, albumNFTConfig);
+      }
+
+      // Generate playlist metadata
+      if (generatePlaylist) {
+        results.playlist = this.generatePlaylistMetadata(albumConfig, results);
+      }
+
+      return results;
+
+    } catch (error) {
+      console.error('Failed to create music album:', error);
+      throw error;
+    }
+  }
+
+  async validateAudioConfig(audioConfig) {
+    const errors = [];
+    const warnings = [];
+
+    // Validate required fields
+    if (!audioConfig.name) {
+      errors.push('Audio NFT name is required');
+    }
+
+    if (!audioConfig.animationUrls || audioConfig.animationUrls.length === 0) {
+      errors.push('At least one audio URL is required');
+    }
+
+    // Validate audio URLs
+    if (audioConfig.animationUrls) {
+      for (let i = 0; i < audioConfig.animationUrls.length; i++) {
+        const audioUrl = audioConfig.animationUrls[i];
+        
+        if (!audioUrl.value) {
+          errors.push(`Audio URL at index ${i} is missing value`);
+          continue;
+        }
+
+        if (!this.isValidUrl(audioUrl.value)) {
+          errors.push(`Invalid audio URL at index ${i}`);
+          continue;
+        }
+
+        // Check file format
+        const format = this.getAudioFormat(audioUrl.value);
+        if (!this.supportedFormats.includes(format.toLowerCase())) {
+          warnings.push(`Unsupported audio format "${format}" at index ${i}. Supported: ${this.supportedFormats.join(', ')}`);
+        }
+
+        // Validate audio file
+        try {
+          const audioValidation = await this.validateAudioFile(audioUrl.value);
+          if (!audioValidation.isValid) {
+            warnings.push(`Audio file validation failed at index ${i}: ${audioValidation.error}`);
+          }
+        } catch (error) {
+          warnings.push(`Could not validate audio file at index ${i}: ${error.message}`);
+        }
+      }
+    }
+
+    // Validate cover image
+    if (audioConfig.coverImage && !this.isValidUrl(audioConfig.coverImage)) {
+      errors.push('Invalid cover image URL');
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+      warnings
+    };
+  }
+
+  async validateAudioFile(audioUrl) {
+    try {
+      // This would typically make a HEAD request to check the file
+      const response = await fetch(audioUrl, { method: 'HEAD' });
+      
+      if (!response.ok) {
+        return {
+          isValid: false,
+          error: `Audio file not accessible: ${response.status}`
+        };
+      }
+
+      const contentType = response.headers.get('content-type');
+      const contentLength = response.headers.get('content-length');
+
+      // Check content type
+      if (!contentType || !contentType.startsWith('audio/')) {
+        return {
+          isValid: false,
+          error: `Invalid content type: ${contentType}`
+        };
+      }
+
+      // Check file size
+      if (contentLength && parseInt(contentLength) > this.maxFileSize) {
+        return {
+          isValid: false,
+          error: `File too large: ${contentLength} bytes (max: ${this.maxFileSize})`
+        };
+      }
+
+      return {
+        isValid: true,
+        contentType,
+        fileSize: contentLength ? parseInt(contentLength) : null
+      };
+
+    } catch (error) {
+      return {
+        isValid: false,
+        error: error.message
+      };
+    }
+  }
+
+  async analyzeAudioFiles(animationUrls) {
+    const analysis = {
+      totalFiles: animationUrls.length,
+      formats: {},
+      totalSize: 0,
+      estimatedDuration: 0,
+      qualityAnalysis: [],
+      recommendations: []
+    };
+
+    for (const audioUrl of animationUrls) {
+      try {
+        const format = this.getAudioFormat(audioUrl.value);
+        analysis.formats[format] = (analysis.formats[format] || 0) + 1;
+
+        const validation = await this.validateAudioFile(audioUrl.value);
+        if (validation.isValid && validation.fileSize) {
+          analysis.totalSize += validation.fileSize;
+        }
+
+        // Estimate duration if provided
+        if (audioUrl.duration) {
+          analysis.estimatedDuration += audioUrl.duration;
+        }
+
+        // Quality analysis
+        const qualityInfo = this.analyzeAudioQuality(audioUrl);
+        analysis.qualityAnalysis.push(qualityInfo);
+
+      } catch (error) {
+        console.warn(`Failed to analyze audio file: ${audioUrl.value}`, error);
+      }
+    }
+
+    // Generate recommendations
+    analysis.recommendations = this.generateQualityRecommendations(analysis);
+
+    return analysis;
+  }
+
+  analyzeAudioQuality(audioUrl) {
+    const format = this.getAudioFormat(audioUrl.value);
+    const quality = {
+      format,
+      estimatedQuality: 'unknown',
+      compression: 'unknown',
+      recommendations: []
+    };
+
+    switch (format.toLowerCase()) {
+      case 'mp3':
+        quality.estimatedQuality = 'good';
+        quality.compression = 'lossy';
+        quality.recommendations.push('Consider 320kbps for best quality');
+        break;
+      case 'wav':
+        quality.estimatedQuality = 'excellent';
+        quality.compression = 'none';
+        quality.recommendations.push('High quality but large file size');
+        break;
+      case 'flac':
+        quality.estimatedQuality = 'excellent';
+        quality.compression = 'lossless';
+        quality.recommendations.push('Best quality with compression');
+        break;
+      case 'ogg':
+        quality.estimatedQuality = 'good';
+        quality.compression = 'lossy';
+        quality.recommendations.push('Good open-source alternative');
+        break;
+      default:
+        quality.recommendations.push('Consider using MP3 or WAV for better compatibility');
+    }
+
+    return quality;
+  }
+
+  async optimizeAudioUrls(animationUrls) {
+    const optimized = [];
+
+    for (const audioUrl of animationUrls) {
+      const optimizedUrl = { ...audioUrl };
+
+      // Add format-specific optimizations
+      const format = this.getAudioFormat(audioUrl.value);
+      
+      if (!optimizedUrl.type) {
+        optimizedUrl.type = 'audio';
+      }
+
+      // Add format metadata
+      optimizedUrl.format = format;
+      optimizedUrl.mimeType = this.getMimeType(format);
+
+      // Add quality hints
+      if (format.toLowerCase() === 'mp3') {
+        optimizedUrl.quality = 'compressed';
+      } else if (['wav', 'flac'].includes(format.toLowerCase())) {
+        optimizedUrl.quality = 'high';
+      }
+
+      optimized.push(optimizedUrl);
+    }
+
+    return optimized;
+  }
+
+  async extractAudioMetadata(animationUrls) {
+    const attributes = [];
+
+    // Add audio format information
+    const formats = [...new Set(animationUrls.map(url => this.getAudioFormat(url.value)))];
+    attributes.push({
+      type: 'property',
+      name: 'Audio Formats',
+      value: formats.join(', '),
+      traitType: 'Audio Formats',
+      trait_type: 'Audio Formats'
+    });
+
+    // Add track count
+    attributes.push({
+      type: 'stat',
+      name: 'Track Count',
+      value: animationUrls.length.toString(),
+      displayType: 'number',
+      display_type: 'number',
+      traitType: 'Track Count',
+      trait_type: 'Track Count'
+    });
+
+    // Add total duration if available
+    const totalDuration = animationUrls.reduce((sum, url) => sum + (url.duration || 0), 0);
+    if (totalDuration > 0) {
+      attributes.push({
+        type: 'stat',
+        name: 'Total Duration',
+        value: Math.round(totalDuration).toString(),
+        displayType: 'number',
+        display_type: 'number',
+        traitType: 'Duration (seconds)',
+        trait_type: 'Duration (seconds)'
+      });
+    }
+
+    // Add audio type
+    attributes.push({
+      type: 'property',
+      name: 'Media Type',
+      value: 'Audio',
+      traitType: 'Media Type',
+      trait_type: 'Media Type'
+    });
+
+    return attributes;
+  }
+
+  generatePlaylistMetadata(albumConfig, results) {
+    return {
+      name: albumConfig.albumName,
+      artist: albumConfig.artist,
+      totalTracks: albumConfig.tracks.length,
+      totalDuration: results.totalDuration,
+      tracks: albumConfig.tracks.map((track, index) => ({
+        trackNumber: index + 1,
+        title: track.title,
+        duration: track.duration,
+        nftId: results.tracks[index]?.result?.creations?.[0]?.id
+      })),
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  generateAudioRecommendations(audioConfig) {
+    const recommendations = [];
+
+    // Check for cover image
+    if (!audioConfig.coverImage) {
+      recommendations.push({
+        type: 'missing_media',
+        priority: 'medium',
+        message: 'Consider adding a cover image for better visual presentation'
+      });
+    }
+
+    // Check audio format diversity
+    const formats = audioConfig.animationUrls.map(url => this.getAudioFormat(url.value));
+    const uniqueFormats = [...new Set(formats)];
+    
+    if (uniqueFormats.length === 1 && uniqueFormats[0].toLowerCase() === 'mp3') {
+      recommendations.push({
+        type: 'format_suggestion',
+        priority: 'low',
+        message: 'Consider providing high-quality WAV or FLAC versions for audiophiles'
+      });
+    }
+
+    // Check for multiple tracks without album structure
+    if (audioConfig.animationUrls.length > 1) {
+      recommendations.push({
+        type: 'organization',
+        priority: 'medium',
+        message: 'Consider creating separate NFTs for individual tracks or organizing as an album'
+      });
+    }
+
+    return recommendations;
+  }
+
+  generateQualityRecommendations(analysis) {
+    const recommendations = [];
+
+    // File size recommendations
+    if (analysis.totalSize > 50 * 1024 * 1024) { // 50MB
+      recommendations.push('Consider compressing audio files to reduce total size');
+    }
+
+    // Format recommendations
+    const hasLossless = Object.keys(analysis.formats).some(format => 
+      ['wav', 'flac'].includes(format.toLowerCase())
+    );
+    
+    if (!hasLossless && analysis.totalFiles > 1) {
+      recommendations.push('Consider providing at least one high-quality format (WAV/FLAC)');
+    }
+
+    // Compatibility recommendations
+    const hasMP3 = analysis.formats.mp3 > 0;
+    if (!hasMP3) {
+      recommendations.push('Consider including MP3 format for maximum compatibility');
+    }
+
+    return recommendations;
+  }
+
+  // Utility methods
+  isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  getAudioFormat(url) {
+    try {
+      const urlObj = new URL(url);
+      const pathname = urlObj.pathname;
+      const extension = pathname.split('.').pop()?.toLowerCase();
+      return extension || 'unknown';
+    } catch {
+      return 'unknown';
+    }
+  }
+
+  getMimeType(format) {
+    const mimeTypes = {
+      'mp3': 'audio/mpeg',
+      'wav': 'audio/wav',
+      'ogg': 'audio/ogg',
+      'aac': 'audio/aac',
+      'flac': 'audio/flac',
+      'm4a': 'audio/mp4'
+    };
+    return mimeTypes[format.toLowerCase()] || 'audio/mpeg';
+  }
+
+  cacheAudioNFT(result) {
+    if (result.creations && result.creations[0]) {
+      const creation = result.creations[0];
+      this.audioCache.set(creation.id, {
+        ...creation,
+        cachedAt: new Date().toISOString()
+      });
+    }
+  }
+
+  getCachedAudioNFT(id) {
+    return this.audioCache.get(id);
+  }
+
+  clearCache() {
+    this.audioCache.clear();
+  }
+}
+
+// Usage examples
+const audioNFTManager = new AudioNFTManager('YOUR_API_KEY');
+
+// Simple audio NFT
+const audioConfig = {
+  chain: 'MATIC',
+  name: 'My Music NFT',
+  description: 'A beautiful piece of music',
+  coverImage: 'https://example.com/cover.jpg',
+  externalUrl: 'https://mywebsite.com',
+  animationUrls: [{
+    type: 'audio',
+    value: 'https://storage.venly.io/audio/my-song.mp3',
+    title: 'My Song',
+    duration: 180 // 3 minutes
+  }]
+};
+
+const result = await audioNFTManager.createAudioNFT(
+  '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+  audioConfig,
+  {
+    validateAudio: true,
+    optimizeForWeb: true,
+    addMetadata: true
+  }
+);
+
+console.log('Audio NFT created:', result);
+
+// Music album NFT
+const albumConfig = {
+  chain: 'MATIC',
+  albumName: 'My First Album',
+  artist: 'Artist Name',
+  albumCover: 'https://example.com/album-cover.jpg',
+  externalUrl: 'https://mywebsite.com/album',
+  tracks: [
+    {
+      title: 'Track 1',
+      audioUrl: 'https://storage.venly.io/audio/track1.mp3',
+      duration: 210,
+      coverImage: 'https://example.com/track1-cover.jpg'
+    },
+    {
+      title: 'Track 2',
+      audioUrl: 'https://storage.venly.io/audio/track2.mp3',
+      duration: 195
+    }
+  ]
+};
+
+const albumResult = await audioNFTManager.createMusicAlbum(
+  '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+  albumConfig,
+  {
+    createIndividualTracks: true,
+    createAlbumNFT: true,
+    addTrackNumbers: true,
+    generatePlaylist: true
+  }
+);
+
+console.log('Music album created:', albumResult);
+console.log('Playlist metadata:', albumResult.playlist);
+```
+
+```python Python
+import requests
+import json
+from urllib.parse import urlparse
+from typing import Dict, List, Any, Optional
+
+class AudioNFTManager:
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+        self.base_url = '/api/v3/erc1155'
+        self.supported_formats = ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a']
+        self.max_file_size = 100 * 1024 * 1024  # 100MB
+        self.audio_cache = {}
+    
+    def create_audio_nft(self, contract_address: str, audio_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Create NFT token type with audio"""
+        url = f'{self.base_url}/token-types/creations'
+        headers = {
+            'Authorization': f'Bearer {self.api_key}',
+            'Content-Type': 'application/json'
+        }
+        
+        payload = {
+            'chain': audio_config['chain'],
+            'contractAddress': contract_address,
+            'creations': [{
+                'name': audio_config['name'],
+                'description': audio_config['description'],
+                'image': audio_config.get('coverImage'),
+                'externalUrl': audio_config.get('externalUrl'),
+                'animationUrls': audio_config['animationUrls']
+            }]
+        }
+        
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if data.get('success'):
+                return data['result']
+            else:
+                raise Exception('Failed to create audio NFT')
+                
+        except requests.exceptions.RequestException as error:
+            print(f'Error creating audio NFT: {error}')
+            raise error
+    
+    def create_audio_nft_enhanced(self, contract_address: str, audio_config: Dict[str, Any], 
+                                 options: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Create audio NFT with validation and optimization"""
+        if options is None:
+            options = {}
+        
+        validate_audio = options.get('validate_audio', True)
+        optimize_for_web = options.get('optimize_for_web', True)
+        add_metadata = options.get('add_metadata', True)
+        
+        try:
+            # Validate audio configuration
+            if validate_audio:
+                validation = self.validate_audio_config(audio_config)
+                if not validation['is_valid']:
+                    raise Exception(f"Audio validation failed: {', '.join(validation['errors'])}")
+            
+            # Optimize audio URLs if requested
+            if optimize_for_web:
+                audio_config['animationUrls'] = self.optimize_audio_urls(audio_config['animationUrls'])
+            
+            # Add audio metadata
+            if add_metadata:
+                audio_config['attributes'] = self.extract_audio_metadata(audio_config['animationUrls'])
+            
+            # Create the NFT
+            result = self.create_audio_nft(contract_address, audio_config)
+            
+            # Cache the result
+            self.cache_audio_nft(result)
+            
+            return {
+                'success': True,
+                'result': result,
+                'audio_analysis': self.analyze_audio_files(audio_config['animationUrls']),
+                'recommendations': self.generate_audio_recommendations(audio_config)
+            }
+            
+        except Exception as error:
+            print(f'Failed to create audio NFT: {error}')
+            raise error
+    
+    def validate_audio_config(self, audio_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate audio configuration"""
+        errors = []
+        warnings = []
+        
+        # Validate required fields
+        if not audio_config.get('name'):
+            errors.append('Audio NFT name is required')
+        
+        if not audio_config.get('animationUrls') or len(audio_config['animationUrls']) == 0:
+            errors.append('At least one audio URL is required')
+        
+        # Validate audio URLs
+        if audio_config.get('animationUrls'):
+            for i, audio_url in enumerate(audio_config['animationUrls']):
+                if not audio_url.get('value'):
+                    errors.append(f'Audio URL at index {i} is missing value')
+                    continue
+                
+                if not self._is_valid_url(audio_url['value']):
+                    errors.append(f'Invalid audio URL at index {i}')
+                    continue
+                
+                # Check file format
+                format_ext = self._get_audio_format(audio_url['value'])
+                if format_ext.lower() not in self.supported_formats:
+                    warnings.append(f'Unsupported audio format "{format_ext}" at index {i}. Supported: {", ".join(self.supported_formats)}')
+        
+        # Validate cover image
+        if audio_config.get('coverImage') and not self._is_valid_url(audio_config['coverImage']):
+            errors.append('Invalid cover image URL')
+        
+        return {
+            'is_valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+    
+    def analyze_audio_files(self, animation_urls: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Analyze audio files"""
+        analysis = {
+            'total_files': len(animation_urls),
+            'formats': {},
+            'estimated_duration': 0,
+            'quality_analysis': [],
+            'recommendations': []
+        }
+        
+        for audio_url in animation_urls:
+            format_ext = self._get_audio_format(audio_url['value'])
+            analysis['formats'][format_ext] = analysis['formats'].get(format_ext, 0) + 1
+            
+            # Estimate duration if provided
+            if audio_url.get('duration'):
+                analysis['estimated_duration'] += audio_url['duration']
+            
+            # Quality analysis
+            quality_info = self._analyze_audio_quality(audio_url)
+            analysis['quality_analysis'].append(quality_info)
+        
+        # Generate recommendations
+        analysis['recommendations'] = self._generate_quality_recommendations(analysis)
+        
+        return analysis
+    
+    def optimize_audio_urls(self, animation_urls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Optimize audio URLs"""
+        optimized = []
+        
+        for audio_url in animation_urls:
+            optimized_url = audio_url.copy()
+            
+            # Add format-specific optimizations
+            format_ext = self._get_audio_format(audio_url['value'])
+            
+            if not optimized_url.get('type'):
+                optimized_url['type'] = 'audio'
+            
+            # Add format metadata
+            optimized_url['format'] = format_ext
+            optimized_url['mimeType'] = self._get_mime_type(format_ext)
+            
+            # Add quality hints
+            if format_ext.lower() == 'mp3':
+                optimized_url['quality'] = 'compressed'
+            elif format_ext.lower() in ['wav', 'flac']:
+                optimized_url['quality'] = 'high'
+            
+            optimized.append(optimized_url)
+        
+        return optimized
+    
+    def extract_audio_metadata(self, animation_urls: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Extract audio metadata as NFT attributes"""
+        attributes = []
+        
+        # Add audio format information
+        formats = list(set(self._get_audio_format(url['value']) for url in animation_urls))
+        attributes.append({
+            'type': 'property',
+            'name': 'Audio Formats',
+            'value': ', '.join(formats),
+            'traitType': 'Audio Formats',
+            'trait_type': 'Audio Formats'
+        })
+        
+        # Add track count
+        attributes.append({
+            'type': 'stat',
+            'name': 'Track Count',
+            'value': str(len(animation_urls)),
+            'displayType': 'number',
+            'display_type': 'number',
+            'traitType': 'Track Count',
+            'trait_type': 'Track Count'
+        })
+        
+        # Add total duration if available
+        total_duration = sum(url.get('duration', 0) for url in animation_urls)
+        if total_duration > 0:
+            attributes.append({
+                'type': 'stat',
+                'name': 'Total Duration',
+                'value': str(round(total_duration)),
+                'displayType': 'number',
+                'display_type': 'number',
+                'traitType': 'Duration (seconds)',
+                'trait_type': 'Duration (seconds)'
+            })
+        
+        # Add audio type
+        attributes.append({
+            'type': 'property',
+            'name': 'Media Type',
+            'value': 'Audio',
+            'traitType': 'Media Type',
+            'trait_type': 'Media Type'
+        })
+        
+        return attributes
+    
+    def generate_audio_recommendations(self, audio_config: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Generate recommendations for audio NFT"""
+        recommendations = []
+        
+        # Check for cover image
+        if not audio_config.get('coverImage'):
+            recommendations.append({
+                'type': 'missing_media',
+                'priority': 'medium',
+                'message': 'Consider adding a cover image for better visual presentation'
+            })
+        
+        # Check audio format diversity
+        formats = [self._get_audio_format(url['value']) for url in audio_config['animationUrls']]
+        unique_formats = list(set(formats))
+        
+        if len(unique_formats) == 1 and unique_formats[0].lower() == 'mp3':
+            recommendations.append({
+                'type': 'format_suggestion',
+                'priority': 'low',
+                'message': 'Consider providing high-quality WAV or FLAC versions for audiophiles'
+            })
+        
+        # Check for multiple tracks without album structure
+        if len(audio_config['animationUrls']) > 1:
+            recommendations.append({
+                'type': 'organization',
+                'priority': 'medium',
+                'message': 'Consider creating separate NFTs for individual tracks or organizing as an album'
+            })
+        
+        return recommendations
+    
+    def _analyze_audio_quality(self, audio_url: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze audio quality"""
+        format_ext = self._get_audio_format(audio_url['value'])
+        quality = {
+            'format': format_ext,
+            'estimated_quality': 'unknown',
+            'compression': 'unknown',
+            'recommendations': []
+        }
+        
+        format_lower = format_ext.lower()
+        if format_lower == 'mp3':
+            quality['estimated_quality'] = 'good'
+            quality['compression'] = 'lossy'
+            quality['recommendations'].append('Consider 320kbps for best quality')
+        elif format_lower == 'wav':
+            quality['estimated_quality'] = 'excellent'
+            quality['compression'] = 'none'
+            quality['recommendations'].append('High quality but large file size')
+        elif format_lower == 'flac':
+            quality['estimated_quality'] = 'excellent'
+            quality['compression'] = 'lossless'
+            quality['recommendations'].append('Best quality with compression')
+        elif format_lower == 'ogg':
+            quality['estimated_quality'] = 'good'
+            quality['compression'] = 'lossy'
+            quality['recommendations'].append('Good open-source alternative')
+        else:
+            quality['recommendations'].append('Consider using MP3 or WAV for better compatibility')
+        
+        return quality
+    
+    def _generate_quality_recommendations(self, analysis: Dict[str, Any]) -> List[str]:
+        """Generate quality recommendations"""
+        recommendations = []
+        
+        # Format recommendations
+        has_lossless = any(fmt.lower() in ['wav', 'flac'] for fmt in analysis['formats'].keys())
+        
+        if not has_lossless and analysis['total_files'] > 1:
+            recommendations.append('Consider providing at least one high-quality format (WAV/FLAC)')
+        
+        # Compatibility recommendations
+        has_mp3 = 'mp3' in analysis['formats']
+        if not has_mp3:
+            recommendations.append('Consider including MP3 format for maximum compatibility')
+        
+        return recommendations
+    
+    def cache_audio_nft(self, result: Dict[str, Any]):
+        """Cache audio NFT result"""
+        if result.get('creations') and result['creations']:
+            creation = result['creations'][0]
+            self.audio_cache[creation['id']] = {
+                **creation,
+                'cached_at': '2024-01-01T00:00:00Z'
+            }
+    
+    def _is_valid_url(self, url: str) -> bool:
+        """Check if URL is valid"""
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])
+        except:
+            return False
+    
+    def _get_audio_format(self, url: str) -> str:
+        """Get audio format from URL"""
+        try:
+            parsed = urlparse(url)
+            path = parsed.path
+            extension = path.split('.')[-1].lower() if '.' in path else 'unknown'
+            return extension
+        except:
+            return 'unknown'
+    
+    def _get_mime_type(self, format_ext: str) -> str:
+        """Get MIME type for audio format"""
+        mime_types = {
+            'mp3': 'audio/mpeg',
+            'wav': 'audio/wav',
+            'ogg': 'audio/ogg',
+            'aac': 'audio/aac',
+            'flac': 'audio/flac',
+            'm4a': 'audio/mp4'
+        }
+        return mime_types.get(format_ext.lower(), 'audio/mpeg')
+
+# Usage
+audio_nft_manager = AudioNFTManager('YOUR_API_KEY')
+
+# Simple audio NFT
+audio_config = {
+    'chain': 'MATIC',
+    'name': 'My Music NFT',
+    'description': 'A beautiful piece of music',
+    'coverImage': 'https://example.com/cover.jpg',
+    'externalUrl': 'https://mywebsite.com',
+    'animationUrls': [{
+        'type': 'audio',
+        'value': 'https://storage.venly.io/audio/my-song.mp3',
+        'title': 'My Song',
+        'duration': 180  # 3 minutes
+    }]
+}
+
+result = audio_nft_manager.create_audio_nft_enhanced(
+    '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+    audio_config,
+    {
+        'validate_audio': True,
+        'optimize_for_web': True,
+        'add_metadata': True
+    }
+)
+
+print('Audio NFT created:', result)
+```
+
+```bash cURL
+# Create audio NFT token type
+curl -X POST '/api/v3/erc1155/token-types/creations' \
+  -H 'Authorization: Bearer YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chain": "MATIC",
+    "contractAddress": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+    "creations": [{
+      "name": "My Music NFT",
+      "description": "A beautiful piece of music",
+      "image": "https://example.com/cover.jpg",
+      "externalUrl": "https://mywebsite.com",
+      "animationUrls": [{
+        "type": "audio",
+        "value": "https://storage.venly.io/audio/my-song.mp3",
+        "title": "My Song",
+        "duration": 180
+      }]
+    }]
+  }'
+```
+
+```php PHP
+<?php
+class AudioNFTManager {
+    private $apiKey;
+    private $baseUrl;
+    private $supportedFormats;
+    
+    public function __construct($apiKey) {
+        $this->apiKey = $apiKey;
+        $this->baseUrl = '/api/v3/erc1155';
+        $this->supportedFormats = ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a'];
+    }
+    
+    public function createAudioNFT($contractAddress, $audioConfig) {
+        $url = $this->baseUrl . '/token-types/creations';
+        
+        $payload = [
+            'chain' => $audioConfig['chain'],
+            'contractAddress' => $contractAddress,
+            'creations' => [[
+                'name' => $audioConfig['name'],
+                'description' => $audioConfig['description'],
+                'image' => $audioConfig['coverImage'] ?? null,
+                'externalUrl' => $audioConfig['externalUrl'] ?? null,
+                'animationUrls' => $audioConfig['animationUrls']
+            ]]
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$this->apiKey}",
+            'Content-Type: application/json'
+        ]);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            throw new Exception("HTTP {$httpCode}: Failed to create audio NFT");
+        }
+        
+        $data = json_decode($response, true);
+        
+        if ($data['success']) {
+            return $data['result'];
+        } else {
+            throw new Exception('Failed to create audio NFT');
+        }
+    }
+    
+    public function validateAudioConfig($audioConfig) {
+        $errors = [];
+        
+        if (empty($audioConfig['name'])) {
+            $errors[] = 'Audio NFT name is required';
+        }
+        
+        if (empty($audioConfig['animationUrls'])) {
+            $errors[] = 'At least one audio URL is required';
+        }
+        
+        foreach ($audioConfig['animationUrls'] as $i => $audioUrl) {
+            if (empty($audioUrl['value'])) {
+                $errors[] = "Audio URL at index {$i} is missing value";
+            }
+            
+            $format = $this->getAudioFormat($audioUrl['value']);
+            if (!in_array(strtolower($format), $this->supportedFormats)) {
+                $errors[] = "Unsupported audio format '{$format}' at index {$i}";
+            }
+        }
+        
+        return [
+            'isValid' => empty($errors),
+            'errors' => $errors
+        ];
+    }
+    
+    private function getAudioFormat($url) {
+        $path = parse_url($url, PHP_URL_PATH);
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        return strtolower($extension ?: 'unknown');
+    }
+}
+
+// Usage
+$audioNFTManager = new AudioNFTManager('YOUR_API_KEY');
+
+$audioConfig = [
+    'chain' => 'MATIC',
+    'name' => 'My Music NFT',
+    'description' => 'A beautiful piece of music',
+    'coverImage' => 'https://example.com/cover.jpg',
+    'externalUrl' => 'https://mywebsite.com',
+    'animationUrls' => [[
+        'type' => 'audio',
+        'value' => 'https://storage.venly.io/audio/my-song.mp3',
+        'title' => 'My Song',
+        'duration' => 180
+    ]]
+];
+
+try {
+    $validation = $audioNFTManager->validateAudioConfig($audioConfig);
+    
+    if ($validation['isValid']) {
+        $result = $audioNFTManager->createAudioNFT(
+            '0xf5b11b4f458cc12a7989a146c5db2e7d500e2241',
+            $audioConfig
+        );
+        
+        echo "Audio NFT created successfully: " . json_encode($result) . "\n";
+    } else {
+        echo "Validation failed: " . implode(', ', $validation['errors']) . "\n";
+    }
+} catch (Exception $e) {
+    echo "Error: " . $e->getMessage() . "\n";
+}
+?>
+```
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+**Audio NFT Best Practices:**
+
+1. **Format Selection** - Use MP3 for compatibility, WAV/FLAC for quality
+2. **File Size** - Balance quality with reasonable file sizes for web delivery
+3. **Cover Art** - Always include attractive cover images for visual appeal
+4. **Metadata** - Add comprehensive metadata including duration, artist, genre
+5. **Quality Control** - Test audio playback across different platforms
+6. **Multiple Formats** - Consider providing both compressed and lossless versions
+7. **Organization** - Structure albums and collections logically
+8. **Accessibility** - Ensure audio works across different devices and browsers
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Video NFTs" href="/guides/nft-api/media/add-video-to-nfts" icon="video">
+    Learn how to add video content to your NFTs
+  </Card>
+  <Card title="Media Storage" href="/guides/nft-api/media/store-nft-image-and-media" icon="cloud">
+    Understand media storage and optimization
+  </Card>
+  <Card title="Token Types" href="/guides/nft-api/token-types/create-nft-template" icon="shapes">
+    Create comprehensive NFT token types
+  </Card>
+  <Card title="Minting" href="/guides/nft-api/minting/how-to-mint-an-nft" icon="hammer">
+    Mint your audio NFTs to the blockchain
+  </Card>
+</CardGroup>

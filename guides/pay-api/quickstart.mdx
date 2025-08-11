@@ -1,0 +1,1189 @@
+---
+title: "PAY API Quick Start"
+description: "Complete step-by-step guide to process your first fiat payment for NFTs using Venly's PAY API with Stripe integration"
+icon: "rocket"
+---
+
+<Info>
+**Quick Start Guide:** Follow this comprehensive tutorial to set up PAY API and process your first fiat payment for NFTs through Stripe integration.
+
+**Time required:** ~20 minutes (after onboarding approval)
+</Info>
+
+## What We Cover in This Guide
+
+This guide will walk you through the complete process of setting up and using PAY API to accept fiat payments for NFTs:
+
+<Steps>
+  <Step title="Onboarding & Configuration" icon="user-plus">
+    Complete the PAY onboarding process and get your credentials
+  </Step>
+  <Step title="Authentication" icon="key">
+    Set up API authentication with your credentials
+  </Step>
+  <Step title="Customize Checkout" icon="palette">
+    Brand your checkout pages with logo and colors
+  </Step>
+  <Step title="Configure Webhooks" icon="webhook">
+    Set up payment notifications for your application
+  </Step>
+  <Step title="Create Checkout Session" icon="credit-card">
+    Generate a payment link for your NFT
+  </Step>
+  <Step title="Process Payment" icon="check">
+    Handle customer payment and verify transaction
+  </Step>
+  <Step title="Complete NFT Transfer" icon="paper-plane">
+    Transfer the NFT to the customer after payment
+  </Step>
+</Steps>
+
+## Example Use Case Scenario
+
+### Scenario Overview
+
+**Roles:**
+- **User-A**: Your end user purchasing NFTs with fiat currency
+- **Company-X**: Your business/company
+- **Payment-N**: The payment generated for User-A
+
+**Example Flow:**
+1. **User-A** wants to purchase one **RING NFT** worth **€20**
+2. You create a checkout URL for **Payment-N** (RING NFT)
+3. You receive the **checkout URL** from **PAY**
+4. You send the **checkout URL** to **User-A**
+5. **User-A** completes payment on **Stripe checkout**
+6. You verify the payment status
+7. You transfer the **NFT to User-A's wallet**
+
+## Prerequisites
+
+<Warning>
+**Before You Start:**
+1. Your business must be registered in the **USA**, **UK**, or any **EU country**
+2. You must be a user of Venly's **NFT-API** or **Wallet-API**
+3. Complete PAY onboarding process (see below)
+4. Have NFTs ready for sale
+</Warning>
+
+## 1. Onboarding & Configuration
+
+### Onboarding Flow
+
+
+<Steps>
+  <Step title="Fill Onboarding Form" icon="clipboard">
+    Complete the **[PAY onboarding form](https://wkf.ms/3tJDeE8)** with your business details
+  </Step>
+  <Step title="Complete KYB Form" icon="shield-check">
+    Fill out the **Know Your Business (KYB)** form for due diligence
+  </Step>
+  <Step title="Stripe Integration" icon="stripe">
+    Complete the **Stripe form** with your business and payment details
+  </Step>
+  <Step title="Get Credentials" icon="key">
+    Once approved, receive your **Client ID** and **Client Secret**
+  </Step>
+</Steps>
+
+<Note>
+If you wish to use **PAY** as a stand-alone product, please [reach out to support](https://support.venly.io/support/tickets/new).
+</Note>
+
+## 2. Authentication
+
+Once you have your credentials, you can authenticate with the PAY API.
+
+### Get Bearer Token
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=YOUR_CLIENT_ID' \
+  -d 'client_secret=YOUR_CLIENT_SECRET'
+```
+
+```javascript JavaScript
+const getAccessToken = async () => {
+  const response = await fetch('https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      'grant_type': 'client_credentials',
+      'client_id': 'YOUR_CLIENT_ID',
+      'client_secret': 'YOUR_CLIENT_SECRET'
+    })
+  });
+  
+  const data = await response.json();
+  return data.access_token;
+};
+```
+
+```python Python
+import requests
+
+def get_access_token():
+    url = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token'
+    
+    data = {
+        'grant_type': 'client_credentials',
+        'client_id': 'YOUR_CLIENT_ID',
+        'client_secret': 'YOUR_CLIENT_SECRET'
+    }
+    
+    response = requests.post(url, data=data)
+    return response.json()['access_token']
+```
+</CodeGroup>
+
+<Tip>
+Learn how to authenticate and [retrieve the bearer token](https://docs.venly.io/reference/how-to-get-bearer-token) for detailed authentication information.
+</Tip>
+
+## 3. Customize Checkout (Recommended)
+
+Before processing payments, customize your checkout pages with your brand elements for a professional experience.
+
+### Upload Your Logo
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://api-pay-sandbox.venly.io/branding/icon' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: multipart/form-data' \
+  -F 'file=@/path/to/your/logo.png'
+```
+
+```javascript JavaScript
+const uploadLogo = async (accessToken, logoFile) => {
+  const formData = new FormData();
+  formData.append('file', logoFile);
+  
+  const response = await fetch('https://api-pay-sandbox.venly.io/branding/icon', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    },
+    body: formData
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+import requests
+
+def upload_logo(access_token, logo_file_path):
+    url = 'https://api-pay-sandbox.venly.io/branding/icon'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    with open(logo_file_path, 'rb') as file:
+        files = {'file': file}
+        response = requests.post(url, headers=headers, files=files)
+    
+    return response.json()
+```
+</CodeGroup>
+
+### Set Brand Colors
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://api-pay-sandbox.venly.io/branding' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "primaryColor": "#16A34A",
+    "backgroundColor": "#FFFFFF"
+  }'
+```
+
+```javascript JavaScript
+const setBrandColors = async (accessToken) => {
+  const response = await fetch('https://api-pay-sandbox.venly.io/branding', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      primaryColor: "#16A34A",
+      backgroundColor: "#FFFFFF"
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def set_brand_colors(access_token):
+    url = 'https://api-pay-sandbox.venly.io/branding'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "primaryColor": "#16A34A",
+        "backgroundColor": "#FFFFFF"
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+<Tip>
+Learn more about [customizing checkout URLs](https://docs.venly.io/docs/checkout-link-branding) for detailed branding options.
+</Tip>
+
+## 4. Configure Webhooks
+
+Set up webhooks to receive real-time payment notifications.
+
+### Create Webhook Endpoint
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://api-pay-sandbox.venly.io/webhooks' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "url": "https://your-domain.com/webhooks/pay",
+    "events": ["checkout.session.completed", "checkout.session.async_payment_succeeded"]
+  }'
+```
+
+```javascript JavaScript
+const createWebhook = async (accessToken) => {
+  const response = await fetch('https://api-pay-sandbox.venly.io/webhooks', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      url: "https://your-domain.com/webhooks/pay",
+      events: ["checkout.session.completed", "checkout.session.async_payment_succeeded"]
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def create_webhook(access_token):
+    url = 'https://api-pay-sandbox.venly.io/webhooks'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "url": "https://your-domain.com/webhooks/pay",
+        "events": ["checkout.session.completed", "checkout.session.async_payment_succeeded"]
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+<Tip>
+Learn more about [configuring webhooks/notifications](https://docs.venly.io/docs/configuring-webhooks-notifications) for complete webhook setup.
+</Tip>
+
+## 5. Create Checkout Session
+
+Now let's create a checkout session for our example **RING NFT** worth **€20**.
+
+### API Endpoint
+```http
+POST /checkout/sessions
+```
+
+### Request Parameters
+
+| Parameter | Description | Type | Required |
+|-----------|-------------|------|----------|
+| `line_items` | Array of items to purchase | Array | ✅ |
+| `line_items.price_data` | Price information for the item | Object | ✅ |
+| `line_items.price_data.product_data.name` | Product name | String | ✅ |
+| `line_items.price_data.unit_amount` | Price in smallest currency unit (cents) | Integer | ✅ |
+| `line_items.price_data.currency` | Currency code (EUR, USD, etc.) | String | ✅ |
+| `line_items.quantity` | Quantity of items | Integer | ✅ |
+| `success_url` | URL to redirect after successful payment | String | ✅ |
+| `cancel_url` | URL to redirect if payment is cancelled | String | ✅ |
+| `mode` | Payment mode (always "payment" for one-time) | String | ✅ |
+
+### Example Request
+
+<CodeGroup>
+```bash cURL
+curl -X POST 'https://api-pay-sandbox.venly.io/checkout/sessions' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "line_items": [
+      {
+        "price_data": {
+          "product_data": {
+            "name": "Ring NFT"
+          },
+          "unit_amount": 2000,
+          "currency": "EUR"
+        },
+        "quantity": 1
+      }
+    ],
+    "success_url": "https://www.venly.io/success",
+    "cancel_url": "https://www.venly.io/cancel",
+    "mode": "payment"
+  }'
+```
+
+```javascript JavaScript
+const createCheckoutSession = async (accessToken) => {
+  const response = await fetch('https://api-pay-sandbox.venly.io/checkout/sessions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      line_items: [
+        {
+          price_data: {
+            product_data: {
+              name: "Ring NFT"
+            },
+            unit_amount: 2000, // €20.00 in cents
+            currency: "EUR"
+          },
+          quantity: 1
+        }
+      ],
+      success_url: "https://www.venly.io/success",
+      cancel_url: "https://www.venly.io/cancel",
+      mode: "payment"
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def create_checkout_session(access_token):
+    url = 'https://api-pay-sandbox.venly.io/checkout/sessions'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "line_items": [
+            {
+                "price_data": {
+                    "product_data": {
+                        "name": "Ring NFT"
+                    },
+                    "unit_amount": 2000,  # €20.00 in cents
+                    "currency": "EUR"
+                },
+                "quantity": 1
+            }
+        ],
+        "success_url": "https://www.venly.io/success",
+        "cancel_url": "https://www.venly.io/cancel",
+        "mode": "payment"
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+### Response
+
+<Tip>
+**Important:** Save these parameters from the response:
+- **`id`** - The `sessionId` (used to check payment status)
+- **`url`** - The checkout URL (send this to your customer)
+</Tip>
+
+```json
+{
+    "id": "cs_test_a1cLJATpwDr0N5nfKSIk3VJDKMcEtOMGIZNwWf5nZ2v1EivlO6wIK5gY0f",
+    "object": "checkout.session",
+    "amount_subtotal": 2000,
+    "amount_total": 2000,
+    "currency": "eur",
+    "customer_creation": "if_required",
+    "mode": "payment",
+    "payment_status": "unpaid",
+    "status": "open",
+    "success_url": "https://www.venly.io/success",
+    "cancel_url": "https://www.venly.io/cancel",
+    "url": "https://checkout.stripe.com/c/pay/cs_test_a1cLJATpwDr0N5nfKSIk3VJDKMcEtOMGIZNwWf5nZ2v1EivlO6wIK5gY0f#fid2cXdsdWBEZmZqcGtxJz8nZGZmcVo0S21cUGRGVmR%2FNUAxZEFyJyknZHVsTmB8Jz8ndW5acWB2cVowNE10Z3BQQ2FnSmxpVFVsX19gRFxATGZdTmZGTD18NHBmdktycDEydzFLbjx1VVVjSFJGYH9WcVJ9SjdcUG1mYk1qXWs0SVZ8M1VPcUEzZkRyV39IfFxVSzU1b1BIYG88M30nKSdjd2poVmB3c2B3Jz9xd3BgKSdpZHxqcHFRfHVgJz8ndmxrYmlgWmxxYGgnKSdga2RnaWBVaWRmYG1qaWFgd3YnP3F3cGB4JSUl"
+}
+```
+
+## 6. Send Checkout Link to Customer
+
+Send the `url` from the response to your customer. They will interact directly with Stripe to complete the payment.
+
+### Checkout Experience
+
+<Note>
+This checkout page includes your company logo and color scheme because we customized the branding in step 3.
+</Note>
+
+## 7. Handle Payment Completion
+
+### Wait for Webhook Notification
+
+If you configured webhooks, you'll receive a notification when the payment is completed:
+
+<CodeGroup>
+```javascript Webhook Handler Example
+// Express.js webhook handler
+app.post('/webhooks/pay', express.raw({type: 'application/json'}), (req, res) => {
+  const event = req.body;
+  
+  // Handle the event
+  switch (event.type) {
+    case 'checkout.session.completed':
+      const session = event.data.object;
+      console.log('Payment succeeded:', session.id);
+      
+      // Verify payment and transfer NFT
+      handleSuccessfulPayment(session.id);
+      break;
+    
+    case 'checkout.session.async_payment_succeeded':
+      const asyncSession = event.data.object;
+      console.log('Async payment succeeded:', asyncSession.id);
+      
+      // Handle async payment completion
+      handleSuccessfulPayment(asyncSession.id);
+      break;
+    
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+  
+  res.json({received: true});
+});
+
+async function handleSuccessfulPayment(sessionId) {
+  // Verify payment status
+  const paymentStatus = await checkPaymentStatus(sessionId);
+  
+  if (paymentStatus.payment_status === 'paid') {
+    // Transfer NFT to customer
+    await transferNFTToCustomer(paymentStatus.customer_details.email);
+  }
+}
+```
+
+```python Python Webhook Handler
+from flask import Flask, request, jsonify
+import json
+
+app = Flask(__name__)
+
+@app.route('/webhooks/pay', methods=['POST'])
+def handle_webhook():
+    event = request.get_json()
+    
+    # Handle the event
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        print(f'Payment succeeded: {session["id"]}')
+        
+        # Verify payment and transfer NFT
+        handle_successful_payment(session['id'])
+    
+    elif event['type'] == 'checkout.session.async_payment_succeeded':
+        session = event['data']['object']
+        print(f'Async payment succeeded: {session["id"]}')
+        
+        # Handle async payment completion
+        handle_successful_payment(session['id'])
+    
+    else:
+        print(f'Unhandled event type {event["type"]}')
+    
+    return jsonify({'received': True})
+
+def handle_successful_payment(session_id):
+    # Verify payment status
+    payment_status = check_payment_status(session_id)
+    
+    if payment_status['payment_status'] == 'paid':
+        # Transfer NFT to customer
+        transfer_nft_to_customer(payment_status['customer_details']['email'])
+```
+</CodeGroup>
+
+### Verify Payment Status
+
+Always verify the payment status before transferring the NFT:
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://api-pay-sandbox.venly.io/checkout/sessions/cs_test_a1cLJATpwDr0N5nfKSIk3VJDKMcEtOMGIZNwWf5nZ2v1EivlO6wIK5gY0f' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN'
+```
+
+```javascript JavaScript
+const checkPaymentStatus = async (accessToken, sessionId) => {
+  const response = await fetch(`https://api-pay-sandbox.venly.io/checkout/sessions/${sessionId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`
+    }
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python
+def check_payment_status(access_token, session_id):
+    url = f'https://api-pay-sandbox.venly.io/checkout/sessions/{session_id}'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}'
+    }
+    
+    response = requests.get(url, headers=headers)
+    return response.json()
+```
+</CodeGroup>
+
+### Successful Payment Response
+
+<Check>
+Verify that `payment_status` is `"paid"` and `status` is `"complete"` before proceeding with NFT transfer.
+</Check>
+
+```json
+{
+    "id": "cs_test_a1cLJATpwDr0N5nfKSIk3VJDKMcEtOMGIZNwWf5nZ2v1EivlO6wIK5gY0f",
+    "object": "checkout.session",
+    "amount_subtotal": 2000,
+    "amount_total": 2000,
+    "currency": "eur",
+    "customer_details": {
+        "address": {
+            "country": "PK"
+        },
+        "email": "customer@example.com",
+        "name": "John Doe"
+    },
+    "payment_status": "paid",
+    "status": "complete",
+    "success_url": "https://www.venly.io/success",
+    "url": null
+}
+```
+
+## 8. Transfer NFT to Customer
+
+Once payment is verified, transfer the NFT to the customer using Venly's NFT API:
+
+<CodeGroup>
+```javascript JavaScript NFT Transfer
+const transferNFT = async (accessToken, contractAddress, tokenId, customerWallet) => {
+  const response = await fetch('https://api-wallet-sandbox.venly.io/api/transactions/execute', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      transactionRequest: {
+        type: "TRANSFER_TOKEN",
+        walletId: "YOUR_WALLET_ID",
+        to: customerWallet,
+        secretType: "MATIC",
+        tokenAddress: contractAddress,
+        tokenId: tokenId,
+        value: 1
+      }
+    })
+  });
+  
+  return await response.json();
+};
+```
+
+```python Python NFT Transfer
+def transfer_nft(access_token, contract_address, token_id, customer_wallet):
+    url = 'https://api-wallet-sandbox.venly.io/api/transactions/execute'
+    
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+        'Content-Type': 'application/json'
+    }
+    
+    data = {
+        "transactionRequest": {
+            "type": "TRANSFER_TOKEN",
+            "walletId": "YOUR_WALLET_ID",
+            "to": customer_wallet,
+            "secretType": "MATIC",
+            "tokenAddress": contract_address,
+            "tokenId": token_id,
+            "value": 1
+        }
+    }
+    
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
+```
+</CodeGroup>
+
+<Tip>
+Learn more about [NFT transfers](https://docs.venly.io/reference/executetransaction_1) in the Wallet API documentation.
+</Tip>
+
+## Complete Example Implementation
+
+Here's a complete example that combines all the steps:
+
+<CodeGroup>
+```javascript Complete JavaScript Example
+class VenlyPayQuickStart {
+  constructor(clientId, clientSecret) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.baseUrl = 'https://api-pay-sandbox.venly.io';
+    this.authUrl = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token';
+    this.accessToken = null;
+  }
+
+  async authenticate() {
+    const response = await fetch(this.authUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        'grant_type': 'client_credentials',
+        'client_id': this.clientId,
+        'client_secret': this.clientSecret
+      })
+    });
+    
+    const data = await response.json();
+    this.accessToken = data.access_token;
+    return this.accessToken;
+  }
+
+  async createNFTSale(nftName, priceInCents, currency = 'EUR') {
+    console.log('🚀 Starting NFT sale process...');
+    
+    // Step 1: Authenticate
+    console.log('🔐 Authenticating...');
+    await this.authenticate();
+    
+    // Step 2: Create checkout session
+    console.log('💳 Creating checkout session...');
+    const session = await this.createCheckoutSession(nftName, priceInCents, currency);
+    console.log(`✅ Checkout session created: ${session.id}`);
+    
+    return {
+      sessionId: session.id,
+      checkoutUrl: session.url,
+      paymentStatus: session.payment_status
+    };
+  }
+
+  async createCheckoutSession(productName, unitAmount, currency) {
+    const response = await fetch(`${this.baseUrl}/checkout/sessions`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        line_items: [
+          {
+            price_data: {
+              product_data: {
+                name: productName
+              },
+              unit_amount: unitAmount,
+              currency: currency
+            },
+            quantity: 1
+          }
+        ],
+        success_url: "https://www.venly.io/success",
+        cancel_url: "https://www.venly.io/cancel",
+        mode: "payment"
+      })
+    });
+    
+    const data = await response.json();
+    return data;
+  }
+
+  async checkPaymentStatus(sessionId) {
+    const response = await fetch(`${this.baseUrl}/checkout/sessions/${sessionId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      }
+    });
+    
+    return await response.json();
+  }
+
+  async setupBranding(logoFile, primaryColor = "#16A34A") {
+    console.log('🎨 Setting up branding...');
+    
+    // Upload logo
+    if (logoFile) {
+      const formData = new FormData();
+      formData.append('file', logoFile);
+      
+      await fetch(`${this.baseUrl}/branding/icon`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`
+        },
+        body: formData
+      });
+    }
+    
+    // Set colors
+    await fetch(`${this.baseUrl}/branding`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        primaryColor: primaryColor,
+        backgroundColor: "#FFFFFF"
+      })
+    });
+    
+    console.log('✅ Branding configured');
+  }
+
+  async setupWebhook(webhookUrl) {
+    console.log('🔗 Setting up webhook...');
+    
+    const response = await fetch(`${this.baseUrl}/webhooks`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url: webhookUrl,
+        events: ["checkout.session.completed", "checkout.session.async_payment_succeeded"]
+      })
+    });
+    
+    const webhook = await response.json();
+    console.log('✅ Webhook configured');
+    return webhook;
+  }
+}
+
+// Usage
+const payQuickStart = new VenlyPayQuickStart('YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET');
+
+// Create NFT sale
+payQuickStart.createNFTSale('Ring NFT', 2000, 'EUR')
+  .then(result => {
+    console.log('🎉 NFT Sale Created!');
+    console.log('Session ID:', result.sessionId);
+    console.log('Checkout URL:', result.checkoutUrl);
+    console.log('Send this URL to your customer:', result.checkoutUrl);
+  })
+  .catch(error => {
+    console.error('❌ Error:', error);
+  });
+```
+
+```python Complete Python Example
+import requests
+import json
+
+class VenlyPayQuickStart:
+    def __init__(self, client_id, client_secret):
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.base_url = 'https://api-pay-sandbox.venly.io'
+        self.auth_url = 'https://login-sandbox.venly.io/auth/realms/Venly/protocol/openid-connect/token'
+        self.access_token = None
+    
+    def authenticate(self):
+        data = {
+            'grant_type': 'client_credentials',
+            'client_id': self.client_id,
+            'client_secret': self.client_secret
+        }
+        
+        response = requests.post(self.auth_url, data=data)
+        result = response.json()
+        self.access_token = result['access_token']
+        return self.access_token
+    
+    def create_nft_sale(self, nft_name, price_in_cents, currency='EUR'):
+        print('🚀 Starting NFT sale process...')
+        
+        # Step 1: Authenticate
+        print('🔐 Authenticating...')
+        self.authenticate()
+        
+        # Step 2: Create checkout session
+        print('💳 Creating checkout session...')
+        session = self.create_checkout_session(nft_name, price_in_cents, currency)
+        print(f'✅ Checkout session created: {session["id"]}')
+        
+        return {
+            'session_id': session['id'],
+            'checkout_url': session['url'],
+            'payment_status': session['payment_status']
+        }
+    
+    def create_checkout_session(self, product_name, unit_amount, currency):
+        url = f'{self.base_url}/checkout/sessions'
+        
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "line_items": [
+                {
+                    "price_data": {
+                        "product_data": {
+                            "name": product_name
+                        },
+                        "unit_amount": unit_amount,
+                        "currency": currency
+                    },
+                    "quantity": 1
+                }
+            ],
+            "success_url": "https://www.venly.io/success",
+            "cancel_url": "https://www.venly.io/cancel",
+            "mode": "payment"
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()
+    
+    def check_payment_status(self, session_id):
+        url = f'{self.base_url}/checkout/sessions/{session_id}'
+        
+        headers = {
+            'Authorization': f'Bearer {self.access_token}'
+        }
+        
+        response = requests.get(url, headers=headers)
+        return response.json()
+    
+    def setup_branding(self, logo_file_path=None, primary_color="#16A34A"):
+        print('🎨 Setting up branding...')
+        
+        # Upload logo
+        if logo_file_path:
+            url = f'{self.base_url}/branding/icon'
+            headers = {'Authorization': f'Bearer {self.access_token}'}
+            
+            with open(logo_file_path, 'rb') as file:
+                files = {'file': file}
+                requests.post(url, headers=headers, files=files)
+        
+        # Set colors
+        url = f'{self.base_url}/branding'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "primaryColor": primary_color,
+            "backgroundColor": "#FFFFFF"
+        }
+        
+        requests.post(url, headers=headers, json=data)
+        print('✅ Branding configured')
+    
+    def setup_webhook(self, webhook_url):
+        print('🔗 Setting up webhook...')
+        
+        url = f'{self.base_url}/webhooks'
+        headers = {
+            'Authorization': f'Bearer {self.access_token}',
+            'Content-Type': 'application/json'
+        }
+        
+        data = {
+            "url": webhook_url,
+            "events": ["checkout.session.completed", "checkout.session.async_payment_succeeded"]
+        }
+        
+        response = requests.post(url, headers=headers, json=data)
+        webhook = response.json()
+        print('✅ Webhook configured')
+        return webhook
+
+# Usage
+if __name__ == "__main__":
+    pay_quick_start = VenlyPayQuickStart('YOUR_CLIENT_ID', 'YOUR_CLIENT_SECRET')
+    
+    try:
+        # Create NFT sale
+        result = pay_quick_start.create_nft_sale('Ring NFT', 2000, 'EUR')
+        print('🎉 NFT Sale Created!')
+        print('Session ID:', result['session_id'])
+        print('Checkout URL:', result['checkout_url'])
+        print('Send this URL to your customer:', result['checkout_url'])
+    except Exception as error:
+        print('❌ Error:', error)
+```
+</CodeGroup>
+
+## 🎉 Congratulations!
+
+You've successfully set up PAY API and created your first fiat payment checkout for NFTs! Here's what you accomplished:
+
+<CardGroup cols={2}>
+  <Card title="✅ Onboarding Complete" icon="user-check">
+    Completed PAY onboarding and received credentials
+  </Card>
+  <Card title="✅ Branding Configured" icon="palette">
+    Customized checkout pages with your brand
+  </Card>
+  <Card title="✅ Webhooks Set Up" icon="webhook">
+    Configured real-time payment notifications
+  </Card>
+  <Card title="✅ Payment Created" icon="credit-card">
+    Generated checkout link for NFT purchase
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Now that you've processed your first payment, explore these advanced features:
+
+<CardGroup cols={2}>
+  <Card title="Checkout Management" href="/guides/pay-api/checkout/checkout-link-management" icon="link">
+    Advanced checkout session management and customization
+  </Card>
+  <Card title="Fiat On/Off Ramps" href="/guides/pay-api/fiat-ramps/fiat-on-ramps" icon="arrows-up-down">
+    Enable crypto-to-fiat and fiat-to-crypto conversions
+  </Card>
+  <Card title="Stripe Dashboard" href="/guides/pay-api/stripe-dashboard/fetch-stripe-dashboard" icon="chart-line">
+    Access detailed payment analytics and reporting
+  </Card>
+  <Card title="Testing Guide" href="/guides/pay-api/testing/testing-pay" icon="flask">
+    Comprehensive testing strategies for PAY integration
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Onboarding Issues" icon="user-x">
+    **Common Problems:**
+    - Business not in supported countries (USA, UK, EU)
+    - Incomplete KYB documentation
+    - Stripe verification delays
+    - Missing required business information
+    
+    **Solutions:**
+    - Ensure business registration in supported regions
+    - Complete all KYB forms accurately
+    - Provide all requested documentation
+    - Contact support for status updates
+  </Accordion>
+  
+  <Accordion title="Authentication Errors" icon="key">
+    **Common Problems:**
+    - Invalid Client ID or Client Secret
+    - Expired access tokens
+    - Wrong authentication endpoint
+    - Missing authentication headers
+    
+    **Solutions:**
+    - Verify credentials from PAY onboarding
+    - Refresh access tokens regularly
+    - Use correct sandbox/production endpoints
+    - Include Bearer token in all API requests
+  </Accordion>
+  
+  <Accordion title="Checkout Session Issues" icon="credit-card">
+    **Common Problems:**
+    - Invalid currency codes
+    - Incorrect price formatting
+    - Missing required parameters
+    - Invalid success/cancel URLs
+    
+    **Solutions:**
+    - Use ISO currency codes (EUR, USD, GBP)
+    - Specify prices in smallest currency unit (cents)
+    - Include all required checkout parameters
+    - Ensure URLs are valid and accessible
+  </Accordion>
+  
+  <Accordion title="Payment Verification" icon="shield-check">
+    **Common Problems:**
+    - Webhook not receiving events
+    - Payment status not updating
+    - Customer payment failures
+    - NFT transfer delays
+    
+    **Solutions:**
+    - Verify webhook URL is accessible
+    - Check webhook event configuration
+    - Always verify payment status before NFT transfer
+    - Implement proper error handling and retries
+  </Accordion>
+</AccordionGroup>
+
+## Payment Configuration Examples
+
+<Tabs>
+  <Tab title="Art NFT Sale">
+    ```json
+    {
+      "line_items": [
+        {
+          "price_data": {
+            "product_data": {
+              "name": "Digital Art Masterpiece #001"
+            },
+            "unit_amount": 50000,
+            "currency": "USD"
+          },
+          "quantity": 1
+        }
+      ],
+      "success_url": "https://artgallery.com/success",
+      "cancel_url": "https://artgallery.com/cancel",
+      "mode": "payment"
+    }
+    ```
+    Perfect for high-value art sales.
+  </Tab>
+  <Tab title="Gaming NFT">
+    ```json
+    {
+      "line_items": [
+        {
+          "price_data": {
+            "product_data": {
+              "name": "Legendary Sword NFT"
+            },
+            "unit_amount": 999,
+            "currency": "EUR"
+          },
+          "quantity": 1
+        }
+      ],
+      "success_url": "https://game.com/inventory",
+      "cancel_url": "https://game.com/shop",
+      "mode": "payment"
+    }
+    ```
+    Ideal for in-game asset purchases.
+  </Tab>
+  <Tab title="Collectible">
+    ```json
+    {
+      "line_items": [
+        {
+          "price_data": {
+            "product_data": {
+              "name": "Limited Edition Collectible #42"
+            },
+            "unit_amount": 2500,
+            "currency": "GBP"
+          },
+          "quantity": 1
+        }
+      ],
+      "success_url": "https://collectibles.com/owned",
+      "cancel_url": "https://collectibles.com/marketplace",
+      "mode": "payment"
+    }
+    ```
+    Great for limited edition releases.
+  </Tab>
+  <Tab title="Membership NFT">
+    ```json
+    {
+      "line_items": [
+        {
+          "price_data": {
+            "product_data": {
+              "name": "VIP Membership Pass 2024"
+            },
+            "unit_amount": 10000,
+            "currency": "USD"
+          },
+          "quantity": 1
+        }
+      ],
+      "success_url": "https://club.com/welcome",
+      "cancel_url": "https://club.com/join",
+      "mode": "payment"
+    }
+    ```
+    Perfect for membership and access tokens.
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<Tip>
+**PAY Integration Best Practices:**
+
+1. **Security First** - Always verify payment status before NFT transfer
+2. **User Experience** - Customize checkout pages with your branding
+3. **Error Handling** - Implement comprehensive error handling and logging
+4. **Testing** - Thoroughly test payment flows in sandbox environment
+5. **Monitoring** - Set up proper webhook handling and monitoring
+6. **Compliance** - Maintain accurate transaction records for compliance
+7. **Customer Support** - Provide clear support channels for payment issues
+8. **Performance** - Optimize checkout flow for maximum conversion
+</Tip>
+
+<Warning>
+**Important Considerations:**
+- Always verify payment completion before transferring NFTs
+- Test thoroughly in sandbox before going live
+- Implement proper webhook signature validation
+- Handle payment failures gracefully
+- Maintain PCI compliance for payment data
+- Monitor for fraudulent transactions
+</Warning>
+
+---

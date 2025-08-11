@@ -1,0 +1,1014 @@
+---
+title: "Access Stripe Dashboard"
+description: "Retrieve secure login links to access your Stripe dashboard for transaction monitoring and financial management"
+icon: "chart-line"
+---
+
+<Info>
+**Dashboard Access:** Generate secure login links to access your Stripe dashboard for comprehensive transaction monitoring and financial analytics.
+
+**Time required:** ~2 minutes
+</Info>
+
+## What is Stripe Dashboard Access?
+
+The Stripe dashboard provides a comprehensive view of all your payment transactions, analytics, and financial data. This endpoint generates secure, time-limited login links that allow you to access your Stripe dashboard without manual authentication, streamlining your workflow for transaction monitoring and financial management.
+
+<CardGroup cols={2}>
+  <Card title="Transaction Overview" icon="receipt">
+    View all payment transactions and their status
+  </Card>
+  <Card title="Financial Analytics" icon="chart-bar">
+    Access detailed financial reports and insights
+  </Card>
+  <Card title="Secure Access" icon="shield">
+    Time-limited login links for enhanced security
+  </Card>
+  <Card title="Real-time Data" icon="clock">
+    Live transaction monitoring and updates
+  </Card>
+</CardGroup>
+
+## Why Use Dashboard Access?
+
+<Tabs>
+  <Tab title="Transaction Monitoring">
+    **Real-time Oversight**
+    - Monitor payment transactions
+    - Track transaction status
+    - View payment methods used
+    - Analyze transaction patterns
+  </Tab>
+  <Tab title="Financial Management">
+    **Business Intelligence**
+    - Revenue tracking and reporting
+    - Payout schedules and history
+    - Fee analysis and optimization
+    - Financial reconciliation
+  </Tab>
+  <Tab title="Customer Insights">
+    **User Analytics**
+    - Customer payment behavior
+    - Geographic transaction data
+    - Payment method preferences
+    - Conversion rate analysis
+  </Tab>
+</Tabs>
+
+## Generate Dashboard Login Link
+
+### API Endpoint
+
+<CodeGroup>
+```javascript JavaScript
+// Generate Stripe dashboard login link
+const response = await fetch('/stripe-dashboard', {
+  method: 'GET',
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+});
+
+const data = await response.json();
+console.log('Dashboard URL:', data.url);
+
+// Open dashboard in new window
+window.open(data.url, '_blank');
+```
+
+```python Python
+import requests
+import webbrowser
+
+# Generate Stripe dashboard login link
+response = requests.get(
+    '/stripe-dashboard',
+    headers={'Authorization': 'Bearer YOUR_API_KEY'}
+)
+
+data = response.json()
+print('Dashboard URL:', data['url'])
+
+# Open dashboard in browser
+webbrowser.open(data['url'])
+```
+
+```bash cURL
+curl -X GET '/stripe-dashboard' \
+  -H 'Authorization: Bearer YOUR_API_KEY'
+```
+
+```php PHP
+<?php
+// Generate Stripe dashboard login link
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, '/stripe-dashboard');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Bearer YOUR_API_KEY'
+]);
+
+$response = curl_exec($ch);
+$data = json_decode($response, true);
+
+echo 'Dashboard URL: ' . $data['url'];
+curl_close($ch);
+?>
+```
+</CodeGroup>
+
+### Response Structure
+
+<Tabs>
+  <Tab title="Success Response">
+    ```json
+    {
+      "object": "login_link",
+      "created": 1692784524,
+      "url": "https://connect.stripe.com/express/acct_1oJl3NhYUE4aDw/jy9JOia7aCSaz0"
+    }
+    ```
+  </Tab>
+  <Tab title="Response Fields">
+    **Login Link Information:**
+    - **`object`** - Type of object returned (always "login_link")
+    - **`created`** - Unix timestamp when the link was created
+    - **`url`** - Secure login URL for accessing the Stripe dashboard
+    
+    **Security Features:**
+    - Links are time-limited for security
+    - Single-use authentication tokens
+    - Automatic session management
+  </Tab>
+</Tabs>
+
+<Check>
+**Usage:** Copy the returned URL and paste it into your web browser to access your Stripe dashboard. The link provides secure, authenticated access without requiring manual login.
+</Check>
+
+## Advanced Dashboard Integration
+
+<AccordionGroup>
+  <Accordion title="Automated Dashboard Access" icon="robot">
+    **Implement automated dashboard access workflows:**
+    
+    ```javascript
+    class StripeDashboardManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.cachedLink = null;
+        this.linkExpiry = null;
+      }
+    
+      async getDashboardLink(forceRefresh = false) {
+        // Check if we have a valid cached link
+        if (!forceRefresh && this.cachedLink && this.isLinkValid()) {
+          console.log('Using cached dashboard link');
+          return this.cachedLink;
+        }
+        
+        try {
+          const response = await fetch('/stripe-dashboard', {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          
+          // Cache the link with expiry (links typically expire after 1 hour)
+          this.cachedLink = data.url;
+          this.linkExpiry = Date.now() + (55 * 60 * 1000); // 55 minutes for safety
+          
+          console.log('Generated new dashboard link');
+          return data.url;
+        } catch (error) {
+          console.error('Failed to generate dashboard link:', error);
+          throw error;
+        }
+      }
+    
+      isLinkValid() {
+        return this.linkExpiry && Date.now() < this.linkExpiry;
+      }
+    
+      async openDashboard(target = '_blank') {
+        try {
+          const url = await this.getDashboardLink();
+          
+          if (typeof window !== 'undefined') {
+            // Browser environment
+            window.open(url, target);
+            return { success: true, url };
+          } else {
+            // Node.js environment
+            console.log(`Dashboard URL: ${url}`);
+            return { success: true, url };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      }
+    
+      async openDashboardWithAnalytics(analyticsCallback) {
+        try {
+          const url = await this.getDashboardLink();
+          
+          // Track dashboard access
+          if (analyticsCallback) {
+            analyticsCallback('dashboard_accessed', {
+              timestamp: new Date().toISOString(),
+              url: url.split('/').slice(0, 3).join('/') // Remove sensitive parts
+            });
+          }
+          
+          if (typeof window !== 'undefined') {
+            window.open(url, '_blank');
+          }
+          
+          return { success: true, url };
+        } catch (error) {
+          if (analyticsCallback) {
+            analyticsCallback('dashboard_access_failed', {
+              error: error.message,
+              timestamp: new Date().toISOString()
+            });
+          }
+          
+          return { success: false, error: error.message };
+        }
+      }
+    
+      async scheduleDashboardAccess(scheduleOptions) {
+        const {
+          frequency = 'daily', // daily, weekly, monthly
+          time = '09:00',
+          timezone = 'UTC',
+          callback
+        } = scheduleOptions;
+        
+        console.log(`Scheduling dashboard access: ${frequency} at ${time} (${timezone})`);
+        
+        // Implementation would depend on your scheduling system
+        // This is a conceptual example
+        const scheduleId = `dashboard_${Date.now()}`;
+        
+        return {
+          scheduleId,
+          frequency,
+          time,
+          timezone,
+          nextExecution: this.calculateNextExecution(frequency, time, timezone)
+        };
+      }
+    
+      calculateNextExecution(frequency, time, timezone) {
+        // Simplified calculation - in practice, use a proper date library
+        const now = new Date();
+        const [hours, minutes] = time.split(':').map(Number);
+        
+        const next = new Date(now);
+        next.setHours(hours, minutes, 0, 0);
+        
+        if (next <= now) {
+          // If time has passed today, schedule for next occurrence
+          switch (frequency) {
+            case 'daily':
+              next.setDate(next.getDate() + 1);
+              break;
+            case 'weekly':
+              next.setDate(next.getDate() + 7);
+              break;
+            case 'monthly':
+              next.setMonth(next.getMonth() + 1);
+              break;
+          }
+        }
+        
+        return next.toISOString();
+      }
+    }
+    
+    // Usage
+    const dashboardManager = new StripeDashboardManager('YOUR_API_KEY');
+    
+    // Simple dashboard access
+    const result = await dashboardManager.openDashboard();
+    console.log('Dashboard access result:', result);
+    
+    // Dashboard access with analytics
+    await dashboardManager.openDashboardWithAnalytics((event, data) => {
+      console.log(`Analytics: ${event}`, data);
+      // Send to your analytics service
+    });
+    
+    // Schedule regular dashboard access
+    const schedule = await dashboardManager.scheduleDashboardAccess({
+      frequency: 'daily',
+      time: '09:00',
+      timezone: 'UTC'
+    });
+    console.log('Dashboard access scheduled:', schedule);
+    ```
+  </Accordion>
+  
+  <Accordion title="Dashboard Embedding" icon="window">
+    **Embed dashboard access in your application:**
+    
+    ```javascript
+    class DashboardEmbedder {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.embedContainer = null;
+      }
+    
+      async createEmbeddedDashboard(containerId, options = {}) {
+        const {
+          width = '100%',
+          height = '600px',
+          showHeader = true,
+          allowFullscreen = true,
+          refreshInterval = null
+        } = options;
+        
+        this.embedContainer = document.getElementById(containerId);
+        if (!this.embedContainer) {
+          throw new Error(`Container with ID '${containerId}' not found`);
+        }
+        
+        // Create iframe for dashboard
+        const iframe = document.createElement('iframe');
+        iframe.style.width = width;
+        iframe.style.height = height;
+        iframe.style.border = 'none';
+        iframe.style.borderRadius = '8px';
+        iframe.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+        
+        if (allowFullscreen) {
+          iframe.allowFullscreen = true;
+        }
+        
+        // Get dashboard URL
+        const dashboardUrl = await this.getDashboardUrl();
+        iframe.src = dashboardUrl;
+        
+        // Add loading indicator
+        const loadingDiv = this.createLoadingIndicator();
+        this.embedContainer.appendChild(loadingDiv);
+        
+        // Handle iframe load
+        iframe.onload = () => {
+          loadingDiv.remove();
+          this.embedContainer.appendChild(iframe);
+          
+          // Set up refresh interval if specified
+          if (refreshInterval) {
+            this.setupAutoRefresh(iframe, refreshInterval);
+          }
+        };
+        
+        iframe.onerror = () => {
+          loadingDiv.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #666;">
+              <p>Failed to load dashboard</p>
+              <button onclick="location.reload()">Retry</button>
+            </div>
+          `;
+        };
+        
+        return {
+          iframe,
+          container: this.embedContainer,
+          refresh: () => this.refreshDashboard(iframe)
+        };
+      }
+    
+      createLoadingIndicator() {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.style.cssText = `
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 600px;
+          background: #f8f9fa;
+          border-radius: 8px;
+        `;
+        
+        loadingDiv.innerHTML = `
+          <div style="text-align: center;">
+            <div style="
+              width: 40px;
+              height: 40px;
+              border: 4px solid #e3e3e3;
+              border-top: 4px solid #007bff;
+              border-radius: 50%;
+              animation: spin 1s linear infinite;
+              margin: 0 auto 16px;
+            "></div>
+            <p style="color: #666; margin: 0;">Loading Stripe Dashboard...</p>
+          </div>
+          <style>
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          </style>
+        `;
+        
+        return loadingDiv;
+      }
+    
+      async getDashboardUrl() {
+        const response = await fetch('/stripe-dashboard', {
+          headers: { 'Authorization': `Bearer ${this.apiKey}` }
+        });
+        
+        const data = await response.json();
+        return data.url;
+      }
+    
+      setupAutoRefresh(iframe, intervalMinutes) {
+        const intervalMs = intervalMinutes * 60 * 1000;
+        
+        setInterval(async () => {
+          try {
+            const newUrl = await this.getDashboardUrl();
+            iframe.src = newUrl;
+            console.log('Dashboard refreshed automatically');
+          } catch (error) {
+            console.error('Failed to refresh dashboard:', error);
+          }
+        }, intervalMs);
+      }
+    
+      async refreshDashboard(iframe) {
+        try {
+          const newUrl = await this.getDashboardUrl();
+          iframe.src = newUrl;
+          return { success: true };
+        } catch (error) {
+          console.error('Failed to refresh dashboard:', error);
+          return { success: false, error: error.message };
+        }
+      }
+    
+      createDashboardWidget(containerId, widgetType = 'summary') {
+        const container = document.getElementById(containerId);
+        if (!container) {
+          throw new Error(`Container with ID '${containerId}' not found`);
+        }
+        
+        const widget = document.createElement('div');
+        widget.className = 'stripe-dashboard-widget';
+        widget.style.cssText = `
+          background: white;
+          border-radius: 8px;
+          padding: 20px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          margin-bottom: 16px;
+        `;
+        
+        switch (widgetType) {
+          case 'summary':
+            widget.innerHTML = `
+              <h3 style="margin: 0 0 16px 0; color: #333;">Payment Summary</h3>
+              <div style="display: flex; gap: 16px;">
+                <button onclick="window.open('${this.getDashboardUrl()}', '_blank')" 
+                        style="
+                          background: #635bff;
+                          color: white;
+                          border: none;
+                          padding: 8px 16px;
+                          border-radius: 4px;
+                          cursor: pointer;
+                        ">
+                  View Full Dashboard
+                </button>
+              </div>
+            `;
+            break;
+            
+          case 'quick-access':
+            widget.innerHTML = `
+              <h3 style="margin: 0 0 16px 0; color: #333;">Quick Access</h3>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
+                <button onclick="this.openDashboardSection('payments')" 
+                        style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                  Payments
+                </button>
+                <button onclick="this.openDashboardSection('customers')" 
+                        style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                  Customers
+                </button>
+                <button onclick="this.openDashboardSection('analytics')" 
+                        style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                  Analytics
+                </button>
+              </div>
+            `;
+            break;
+        }
+        
+        container.appendChild(widget);
+        return widget;
+      }
+    }
+    
+    // Usage
+    const embedder = new DashboardEmbedder('YOUR_API_KEY');
+    
+    // Create embedded dashboard
+    const dashboard = await embedder.createEmbeddedDashboard('dashboard-container', {
+      height: '800px',
+      refreshInterval: 30 // Refresh every 30 minutes
+    });
+    
+    // Create dashboard widgets
+    embedder.createDashboardWidget('widget-container', 'summary');
+    embedder.createDashboardWidget('quick-access-container', 'quick-access');
+    ```
+  </Accordion>
+  
+  <Accordion title="Dashboard Analytics Integration" icon="chart-mixed">
+    **Integrate dashboard access with analytics:**
+    
+    ```javascript
+    class DashboardAnalytics {
+      constructor(apiKey, analyticsConfig = {}) {
+        this.apiKey = apiKey;
+        this.analyticsConfig = analyticsConfig;
+        this.accessLog = [];
+      }
+    
+      async trackDashboardAccess(userId, metadata = {}) {
+        const accessEvent = {
+          userId,
+          timestamp: new Date().toISOString(),
+          action: 'dashboard_access_requested',
+          metadata: {
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'server',
+            referrer: typeof document !== 'undefined' ? document.referrer : null,
+            ...metadata
+          }
+        };
+        
+        try {
+          // Generate dashboard link
+          const response = await fetch('/stripe-dashboard', {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          
+          // Log successful access
+          accessEvent.action = 'dashboard_access_granted';
+          accessEvent.dashboardUrl = data.url.split('/').slice(0, 3).join('/'); // Remove sensitive parts
+          accessEvent.linkCreated = data.created;
+          
+          this.accessLog.push(accessEvent);
+          
+          // Send to analytics service
+          await this.sendAnalytics(accessEvent);
+          
+          return { success: true, url: data.url, event: accessEvent };
+        } catch (error) {
+          // Log failed access
+          accessEvent.action = 'dashboard_access_failed';
+          accessEvent.error = error.message;
+          
+          this.accessLog.push(accessEvent);
+          await this.sendAnalytics(accessEvent);
+          
+          return { success: false, error: error.message, event: accessEvent };
+        }
+      }
+    
+      async sendAnalytics(event) {
+        if (this.analyticsConfig.endpoint) {
+          try {
+            await fetch(this.analyticsConfig.endpoint, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(this.analyticsConfig.headers || {})
+              },
+              body: JSON.stringify(event)
+            });
+          } catch (error) {
+            console.error('Failed to send analytics:', error);
+          }
+        }
+        
+        // Console logging for development
+        if (this.analyticsConfig.debug) {
+          console.log('Dashboard Analytics:', event);
+        }
+      }
+    
+      generateAccessReport(timeRange = '7d') {
+        const now = new Date();
+        const cutoff = new Date();
+        
+        switch (timeRange) {
+          case '1d':
+            cutoff.setDate(now.getDate() - 1);
+            break;
+          case '7d':
+            cutoff.setDate(now.getDate() - 7);
+            break;
+          case '30d':
+            cutoff.setDate(now.getDate() - 30);
+            break;
+          default:
+            cutoff.setDate(now.getDate() - 7);
+        }
+        
+        const relevantLogs = this.accessLog.filter(log => 
+          new Date(log.timestamp) >= cutoff
+        );
+        
+        const report = {
+          timeRange,
+          totalAccesses: relevantLogs.length,
+          successfulAccesses: relevantLogs.filter(log => log.action === 'dashboard_access_granted').length,
+          failedAccesses: relevantLogs.filter(log => log.action === 'dashboard_access_failed').length,
+          uniqueUsers: new Set(relevantLogs.map(log => log.userId)).size,
+          accessesByDay: this.groupAccessesByDay(relevantLogs),
+          topUsers: this.getTopUsers(relevantLogs),
+          errorAnalysis: this.analyzeErrors(relevantLogs)
+        };
+        
+        report.successRate = report.totalAccesses > 0 
+          ? (report.successfulAccesses / report.totalAccesses * 100).toFixed(2)
+          : 0;
+        
+        return report;
+      }
+    
+      groupAccessesByDay(logs) {
+        const dayGroups = {};
+        
+        logs.forEach(log => {
+          const day = log.timestamp.split('T')[0];
+          if (!dayGroups[day]) {
+            dayGroups[day] = { successful: 0, failed: 0 };
+          }
+          
+          if (log.action === 'dashboard_access_granted') {
+            dayGroups[day].successful++;
+          } else if (log.action === 'dashboard_access_failed') {
+            dayGroups[day].failed++;
+          }
+        });
+        
+        return dayGroups;
+      }
+    
+      getTopUsers(logs, limit = 10) {
+        const userCounts = {};
+        
+        logs.forEach(log => {
+          if (!userCounts[log.userId]) {
+            userCounts[log.userId] = { total: 0, successful: 0, failed: 0 };
+          }
+          
+          userCounts[log.userId].total++;
+          
+          if (log.action === 'dashboard_access_granted') {
+            userCounts[log.userId].successful++;
+          } else if (log.action === 'dashboard_access_failed') {
+            userCounts[log.userId].failed++;
+          }
+        });
+        
+        return Object.entries(userCounts)
+          .sort(([, a], [, b]) => b.total - a.total)
+          .slice(0, limit)
+          .map(([userId, stats]) => ({ userId, ...stats }));
+      }
+    
+      analyzeErrors(logs) {
+        const errors = logs.filter(log => log.action === 'dashboard_access_failed');
+        const errorCounts = {};
+        
+        errors.forEach(log => {
+          const error = log.error || 'Unknown error';
+          errorCounts[error] = (errorCounts[error] || 0) + 1;
+        });
+        
+        return Object.entries(errorCounts)
+          .sort(([, a], [, b]) => b - a)
+          .map(([error, count]) => ({ error, count }));
+      }
+    }
+    
+    // Usage
+    const analytics = new DashboardAnalytics('YOUR_API_KEY', {
+      endpoint: 'https://your-analytics-service.com/events',
+      debug: true,
+      headers: {
+        'X-API-Key': 'your-analytics-api-key'
+      }
+    });
+    
+    // Track dashboard access
+    const result = await analytics.trackDashboardAccess('user123', {
+      source: 'admin_panel',
+      feature: 'transaction_review'
+    });
+    
+    if (result.success) {
+      window.open(result.url, '_blank');
+    }
+    
+    // Generate access report
+    const report = analytics.generateAccessReport('7d');
+    console.log('Dashboard access report:', report);
+    ```
+  </Accordion>
+  
+  <Accordion title="Multi-User Dashboard Management" icon="users">
+    **Manage dashboard access for multiple users:**
+    
+    ```javascript
+    class MultiUserDashboardManager {
+      constructor(apiKey) {
+        this.apiKey = apiKey;
+        this.userSessions = new Map();
+        this.accessPermissions = new Map();
+      }
+    
+      setUserPermissions(userId, permissions) {
+        this.accessPermissions.set(userId, {
+          canAccessDashboard: permissions.canAccessDashboard || false,
+          allowedSections: permissions.allowedSections || [],
+          accessLevel: permissions.accessLevel || 'read-only',
+          expiresAt: permissions.expiresAt || null
+        });
+      }
+    
+      async requestDashboardAccess(userId, requestedBy = null) {
+        // Check permissions
+        const permissions = this.accessPermissions.get(userId);
+        if (!permissions || !permissions.canAccessDashboard) {
+          return {
+            success: false,
+            error: 'User does not have dashboard access permissions'
+          };
+        }
+        
+        // Check expiry
+        if (permissions.expiresAt && new Date() > new Date(permissions.expiresAt)) {
+          return {
+            success: false,
+            error: 'User permissions have expired'
+          };
+        }
+        
+        try {
+          // Generate dashboard link
+          const response = await fetch('/stripe-dashboard', {
+            headers: { 'Authorization': `Bearer ${this.apiKey}` }
+          });
+          
+          const data = await response.json();
+          
+          // Create user session
+          const session = {
+            userId,
+            dashboardUrl: data.url,
+            createdAt: new Date().toISOString(),
+            createdBy: requestedBy,
+            permissions: permissions,
+            accessed: false,
+            lastActivity: null
+          };
+          
+          this.userSessions.set(userId, session);
+          
+          // Log access request
+          await this.logAccessRequest(userId, session, 'granted');
+          
+          return {
+            success: true,
+            url: data.url,
+            session: session,
+            permissions: permissions
+          };
+        } catch (error) {
+          await this.logAccessRequest(userId, null, 'failed', error.message);
+          
+          return {
+            success: false,
+            error: error.message
+          };
+        }
+      }
+    
+      async trackDashboardUsage(userId, activity) {
+        const session = this.userSessions.get(userId);
+        if (!session) {
+          return { success: false, error: 'No active session found' };
+        }
+        
+        // Update session activity
+        session.accessed = true;
+        session.lastActivity = new Date().toISOString();
+        
+        if (!session.activities) {
+          session.activities = [];
+        }
+        
+        session.activities.push({
+          type: activity.type,
+          timestamp: new Date().toISOString(),
+          details: activity.details || {}
+        });
+        
+        // Log activity
+        await this.logUserActivity(userId, activity);
+        
+        return { success: true };
+      }
+    
+      async logAccessRequest(userId, session, status, error = null) {
+        const logEntry = {
+          userId,
+          action: 'dashboard_access_request',
+          status,
+          timestamp: new Date().toISOString(),
+          sessionId: session ? session.userId : null,
+          error
+        };
+        
+        console.log('Dashboard Access Log:', logEntry);
+        
+        // Send to your logging service
+        // await this.sendToLoggingService(logEntry);
+      }
+    
+      async logUserActivity(userId, activity) {
+        const logEntry = {
+          userId,
+          action: 'dashboard_activity',
+          activity: activity.type,
+          timestamp: new Date().toISOString(),
+          details: activity.details
+        };
+        
+        console.log('Dashboard Activity Log:', logEntry);
+        
+        // Send to your logging service
+        // await this.sendToLoggingService(logEntry);
+      }
+    
+      getUserSessions(activeOnly = false) {
+        const sessions = Array.from(this.userSessions.entries()).map(([userId, session]) => ({
+          userId,
+          ...session
+        }));
+        
+        if (activeOnly) {
+          const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+          return sessions.filter(session => 
+            session.lastActivity && new Date(session.lastActivity) > oneHourAgo
+          );
+        }
+        
+        return sessions;
+      }
+    
+      generateUsageReport() {
+        const sessions = this.getUserSessions();
+        
+        return {
+          totalSessions: sessions.length,
+          activeSessions: this.getUserSessions(true).length,
+          accessedSessions: sessions.filter(s => s.accessed).length,
+          userBreakdown: this.generateUserBreakdown(sessions),
+          activitySummary: this.generateActivitySummary(sessions)
+        };
+      }
+    
+      generateUserBreakdown(sessions) {
+        const breakdown = {};
+        
+        sessions.forEach(session => {
+          if (!breakdown[session.userId]) {
+            breakdown[session.userId] = {
+              totalSessions: 0,
+              accessedSessions: 0,
+              lastAccess: null,
+              permissions: session.permissions
+            };
+          }
+          
+          breakdown[session.userId].totalSessions++;
+          
+          if (session.accessed) {
+            breakdown[session.userId].accessedSessions++;
+            
+            if (!breakdown[session.userId].lastAccess || 
+                session.lastActivity > breakdown[session.userId].lastAccess) {
+              breakdown[session.userId].lastAccess = session.lastActivity;
+            }
+          }
+        });
+        
+        return breakdown;
+      }
+    
+      generateActivitySummary(sessions) {
+        const activities = [];
+        
+        sessions.forEach(session => {
+          if (session.activities) {
+            activities.push(...session.activities.map(activity => ({
+              ...activity,
+              userId: session.userId
+            })));
+          }
+        });
+        
+        const activityTypes = {};
+        activities.forEach(activity => {
+          activityTypes[activity.type] = (activityTypes[activity.type] || 0) + 1;
+        });
+        
+        return {
+          totalActivities: activities.length,
+          activityTypes,
+          recentActivities: activities
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .slice(0, 10)
+        };
+      }
+    }
+    
+    // Usage
+    const dashboardManager = new MultiUserDashboardManager('YOUR_API_KEY');
+    
+    // Set user permissions
+    dashboardManager.setUserPermissions('admin123', {
+      canAccessDashboard: true,
+      allowedSections: ['payments', 'customers', 'analytics'],
+      accessLevel: 'full-access',
+      expiresAt: '2024-12-31T23:59:59Z'
+    });
+    
+    dashboardManager.setUserPermissions('user456', {
+      canAccessDashboard: true,
+      allowedSections: ['payments'],
+      accessLevel: 'read-only',
+      expiresAt: '2024-06-30T23:59:59Z'
+    });
+    
+    // Request dashboard access
+    const accessResult = await dashboardManager.requestDashboardAccess('admin123', 'system');
+    
+    if (accessResult.success) {
+      console.log('Dashboard URL:', accessResult.url);
+      
+      // Track usage
+      await dashboardManager.trackDashboardUsage('admin123', {
+        type: 'page_view',
+        details: { section: 'payments' }
+      });
+    }
+    
+    // Generate usage report
+    const report = dashboardManager.generateUsageReport();
+    console.log('Usage report:', report);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+**Dashboard Access Best Practices:**
+
+1. **Secure Link Handling** - Never log or store dashboard URLs as they contain sensitive authentication tokens
+2. **Time-Limited Access** - Dashboard links expire automatically for security
+3. **User Permissions** - Implement proper access controls for multi-user environments
+4. **Analytics Tracking** - Monitor dashboard access patterns for security and usage insights
+5. **Error Handling** - Implement robust error handling for failed link generation
+6. **Cache Management** - Cache links appropriately but respect expiration times
+7. **Audit Logging** - Log all dashboard access requests for compliance and security
+8. **Mobile Optimization** - Ensure dashboard links work properly on mobile devices
+</Tip>
+
+## What's Next?
+
+<CardGroup cols={2}>
+  <Card title="Webhook Configuration" href="/guides/pay-api/webhooks/configuring-webhooks-notifications" icon="webhook">
+    Set up webhook endpoints for real-time payment notifications
+  </Card>
+  <Card title="Payment Testing" href="/guides/pay-api/testing/testing-pay" icon="flask">
+    Test your payment integration with test cards
+  </Card>
+  <Card title="Checkout Customization" href="/guides/pay-api/checkout/checkout-link-branding" icon="palette">
+    Customize the appearance of your checkout pages
+  </Card>
+  <Card title="API Reference" href="/api-reference/PAY-API/stripe-dashboard/get-stripe-dashboard-login-link" icon="book">
+    Explore the complete Stripe dashboard API documentation
+  </Card>
+</CardGroup>
