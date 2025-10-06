@@ -1,0 +1,465 @@
+---
+title: "API Security Best Practices"
+description: "Essential security practices for protecting your API and data"
+icon: "shield-check"
+---
+
+# API Security Best Practices
+
+## Introduction
+
+API security is paramount in today's digital landscape. APIs (Application Programming Interfaces) enable seamless interactions between applications and services. As APIs expose endpoints for accessing resources and data, they also present security challenges that must be addressed.
+
+To ensure the integrity, confidentiality, and availability of APIs and the data they access, following best practices for API security is essential. These practices encompass authentication, authorization, input validation, encryption, monitoring, and logging. By implementing these best practices, organizations can mitigate risks and protect their APIs from security threats.
+
+---
+
+## Venly-API Specific Security Practices
+
+### Securely Store Access Credentials
+
+Securely storing API keys, tokens, and other credentials is essential to prevent unauthorized access and protect sensitive information. Hardcoding credentials in your application code or storing them in insecure locations can lead to security vulnerabilities.
+
+Similarly, you need to safely secure the Venly API access credentials (**Client ID + Client Secret**) that are obtained from the [Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal). These access credentials are used to obtain the bearer token required to authenticate all API calls. If the credentials fall into the wrong hands, your app is at risk of security threats.
+
+<Warning>
+**Critical Security Measures:**
+- Use a secure method, such as a password manager, to store your access credentials
+- Avoid storing them in plain text or in easily accessible locations
+- Only share access credentials with authorized personnel
+- Ensure they are aware of the importance of keeping them secure
+</Warning>
+
+#### Best Practices for Credential Management
+
+<Steps>
+  <Step title="Track Access">
+    Make sure you know the trails of who has access to these credentials and when they access it
+  </Step>
+  
+  <Step title="Create Audit Trail">
+    Create an audit trail to keep track of the people and time when the credentials are accessed
+  </Step>
+  
+  <Step title="Secure Storage">
+    Use secure storage mechanisms such as environment variables, configuration files with restricted access, or secure vault services
+  </Step>
+</Steps>
+
+<Info>
+**Implementation:** Use secure storage mechanisms such as environment variables, configuration files with restricted access, or secure vault services to store credentials securely.
+</Info>
+
+---
+
+### Attack Mode
+
+Attack mode can be activated/deactivated from the [authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) section of the [portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+Attack Mode is a critical security feature designed to safeguard your platform against potential security threats and unauthorized access. By activating Attack Mode, you can instantly halt all incoming traffic from your clients or servers to our system, ensuring your data and operations remain secure during a security incident.
+
+Knowing that you have a reliable mechanism to stop potential threats allows you to respond confidently to security incidents. With a simple toggle, you can activate Attack Mode and ensure your system is protected.
+
+#### When to Use Attack Mode
+
+<CardGroup cols={2}>
+  <Card title="Hacking Attempts" icon="user-ninja">
+    If you suspect that your platform is under a hacking attempt, enabling Attack Mode can provide immediate protection by blocking all incoming connections
+  </Card>
+  
+  <Card title="Security Breaches" icon="shield-exclamation">
+    In the event of a security breach, quickly activating Attack Mode helps contain the threat and prevent further unauthorized access
+  </Card>
+</CardGroup>
+
+<Warning>
+Activating Attack Mode will temporarily stop all incoming traffic, which may cause a disruption in service. Use this feature diligently and inform your users if necessary.
+</Warning>
+
+<Frame caption="Attack Mode to stop incoming traffic from your servers">
+  <img
+    src="https://files.readme.io/c5ffb7d-Attack-mode.gif"
+    alt="Attack Mode Toggle"
+  />
+</Frame>
+
+---
+
+### Create Emergency Code as Backup
+
+We highly recommend that you provide your end-users with an `emergency code` signing method along with a **PIN** signing method. This ensures that they have a backup means of accessing their wallets or recovering their signing method if they lose their **PIN**.
+
+<Info>
+Read more about [signing methods](https://docs.venly.io/docs/signing-methods).
+</Info>
+
+**Implementation:** Generate the emergency code for each user that can be used to access their wallets in case they forget their PIN. This code is advised to be stored securely and only accessible to your end-user.
+
+<Card title="Learn More" icon="book" href="https://docs.venly.io/docs/user-management#2-create-emergency-code-optional-but-recommended">
+  Learn how to create emergency code for your end-users
+</Card>
+
+---
+
+## General API Security Practices
+
+### Authentication
+
+Authentication in terms of API security refers to verifying the identity of a client application or user accessing an API. It ensures that only authorized entities can access the API and its resources.
+
+Authentication mechanisms commonly used in API security include:
+
+<Tabs>
+  <Tab title="API Keys">
+    Unique identifiers issued to clients to authenticate their requests to the API
+  </Tab>
+  
+  <Tab title="OAuth">
+    An authorization framework that allows a client application to access resources on behalf of a user
+  </Tab>
+  
+  <Tab title="JWT">
+    JSON Web Tokens - A compact, URL-safe means of representing claims that can be securely transferred between two parties
+  </Tab>
+</Tabs>
+
+<Info>
+**Venly** uses OAuth + JWT authorization for its APIs.
+</Info>
+
+#### Why It Matters
+
+<CardGroup cols={3}>
+  <Card title="Importance" icon="exclamation">
+    Strong authentication mechanisms like OAuth, API keys, or JWT tokens ensure that only legitimate users or applications can access your API
+  </Card>
+  
+  <Card title="Implementation" icon="code">
+    Using OAuth tokens to authenticate users before allowing access to the API's resources
+  </Card>
+  
+  <Card title="Risks" icon="triangle-exclamation">
+    Without solid authentication, your API is susceptible to unauthorized access, leading to data breaches and misuse of resources
+  </Card>
+</CardGroup>
+
+---
+
+### Authorization
+
+Authorization, in terms of API security, refers to the process of determining what actions a user or application is allowed to perform on an API. It involves verifying the user or application's identity and checking whether they have the necessary permissions to access or manipulate the requested resources.
+
+Authorization is typically implemented using access control mechanisms, such as:
+- **Role-Based Access Control (RBAC)** - Assigns roles to users or applications and grants permissions based on these roles
+- **Attribute-Based Access Control (ABAC)** - Uses attributes of the user or request (such as user roles, time of day, or location) to determine access rights
+
+Authorization helps ensure that only authorized users or applications can access sensitive data or functionality.
+
+<AccordionGroup>
+  <Accordion title="Importance" icon="star">
+    Implementing strict access control ensures that users or applications have the minimum necessary access to resources, reducing the risk of data breaches and ensuring compliance with security policies and regulations.
+  </Accordion>
+  
+  <Accordion title="Implementation" icon="wrench">
+    Using role-based access control (RBAC) to grant permissions to users based on their roles, limiting access to sensitive resources.
+  </Accordion>
+  
+  <Accordion title="Risks of Not Implementing" icon="exclamation-triangle">
+    Lack of proper authorization can result in unauthorized access to sensitive data or functionalities, leading to data leaks, compliance violations, and reputational damage.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Input Validation
+
+Input validation in terms of API security refers to validating and sanitizing all input data received by an API to prevent malicious attacks, such as injection attacks (e.g., SQL injection, cross-site scripting).
+
+It involves checking input data against predefined rules (e.g., data type, length, format) to ensure it meets the expected criteria. This helps protect the API from receiving and processing malicious or malformed input that could be used to exploit vulnerabilities and compromise the system's security.
+
+<CardGroup cols={3}>
+  <Card title="Importance" icon="shield-check">
+    Validating and sanitizing input data helps prevent injection attacks such as SQL injection and XSS
+  </Card>
+  
+  <Card title="Implementation" icon="filter">
+    Validating input data to prevent SQL injection attacks, ensuring that only safe data is processed
+  </Card>
+  
+  <Card title="Risks" icon="bug">
+    Without proper input validation, attackers can exploit vulnerabilities to execute malicious code
+  </Card>
+</CardGroup>
+
+---
+
+### Rate Limiting
+
+Rate limiting is a security measure used to control the rate of requests that clients can make to an API within a specific timeframe. It helps prevent API abuse by limiting the number of requests a client can make, thus protecting the API from being overwhelmed by a large number of requests or targeted denial-of-service (DoS) attacks.
+
+By implementing rate limiting, API providers can ensure fair resource usage, prevent unauthorized access, and protect against API abuse. Rate limiting can be based on various factors, such as:
+- Number of requests per second, minute, or hour
+- Client's IP address
+- Authentication token used by the client
+
+<AccordionGroup>
+  <Accordion title="Importance" icon="gauge">
+    Implementing rate limiting prevents abuse of your API by restricting the number of requests, protecting against denial-of-service (DoS) attacks, and ensuring fair resource usage.
+  </Accordion>
+  
+  <Accordion title="Implementation" icon="sliders">
+    Limiting the number of requests a client can make to the API within a specific timeframe to prevent abuse and ensure fair usage.
+  </Accordion>
+  
+  <Accordion title="Risks of Not Implementing" icon="circle-exclamation">
+    Without rate limiting, your API is vulnerable to abuse, leading to increased costs, degraded performance, and potential service disruptions for legitimate users.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Encryption
+
+Encryption in API security refers to encoding data transmitted between clients and the API server to protect it from unauthorized access and interception. By encrypting data, sensitive information such as user credentials, access tokens, and other sensitive data is transformed into a secure format that can only be decoded by authorized parties with the correct decryption key.
+
+Encryption helps ensure the confidentiality and integrity of data transmitted over the API, protecting it from eavesdropping, tampering, and unauthorized access. It is typically implemented using:
+- **Transport Layer Security (TLS)** - Encrypts data in transit
+- **Data-at-Rest Encryption** - Protects data while stored on the server
+
+<CardGroup cols={3}>
+  <Card title="Importance" icon="lock">
+    Encrypting data in transit with TLS protects against eavesdropping and ensures data integrity and confidentiality
+  </Card>
+  
+  <Card title="Implementation" icon="key">
+    Encrypting data transmitted between clients and the API server using TLS
+  </Card>
+  
+  <Card title="Risks" icon="unlock">
+    Without encryption, data can be intercepted by attackers, leading to unauthorized access and data breaches
+  </Card>
+</CardGroup>
+
+---
+
+### Web Application Firewall (WAF)
+
+Using a Web Application Firewall (WAF) is critical to API security, as it helps protect your application from common web-based attacks. A WAF sits between the client and the server and analyzes HTTP requests and responses to filter out malicious traffic. It can detect and block various types of attacks, such as:
+- SQL injection
+- Cross-site scripting (XSS)
+- Cross-site request forgery (CSRF)
+
+<AccordionGroup>
+  <Accordion title="Importance" icon="shield-halved">
+    One of the key advantages of using a WAF is its ability to provide a layer of defense against known vulnerabilities and zero-day attacks. WAFs can be configured to block requests that match known attack patterns or to inspect requests for suspicious behavior.
+  </Accordion>
+  
+  <Accordion title="Implementation" icon="server">
+    Deploying a Web Application Firewall (WAF) in front of a web application creates a protective barrier between the application and the Internet. A WAF acts as a reverse proxy, safeguarding the server from exposure by requiring clients to pass through the WAF before reaching the server.
+  </Accordion>
+  
+  <Accordion title="Risks of Not Implementing" icon="ban">
+    Without a WAF, web applications are more susceptible to common web-based attacks such as SQL injection, XSS, and CSRF. Zero-day attacks pose a significant threat. A WAF can help mitigate these risks by providing virtual patching and protection against emerging threats.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Monitoring and Logging
+
+Monitoring and logging help you identify abnormal patterns or suspicious activity, such as unauthorized access attempts or unusual traffic spikes, enabling you to mitigate potential threats proactively. Implementing monitoring and logging involves using tools and services to track API usage, analyze logs, and generate alerts for suspicious activity.
+
+<CardGroup cols={3}>
+  <Card title="Importance" icon="chart-line">
+    Monitoring API usage and logs for suspicious activity allows you to detect and respond to security incidents promptly
+  </Card>
+  
+  <Card title="Implementation" icon="clipboard-list">
+    Record all incoming requests, including IP addresses and request payloads. Monitoring tools analyze these logs for unusual patterns
+  </Card>
+  
+  <Card title="Risks" icon="eye-slash">
+    Without monitoring and logging, you won't be aware of security incidents or breaches, allowing attackers to persist undetected
+  </Card>
+</CardGroup>
+
+---
+
+### Error Handling
+
+Error handling in API security refers to managing and responding to errors during API interactions. Proper error handling is essential for maintaining an API's security and integrity. It involves providing users with informative but generic error messages to prevent the leakage of sensitive information about the API's internals.
+
+Error handling is essential for API security because:
+
+<Steps>
+  <Step title="Prevent Information Exposure">
+    It helps prevent the exposure of sensitive information, such as database schema or system internals, that attackers could exploit
+  </Step>
+  
+  <Step title="Reduce Attack Surface">
+    It reduces the risk of attackers gaining insights into the API's security mechanisms and potentially exploiting vulnerabilities
+  </Step>
+  
+  <Step title="Improve User Experience">
+    It ensures that users receive clear and actionable error messages, improving the overall user experience
+  </Step>
+</Steps>
+
+<AccordionGroup>
+  <Accordion title="Importance" icon="message-exclamation">
+    Implementing proper error handling prevents leaking sensitive information and helps maintain the security and integrity of your API.
+  </Accordion>
+  
+  <Accordion title="Implementation" icon="code">
+    An API returns a generic error message "Internal Server Error" when encountering an unexpected error. This prevents attackers from gaining insights into the API's internals.
+  </Accordion>
+  
+  <Accordion title="Risks of Not Implementing" icon="circle-xmark">
+    Inadequate error handling can expose sensitive information about your API's internals, providing attackers with insights to exploit vulnerabilities.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Content-Type Checking
+
+Content-type checking in API security means validating that requests and responses sent to and from an API have the correct content types. This helps prevent certain types of attacks, such as cross-site scripting (XSS) and cross-site request forgery (CSRF), by ensuring that data is interpreted correctly and securely.
+
+For example, suppose an API expects JSON data in a request. In that case, it should verify that the Content-Type header of the request is set to `application/json`. Similarly, when returning a response, the API should set the Content-Type header to indicate the type of data being returned.
+
+<CardGroup cols={3}>
+  <Card title="Importance" icon="check-double">
+    Ensuring that requests and responses have the correct content types prevents attacks like XSS and CSRF
+  </Card>
+  
+  <Card title="Implementation" icon="file-code">
+    An API endpoint expects JSON data. If a request with a different content type is received, the API responds with a 415 status code
+  </Card>
+  
+  <Card title="Risks" icon="file-slash">
+    Without content-type checking, your API is vulnerable to attacks that can manipulate or execute malicious content
+  </Card>
+</CardGroup>
+
+---
+
+### API Gateway
+
+Using an API gateway to manage and secure your API endpoints provides an additional layer of security. API gateways can enforce authentication and authorization, perform rate limiting and content validation, and provide logging and monitoring capabilities, helping you secure your API against various threats.
+
+<AccordionGroup>
+  <Accordion title="Importance" icon="door-open">
+    Using an API gateway to manage and secure your API endpoints provides an additional layer of security by enforcing authentication, authorization, rate limiting, and other security policies.
+  </Accordion>
+  
+  <Accordion title="Implementation" icon="network-wired">
+    An organization uses an API gateway to manage access to its internal APIs. The gateway enforces authentication, rate limiting, and content validation policies before forwarding requests to the backend APIs.
+  </Accordion>
+  
+  <Accordion title="Risks of Not Implementing" icon="door-closed">
+    Without an API gateway, your API is exposed to various security threats, including unauthorized access, data breaches, and service disruptions.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### IP Allowlisting
+
+IP allowlisting is a security measure that restricts access to an API to a specific list of IP addresses. Only requests originating from these allowlisted IP addresses can access the API, while requests from other IP addresses are blocked. This helps enhance API security by limiting access to trusted entities and reducing the risk of unauthorized access and potential security threats.
+
+<CardGroup cols={3}>
+  <Card title="Importance" icon="list-check">
+    IP allowlisting allows you to restrict access to your API to a predefined list of IP addresses
+  </Card>
+  
+  <Card title="Implementation" icon="filter-circle-xmark">
+    A company's API is only accessible from specific IP addresses. The firewall blocks requests from other IP addresses
+  </Card>
+  
+  <Card title="Risks" icon="globe">
+    Without IP allowlisting, your API is exposed to unauthorized access from any IP address
+  </Card>
+</CardGroup>
+
+---
+
+### Bounty Programs
+
+We also recommend launching a bounty program to identify and address vulnerabilities in your software processes and applications. By incentivizing security researchers and ethical hackers to find and report vulnerabilities, they can proactively improve security and protect your customers' data.
+
+<CardGroup cols={2}>
+  <Card title="Discover Vulnerabilities" icon="magnifying-glass">
+    A bounty program helps you discover and fix security issues before they can be exploited
+  </Card>
+  
+  <Card title="Build Reputation" icon="star">
+    It enhances your reputation as a company committed to security
+  </Card>
+  
+  <Card title="Community Expertise" icon="users">
+    Leverage the expertise of the broader security community
+  </Card>
+  
+  <Card title="Stay Ahead" icon="shield-check">
+    Stay ahead of potential threats with continuous security testing
+  </Card>
+</CardGroup>
+
+---
+
+## Security Practices Summary
+
+<Tabs>
+  <Tab title="Venly-Specific">
+    **Key Venly Security Practices:**
+    - Securely store access credentials
+    - Use Attack Mode for emergency security situations
+    - Create emergency codes as backup for users
+  </Tab>
+  
+  <Tab title="Authentication & Authorization">
+    **Access Control:**
+    - Implement strong authentication (OAuth, JWT)
+    - Enforce proper authorization (RBAC/ABAC)
+    - Use API gateways for centralized control
+  </Tab>
+  
+  <Tab title="Data Protection">
+    **Protecting Data:**
+    - Encrypt data in transit (TLS)
+    - Validate and sanitize all inputs
+    - Use content-type checking
+    - Implement proper error handling
+  </Tab>
+  
+  <Tab title="Threat Prevention">
+    **Preventing Attacks:**
+    - Implement rate limiting
+    - Use Web Application Firewall (WAF)
+    - Enable IP allowlisting
+    - Set up monitoring and logging
+    - Launch bug bounty programs
+  </Tab>
+</Tabs>
+
+---
+
+## Learn More
+
+<CardGroup cols={2}>
+  <Card title="Authentication Guide" icon="key" href="/getting-started/authentication">
+    Learn about Venly authentication methods
+  </Card>
+  
+  <Card title="Infrastructure Security" icon="shield" href="/getting-started/infrastructure">
+    Understand Venly's security architecture
+  </Card>
+  
+  <Card title="Developer Portal" icon="browser" href="/getting-started/developer-portal">
+    Access Attack Mode and security settings
+  </Card>
+  
+  <Card title="Rate Limits" icon="gauge" href="/getting-started/rate-limits">
+    Learn about API rate limits
+  </Card>
+</CardGroup>

@@ -1,0 +1,352 @@
+---
+title: "Developer Portal"
+description: "Complete guide to navigating and using the Venly Developer Portal"
+icon: "browser"
+---
+
+# Developer Portal
+
+<Frame caption="Venly Developer Portal sign-in/signup">
+  <img
+    src="https://files.readme.io/67be6d50ae40555f857499030b626669be5642d5debf9406c8e1ab41cf85badd-image.png"
+    alt="Venly Developer Portal"
+  />
+</Frame>
+
+The Venly Developer Portal is your central hub for managing API credentials, monitoring usage, configuring services, and handling billing. This guide will walk you through all the features available in the portal.
+
+---
+
+## Dashboard
+
+The updated [portal dashboard](https://portal.venly.io/overview/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) includes information on your:
+
+### Requests
+
+This section shows the number of API requests made on the production and sandbox environment, and the number of errors. Click on **Details** to view a detailed view of your API requests.
+
+### Compute Units
+
+The number of compute units consumed and remaining compute units. Click on **Manage** to manage your subscription plan.
+
+<Info>
+Read more about [compute units](https://docs.venly.io/docs/pricing#compute-units).
+</Info>
+
+<Frame caption="Portal Dashboard">
+  <img
+    src="https://files.readme.io/85d9fa93096de85faeaff6aaa09240ef7f0dbe8e78f5c0dcff358b8b82b2f50b-image.png"
+    alt="Developer Portal Dashboard"
+  />
+</Frame>
+
+---
+
+## Authentication
+
+The [authentication page](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) encompasses everything you need to authenticate with Venly services. There are two categories: the Widget and the API services. Both services use a different authentication method, which you can read about by clicking on either the **Widget** or **API documentation**.
+
+### Access Credentials
+
+The access credentials for the widget and API services are provided. The widget is authenticated using the client ID and whitelisted URLs, while the API services are authenticated using the client ID and client secret. You can switch between production & sandbox credentials by clicking the toggle button on the top right.
+
+<Info>
+Read more about [how to authenticate](/getting-started/authentication) with different Venly services.
+</Info>
+
+### Endpoints
+
+Here, you can view the endpoints for authentication and different API services. Switching between the sandbox and the production environment also changes these endpoints.
+
+<Info>
+Read about our [environment and supported blockchains](/getting-started/environments).
+</Info>
+
+<Frame caption="Authentication Page">
+  <img
+    src="https://files.readme.io/9a6063a33e13e5f2760662238e34755314bedd27cccfbc878e655f948009f2b1-image.png"
+    alt="Portal Authentication Page"
+  />
+</Frame>
+
+### Login Events
+
+You can view the login events whenever your access credentials are used to authenticate with Venly. You get the date, time, and IP address used when the login occurred. Keep track of this section to make sure the login events occur only from your IP address. If you see an unknown login attempt from an unknown IP address, your access credentials could be compromised. See the next section about attack mode.
+
+### Attack Mode
+
+By turning on this feature, you can **immediately stop all incoming traffic from your clients or servers to our system**. This is a helpful step to protect your platform if there is a hacking attempt or another security issue. Activate **Attack Mode** confidently, knowing your system is shielded from unauthorized access and potential vulnerabilities.
+
+<Info>
+You can also read our detailed API security guide which describes best practices for protecting your users from malicious attacks by clicking on **Read more**, or by clicking [here](https://docs.venly.io/docs/api-security-best-practices).
+</Info>
+
+<Frame caption="Portal Security Features">
+  <img
+    src="https://files.readme.io/28716422c173e3e462b8ccc80f715b94497390ecd20782160b613a622a31ba45-image.png"
+    alt="Portal Security Features"
+  />
+</Frame>
+
+---
+
+## Configuration
+
+This section is used to configure settings for the widget and API services, for example creating webhooks, changing permissions, etc.
+
+<Tabs>
+  <Tab title="Wallet API">
+    **[Configure Wallet API](https://portal.venly.io/wallet-api/wallets/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)**
+    
+    - Create and configure webhooks
+    - Enable or disable wallet exporting permission
+  </Tab>
+  
+  <Tab title="NFT API">
+    **[Configure NFT API](https://portal.venly.io/nft-api/contracts/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)**
+    
+    - Create and configure webhooks
+  </Tab>
+  
+  <Tab title="Widget">
+    **[Configure Widget](https://portal.venly.io/wallet-widget/details/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)**
+    
+    - Configure initialization URLs (the URLs from where the widget functions will be called)
+    - Configure log-out URLs (the URL where your user will be redirected to when they log out)
+    - Upload your company logo to be visible on the widget
+    - Add a description to the widget about your company
+  </Tab>
+</Tabs>
+
+<Frame caption="Configure the Widget and API services">
+  <img
+    src="https://files.readme.io/5e5f7ecea9e3b9f0b2503e8526d3e7625e155e48023612ad0d1976fbec4ca583-image.png"
+    alt="Configuration Options"
+  />
+</Frame>
+
+---
+
+## Integrations
+
+You can view Venly's [integrations](https://portal.venly.io/integrations/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) and click on them at a glance to read the documentation or getting started guide.
+
+<Frame>
+  <img
+    src="https://files.readme.io/fa944da12ee92051195ea368aef9531444efe9b14c9e0a06d14f7bd611563298-image.png"
+    alt="Venly Integrations"
+  />
+</Frame>
+
+---
+
+## Usage
+
+The [usage section](https://portal.venly.io/usage/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) has complete details on:
+
+- Total number of requests
+- Total number of compute units consumed
+- Total number of errors
+
+### Filter Options
+
+You can filter the results based on the following:
+
+<CardGroup cols={2}>
+  <Card title="Time Period" icon="calendar">
+    Filter by billing period, month, quarter, and year
+  </Card>
+  
+  <Card title="Components" icon="grid">
+    Filter by Authentication, Wallet API, NFT API, PAY API
+  </Card>
+</CardGroup>
+
+<Info>
+Learn how to [track the usage](https://docs.venly.io/docs/pricing#how-do-i-track-my-usage-of-compute-units) of compute units.
+</Info>
+
+<Frame caption="Track usage and compute units">
+  <img
+    src="https://files.readme.io/f3bb8f5399f26c6f998e4bafa1e8b4ac8b84de41566533f482182a90bea51ccb-image.png"
+    alt="Usage Tracking"
+  />
+</Frame>
+
+---
+
+## Faucet
+
+This [faucet feature](https://portal.venly.io/faucet/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) is designed to facilitate developers in building and testing applications that integrate with these blockchain networks. A dedicated faucet section which allows you to obtain the following testnet tokens every **24 hours**:
+
+<CardGroup cols={3}>
+  <Card title="0.5 MATIC" icon="coins">
+    On Polygon Amoy testnet
+  </Card>
+  
+  <Card title="0.5 AVAX" icon="coins">
+    On Avalanche Fuji testnet
+  </Card>
+  
+  <Card title="0.1 ETH" icon="coins">
+    On BASE Sepolia testnet
+  </Card>
+</CardGroup>
+
+<Info>
+**Requirements:**
+- Only Venly wallets can be used to receive the testnet tokens
+- You can specify a wallet address or a wallet UUID to receive test tokens
+</Info>
+
+<Frame caption="Test tokens faucet for Venly developers">
+  <img
+    src="https://files.readme.io/c1622f0e749b238172d70c9b0f3b88c8ae89c34adc2d04f20ffdcdc40b6667b7-image.png"
+    alt="Testnet Faucet"
+  />
+</Frame>
+
+---
+
+## Settings
+
+The [settings page](https://portal.venly.io/company-settings/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) lets you add or update your **company name**, **VAT**, **billing email**, and **billing address**. The following can be updated or added to the billing address:
+
+<Steps>
+  <Step title="Country">
+    Select your country
+  </Step>
+  
+  <Step title="City">
+    Enter your city
+  </Step>
+  
+  <Step title="Postal/ZIP Code">
+    Enter postal or ZIP code
+  </Step>
+  
+  <Step title="State/Province">
+    Enter state or province
+  </Step>
+  
+  <Step title="Street Address">
+    Enter your street address
+  </Step>
+</Steps>
+
+<Frame caption="Update Billing Address">
+  <img
+    src="https://files.readme.io/85cf2c3-image.png"
+    alt="Billing Settings"
+  />
+</Frame>
+
+---
+
+## Users
+
+[Invite users](https://portal.venly.io/users/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) - **new** and **existing users** to join your company via **email**. Each invitation link will be valid for 10 days, during which users can choose to accept or decline the invitation. Once accepted, your company's users will share **access credentials**.
+
+### User Management Features
+
+<CardGroup cols={2}>
+  <Card title="Invite Users" icon="user-plus">
+    Send email invitations to new and existing users
+  </Card>
+  
+  <Card title="Manage Access" icon="users-gear">
+    Delete users or resend invitations if expired or declined
+  </Card>
+  
+  <Card title="Shared Credentials" icon="key">
+    All company users share the same access credentials
+  </Card>
+  
+  <Card title="Admin Rights" icon="shield">
+    Admin rights are the same amongst all users of your company
+  </Card>
+</CardGroup>
+
+<Info>
+**Admin rights** are the same amongst **all users** of your company.
+</Info>
+
+<Frame caption="Inviting Users to your Company">
+  <img
+    src="https://files.readme.io/feabd3d1e99447aa4e673eab66df1bd12a8d76cd92a42e21f0019a02b9405921-image.png"
+    alt="User Management"
+  />
+</Frame>
+
+---
+
+## Billing
+
+The [billing page](https://portal.venly.io/billing/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) provides comprehensive billing management:
+
+<CardGroup cols={2}>
+  <Card title="View Invoices" icon="file-invoice">
+    View all your invoices at a glance
+  </Card>
+  
+  <Card title="Pay Invoices" icon="credit-card">
+    Pay invoices straight from the Portal
+  </Card>
+  
+  <Card title="Download Invoices" icon="download">
+    Download invoices for your records
+  </Card>
+  
+  <Card title="Manage Subscription" icon="chart-line">
+    View and manage your subscription plan
+  </Card>
+  
+  <Card title="Add Payment Method" icon="credit-card-front">
+    Add a credit card for payments
+  </Card>
+  
+  <Card title="Update Card Details" icon="pen-to-square">
+    Update credit card details
+  </Card>
+</CardGroup>
+
+### Cancelling Your Plan
+
+<Warning>
+**Consequences of Cancelling:**
+
+Scroll to the bottom of the [billing page](https://portal.venly.io/billing) to **cancel your plan**.
+
+- All of your users will lose access to the platform and any wallets associated with it
+- All assets (NFTs, tokens, wallets, etc.) will remain on the blockchain
+- You can re-enable your account at any time
+</Warning>
+
+<Frame caption="Manage billing and subscription plans">
+  <img
+    src="https://files.readme.io/fba9f39a57c0e93421f154c8e9389069a3cefc6b5234efbc29570bb05ae01a71-image.png"
+    alt="Billing Management"
+  />
+</Frame>
+
+---
+
+## Quick Links
+
+<CardGroup cols={2}>
+  <Card title="Dashboard" icon="gauge" href="https://portal.venly.io/overview/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal">
+    View your API usage and compute units
+  </Card>
+  
+  <Card title="Authentication" icon="key" href="https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal">
+    Manage your API credentials
+  </Card>
+  
+  <Card title="Usage Tracking" icon="chart-line" href="https://portal.venly.io/usage/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal">
+    Monitor detailed API usage
+  </Card>
+  
+  <Card title="Billing" icon="credit-card" href="https://portal.venly.io/billing/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal">
+    Manage billing and subscriptions
+  </Card>
+</CardGroup>

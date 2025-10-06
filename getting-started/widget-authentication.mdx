@@ -1,0 +1,319 @@
+---
+title: "Widget Authentication"
+description: "Learn how to authenticate the Venly Widget SDK using Client ID and redirect URLs"
+icon: "window"
+---
+
+# Widget Authentication
+
+In this section, we will discuss how the authentication of the [Widget SDK](https://www.npmjs.com/package/@venly/connect) with the Venly platform is done using a **Client ID** and by defining **valid redirect URLs**.
+
+---
+
+## Client ID
+
+The Client ID is a unique identifier (similar to an API key) that you can use in your code to authenticate to the Venly backend. The Client ID can be easily obtained from the [Developer Portal](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+<Frame caption="Access Credentials - Widget Client ID">
+  <img
+    src="https://files.readme.io/9703adb-image.png"
+    alt="Widget Client ID in Developer Portal"
+  />
+</Frame>
+
+### Initializing the Widget
+
+With the Client ID you can [initialize](https://docs.venly.io/docs/initializing-widget) the Widget with [Venly Connect](https://www.npmjs.com/package/@venly/connect). Create a `VenlyConnect` instance with your Client ID using the following script. Your Venly Client ID is required when calling this function, as it identifies your app to Venly.
+
+```javascript
+//Signature VenlyConnect
+VenlyConnect(clientID: string, options?: ConstructorOptions)
+```
+
+**Example Implementation:**
+
+<CodeGroup>
+```javascript JavaScript
+import { VenlyConnect } from '@venly/connect';
+
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID', {
+  environment: 'sandbox' // or 'production'
+});
+```
+
+```typescript TypeScript
+import { VenlyConnect, ConstructorOptions } from '@venly/connect';
+
+const options: ConstructorOptions = {
+  environment: 'sandbox', // or 'production'
+  secretType: 'NATIVE'
+};
+
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID', options);
+```
+
+```html HTML
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.venly.io/connect/latest/venly-connect.js"></script>
+</head>
+<body>
+  <script>
+    const venlyConnect = new Venly.VenlyConnect('YOUR_CLIENT_ID', {
+      environment: 'sandbox'
+    });
+  </script>
+</body>
+</html>
+```
+</CodeGroup>
+
+<Info>
+Learn more on how to [initialize the Widget](https://docs.venly.io/docs/initializing-widget) with [Venly Connect](https://www.npmjs.com/package/@venly/connect).
+</Info>
+
+---
+
+## Valid Redirect URLs
+
+To prevent the Client ID from being used outside of the project, it is required to define the URLs with which to initialize the widget in combination with a project's Client ID.
+
+<Warning>
+**Security Requirement**
+
+Any URL that tries to access the Widget with your Client ID will be **blocked** unless it is defined in the Allow list.
+</Warning>
+
+### Configuration Steps
+
+<Steps>
+  <Step title="Add Initialization URLs">
+    Define all URLs where you will initialize the Widget with your Client ID
+  </Step>
+  
+  <Step title="Add Logout Redirect URL">
+    Specify where users should be redirected after logging out of the Widget
+  </Step>
+  
+  <Step title="Save Configuration">
+    Save your settings in the Developer Portal
+  </Step>
+</Steps>
+
+We also allow you to define a **Logout Redirect URL**. This URL is where a project consumer is redirected after logging out of the Widget.
+
+<Info>
+**Best Practice**
+
+Make sure to always define a logout redirect URL as well as minimum one initialization URL.
+</Info>
+
+### Example Configuration
+
+<Frame caption="Example Widget Configuration">
+  <img
+    src="https://files.readme.io/531353a-image.png"
+    alt="Widget URL Configuration Example"
+  />
+</Frame>
+
+### Allowed URL Patterns
+
+You can use wildcards for subdomains and paths:
+
+<CardGroup cols={2}>
+  <Card title="Specific Domain" icon="link">
+    ```
+    https://app.example.com
+    ```
+    Only allows exact domain
+  </Card>
+  
+  <Card title="Subdomain Wildcard" icon="asterisk">
+    ```
+    https://*.example.com
+    ```
+    Allows all subdomains
+  </Card>
+  
+  <Card title="Localhost Development" icon="laptop-code">
+    ```
+    http://localhost:3000
+    http://127.0.0.1:3000
+    ```
+    For local development
+  </Card>
+  
+  <Card title="Path Wildcard" icon="folder-tree">
+    ```
+    https://example.com/*
+    ```
+    Allows all paths under domain
+  </Card>
+</CardGroup>
+
+---
+
+## Environment-Specific Configuration
+
+Configure different URLs for sandbox and production environments:
+
+<Tabs>
+  <Tab title="Sandbox">
+    **Sandbox Configuration:**
+    - Use for testing and development
+    - Can include localhost URLs
+    - Typically uses testnet blockchains
+    
+    **Example URLs:**
+    ```
+    http://localhost:3000
+    http://localhost:8080
+    https://staging.example.com
+    https://dev.example.com
+    ```
+  </Tab>
+  
+  <Tab title="Production">
+    **Production Configuration:**
+    - Use for live applications
+    - Should only include production domains
+    - Uses mainnet blockchains
+    
+    **Example URLs:**
+    ```
+    https://app.example.com
+    https://www.example.com
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Limit URLs" icon="shield-check">
+    Only add URLs that are absolutely necessary. The fewer URLs in your allow list, the more secure your integration.
+  </Card>
+  
+  <Card title="Use HTTPS" icon="lock">
+    Always use HTTPS URLs in production. HTTP should only be used for localhost development.
+  </Card>
+  
+  <Card title="Specific Paths" icon="route">
+    Be as specific as possible with your URLs. Avoid using wildcards unless necessary.
+  </Card>
+  
+  <Card title="Regular Audits" icon="clipboard-check">
+    Regularly review and update your allowed URLs. Remove any URLs that are no longer in use.
+  </Card>
+</CardGroup>
+
+---
+
+## Common Issues & Solutions
+
+<AccordionGroup>
+  <Accordion title="Widget Blocked - URL Not Whitelisted" icon="circle-xmark">
+    **Problem:** The Widget fails to load with an error about blocked URL.
+    
+    **Solution:**
+    1. Check that your current URL is in the allowed list
+    2. Verify there are no typos in the configured URLs
+    3. Ensure you're using the correct environment (sandbox vs production)
+    4. Remember to include the protocol (http:// or https://)
+  </Accordion>
+  
+  <Accordion title="Logout Redirect Not Working" icon="arrow-right-from-bracket">
+    **Problem:** After logout, user is not redirected to expected page.
+    
+    **Solution:**
+    1. Verify the Logout Redirect URL is configured in the portal
+    2. Ensure the logout URL matches exactly (including protocol)
+    3. Check browser console for any redirect errors
+  </Accordion>
+  
+  <Accordion title="Localhost Not Working" icon="laptop-code">
+    **Problem:** Widget works in production but not on localhost.
+    
+    **Solution:**
+    1. Add localhost URLs to your sandbox environment
+    2. Include both `http://localhost:PORT` and `http://127.0.0.1:PORT`
+    3. Make sure you're using the sandbox Client ID, not production
+  </Accordion>
+  
+  <Accordion title="Wildcard Issues" icon="asterisk">
+    **Problem:** Wildcard URLs not working as expected.
+    
+    **Solution:**
+    1. Verify wildcard syntax: `https://*.example.com` (subdomain) or `https://example.com/*` (path)
+    2. Wildcards may have limitations - test specific URLs if issues persist
+    3. Consider adding specific URLs instead of relying on wildcards
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Testing Your Configuration
+
+### 1. Test in Development
+
+```javascript
+// Initialize with your Client ID
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID', {
+  environment: 'sandbox'
+});
+
+// Try to create a wallet
+try {
+  const result = await venlyConnect.flows.createWallet({
+    chain: 'MATIC'
+  });
+  console.log('Widget initialized successfully!', result);
+} catch (error) {
+  console.error('Widget initialization failed:', error);
+  // Check if error is related to URL whitelisting
+}
+```
+
+### 2. Verify URL Whitelist
+
+- Open your application in different environments
+- Check browser console for any authentication errors
+- Ensure Widget loads without security warnings
+
+### 3. Test Logout Flow
+
+- Trigger logout from Widget
+- Verify redirect to configured logout URL
+- Confirm session is properly terminated
+
+---
+
+## Next Steps
+
+<Info>
+**You're Ready!**
+
+Now you have the **Client ID** and configured the **valid redirect URLs**. You can move to the [Getting Started Guide](https://docs.venly.io/docs/widget-getting-started) of the Widget.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Widget Getting Started" icon="rocket" href="https://docs.venly.io/docs/widget-getting-started">
+    Complete guide to start building with the Widget
+  </Card>
+  
+  <Card title="Initializing Widget" icon="play" href="https://docs.venly.io/docs/initializing-widget">
+    Learn how to properly initialize VenlyConnect
+  </Card>
+  
+  <Card title="Widget SDK Docs" icon="book" href="https://www.npmjs.com/package/@venly/connect">
+    View the complete SDK documentation on npm
+  </Card>
+  
+  <Card title="API Authentication" icon="code" href="/getting-started/api-authentication">
+    Learn about API authentication for backend services
+  </Card>
+</CardGroup>

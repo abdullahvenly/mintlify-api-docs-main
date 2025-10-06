@@ -1,0 +1,185 @@
+---
+title: "Authentication"
+description: "Learn how to authenticate with Venly's APIs and services"
+icon: "key"
+---
+
+# Authentication
+
+Authentication is a crucial process that ensures only authorized users or applications can access resources. It involves verifying the identity of the entity attempting to access the system. Proper authentication is essential for maintaining the security and integrity of your system and its data.
+
+This page explains the **different types of authentication** required for **different Venly components**.
+
+---
+
+## Authenticating with Venly
+
+Venly services are categorized into two main parts, each with its own authentication method:
+
+### 1. API Services (OAuth 2.0)
+
+The **API** category includes:
+- **Wallet-API** - Wallet management and blockchain operations
+- **NFT-API** - NFT creation and management
+- **PAY-API** - Payment and checkout services
+
+These API components are authenticated via **OAuth 2.0 client credentials flow**.
+
+### 2. Widget (Client ID + URLs)
+
+The **Widget** is a **JavaScript SDK** that uses a different authentication method. It is authenticated using:
+- **Client ID**
+- **Valid redirect URLs** (whitelisted domains)
+
+---
+
+## Authentication Methods Comparison
+
+<CardGroup cols={2}>
+  <Card title="API Authentication" icon="code" href="/getting-started/api-authentication">
+    **OAuth 2.0 Client Credentials**
+    
+    - Uses Client ID and Client Secret
+    - Bearer token authentication
+    - For Wallet-API, NFT-API, and PAY-API
+    - Server-side integration
+    
+    [View API Authentication Guide →](/getting-started/api-authentication)
+  </Card>
+  
+  <Card title="Widget Authentication" icon="window" href="/getting-started/widget-authentication">
+    **Client ID + Whitelisted URLs**
+    
+    - Uses Client ID only
+    - Domain whitelisting required
+    - JavaScript SDK integration
+    - Client-side implementation
+    
+    [View Widget Authentication Guide →](/getting-started/widget-authentication)
+  </Card>
+</CardGroup>
+
+---
+
+## Getting Your Credentials
+
+Access your authentication credentials from the [Authentication page](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) in the [Developer Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+<Steps>
+  <Step title="Navigate to Authentication">
+    Log in to the Developer Portal and go to the Authentication section
+  </Step>
+  
+  <Step title="Choose Environment">
+    Toggle between Sandbox and Production credentials using the switch in the top right corner
+  </Step>
+  
+  <Step title="Copy Credentials">
+    Copy your Client ID and Client Secret (for APIs) or configure whitelisted URLs (for Widget)
+  </Step>
+</Steps>
+
+<Info>
+**Environment Credentials:**
+- **Sandbox** - For testing on testnet chains
+- **Production** - For live deployments on mainnet chains
+</Info>
+
+---
+
+## Attack Mode
+
+<Warning>
+**Security Feature**
+
+Attack Mode can be activated/deactivated from the [authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) section of the [portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+</Warning>
+
+Attack Mode is a critical security feature designed to safeguard your platform against potential security threats and unauthorized access. By activating Attack Mode, you can instantly halt all incoming traffic from your clients or servers to our system, ensuring your data and operations remain secure during a security incident.
+
+### Why Use Attack Mode?
+
+Knowing that you have a reliable mechanism to stop potential threats allows you to respond confidently to security incidents. With a simple toggle, you can activate Attack Mode and ensure your system is protected.
+
+### When to Activate Attack Mode
+
+<AccordionGroup>
+  <Accordion title="Hacking Attempts" icon="user-ninja">
+    If you suspect that your platform is under a hacking attempt, enabling Attack Mode can provide immediate protection by blocking all incoming connections.
+  </Accordion>
+  
+  <Accordion title="Security Breaches" icon="shield-exclamation">
+    In the event of a security breach, quickly activating Attack Mode helps contain the threat and prevent further unauthorized access.
+  </Accordion>
+  
+  <Accordion title="Suspicious Activity" icon="triangle-exclamation">
+    When you detect unusual patterns or suspicious activity from your API usage, Attack Mode provides an immediate safeguard while you investigate.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+**Important Notice:**
+
+Activating Attack Mode will temporarily stop **all incoming traffic**, which may cause a disruption in service. Use this feature diligently and inform your users if necessary.
+
+**Impact:**
+- All API requests will be blocked
+- Widget authentication will fail
+- All active sessions may be terminated
+- Service interruption for end users
+</Warning>
+
+### How to Activate Attack Mode
+
+1. Navigate to the [Authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) page
+2. Locate the Attack Mode toggle
+3. Switch the toggle to activate/deactivate
+4. Confirm your action
+
+<Tip>
+**Best Practice:** Have a communication plan ready to notify your users when activating Attack Mode during a security incident.
+</Tip>
+
+---
+
+## Authentication Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Secure Storage" icon="lock">
+    Store API credentials securely using environment variables or secret management systems. Never commit credentials to version control.
+  </Card>
+  
+  <Card title="Rotate Regularly" icon="arrows-rotate">
+    Regularly rotate your Client Secret and update your applications accordingly to maintain security.
+  </Card>
+  
+  <Card title="Monitor Usage" icon="chart-line">
+    Keep track of API usage patterns to detect any unusual activity that might indicate compromised credentials.
+  </Card>
+  
+  <Card title="Separate Environments" icon="layer-group">
+    Always use separate credentials for sandbox and production environments to prevent accidental impacts.
+  </Card>
+</CardGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Authentication Guide" icon="code" href="/getting-started/api-authentication">
+    Detailed guide for authenticating with APIs using OAuth 2.0
+  </Card>
+  
+  <Card title="Widget Authentication Guide" icon="window" href="/getting-started/widget-authentication">
+    Learn how to authenticate and configure the Venly Widget
+  </Card>
+  
+  <Card title="Rate Limits" icon="gauge" href="/getting-started/rate-limits">
+    Understand API rate limits and best practices
+  </Card>
+  
+  <Card title="Environments" icon="server" href="/getting-started/environments">
+    Learn about sandbox and production environments
+  </Card>
+</CardGroup>

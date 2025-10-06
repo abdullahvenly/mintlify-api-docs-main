@@ -1,0 +1,310 @@
+---
+title: "Environments"
+description: "Understanding Venly sandbox and production environments"
+icon: "server"
+---
+
+# Environments
+
+Depending on which environment your application is connecting to, your blockchain transactions will be directed to a specific blockchain network. Below is an overview of the different endpoints and the associated blockchain networks.
+
+---
+
+## Endpoints
+
+<Info>
+Each Venly service has dedicated endpoints for sandbox (testing) and production (live) environments.
+</Info>
+
+| Service | Description | Sandbox | Production |
+|:--------|:-----------|:--------|:-----------|
+| **Authentication** | Used for authentication | `https://login-sandbox.venly.io/` | `https://login.venly.io/` |
+| **Widget** | Interacting with the Widget | `https://connect-sandbox.venly.io/` | `https://connect.venly.io/` |
+| **Wallet API** | Interacting with the Wallet API endpoints | `https://api-wallet-sandbox.venly.io/` | `https://api-wallet.venly.io/` |
+| **NFT API** | Interacting with the NFT API endpoints | `https://nft-api-sandbox.venly.io/` | `https://nft-api.venly.io/` |
+| **Token API** | Interacting with the Token API endpoints | `https://token-api-sandbox.venly.io/` | `https://token-api.venly.io/` |
+| **PAY** | Interacting with the PAY API endpoints | `https://api-pay-sandbox.venly.io/` | `https://api-pay.venly.io/` |
+
+---
+
+## RPC Nodes (Direct Node Endpoints)
+
+<Info>
+The RPC endpoints connect to **port 443**.
+</Info>
+
+### Production Endpoint
+
+Direct access to mainnet blockchain nodes:
+
+```http
+https://evm-node.venly.io/chains/{chainId}
+```
+
+#### Supported Mainnets
+
+| Blockchain (mainnet) | {chainId} |
+|:---------------------|:----------|
+| BASE | 8453 |
+| XPLA | 37 |
+| Polygon | 137 |
+| Avalanche | 43114 |
+| BNB (Binance Smart Chain) | 56 |
+| Ethereum | 1 |
+| Arbitrum | 42161 |
+
+**Example Usage:**
+
+<CodeGroup>
+```javascript JavaScript
+const provider = new ethers.JsonRpcProvider(
+  'https://evm-node.venly.io/chains/137' // Polygon Mainnet
+);
+```
+
+```python Python
+from web3 import Web3
+
+# Connect to Ethereum mainnet
+w3 = Web3(Web3.HTTPProvider('https://evm-node.venly.io/chains/1'))
+```
+
+```bash cURL
+curl -X POST https://evm-node.venly.io/chains/1 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+</CodeGroup>
+
+### Sandbox Endpoint
+
+Direct access to testnet blockchain nodes:
+
+```http
+https://evm-node-sandbox.venly.io/chains/{chainId}
+```
+
+#### Supported Testnets
+
+| Blockchain (testnet) | {chainId} |
+|:---------------------|:----------|
+| BASE (sepolia) | 84532 |
+| XPLA (testnet) | 47 |
+| Polygon (amoy) | 80002 |
+| Avalanche (fuji) | 43113 |
+| BNB (Binance Smart Chain) (testnet) | 97 |
+| Ethereum (sepolia) | 11155111 |
+| Arbitrum (sepolia) | 421614 |
+
+**Example Usage:**
+
+<CodeGroup>
+```javascript JavaScript
+const provider = new ethers.JsonRpcProvider(
+  'https://evm-node-sandbox.venly.io/chains/80002' // Polygon Amoy Testnet
+);
+```
+
+```python Python
+from web3 import Web3
+
+# Connect to Ethereum Sepolia testnet
+w3 = Web3(Web3.HTTPProvider('https://evm-node-sandbox.venly.io/chains/11155111'))
+```
+
+```bash cURL
+curl -X POST https://evm-node-sandbox.venly.io/chains/11155111 \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+```
+</CodeGroup>
+
+---
+
+## Blockchain Networks
+
+The sandbox environment is your playground. It connects to testnet blockchains, meaning no real cryptocurrency and NFTs are involved. You can use [testnet faucets](https://docs.venly.io/docs/faucets) to receive cryptocurrency or to generate NFTs.
+
+### Supported Blockchains
+
+| Blockchain | Sandbox | Production | EVM |
+|:-----------|:--------|:-----------|:----|
+| Bitcoin | testnet3 | mainnet | - |
+| Ethereum | Sepolia | mainnet | ✅ |
+| Polygon (Matic) | Amoy | mainnet | ✅ |
+| BNB Chain (Binance Smart Chain) | testnet | mainnet | ✅ |
+| Avalanche | Fuji | mainnet (C-Chain) | ✅ |
+| Arbitrum | Sepolia | mainnet (One) | ✅ |
+| BASE | Sepolia | mainnet | ✅ |
+| XPLA | testnet | mainnet | ✅ |
+| Solana | devnet | mainnet-beta | - |
+| Optimism | Sepolia | mainnet | ✅ |
+| ImmutableX | testnet | mainnet | ✅ * |
+| Hedera | testnet | mainnet | ✅ * |
+| VeChain | testnet | mainnet | ✅ * |
+| GoChain | testnet | mainnet | ✅ * |
+| Litecoin | testnet | mainnet | - |
+| Aeternity | testnet | mainnet | - |
+| NEO | testnet | mainnet | - |
+
+<Info>
+**\* Blockchains which have partial EVM support**
+
+These blockchains support EVM functionality but may have some limitations or differences compared to full EVM compatibility.
+</Info>
+
+---
+
+## EVM Explained
+
+<Tip>
+Understanding EVM is crucial for blockchain development across multiple chains.
+</Tip>
+
+The **Ethereum Virtual Machine** or **EVM** is like a powerful, decentralized computer that helps people do things on the Ethereum network, and its actions are recorded on the blockchain for everyone to see and agree upon. EVM is a platform for smart contract deployment and execution.
+
+The Ethereum Virtual Machine serves as a software platform enabling developers to build decentralized applications (dApps) on the Ethereum network. All Ethereum accounts and smart contracts exist on this virtual machine.
+
+### Key Features of EVM
+
+<CardGroup cols={2}>
+  <Card title="Decentralized Execution" icon="network-wired">
+    Code runs on thousands of nodes worldwide, ensuring no single point of failure
+  </Card>
+  
+  <Card title="Deterministic" icon="equals">
+    Same input always produces the same output, ensuring consistency across the network
+  </Card>
+  
+  <Card title="Isolated Environment" icon="shield">
+    Smart contracts run in isolation, protecting the network from malicious code
+  </Card>
+  
+  <Card title="Gas-Based" icon="gas-pump">
+    Operations cost "gas" to prevent spam and infinite loops
+  </Card>
+</CardGroup>
+
+---
+
+## What are EVM Compatible Blockchains?
+
+**EVM compatible blockchains** refers to the blockchains on which you can write and deploy smart contracts that are compatible with the Ethereum Virtual Machine.
+
+Compatibility with the EVM enables numerous blockchains such as **Polygon**, **Avalanche**, and **Binance Smart Chain** to reduce the entry barrier for developers. This is possible because their native codes align with **Ethereum**, allowing seamless deployment of smart contracts on these new chains.
+
+### Benefits of EVM Compatibility
+
+<AccordionGroup>
+  <Accordion title="Developer Familiarity" icon="code">
+    Developers can use the same tools, languages (Solidity), and frameworks they're already familiar with from Ethereum development.
+  </Accordion>
+  
+  <Accordion title="Code Portability" icon="arrows-left-right">
+    Smart contracts written for Ethereum can be deployed on EVM-compatible chains with minimal or no modifications.
+  </Accordion>
+  
+  <Accordion title="Ecosystem Integration" icon="puzzle-piece">
+    Access to existing Ethereum tools like MetaMask, Hardhat, Truffle, and Remix without additional configuration.
+  </Accordion>
+  
+  <Accordion title="Interoperability" icon="link">
+    EVM chains can offer solutions to facilitate interoperability among blockchain networks and dApps adhering to Ethereum principles.
+  </Accordion>
+</AccordionGroup>
+
+### Why Choose EVM-Compatible Chains?
+
+<CardGroup cols={3}>
+  <Card title="Lower Costs" icon="dollar-sign">
+    Many EVM chains offer significantly lower transaction fees than Ethereum mainnet
+  </Card>
+  
+  <Card title="Faster Transactions" icon="bolt">
+    Improved block times mean quicker transaction confirmations
+  </Card>
+  
+  <Card title="Scalability" icon="arrows-maximize">
+    Higher throughput allows for more transactions per second
+  </Card>
+</CardGroup>
+
+---
+
+## Environment Best Practices
+
+<Warning>
+**Important Guidelines**
+
+Always test thoroughly in sandbox before deploying to production.
+</Warning>
+
+### Development Workflow
+
+<Steps>
+  <Step title="Start with Sandbox">
+    Begin development and testing in the sandbox environment using testnet chains
+  </Step>
+  
+  <Step title="Get Test Tokens">
+    Use [testnet faucets](https://docs.venly.io/docs/faucets) to obtain free test tokens for your testing needs
+  </Step>
+  
+  <Step title="Thorough Testing">
+    Test all functionality, edge cases, and error handling in sandbox
+  </Step>
+  
+  <Step title="Security Audit">
+    Review and audit your code before production deployment
+  </Step>
+  
+  <Step title="Production Deployment">
+    Deploy to production only after successful sandbox testing
+  </Step>
+  
+  <Step title="Monitor & Maintain">
+    Continuously monitor your production application and keep sandbox in sync for testing updates
+  </Step>
+</Steps>
+
+### Security Recommendations
+
+<CardGroup cols={2}>
+  <Card title="Separate Credentials" icon="key">
+    Always use different API credentials for sandbox and production environments
+  </Card>
+  
+  <Card title="Test Transactions" icon="vial">
+    Never test with real funds - always use testnet tokens in sandbox
+  </Card>
+  
+  <Card title="Environment Variables" icon="file-code">
+    Use environment variables to manage endpoint URLs and switch between environments
+  </Card>
+  
+  <Card title="Version Control" icon="code-branch">
+    Keep separate configuration files for each environment in version control
+  </Card>
+</CardGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/getting-started/authentication">
+    Learn how to authenticate with different environments
+  </Card>
+  
+  <Card title="Testnet Faucets" icon="faucet" href="https://docs.venly.io/docs/faucets">
+    Get free testnet tokens for development
+  </Card>
+  
+  <Card title="Rate Limits" icon="gauge" href="/getting-started/rate-limits">
+    Understand API rate limits for each environment
+  </Card>
+  
+  <Card title="Quick Start" icon="rocket" href="/getting-started/quickstart">
+    Start building with Venly
+  </Card>
+</CardGroup>

@@ -1,0 +1,365 @@
+---
+title: "Infrastructure"
+description: "Understanding Venly's secure self-custody infrastructure and security measures"
+icon: "shield-halved"
+---
+
+# Infrastructure
+
+Venly's Self-Custody Infrastructure is a secure and reliable process to store your digital assets in secure digital wallets. With our robust APIs and multi-layer security, you can rely on our work to keep your assets safe and accessible.
+
+---
+
+## How Do We Do It at Venly?
+
+### Web Authentication Service
+
+Venly utilizes an identity provider and web authentication service as the initial layer of authentication. Users can authenticate using their email and password or via a social login, acquiring access to the developer portal. Clients' requests to Venly (web, browser extension, or mobile) must first be authenticated to gain access to credentials via the developer portal.
+
+### Authentication via a Bearer Token
+
+Next, the user must obtain a bearer token using their access credentials. The access credentials (**Client ID** and **Client Secret**) are obtained from the [authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) section of the [developer portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal). The bearer token is the user's entry for using API calls.
+
+<Info>
+**Token Validity:**
+- The bearer token is only valid for **six minutes** and must be refreshed to obtain a new one
+- Learn [how to authenticate](/getting-started/authentication) with Venly services
+</Info>
+
+---
+
+## Signing Methods
+
+To this end, we implement an additional authorization layer called signing methods. These signing methods are only known to end-users and are used to unlock their wallets.
+
+Every sensitive operation (for example, signing a transaction, initiating a transaction, or exporting a wallet) requires the end-user to authorize the request to perform that operation using their signing method.
+
+We allow three types of signing methods:
+
+<CardGroup cols={3}>
+  <Card title="PIN" icon="lock">
+    A six-digit pincode only known by the end-user
+  </Card>
+  
+  <Card title="Emergency Code" icon="key">
+    A complex password that serves as a gateway to unlock a wallet or recover a lost PIN. It is 25 characters long and has a minimum of 128 bits of entropy
+  </Card>
+  
+  <Card title="Biometrics" icon="fingerprint">
+    This signing method allows users to utilize biometric features such as Face ID or Touch ID for authentication
+  </Card>
+</CardGroup>
+
+---
+
+## Attack Mode
+
+Attack mode can be activated/deactivated from the [authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) section of the [portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+Attack Mode is a critical security feature designed to safeguard your platform against potential security threats and unauthorized access. By activating Attack Mode, you can instantly halt all incoming traffic from your clients or servers to our system, ensuring your data and operations remain secure during a security incident.
+
+Knowing that you have a reliable mechanism to stop potential threats allows you to respond confidently to security incidents. With a simple toggle, you can activate Attack Mode and ensure your system is protected.
+
+### When to Use Attack Mode
+
+<AccordionGroup>
+  <Accordion title="Hacking Attempts" icon="user-ninja">
+    If you suspect that your platform is under a hacking attempt, enabling Attack Mode can provide immediate protection by blocking all incoming connections.
+  </Accordion>
+  
+  <Accordion title="Security Breaches" icon="shield-exclamation">
+    In the event of a security breach, quickly activating Attack Mode helps contain the threat and prevent further unauthorized access.
+  </Accordion>
+</AccordionGroup>
+
+<Warning>
+Activating Attack Mode will temporarily stop all incoming traffic, which may cause a disruption in service. Use this feature diligently and inform your users if necessary.
+</Warning>
+
+<Frame>
+  <img
+    src="https://files.readme.io/3e0cbaf-image.png"
+    alt="Attack Mode Toggle"
+  />
+</Frame>
+
+---
+
+## Login Events
+
+The Login Events feature allows you to monitor and track every instance where your access credentials are used to authenticate with Venly. By keeping a close eye on this section, you can ensure that only authorized logins occur, providing an additional layer of security for your account.
+
+### What's Tracked
+
+<CardGroup cols={2}>
+  <Card title="Date and Time" icon="clock">
+    Each login event is recorded with the precise date and time, allowing you to verify the exact moment your credentials were used
+  </Card>
+  
+  <Card title="IP Address" icon="location-dot">
+    The IP address associated with each login attempt is logged, helping you identify the location of the access
+  </Card>
+</CardGroup>
+
+### How to Monitor
+
+Visit the [authentication](https://portal.venly.io/authentication) section of the [portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) and check the date, time, and IP address of each login event.
+
+<Steps>
+  <Step title="Verify Recognized IPs">
+    Ensure that all logins are from recognized IP addresses and expected times
+  </Step>
+  
+  <Step title="Identify Suspicious Activity">
+    Look for any login attempts from unknown IP addresses or at unusual times
+  </Step>
+  
+  <Step title="Take Action">
+    If suspicious activity is detected, immediately activate Attack Mode and rotate your credentials
+  </Step>
+</Steps>
+
+---
+
+## Shamir's Secret Sharing
+
+A wallet's private key is divided into two shares: **user-owned share** and **application share**. These shares are further encrypted and stored in a key vault.
+
+- The **user-owned share** can be decrypted using that user's signing method
+- The **application share** is decrypted using the credentials: client ID and client secret
+
+Both of these shares are combined and unlock an end user's wallet. If a malicious entity gains access to one of the two shares, it is practically useless for them, as both shares must be combined to gain access to a wallet.
+
+<Info>
+**How It Works:**
+
+Shamir's Secret Sharing is a cryptographic algorithm that divides a secret into multiple parts. A minimum number of parts are needed to reconstruct the original secret. This ensures that no single party can access the wallet without the other share.
+</Info>
+
+---
+
+## Isolated Generation of the Private Key
+
+Venly uses Amazon Fargate to generate the private key of a wallet when required temporarily. With the Fargate launch type, you package your application into containers and specify how much CPU power and memory it needs. You also set up networking and security rules.
+
+Each Fargate task runs in its own **isolated environment**, meaning it doesn't share its core resources—like CPU, memory, or network connection—with any other task. This ensures your application runs isolated and secure.
+
+<CardGroup cols={2}>
+  <Card title="Isolated Environment" icon="box">
+    Each task runs independently with dedicated resources
+  </Card>
+  
+  <Card title="Temporary Generation" icon="clock-rotate-left">
+    Private keys are generated only when needed and not stored permanently
+  </Card>
+  
+  <Card title="Resource Allocation" icon="gauge-high">
+    Configurable CPU and memory for optimal performance
+  </Card>
+  
+  <Card title="Network Security" icon="network-wired">
+    Secured networking and firewall rules
+  </Card>
+</CardGroup>
+
+---
+
+## Segregated Model
+
+Venly's offerings, namely the Wallet-API and Widget solutions, follow a segregated model, reflecting a commitment to providing users with a high level of individual control, security, and transparency in managing their digital assets.
+
+Each user is treated as a separate and unique entity. Tokens are not pooled together, and the wallet's owner is the sole custodian of that wallet.
+
+Under Venly's segregated accounts model, each user becomes the sole custodian of their wallet. This means that the ownership and control of the wallet's private keys rest entirely with the individual user.
+
+<Info>
+**Key Benefits:**
+- Individual control over assets
+- No commingling of funds
+- Enhanced security through isolation
+- Complete transparency in asset management
+</Info>
+
+---
+
+## Clean and Simple Integration
+
+Our service offerings are designed for easy implementation and seamless integration with your applications. We understand that an easy integration process is key to minimizing issues and maximizing efficiency. On the other hand, more complex integrations, such as the one required for MPC (Multi-Party Computation), can lead to increased challenges and potential vulnerabilities.
+
+While MPC offers advanced security features, its integration process can be more involved, potentially leading to compatibility issues or vulnerabilities like the [Zero Day](https://www.coindesk.com/tech/2023/08/09/fireblocks-discloses-zero-day-vulnerabilities-impacting-leading-mpc-wallets/) vulnerability.
+
+<Tip>
+Venly's straightforward integration approach reduces complexity while maintaining robust security standards.
+</Tip>
+
+---
+
+## Proven Security
+
+Venly boasts an impressive six-year track record of impeccable security, having never experienced a single security breach since its inception.
+
+<CardGroup cols={2}>
+  <Card title="6+ Years" icon="calendar-check">
+    Zero security breaches since inception
+  </Card>
+  
+  <Card title="6M+ Wallets" icon="wallet">
+    Over 6 million wallets powered by Venly
+  </Card>
+</CardGroup>
+
+Venly's unwavering dedication to security has ensured that user wallets remain uncompromised, maintaining our impeccable track record in the industry.
+
+---
+
+## Security Certifications & Audits
+
+### SOC 2 Type II Certification
+
+Venly, the leading blockchain technology solutions provider, is pleased to announce that it has successfully completed the Service Organization Control 2 (SOC 2) Type 2 compliance assessment. This achievement reflects Venly's dedication to upholding its services' highest data security, privacy, and reliability standards.
+
+By achieving SOC 2 Type II compliance, Venly demonstrates its proactive approach to safeguarding customer data and confidential information. The rigorous assessment process involved a comprehensive evaluation of Venly's systems, policies, and procedures, ensuring they meet the strictest industry standards.
+
+### Cobalt.io Audits
+
+We at **Venly** quickly identify and reduce risk with Audits performed by **[Cobalt.io](https://www.cobalt.io/)**. They offer instant access to expert testers and real-time security findings. We seamlessly scale our security efforts as needs change. We stay ahead of threats with continuous offensive security testing, relying on seasoned experts to safeguard our organization. As a reliable partner, Cobalt combines expert insights to carry out detailed audits of security.
+
+### Bug Bounty Program
+
+We also offer a bug bounty program via **[Intigriti](https://app.intigriti.com/programs/arkane/arkanenetwork/detail)** - (cybersecurity bug bounty program). By leveraging the skills of a diverse pool of ethical hackers, we can identify and address vulnerabilities more effectively than relying solely on our internal team.
+
+<CardGroup cols={3}>
+  <Card title="Continuous Testing" icon="arrows-rotate">
+    Systems are continuously tested for new vulnerabilities
+  </Card>
+  
+  <Card title="Diverse Expertise" icon="users">
+    Access to a diverse pool of ethical hackers
+  </Card>
+  
+  <Card title="Better Code Quality" icon="code">
+    Insights lead to better code quality and security
+  </Card>
+</CardGroup>
+
+### ISO27001 Certification
+
+Venly has received its official ISO 27001 certification, the world's best-known standard for information security management systems.
+
+Being so certified "proves that we have consistently implemented rigorous controls," commented Venly CEO Tim Dierckxsens, "and demonstrates our dedication to maintaining the highest security and compliance standards."
+
+These standards comprise a systematic approach to managing sensitive information and reducing the risk of security breaches. They provide best practices in:
+
+<Steps>
+  <Step title="Risk Assessment">
+    Risk assessment and management
+  </Step>
+  
+  <Step title="Access Control">
+    Access control and user management
+  </Step>
+  
+  <Step title="Incident Management">
+    Incident management and response
+  </Step>
+  
+  <Step title="Business Continuity">
+    Business continuity planning
+  </Step>
+  
+  <Step title="Compliance">
+    Compliance with legal and regulatory requirements
+  </Step>
+  
+  <Step title="Physical Security">
+    Physical and environmental security
+  </Step>
+</Steps>
+
+---
+
+## Encrypted Databases
+
+Within Venly's framework, encryption isn't just an afterthought; it's a foundational principle of operations. Each piece of data stored within the databases is encrypted using robust encryption algorithms, rendering it indecipherable to anyone without the proper cryptographic keys.
+
+This approach ensures that even if a malicious actor were to gain access to the database, the information would remain safely locked away, beyond their reach.
+
+<Info>
+**Encryption at Rest:**
+
+All data is encrypted using industry-standard encryption algorithms, ensuring maximum protection even in the event of unauthorized access.
+</Info>
+
+---
+
+## Enterprise-Grade Security
+
+Venly implements multiple layers of enterprise-grade security measures to protect your assets:
+
+<AccordionGroup>
+  <Accordion title="Compliance & Standards" icon="clipboard-check">
+    - **GDPR Regulated** - Full compliance with European data protection regulations
+    - **NIST SP 800_57** - Following NIST cryptographic key management standards
+  </Accordion>
+  
+  <Accordion title="Encryption & Security" icon="lock">
+    - **[RSA 4096](https://en.wikipedia.org/wiki/RSA_(cryptosystem))** - Strong asymmetric encryption
+    - **[Argon2 Key Stretching](https://en.wikipedia.org/wiki/Argon2)** - Password hashing and key derivation
+    - **[Amazon KMS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.Keys.html)** - Key management service for encryption keys
+    - **[HashiCorp Vaults](https://www.vaultproject.io/)** - Secure secret storage
+  </Accordion>
+  
+  <Accordion title="Threat Detection & Monitoring" icon="radar">
+    - **[GuardDuty threat detection](https://aws.amazon.com/guardduty/features/)** - Continuous threat detection
+    - **[SecurityHub cloud security](https://docs.aws.amazon.com/securityhub/latest/userguide/security.html)** - Centralized security monitoring
+    - **[Inspector scanning](https://docs.aws.amazon.com/inspector/latest/user/what-is-inspector.html)** - Automated security assessment
+  </Accordion>
+  
+  <Accordion title="Bug Bounty & Audits" icon="bug">
+    - **[Intigriti](https://app.intigriti.com/programs/arkane/arkanenetwork)** - Cybersecurity bug bounty program
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Security Summary
+
+<CardGroup cols={2}>
+  <Card title="Certifications" icon="certificate">
+    SOC 2 Type II, ISO27001 certified
+  </Card>
+  
+  <Card title="Track Record" icon="shield-check">
+    6+ years without a security breach
+  </Card>
+  
+  <Card title="Continuous Audits" icon="magnifying-glass">
+    Regular security audits via Cobalt.io
+  </Card>
+  
+  <Card title="Bug Bounty" icon="bug-slash">
+    Active bug bounty program via Intigriti
+  </Card>
+</CardGroup>
+
+---
+
+## Learn More
+
+<CardGroup cols={2}>
+  <Card title="Authentication Guide" icon="key" href="/getting-started/authentication">
+    Learn about authentication methods
+  </Card>
+  
+  <Card title="Developer Portal" icon="browser" href="/getting-started/developer-portal">
+    Access your security settings
+  </Card>
+  
+  <Card title="Bug Bounty Program" icon="bug" href="https://app.intigriti.com/programs/arkane/arkanenetwork/detail">
+    Report security vulnerabilities
+  </Card>
+  
+  <Card title="Contact Security" icon="shield" href="mailto:security@venly.io">
+    Report security concerns
+  </Card>
+</CardGroup>

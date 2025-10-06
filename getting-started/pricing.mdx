@@ -1,0 +1,406 @@
+---
+title: "Pricing"
+description: "Understanding Venly's flexible pay-as-you-go pricing model"
+icon: "dollar-sign"
+---
+
+# Pricing
+
+Venly offers a flexible pay-as-you-go pricing model. Plans include a base fee that covers a predefined level of consumption. Once you exceed this base level, you continue with a pay-as-you-go approach, paying only for the additional services you use.
+
+With Venly, you avoid long-term contracts and complex licensing, similar to paying for utilities like water and electricity: you only pay for what you consume. Additionally, you can choose between a **monthly license** or a **yearly license**, with the **yearly** option providing a **20% discount**.
+
+---
+
+## Platform Trial - Onboarding Made Fast!
+
+Creating a new company or signing up with Venly automatically starts a **14-day Platform Trial**. During this period, you can test out features and API endpoints, ensuring you fully experience the platform's capabilities before committing. You can sign up with your email or socials, and then you will be prompted to enter the name of your workspace, and that's it. Instantly, you get access to the [Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+<Frame>
+  <img
+    src="https://files.readme.io/317c24afdeed4a945250ba52b58d47f9ccf9d8971daee04b19420f53c3230365-image.png"
+    alt="Platform Trial Signup"
+  />
+</Frame>
+
+<Info>
+**Trial Benefits:**
+- There are no additional costs or termination fees once you stop using the services
+- When you sign up or create a company, a **14-day Platform Trial** plan is automatically activated
+- After 14 days, the trial ends automatically and you will then be prompted to select a plan if you wish to continue using Venly services
+</Info>
+
+<Frame caption="Venly Pricing - Subscription Plans">
+  <img
+    src="https://files.readme.io/276c409cd8b7b276ab5859a01ff136755fc75b7173953bbddb7a41735871f47e-image.png"
+    alt="Venly Subscription Plans"
+  />
+</Frame>
+
+---
+
+## Subscription Plans
+
+<CardGroup cols={3}>
+  <Card title="Scale Plan" icon="rocket">
+    **$499/month** (annual)
+    
+    **$599/month** (monthly)
+    
+    - 3 million compute units
+    - Account manager
+    - Priority/dedicated Slack support
+    - All Professional features
+  </Card>
+  
+  <Card title="Professional Plan" icon="briefcase">
+    **$199/month** (annual)
+    
+    **$249/month** (monthly)
+    
+    - 1 million compute units
+    - All API services & SDKs
+    - Web3 webhooks
+    - Dynamic NFTs
+    - Full sandbox & production access
+  </Card>
+  
+  <Card title="Developer Plan" icon="code">
+    **$99/month** (annual)
+    
+    **$124/month** (monthly)
+    
+    - 200,000 compute units
+    - All API services & SDKs
+    - All mainnets & testnets
+    - Node infrastructure
+    - Community support
+  </Card>
+</CardGroup>
+
+<Info>
+View the [included features](https://www.venly.io/pricing) and the **difference between the plans**.
+</Info>
+
+---
+
+## Pay as You Go!
+
+The number of compute units are conveniently bundled in groups of 100K. The Professional plan includes **ten** bundles, while the Developer plan includes **two** bundles each containing **100K compute units**.
+
+If you exceed your plan's compute unit limit (for instance, 1 Million), an additional bundle of 100K compute units will be automatically added and invoiced. If you surpass the extra 100K compute units, another 100K compute units will be added, invoiced, and so on. This ensures uninterrupted service while keeping you informed about your usage.
+
+### Over Usage Pricing
+
+| Plan | Additional 100K CUs |
+|:-----|:--------------------|
+| **Scale** | $17 |
+| **Professional** | $25 |
+| **Developer** | $62 |
+
+<Info>
+Over usage is always billed **monthly** regardless if you have a monthly or yearly plan.
+</Info>
+
+---
+
+## Managing Your Plan
+
+### Canceling Plan
+
+<Warning>
+**Cancellation Policy:**
+- If you are on trial, the cancellation happens immediately (you will not be charged)
+- If your plan is active, the cancellation occurs at the end of the current term (end of the month or end of your yearly plan depending on your billing cycle)
+</Warning>
+
+### Upgrading/Downgrading Plan
+
+<Tabs>
+  <Tab title="Upgrading">
+    **You can immediately upgrade:**
+    - To a higher billing cycle within the same plan (from monthly to yearly billing)
+    - To a higher-tier plan by paying the price difference
+  </Tab>
+  
+  <Tab title="Downgrading">
+    **To downgrade:**
+    - Contact [support@venly.io](mailto:support@venly.io)
+    - Or reach out via chat from the [Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) (click on the message icon on the bottom right)
+  </Tab>
+</Tabs>
+
+### Plan Tiers
+
+| Plan | Tier |
+|:-----|:-----|
+| **Scale** | 3 |
+| **Professional** | 2 |
+| **Developer** | 1 |
+
+---
+
+## Compute Units
+
+Compute units (CUs) are a way to measure how much computing resources, like processing power and memory, an API endpoint requires. Think of compute units like a measuring stick representing how much computer power an API endpoint needs. The more compute units an API endpoint requires, the more resources it consumes to complete the request and vice versa.
+
+### Why Use Compute Units?
+
+<CardGroup cols={2}>
+  <Card title="Fair Pricing" icon="scale-balanced">
+    Pay only for what you use - no overpaying for basic requests
+  </Card>
+  
+  <Card title="Transparent Costs" icon="eye">
+    Clear understanding of resource consumption and costs
+  </Card>
+  
+  <Card title="Flexible Scaling" icon="arrows-maximize">
+    Scale your usage up or down without penalties
+  </Card>
+  
+  <Card title="Abuse Prevention" icon="shield">
+    Higher costs for intensive endpoints protect system resources
+  </Card>
+</CardGroup>
+
+### How Are Compute Units Calculated?
+
+Some API endpoints are lightweight and fast to run (e.g., [Get a User](https://docs.venly.io/reference/getuser)) and others can be more intense (e.g., [Create Wallet](https://docs.venly.io/reference/createwallet)). Each API endpoint is assigned a quantity of compute units depending on the complexity of the endpoint request.
+
+By the end of your billing cycle, all compute units are added and a total is created. This total of compute units is then used to create your invoice. You only pay for what you use, plain and simple. Your charges will be based on the volume of compute units consumed.
+
+### Approximate Creations Per Plan
+
+<Tabs>
+  <Tab title="Developer">
+    **200,000 Compute Units**
+    
+    - Create **+2,500** Wallets
+    - Execute **+2,500** Transactions
+    - Mint **+2,500** NFTs
+  </Tab>
+  
+  <Tab title="Professional">
+    **1,000,000 Compute Units**
+    
+    - Create **+12,500** Wallets
+    - Execute **+12,500** Transactions
+    - Mint **+12,500** NFTs
+  </Tab>
+  
+  <Tab title="Scale">
+    **3,000,000 Compute Units**
+    
+    - Create **40,000+** Wallets
+    - Execute **40,000+** Transactions
+    - Mint **40,000+** NFTs
+  </Tab>
+</Tabs>
+
+### Endpoints and Their CUs
+
+Below is a table of some main requests and their corresponding CU cost:
+
+| Endpoint | CU Cost |
+|:---------|:--------|
+| Authenticate (fetch auth token) | 10 |
+| Create a user | 50 |
+| Get User by ID | 25 |
+| Create a wallet | 75 |
+| Get wallet balance | 25 |
+| Perform a transaction | 75 |
+| Read a smart contract | 25 |
+| Mint an NFT | 75 |
+| Update an NFT | 25 |
+| Create a Payment Checkout link | 25 |
+| Create a webhook | 25 |
+
+### Basic Creation Endpoints and CU Cost
+
+The table shows the compute unit cost for creating user wallets, executing transactions, and minting NFTs:
+
+| API Request | CU Cost |
+|:-----------|:--------|
+| **Create a User Wallet** | 75 |
+| Create 200 User Wallets | 15,000 |
+| Create 1,000 User Wallets | 75,000 |
+| **Execute a Transaction** | 75 |
+| Execute 200 Transactions | 15,000 |
+| Execute 1,000 Transactions | 75,000 |
+| **Mint an NFT** | 75 |
+| Mint 200 NFTs | 15,000 |
+| Mint 1,000 NFTs | 75,000 |
+
+---
+
+## Optimizing Venly API Integration
+
+<iframe
+  src="https://www.loom.com/embed/f7c79a547a8643ada3d7b6df2fa85781?sid=74a2cff8-de13-45c2-8b8d-fae1d379410d"
+  frameBorder="0"
+  allowFullScreen
+  style={{
+    width: '100%',
+    height: '400px'
+  }}
+/>
+
+### Authentication Optimization
+
+The expiration is in the token itself, so it would be better to read the expiry and only fetch a new token if it is expired. The bearer token is valid for approximately **6 minutes** after it is fetched. Only retrieve the bearer again when it is expired.
+
+For example in JavaScript, this can be done with the help of [jwt-decode](https://www.npmjs.com/package/jwt-decode):
+
+```javascript
+import jwtDecode from 'jwt-decode';
+
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return true;
+  }
+};
+```
+
+<Tip>
+**Savings:** Check token expiration before fetching a new one to avoid unnecessary authentication requests (10 CUs per auth).
+</Tip>
+
+### Creating Users Efficiently
+
+The create user endpoint uses 50 CUs and allows you to create one user. To use this endpoint efficiently, you can create a signing method for the user while you are creating the user. This way only 50 CUs are used and you can create a user and their signing method simultaneously.
+
+When creating a user you can specify the request body as:
+
+```json
+{
+  "reference": "Test User 1",
+  "signingMethod": {
+    "type": "PIN",
+    "value": "123456"
+  }
+}
+```
+
+<Tip>
+**Savings:** Create user + signing method in one call (50 CUs) instead of two separate calls (50 + 50 = 100 CUs).
+</Tip>
+
+### Minting NFTs in Batches
+
+The mint NFT endpoint uses 75 CUs. You can mint multiple NFTs to multiple wallet addresses/email addresses with the same endpoint. This means you will only utilize 75 CUs and can mint multiple NFTs to multiple wallets/emails.
+
+<Card title="Batch Minting Guide" icon="layer-group" href="https://docs.venly.io/docs/how-to-batch-mint-nfts-to-multiple-destinations">
+  Learn how to batch mint NFTs to multiple destinations
+</Card>
+
+<Tip>
+**Savings:** Batch mint 10 NFTs to different wallets in one call (75 CUs) instead of 10 separate calls (750 CUs).
+</Tip>
+
+---
+
+## How Will I Be Billed?
+
+Billing depends on the plan you have selected and the compute units consumed.
+
+Compute units are bundled in bundles of **100K** (100,000). This means the **Professional Plan** includes **ten bundles**, while the **Developer Plan** includes **two bundles** of **100K** compute units.
+
+As soon as you surpass the compute units included in your plan, an additional bundle of **100K** will automatically be added and invoiced.
+
+### Over Usage Charges
+
+- On the **Scale plan**, over usage will be charged by **$17** for an additional 100k compute units
+- On the **Professional plan**, over usage will be charged by **$25** for an additional 100k compute units
+- On the **Developer plan**, over usage will be charged by **$62** for an additional 100k compute units
+
+---
+
+## How Do I Track My Usage of Compute Units?
+
+Head over to the **[Usage](https://portal.venly.io/usage/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)** section on the [developer portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal), where you can see a line graph indicating the following:
+
+- Total number of requests
+- Total number of compute units consumed
+- Total number of errors
+
+<Info>
+Press the toggle on the top right to switch between **sandbox usage** and **production usage**.
+</Info>
+
+<Frame>
+  <img
+    src="https://files.readme.io/9d0e3e43ef492b9b445b1e3eea68df5094d47d38180a868c39be21c269d0190a-image.png"
+    alt="Usage Tracking Dashboard"
+  />
+</Frame>
+
+### Filter Options
+
+You can filter the results based on the **period**:
+
+<Frame>
+  <img
+    src="https://files.readme.io/fda4b0f8def5ed180d3c3810f992d4069fa5e416460abfc40eee74222c45f128-image.png"
+    alt="Period Filter"
+  />
+</Frame>
+
+Further, you can also filter based on a specific **Component**:
+
+<Frame>
+  <img
+    src="https://files.readme.io/492f54c5b03be2831d38cf2a6618f6c0f211701e0e46983a3e19596b04a9823a-image.png"
+    alt="Component Filter"
+  />
+</Frame>
+
+---
+
+## Endpoints & Compute Units
+
+### Details
+
+- The details section shows all of your used endpoints
+- Under **Requests**, you can see the number of times they have been used and the corresponding percentage compared to your total API requests
+- Under **Compute units**, you can see the corresponding compute units for a specific endpoint and the corresponding percentage compared to your total compute units
+
+### Success Rate
+
+- This section shows the percentage of successful API calls and errors on the user and client sides
+- Below this, you can view the endpoint that resulted in an error, how many times it failed, and the corresponding percentage compared to your total errors
+
+<Frame>
+  <img
+    src="https://files.readme.io/66a5b8f5a8e19ad384d63d24b1036f7a9bdd57549308e8f3894e2e756e38a343-image.png"
+    alt="Endpoints and Success Rate"
+  />
+</Frame>
+
+---
+
+## Quick Links
+
+<CardGroup cols={2}>
+  <Card title="View Pricing Plans" icon="dollar-sign" href="https://www.venly.io/pricing">
+    See all plans and features in detail
+  </Card>
+  
+  <Card title="Usage Dashboard" icon="chart-line" href="https://portal.venly.io/usage/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal">
+    Track your compute unit usage
+  </Card>
+  
+  <Card title="Developer Portal" icon="browser" href="/getting-started/developer-portal">
+    Manage your billing and subscriptions
+  </Card>
+  
+  <Card title="Contact Support" icon="headset" href="mailto:support@venly.io">
+    Have questions? Contact our support team
+  </Card>
+</CardGroup>
