@@ -1,0 +1,88 @@
+---
+title: "Hedera Support & USDC Integration"
+description: "Hedera Hashgraph support, contract reading, and USDC credit system"
+icon: "plus"
+date: "2021-11-01"
+---
+
+Updates on our API products: **Wallet**, **NFT**, and **Market**.
+
+## Wallet API [0.31.0]
+
+<CardGroup cols={3}>
+  <Card title="Resubmit Transaction" icon="rotate">
+    Endpoint to resubmit a transaction
+  </Card>
+  
+  <Card title="Hedera Support" icon="h">
+    Support for Hedera Hashgraph
+  </Card>
+  
+  <Card title="Read Contract" icon="book-open">
+    Endpoint to read a contract
+  </Card>
+</CardGroup>
+
+**New Endpoints:**
+- Endpoint to [resubmit a transaction](https://venly.readme.io/reference/resubmit)
+- Support for Hedera Hashgraph
+- Endpoint to [read a contract](https://venly.readme.io/reference/readcontract)
+
+## NFT API [0.19.0]
+
+<CardGroup cols={2}>
+  <Card title="Transaction Hash" icon="hashtag">
+    Added in API endpoint responses
+  </Card>
+  
+  <Card title="IPFS Support" icon="server">
+    Support for IPFS and other metadata storage
+  </Card>
+  
+  <Card title="Burn NFT" icon="fire">
+    Documentation on how to burn NFTs
+  </Card>
+  
+  <Card title="Update Metadata" icon="pen">
+    Endpoint to update NFT metadata
+  </Card>
+</CardGroup>
+
+**Added:**
+- `transactionHash` in the response of the [NFT API endpoints](https://venly.readme.io/reference/gettokenmetadata_2)
+- Support for IPFS and other metadata storage providers
+- Documentation on [how to burn an NFT](https://docs.venly.io/docs/how-to-burn-nft)
+- Endpoint to [update the metadata of an NFT (token type)](https://venly.readme.io/reference/updatemetadatafortokentype_1)
+
+## Market API [0.14.0]
+
+### USDC Credit System
+
+<Info>
+Switch of Market credit system to **USDC**
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Update Offer Price" icon="dollar-sign">
+    Endpoint to update offer prices
+  </Card>
+  
+  <Card title="Balance History" icon="clock-rotate-left">
+    Retrieve complete balance history
+  </Card>
+  
+  <Card title="USDC Deposits" icon="money-bill-wave">
+    Create and retrieve USDC deposit addresses
+  </Card>
+  
+  <Card title="USDC Withdrawals" icon="arrow-up-from-bracket">
+    Withdraw USDC balance
+  </Card>
+</CardGroup>
+
+**Added:**
+- Endpoint to [update offer price](https://venly.readme.io/reference/update)
+- Endpoint to [retrieve the balance history](https://venly.readme.io/reference/getcredithistory)
+- Switch of Market credit system to **USDC**
+- Endpoint to [create and retrieve a USDC deposit address](https://venly.readme.io/reference/createdepositaddress_1)
+- Endpoint to withdraw **USDC** balance

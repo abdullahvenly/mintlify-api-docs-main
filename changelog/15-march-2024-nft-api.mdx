@@ -1,0 +1,102 @@
+---
+title: "Retrieve All Token Mints Endpoint"
+description: "New endpoint to retrieve token mints with filtering and timestamp tracking"
+icon: "clock-rotate-left"
+date: "2024-03-15"
+---
+
+- A new endpoint has been added to the **NFT-API** which allows you to retrieve all token mint requests
+- A new way to filter your tokens based on `tokenTypeId` for the **Get All Tokens Endpoint**
+- Addition of a **timestamp** of the creation of mints in the response body for specific endpoints
+
+## Improvements
+
+### Filter Tokens by tokenTypeId
+
+A new query param (`tokenTypeId`) has been added to the [Get All Tokens endpoint](https://docs.venly.io/reference/gettokens), which allows you to filter all of your tokens by `tokenTypeId`.
+
+**Request Endpoint:** [API Reference](https://docs.venly.io/reference/gettokens)
+
+```http
+GET /api/v2/contracts/{secretType}/{contractAddress}/tokens
+```
+
+**Query Parameters:**
+
+| Param | Param Type | Data Type | Required? | Description |
+|:------|:-----------|:----------|:----------|:------------|
+| `tokenTypeId` | Query | Numeric | No | Filter all the tokens based on the `tokenTypeId` |
+
+## New Features
+
+### Retrieve All Token Mints Endpoint
+
+A new endpoint has been added, allowing you to retrieve all of your token mint requests and filter the results based on multiple query parameters.
+
+[API Reference](https://docs.venly.io/reference/getall-1)
+
+```http
+GET /api/v2/tokens/mints
+```
+
+**Available Filter Parameters:**
+- `mintIds`
+- `status`
+- `createdOnFrom`
+- `createdOnTo`
+- `sortOn`
+- `sortOrder`
+
+### Timestamps of Mint Creation
+
+You will now receive the timestamps of the creation of mints (_the time-date when a token mint was created_) in the response bodies of the following three endpoints. A new param called `createdOn` is returned in the response body that indicates the timestamp of the creation of the mint.
+
+**Affected Endpoints:**
+
+<CardGroup cols={3}>
+  <Card title="Create Token-type" icon="plus">
+    [Reference](https://docs.venly.io/reference/createtokentype)  
+    (only if you mint tokens in the request)
+  </Card>
+  
+  <Card title="Mint Tokens" icon="coins">
+    [Reference](https://docs.venly.io/reference/minttokens)
+  </Card>
+  
+  <Card title="Check Mint Status" icon="magnifying-glass">
+    [Reference](https://docs.venly.io/reference/gettokenmint)
+  </Card>
+</CardGroup>
+
+**Example response body** containing the **timestamp** information in the `createdOn` param:
+
+```json
+"mints": [
+  {
+    "id": "1d504bea-23d2-49c2-8a3e-52e7e86960b9",
+    "status": "PENDING",
+    "createdOn": "2024-02-14T08:30:00Z",
+    "destination": {
+      "address": "0x6490d80c70990f27f50fee6189829cefe584998a",
+      "amount": 1
+    }
+  },
+  {
+    "id": "80dfeee2-bbfb-489a-acb3-9faaf485cce6",
+    "status": "PENDING",
+    "createdOn": "2024-02-14T08:30:00Z",
+    "destination": {
+      "address": "0x444297d1335cc67130c20EeF0a4E490d18496cC8",
+      "amount": 1
+    }
+  },
+  {
+    "id": "6078717c-1506-4db7-872e-16edb5db6096",
+    "status": "PENDING",
+    "createdOn": "2024-02-14T08:30:00Z",
+    "destination": {
+      "address": "0x932d9D7288C6ade9f2f088421269366839d546F8",
+      "amount": 2
+    }
+  }
+]

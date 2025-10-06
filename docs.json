@@ -464,6 +464,106 @@
             ]
           }
         ]
+      },
+      {
+        "tab": "Changelog",
+        "groups": [
+          {
+            "group": "2025",
+            "pages": [
+              "changelog/developer-portal-update-actions-for-nft-api",
+              "changelog/developer-portal-write-actions-for-nft-api",
+              "changelog/nft-api-token-api-updates-february-2025",
+              "changelog/nft-api-token-api-updates-feb-2025",
+              "changelog/developer-portal-update-wallet-insights",
+              "changelog/developer-portal-updates-january-2025",
+              "changelog/password-signing-method-native-token-usd-price"
+            ]
+          },
+          {
+            "group": "2024",
+            "pages": [
+              "changelog/update-for-nft-api-webhooks",
+              "changelog/developer-portal-updates",
+              "changelog/retrieve-additional-metadata-of-erc20-tokens",
+              "changelog/updated-developer-portal",
+              "changelog/retrieve-erc20-tokens-metadata-usd-price",
+              "changelog/signing-method-update-importing-litecoin-wallet",
+              "changelog/new-pricing-structure",
+              "changelog/12-april-2024-migration-from-mumbai-to-amoy-for-polygon-testnet",
+              "changelog/15-march-2024-nft-api",
+              "changelog/13-march-2024-webhooks",
+              "changelog/11-march-2024-wallet-api",
+              "changelog/04-march-2024-dynamic-nfts",
+              "changelog/27-february-2024-token-type-creation-update",
+              "changelog/22-february-2024-base-xpla-support-added",
+              "changelog/06-february-2024-widget-update",
+              "changelog/06-february-2024-nft-api-v2",
+              "changelog/06-february-2024-flash-minting",
+              "changelog/29-january-2024-venly-portal-updates",
+              "changelog/22-january-2024-invoices-management-for-portal",
+              "changelog/03-january-2024-bitcoin-segwit"
+            ]
+          },
+          {
+            "group": "2023",
+            "pages": [
+              "changelog/11-december-2023",
+              "changelog/05-december-2023-user-management",
+              "changelog/17-november-2023",
+              "changelog/25-october-2023",
+              "changelog/19-september-2023",
+              "changelog/21-july-2023",
+              "changelog/10-july-2023",
+              "changelog/05-june-2023",
+              "changelog/16-february-2023",
+              "changelog/19-january-2023"
+            ]
+          },
+          {
+            "group": "2022",
+            "pages": [
+              "changelog/15-november-2022",
+              "changelog/05-december-2022",
+              "changelog/04-october-2022",
+              "changelog/01-october-2022"
+            ]
+          },
+          {
+            "group": "2021",
+            "pages": [
+              "changelog/01-november-2021"
+            ]
+          },
+          {
+            "group": "Other Updates",
+            "pages": [
+              "changelog/developer-portal-improved-nft-insights",
+              "changelog/developer-portal-nft-insights",
+              "changelog/new-pricing-plan-scale-plan",
+              "changelog/new-pricing-plan-developer-plan",
+              "changelog/token-api",
+              "changelog/nft-api-v3",
+              "changelog/solana-chain-added",
+              "changelog/optimism-chain-added",
+              "changelog/optimism-chain-added-to-widget",
+              "changelog/base-xpla-support-for-widget",
+              "changelog/base-faucet",
+              "changelog/fiat-onramps-offramps",
+              "changelog/get-supported-chains-for-nft-token-api",
+              "changelog/polygon-avalanche-faucet",
+              "changelog/nft-testnet-assets",
+              "changelog/pay-fee-update",
+              "changelog/polygon-mainnet-upgrade",
+              "changelog/rebroadcast-transactions",
+              "changelog/encrypted-pin-transfer",
+              "changelog/sitemanager-integration-added",
+              "changelog/deprecating-market-market-api",
+              "changelog/deprecation-of-ethereum-nft-creation-and-minting",
+              "changelog/reversal-of-ethereum-minting-deprecation"
+            ]
+          }
+        ]
       }
     ],
     "global": {

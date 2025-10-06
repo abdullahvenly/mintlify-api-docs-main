@@ -1,0 +1,144 @@
+---
+title: "Optimism Chain Added"
+description: "Create and manage Optimism wallets, sign messages, and read contracts"
+icon: "o"
+date: "2024-09-27"
+---
+
+The **Optimism** chain has been added to the supported blockchains in **Wallet-API**. Now you can create and manage wallets, sign messages, and read contracts on the **Optimism** chain.
+
+## Optimism Features in Wallet API
+
+<CardGroup cols={3}>
+  <Card title="Create Wallets" icon="wallet">
+    Create and manage Optimism wallets
+  </Card>
+  
+  <Card title="Send & Receive" icon="money-bill-transfer">
+    Transfer funds to/from Optimism wallets
+  </Card>
+  
+  <Card title="Token Support" icon="coins">
+    Transfer native tokens, ERC20 tokens, and NFTs
+  </Card>
+  
+  <Card title="Contract Calls" icon="code">
+    Execute contract calls on Optimism
+  </Card>
+  
+  <Card title="Sign Messages" icon="signature">
+    Sign EIP712 and generic messages
+  </Card>
+  
+  <Card title="Gas Fees" icon="gas-pump">
+    Retrieve current gas fees
+  </Card>
+</CardGroup>
+
+### Key Capabilities
+
+- Create and manage wallets on the **Optimism** blockchain
+- Sandbox works on the **Optimism Sepolia Testnet**
+- Send and receive funds to/from Optimism wallets
+- Transfer native tokens, ERC20 tokens, and NFTs on Optimism
+- Execute contract calls on Optimism
+- Sign EIP712 and generic messages on Optimism
+- Retrieve the current gas fee
+- Read contracts
+
+## Get Supported Chains
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/secrettypes_1)
+
+```http
+GET https://api-wallet-sandbox.venly.io/api/chains
+```
+
+### Response Body
+
+<Info>
+As you can see, we now support **Optimism**.
+</Info>
+
+```json
+{
+  "success": true,
+  "result": [
+    "AETERNITY",
+    "ARBITRUM",
+    "AVAC",
+    "BITCOIN",
+    "BSC",
+    "ETHEREUM",
+    "GOCHAIN",
+    "LITECOIN",
+    "VECHAIN",
+    "MATIC",
+    "NEO",
+    "HEDERA",
+    "IMX",
+    "BASE",
+    "XPLA",
+    "OPTIMISM"
+  ]
+}
+```
+
+## Create Optimism Wallet
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/createwallet)
+
+```http
+POST https://api-wallet-sandbox.venly.io/api/wallets
+```
+
+### Headers
+
+| Parameter | Param Type | Value | Description |
+|:----------|:-----------|:------|:------------|
+| `Signing-Method` | Header | `id:value` | `id`: ID of the signing method<br/>`value`: Value of the signing method |
+
+### Request Body
+
+```json
+{
+  "secretType": "OPTIMISM",
+  "description": "Optimism Wallet",
+  "userId": "8afbf977-1ad2-48c9-b4d4-9beb3c4911e4"
+}
+```
+
+### Response Body
+
+```json
+{
+  "success": true,
+  "result": {
+    "id": "c1403bd7-c21e-402b-9208-85ef130b3a8b",
+    "address": "0x3782630a0e81ab7e3e63b9bC03853a00A71d2209",
+    "walletType": "API_WALLET",
+    "secretType": "OPTIMISM",
+    "createdAt": "2024-09-26T19:34:21.761430234",
+    "archived": false,
+    "description": "Optimism Wallet",
+    "primary": false,
+    "hasCustomPin": false,
+    "userId": "8afbf977-1ad2-48c9-b4d4-9beb3c4911e4",
+    "custodial": false,
+    "balance": {
+      "available": true,
+      "secretType": "OPTIMISM",
+      "balance": 0,
+      "gasBalance": 0,
+      "symbol": "ETH",
+      "gasSymbol": "ETH",
+      "rawBalance": "0",
+      "rawGasBalance": "0",
+      "decimals": 18
+    }
+  }
+}

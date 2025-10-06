@@ -1,0 +1,142 @@
+---
+title: "Token-type Creation Update"
+description: "Breaking change for NFT-API v2.0 token-type creation endpoint"
+icon: "triangle-exclamation"
+date: "2024-02-27"
+---
+
+Update on a breaking change for the **NFT-API v2.0**, specifically for the **token-type creation endpoint**.
+
+## Breaking Change
+
+<Warning>
+**Request Body Format Changed**
+
+Previously when creating a token-type, we passed an array in the request body. This method will not work anymore as the request body is now passed as an object with a `creations` array.
+</Warning>
+
+## Old Method (Deprecated)
+
+### Request
+
+<Warning>
+The old method to create a token-type included passing the request body as an array. **This no longer works.**
+</Warning>
+
+```http
+POST /api/v2/token-types/creations
+```
+
+**Old Request Body (Array):**
+```json
+[
+  {
+    "name": "My first NFT",
+    "description": "Venly",
+    "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+    "secretType": "MATIC",
+    "contractAddress": "0x30d6cff9cb268c59c75a94755b2c60e118d65657"
+  }
+]
+```
+
+## New Method (Current)
+
+The request body now includes a new **array of objects** called `creations` which includes information on a token-type. The `creations` array can include one or multiple token-type details, which means you can create one or multiple token-types with a single request.
+
+### Request
+
+**Endpoint:** [API Reference](https://docs.venly.io/reference/createtokentype)
+
+```http
+POST /api/v2/token-types/creations
+```
+
+### Request Body Parameters
+
+| Parameter | Description | Type | Required |
+|:----------|:------------|:-----|:---------|
+| `secretType` | The blockchain of the contract | String | ✅ |
+| `contractAddress` | The contract address under which you want to create the token-type | String | ✅ |
+| `creations` | An array of objects that can define one or multiple token-type details | Array of objects | ✅ |
+| `creations.name` | The name of the token-type | String | ✅ |
+| `creations.description` | The description of the token-type | String | ❌ |
+| `creations.image` | The image URL for the token-type that will be displayed | String | ❌ |
+
+<Info>
+**Key Changes:**
+- The request body is now an object (not an array)
+- Token-type details are passed in the `creations` array as objects
+- You can create multiple token-types in a single request
+</Info>
+
+**New Request Body (Object with creations array):**
+```json
+{
+  "secretType": "MATIC",
+  "contractAddress": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+  "creations": [
+    {
+      "name": "My first NFT Token-type",
+      "description": "Venly",
+      "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png"
+    }
+  ]
+}
+```
+
+### Response Body
+
+<Info>
+**Important Response Details:**
+- Save the `result.creations.id` from the response body. This is the token-type **Creation ID** used to track the status of the token-type creation request
+- The `status` attribute indicates the token-type creation status
+- The `result` is now an object with an array of `creations`
+</Info>
+
+```json
+{
+  "success": true,
+  "result": {
+    "creations": [
+      {
+        "id": "45cf858a-cb0d-4e31-b6e1-b3bf4c65d014",
+        "status": "PENDING",
+        "tokenTypeId": 5,
+        "metadata": {
+          "name": "My first NFT Token-type",
+          "description": "Venly",
+          "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+          "imagePreview": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+          "imageThumbnail": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+          "animationUrls": [],
+          "attributes": [
+            {
+              "type": "system",
+              "name": "tokenTypeId",
+              "value": "5",
+              "traitType": "Token Type ID",
+              "trait_type": "Token Type ID"
+            }
+          ],
+          "contract": {
+            "address": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+            "name": "Test",
+            "symbol": "TE",
+            "image": "string",
+            "imageUrl": "string",
+            "image_url": "string",
+            "description": "Testing",
+            "externalLink": "www.venly.io",
+            "external_link": "www.venly.io",
+            "externalUrl": "www.venly.io",
+            "external_url": "www.venly.io",
+            "media": [],
+            "type": "ERC_1155"
+          },
+          "fungible": false
+        }
+      }
+    ]
+  }
+}

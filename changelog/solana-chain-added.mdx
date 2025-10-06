@@ -1,0 +1,151 @@
+---
+title: "Solana Support Added"
+description: "Create and manage Solana wallets, execute transactions, and interact with programs"
+icon: "s"
+date: "2024-12-04"
+---
+
+The **Solana** chain has been added to the supported blockchains in **Wallet-API** and **Widget**. You can now create and manage wallets, execute transactions, and read programs on the **Solana** chain.
+
+<Frame>
+  <img src="https://files.readme.io/86e1c26aaeded6ef928effea0d6a52ac7395acc296807a5fc47ac3bc707583e5-image.png" alt="Solana Logo" />
+</Frame>
+
+## Solana Features in Wallet API & Widget
+
+<CardGroup cols={3}>
+  <Card title="Create Wallets" icon="wallet">
+    Create and manage Solana wallets
+  </Card>
+  
+  <Card title="Transfers" icon="money-bill-transfer">
+    Send and receive SOL, tokens, and NFTs
+  </Card>
+  
+  <Card title="Balances" icon="scale-balanced">
+    Fetch native, ERC20, and NFT balances
+  </Card>
+  
+  <Card title="Program Calls" icon="code">
+    Execute program calls on Solana
+  </Card>
+  
+  <Card title="Sign Messages" icon="signature">
+    Sign generic messages
+  </Card>
+  
+  <Card title="Gas Fees" icon="gas-pump">
+    Retrieve current gas fees
+  </Card>
+</CardGroup>
+
+### Key Capabilities
+
+- **Wallet Management**: Create and manage wallets on the Solana blockchain
+- **Sandbox Environment**: Works on the Solana Devnet
+- **Fund Transfers**: Send and receive funds to/from Solana wallets
+- **Token Support**: Transfer native SOL tokens, ERC20 tokens, and NFTs
+- **Balance Queries**: Fetch balance of native tokens, ERC20 tokens, and NFTs
+- **Program Execution**: Execute program calls on Solana
+- **Message Signing**: Sign generic messages on Solana
+- **Gas Estimation**: Retrieve the current gas fee
+- **Read Programs**: Read program data
+- **Wallet Import**: Import Solana wallets
+
+## Get Supported Chains
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/secrettypes_1)
+
+```http
+GET https://api-wallet-sandbox.venly.io/api/chains
+```
+
+### Response Body
+
+<Info>
+As you can see, we now support **Solana**.
+</Info>
+
+```json
+{
+  "success": true,
+  "result": [
+    "AETERNITY",
+    "ARBITRUM",
+    "AVAC",
+    "BITCOIN",
+    "BSC",
+    "ETHEREUM",
+    "GOCHAIN",
+    "LITECOIN",
+    "VECHAIN",
+    "MATIC",
+    "NEO",
+    "HEDERA",
+    "IMX",
+    "BASE",
+    "XPLA",
+    "OPTIMISM",
+    "SOLANA"
+  ]
+}
+```
+
+## Create Solana Wallet
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/createwallet)
+
+```http
+POST https://api-wallet-sandbox.venly.io/api/wallets
+```
+
+### Headers
+
+| Parameter | Param Type | Value | Description |
+|:----------|:-----------|:------|:------------|
+| `Signing-Method` | Header | `id:value` | `id`: ID of the signing method<br/>`value`: Value of the signing method |
+
+### Request Body
+
+```json
+{
+  "secretType": "SOLANA",
+  "description": "Solana Wallet",
+  "userId": "eda7f8f6-2a70-4fcb-8a1f-387a88ae44d0"
+}
+```
+
+### Response Body
+
+```json
+{
+  "success": true,
+  "result": {
+    "id": "1a08ea1c-10b1-41c4-9b63-82ce8c9b9511",
+    "address": "5zZWb31ytB6nbVKf3FZsDSY8heQ9QoEBnYM2CZq9nRW7",
+    "walletType": "API_WALLET",
+    "secretType": "SOLANA",
+    "createdAt": "2024-11-27T11:55:33.372903708",
+    "archived": false,
+    "description": "Solana Wallet",
+    "primary": false,
+    "hasCustomPin": false,
+    "userId": "eda7f8f6-2a70-4fcb-8a1f-387a88ae44d0",
+    "custodial": false,
+    "balance": {
+      "available": true,
+      "secretType": "SOLANA",
+      "balance": 0,
+      "gasBalance": 0,
+      "symbol": "SOL",
+      "gasSymbol": "SOL",
+      "rawBalance": "0",
+      "rawGasBalance": "0",
+      "decimals": 18
+    }
+  }
+}

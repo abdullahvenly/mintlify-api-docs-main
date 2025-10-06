@@ -1,0 +1,53 @@
+---
+title: "Update for NFT-API Webhooks"
+slug: "update-for-nft-api-webhooks"
+type: "improved"
+createdAt: "Tue Nov 05 2024 12:45:00 GMT+0000 (Coordinated Universal Time)"
+hidden: false
+---
+To standardize our webhook event types for the NFT-API, we have updated the names of all `eventType` parameters. This change will help clarify the type of events related to ERC1155 token interactions. Webhooks for NFT-API will be sent out **twice**. Once with the old value for `eventType` and once with the new value. The old `eventType` messages will be supported till **1st May 2025**.
+
+# NFT-API Webhook EventType Update
+
+### Changes
+
+In the payload of NFT-API webhooks, the following `eventType` values have been updated:
+
+> 📘 
+> 
+> Only the names/value of `eventType` have been changed. The payload body sent in the events is exactly the same.
+
+- **CONTRACT_CREATION_SUCCEEDED** → **ERC1155_CONTRACT_CREATION_SUCCEEDED**
+
+- **CONTRACT_CREATION_FAILED** → **ERC1155_CONTRACT_CREATION_FAILED**
+
+- **TOKEN_TYPE_CREATION_SUCCEEDED** → **ERC1155_TOKEN_TYPE_CREATION_SUCCEEDED**
+
+- **TOKEN_TYPE_CREATION_FAILED** → **ERC1155_TOKEN_TYPE_CREATION_FAILED**
+
+- **TOKEN_CREATION_SUCCEEDED** → **ERC1155_TOKEN_CREATION_SUCCEEDED**
+
+- **TOKEN_CREATION_FAILED** → **ERC1155_TOKEN_CREATION_FAILED**
+
+### Transition Period - 1st May 2025
+
+To ensure a smooth transition, both the old and new `eventType` names will be supported until the **1st of May 2025**. We recommend that you update their implementations to accommodate the new `eventType` names.
+
+### Deprecation Notice ⚠️
+
+After the transition period, the old event type names will be removed from the NFT API webhooks. You must ensure your systems are updated to avoid any disruption in webhook functionality by the **1st of May 2025**.
+
+### Action Required
+
+- Review the changes to the `eventType` names.
+- Update your webhook implementations to utilize the new event types.
+- Test your integrations to confirm they respond correctly to the updated event names.
+
+## Example Webhook
+
+Given you're an API user and you deploy an NFT contract. When the deployment succeeds you get 2 webhook notifications (_the payload bodies are identical for both_): 
+
+1. one where `eventType` is **CONTRACT_CREATION_SUCCEEDED**
+2. one where `eventType` is **ERC1155_CONTRACT_CREATION_SUCCEEDED**
+
+Similarly, you will get 2 webhook notifications each time, one with an old value for `eventType` and once with the new value.

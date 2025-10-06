@@ -1,0 +1,77 @@
+---
+title: "Dynamic NFTs"
+description: "Update metadata of already minted NFTs with dynamic interactivity"
+icon: "sparkles"
+date: "2024-03-04"
+---
+
+Introducing **Dynamic NFTs**, which allows you to update the metadata of already minted NFTs. This could include altering the appearance, traits, and metadata associated with the NFT. Now engage with digital assets more dynamically.
+
+<Tip>
+Read the [Dynamic NFTs explainer](https://docs.venly.io/docs/dynamic-nfts) or the [detailed API guide](https://docs.venly.io/docs/dynamic-nfts-api-flow) for Dynamic NFTs.
+</Tip>
+
+## Introducing Dynamic NFTs ⚡
+
+### 1. Introduction
+
+- Venly proudly presents **Dynamic NFTs**, which allows creators and collectors to engage with digital assets dynamically and personally
+- **Dynamic NFTs** transcend traditional non-fungible tokens, allowing the NFT to change or evolve over time
+- This dynamic nature introduces a level of interactivity and uniqueness that sets them apart from static NFTs
+
+### 2. Metadata Magic
+
+- Dynamic NFTs now support metadata updates on the token level
+- Each minted NFT's metadata can be updated, added, and deleted individually, providing unprecedented customization
+
+### 3. Token-Level Independence
+
+- Token-type retains metadata defined during creation; changes at the token level do not impact the original token-type
+
+### 4. Token-type Metadata
+
+- Modifying the metadata of the token-type after minting an NFT will not impact the already minted NFTs
+- The changes will only be applied to newly minted NFTs under that specific token-type
+
+### 5. Attribute Fusion
+
+- Users can dynamically alter the `type, name, value, and maximum value` of attributes
+- Multiple attributes can be defined at both token-type and token levels
+- The **token attributes** merge with the **attributes** defined on the **token-type level**
+
+### 6. Properties & animationUrls
+
+- Properties, including `Name, Description, External URL, Image, Background Color`, support dynamic changes
+- Properties defined on the token level override token-type properties
+- `animationUrls`, presented as a single array, can be dynamically changed at the token level
+- Changes to `animationUrls` on the token level override those defined on the token-type level
+
+### 7. Industry-Wide Applications
+
+<CardGroup cols={3}>
+  <Card title="Dynamic Avatars" icon="user">
+    In blockchain-based games, players own dynamic NFT avatars that evolve based on achievements, experience points, or time spent in the virtual world
+  </Card>
+  
+  <Card title="Interactive Movie Posters" icon="film">
+    Movie studios release dynamic NFTs as limited-edition posters that react to user interactions, unlocking hidden content and exclusive footage
+  </Card>
+  
+  <Card title="Changing Artwork" icon="palette">
+    Artists create NFTs with artwork that changes over time, revealing different scenes, colors, or styles at predefined intervals
+  </Card>
+</CardGroup>
+
+<AccordionGroup>
+  <Accordion title="Gaming: Dynamic Avatars" icon="gamepad">
+    In a blockchain-based game, players may own dynamic NFT avatars that evolve based on in-game achievements, experience points, or time spent in the virtual world. The avatars could gain new features, accessories, or abilities as players progress.
+  </Accordion>
+  
+  <Accordion title="Entertainment: Interactive Movie Posters" icon="film">
+    Movie studios release dynamic NFTs as limited-edition movie posters that react to user interactions. Fans might unlock hidden content, teasers, or exclusive behind-the-scenes footage by engaging with the NFT.
+  </Accordion>
+  
+  <Accordion title="Art: Changing Artwork" icon="palette">
+    An artist creates an NFT with artwork that changes over time, revealing different scenes, colors, or styles at predefined intervals. Collectors can experience the evolving nature of the artwork as they hold the NFT.
+  </Accordion>
+</AccordionGroup>

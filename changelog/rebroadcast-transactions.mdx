@@ -1,0 +1,97 @@
+---
+title: "Rebroadcast Transactions"
+description: "Automatic rebroadcast of stuck transactions without manual intervention"
+icon: "rotate"
+date: "2024-08-20"
+---
+
+The **rebroadcast transactions** feature automatically picks up stuck transactions that are no longer in the memory pool of the blockchain nodes and tries to resubmit them without any change to the original transaction. This reduces the burden on your end, as the stuck transactions are rebroadcasted automatically, without any input from your side!
+
+<Frame caption="Rebroadcast Transactions Flowchart" style={{maxWidth: '750px'}}>
+  <img src="https://files.readme.io/416fe1d-image.png" alt="Rebroadcast Flowchart" />
+</Frame>
+
+## Summary
+
+Transactions can get lost from the memory pool of the blockchain nodes, resulting in the transactions staying pending. The rebroadcast feature picks up the pending transactions and tries to rebroadcast them starting from the lowest nonce.
+
+<CardGroup cols={2}>
+  <Card title="Automatic" icon="wand-magic-sparkles">
+    No input required - fully automatic mechanism
+  </Card>
+  
+  <Card title="5-Minute Scans" icon="clock">
+    Scans pending transactions every 5 minutes
+  </Card>
+  
+  <Card title="5 Retries" icon="repeat">
+    Each unique transaction gets 5 retry attempts
+  </Card>
+  
+  <Card title="1-Hour Cooldown" icon="hourglass">
+    Failed rebroadcasts have 1-hour cooldown period
+  </Card>
+</CardGroup>
+
+<Info>
+- No input is required from your side. The rebroadcast mechanism is automatic.
+- If a transaction fails even after 5 retries, you need to modify the transaction request and check for possible errors (e.g., low gas fee).
+</Info>
+
+## Rebroadcast Feature
+
+### How It Works
+
+<Steps>
+  <Step title="Transaction Detection">
+    A transaction is considered stuck if it's pending for more than **1 hour**. The rebroadcast only picks up transactions pending for more than one hour.
+  </Step>
+  
+  <Step title="Scanning Process">
+    The rebroadcast scans every 5 minutes to search for stuck transactions, segregated by wallet `ID`.
+  </Step>
+  
+  <Step title="Nonce Priority">
+    The rebroadcast starts with the transaction with the **lowest nonce** from a wallet's stuck transactions.
+  </Step>
+  
+  <Step title="Retry Logic">
+    Each unique transaction gets 5 retries. If a rebroadcasted transaction fails, there's a 1-hour cooldown before trying again.
+  </Step>
+</Steps>
+
+### Key Features
+
+- **Gas Price Check**: Transactions are skipped if the gas price is lower than the current gas price
+- **Unchanged Requests**: Nothing is changed in the request body of the transaction while rebroadcasting
+- **Maximum Retries**: If a transaction fails 5 times, it stays pending (indicating you need to evaluate the request body)
+
+## Why Do Transactions Get Stuck?
+
+<AccordionGroup>
+  <Accordion title="Mempool Expiry" icon="clock">
+    Some blockchains automatically remove transactions from the mempool if they have been there for too long without being confirmed. If a transaction is removed due to mempool expiry, it may need to be resent with a higher fee.
+  </Accordion>
+  
+  <Accordion title="Network Congestion" icon="traffic-light">
+    Blockchains have a limited capacity for processing transactions in each block. When the network is busy, there's a backlog of transactions waiting to be confirmed. Even transactions with decent fees can get stuck during demand surges.
+  </Accordion>
+  
+  <Accordion title="Double-Spending Prevention" icon="shield">
+    Blockchains prevent double-spending by ensuring each transaction is unique and properly recorded. If a transaction is detected as a potential double-spend, it could be rejected or delayed by the network.
+  </Accordion>
+  
+  <Accordion title="Insufficient Funds" icon="wallet">
+    If a transaction tries to use more funds than are available in the wallet, it will not be confirmed. The transaction stays stuck until either the correct amount is available or the transaction is canceled.
+  </Accordion>
+  
+  <Accordion title="Bugs or Network Issues" icon="bug">
+    Sometimes, bugs in wallet software or issues with the network itself can cause transactions to get stuck. These situations are less common but can result in transactions not being processed as expected.
+  </Accordion>
+</AccordionGroup>
+
+## What Do You Have to Do?
+
+<Info>
+**Nothing!** The rebroadcast feature is automatic and requires no input from your side. It will automatically pick up stuck transactions of each wallet starting with the lowest nonce and try to rebroadcast them. This feature saves you time and effort.
+</Info>

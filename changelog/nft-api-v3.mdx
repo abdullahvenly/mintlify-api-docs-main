@@ -1,0 +1,113 @@
+---
+title: "NFT API v3"
+description: "Enhanced features with contract owner management, royalty configuration, and Token API integration"
+icon: "rocket"
+date: "2024-10-01"
+---
+
+We are excited to announce the release of **NFT API v3**, bringing enhanced features and performance updates. As part of this update, **NFT API v2** is now deprecated, and we encourage all users to migrate to NFT API v3 for continued support and access to future updates.
+
+## Key Updates in NFT API v3
+
+<CardGroup cols={3}>
+  <Card title="Contract Owner Management" icon="user-gear" href="https://docs.venly.io/reference/updateowner">
+    Easily update the owner of an NFT contract with admin rights
+  </Card>
+  
+  <Card title="Royalty Configuration" icon="coins" href="https://docs.venly.io/reference/updateroyalties">
+    Configure royalties with recipient wallet address and percentage
+  </Card>
+  
+  <Card title="Token API Integration" icon="puzzle-piece">
+    Create ERC20 token contracts and mint ERC20 tokens
+  </Card>
+</CardGroup>
+
+## Why Migrate?
+
+<Warning>
+All future updates, improvements, and new features will only be available on NFT API v3. Staying on v2 means missing out on vital upgrades.
+</Warning>
+
+By migrating to NFT API v3, you future-proof your platform with:
+- Advanced features
+- Better performance
+- Seamless integrations
+- Continued support and innovation
+
+<Card title="Migration Guide" icon="book" href="https://docs.venly.io/v3.0/docs/migration-guide-to-nft-v3">
+  Read the detailed migration guide on how to migrate to NFT v3
+</Card>
+
+## Reasons for Deprecating NFT API v2
+
+### 1. Enhanced Feature Set
+
+NFT API v3 introduces several new capabilities:
+- Contract ownership updates
+- Royalty configuration
+- Token API integration for ERC20 tokens
+
+### 2. Improved Scalability and Performance
+
+NFT API v3 is built with a more scalable and robust framework, optimized to handle higher transaction volumes and deliver faster response times.
+
+### 3. Future-Proofing and Security
+
+All future updates, security enhancements, and new features will only be made available in **NFT API v3**, focusing development on a single, more secure service.
+
+### 4. Streamlined Developer Experience
+
+With a refined structure and simplified endpoint paths, NFT API v3 offers a cleaner experience. For example, the `secretType` parameter is now replaced by `chain`.
+
+### 5. Better Integration with Venly Ecosystem
+
+NFT API v3 integrates seamlessly with other Venly services:
+- Zapier integration
+- SiteManager integration  
+- Shopify integration
+
+<Info>
+**NOTE**: We will continue to support the **NFT API v2**. Migration is not mandatory, but we highly recommend it.
+</Info>
+
+## Accessing NFT API v2 Documentation
+
+- Click [here](https://docs.venly.io/v1.0/docs/nft-api-overview) to view the deprecated **NFT API v1.0** documentation
+- Switch between **v2.0** (deprecated) & **v3.0** (stable) from the top left corner of the documentation
+
+<Frame caption="NFT v1 Documentation">
+  <img src="https://files.readme.io/d310ed0-image.png" alt="Version Selector" />
+</Frame>
+
+## FAQs
+
+<AccordionGroup>
+  <Accordion title="Q1: Is there a migration deadline?" icon="calendar">
+    **Answer:** There is no deadline and the v2.0 endpoints will continue to work without any disruptions. Although, we encourage you to migrate to use the latest features.
+  </Accordion>
+  
+  <Accordion title="Q2: Why should I migrate to v3.0?" icon="question">
+    **Answer:** All the new development features like configuring royalties and updating the contract owner will only be released on NFT v3. Future features will also only be deployed on v3.0.
+  </Accordion>
+  
+  <Accordion title="Q3: What happens to my existing NFTs?" icon="images">
+    **Answer:** Migrating to v3.0 will not affect your existing NFTs and their metadata. All of your existing assets will remain safe.
+  </Accordion>
+  
+  <Accordion title="Q4: Are there payload structure changes?" icon="code">
+    **Answer:** We have a [migration guide](https://docs.venly.io/docs/migration-guide-for-nft-api) that describes all the changes from v2.0 to v3.0 in detail.
+  </Accordion>
+  
+  <Accordion title="Q5: What testing options are available?" icon="flask">
+    **Answer:** Developers can use the sandbox credentials (found in the [Developer Portal](https://portal.venly.io/)) and run API calls on a sandbox environment to test safely before deploying to production.
+  </Accordion>
+  
+  <Accordion title="Q6: How do I configure royalties?" icon="coins">
+    **Answer:** Royalties can only be configured on NFT contracts created using the NFT v3 endpoints. Read the guide on [how to configure royalties](https://docs.venly.io/v3.0/docs/update-royalty-for-contract).
+  </Accordion>
+  
+  <Accordion title="Q7: How do I update the contract owner?" icon="user-gear">
+    **Answer:** Read the guide on [how to update the owner](https://docs.venly.io/v3.0/docs/update-contract-owner) of an NFT contract.
+  </Accordion>
+</AccordionGroup>

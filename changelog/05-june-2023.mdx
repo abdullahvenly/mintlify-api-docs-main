@@ -1,0 +1,105 @@
+---
+title: "Three-Step Process for Signatures & Transactions"
+description: "New endpoints for signature and transaction request workflows"
+icon: "list-check"
+date: "2023-06-05"
+---
+
+Updates on the API products: **Wallet**, **NFT**, and **Market**.
+
+## Wallet API [0.40.0]
+
+### Three-Step Process Updates
+
+<CardGroup cols={2}>
+  <Card title="Signature Workflow" icon="signature">
+    New three-step process for signature requests
+  </Card>
+  
+  <Card title="Transaction Workflow" icon="money-bill-transfer">
+    New three-step process for transaction requests
+  </Card>
+</CardGroup>
+
+#### Signature Request Process
+
+<Steps>
+  <Step title="Save">
+    New endpoint for [saving a signature request](https://venly.readme.io/reference/buildsignature)
+  </Step>
+  
+  <Step title="Confirm">
+    New endpoint for [confirming a signature request](https://venly.readme.io/reference/confirmsignaturerequest)
+  </Step>
+  
+  <Step title="Sign">
+    New endpoint for [signing a signature request](https://venly.readme.io/reference/signsignaturerequest)
+  </Step>
+</Steps>
+
+#### Transaction Request Process
+
+<Steps>
+  <Step title="Save">
+    New endpoint for [saving a transaction request](https://venly.readme.io/reference/savetransaction)
+  </Step>
+  
+  <Step title="Confirm">
+    New endpoint for [confirming a transaction request](https://venly.readme.io/reference/confirmtransaction)
+  </Step>
+  
+  <Step title="Execute">
+    New endpoint for [executing a transaction request](https://venly.readme.io/reference/executetransaction_1)
+  </Step>
+</Steps>
+
+### Additional Updates
+
+- Implemented signing methods for Venly Wallet users
+- Bug fixes and improvements
+
+## NFT API [0.24.0]
+
+### Updates
+
+<CardGroup cols={3}>
+  <Card title="Bug Fixes" icon="bug">
+    Technical bug fixes
+  </Card>
+  
+  <Card title="Error Messages" icon="triangle-exclamation">
+    Improved error messages
+  </Card>
+  
+  <Card title="Arbitrum Support" icon="link">
+    Create NFTs on Arbitrum Blockchain
+  </Card>
+</CardGroup>
+
+## Market API [0.27.0]
+
+### Major Upgrades
+
+<CardGroup cols={3}>
+  <Card title="Java 17" icon="coffee">
+    Upgraded to Java 17
+  </Card>
+  
+  <Card title="Spring Boot 3" icon="leaf">
+    Spring Boot 3.0.1 and Spring 6
+  </Card>
+  
+  <Card title="Spring Cloud" icon="cloud">
+    Switched Zuul to Spring Cloud
+  </Card>
+</CardGroup>
+
+### Updates
+
+- Technical bug fixes
+- Security bug fixes
+- Visual upgrades for a clean UI
+- `ClientId` field set to `ArkaneMarket`, but only on **QA**
+- Stuck transactions get resubmitted automatically
+- AVAC and MATIC explorer URL updated
+- Offers created on the QA are started immediately

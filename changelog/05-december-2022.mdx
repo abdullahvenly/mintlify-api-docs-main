@@ -1,0 +1,64 @@
+---
+title: "KYC Verification & Documentation Updates"
+description: "KYC verification for Widget, Swagger documentation, and multi-company minter support"
+icon: "id-card"
+date: "2022-12-05"
+---
+
+Updates on the API products: **Wallet**, **NFT**, and **Market**.
+
+## Wallet API
+
+### Version 0.36.0
+
+**Added:**
+- KYC verification for Widget users
+
+### Version 0.35.0
+
+**Added:**
+- Full API documentation in Swagger
+
+## NFT API [0.20.0]
+
+<CardGroup cols={2}>
+  <Card title="Multi-Company Minters" icon="users">
+    Support for multi-company minter wallets
+  </Card>
+  
+  <Card title="Swagger Docs" icon="book">
+    Full API documentation with Swagger
+  </Card>
+</CardGroup>
+
+**Added:**
+- Added support for [multi-company minter wallets](https://venly.readme.io/docs/speed-up-your-minting-process)
+- Full API documentation with Swagger
+
+## Market API [0.23.0]
+
+### Updates
+
+<CardGroup cols={3}>
+  <Card title="UI Improvements" icon="paintbrush">
+    Fixed responsiveness and added sticky navigation
+  </Card>
+  
+  <Card title="KYC Features" icon="id-card">
+    KYC verification and withdrawal limits
+  </Card>
+  
+  <Card title="Security" icon="shield-check">
+    Fraud prevention and user protection
+  </Card>
+</CardGroup>
+
+**Changes:**
+- Fixed responsiveness bugs
+- Added a sticky navigation bar
+- Removed Google tag manager
+- Added functionality to retrieve the maximal withdrawal amount without the need for KYC
+- Added checks to verify if an unverified user's Withdraw Order is less than their maximum-withdrawal amount without KYC
+- Added functionality to perform KYC-verification when users exceed the max-withdrawal amount
+- Message displayed when users exceed their maximum-withdrawal amount
+- Withdraw button gets disabled when a user is marked as "Declined / Fraud"

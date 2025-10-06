@@ -1,0 +1,102 @@
+---
+title: "Widget 2.3.0 Update"
+description: "Simplified widget calls with modal-based flow and pop-up blocker handling"
+icon: "window"
+date: "2024-02-06"
+---
+
+We've updated the **Widget** to version **2.3.0** which makes it a lot easier for developers to perform widget calls.
+
+<Info>
+To upgrade you only need to change a few lines of code.
+</Info>
+
+## What's New
+
+In version 2.3.0, the pop-up window also changes. When a function is executed, a modal will appear first, after which the user can start the confirmation/approval flow.
+
+<CardGroup cols={2}>
+  <Card title="No Pop-up Blockers" icon="shield-check">
+    Automatically handles pop-up blockers through modal triggering
+  </Card>
+  
+  <Card title="Simplified API" icon="code">
+    Execute functions in one step instead of two
+  </Card>
+  
+  <Card title="Modal Flow" icon="window">
+    New modal appears before confirmation flow
+  </Card>
+  
+  <Card title="Redirect Support" icon="arrow-right">
+    Also supports redirect mode as alternative
+  </Card>
+</CardGroup>
+
+By making this change, developers don't need to deal anymore with the hassle of pop up blockers, that is automatically being taking care of by the modal that is being triggered.
+
+## New Widget Modal
+
+<Frame caption="New Widget modal">
+  <img src="https://files.readme.io/9aeb3ea-image.png" alt="Widget Modal Interface" />
+</Frame>
+
+The modal will trigger the pop-up, allowing your end-user to execute the required function.
+
+<Frame caption="Signing a message in pop-up mode using version 2.3.0 of the Widget">
+  <img src="https://files.readme.io/098aadf-image.png" alt="Pop-up Mode" />
+</Frame>
+
+### Redirect Mode Support
+
+Note that version 2.3.0 also supported the redirect option where instead of triggering a pop-up window we redirect to user.
+
+<Frame caption="Signing a message in redirect mode using version 2.3.0 of the Widget">
+  <img src="https://files.readme.io/20b2e8e-image.png" alt="Redirect Mode" />
+</Frame>
+
+## Code Comparison
+
+### Old Method (Deprecated but still working)
+
+The old way requires **two steps**:
+
+<Steps>
+  <Step title="Create Signer">
+    First, creating a signer
+  </Step>
+  
+  <Step title="Execute Function">
+    Second, executing the function call
+  </Step>
+</Steps>
+
+```javascript
+// Step#1 Create Signer
+const signer = venlyConnect.createSigner();
+
+// Step#2 Executing the function (Signing Message)
+signer.signMessage({
+    walletId: 'c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1',
+    secretType: 'ETHEREUM',
+    data : "I agree with terms and conditions"
+})
+```
+
+### New Method (v2.3.0)
+
+With the **2.3.0** update, you can do this in just **one step**:
+
+```javascript
+// Execute the function in a single step
+
+venlyConnect.signer.signMessage({
+    walletId: 'c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1',
+    secretType: 'ETHEREUM',
+    data : "I agree with terms and conditions"
+})
+```
+
+<Info>
+This new change applies to all the function calls which previously required to create a signer as a separate step.
+</Info>
