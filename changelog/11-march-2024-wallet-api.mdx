@@ -1,0 +1,164 @@
+---
+title: "NSFW Filter + Bug Fixes"
+description: "Filter and check if NFTs are marked as NSFW with new query parameters"
+icon: "filter"
+date: "2024-03-11"
+---
+
+Introducing the new release of **Wallet-API version 0.49.0** which includes bug fixes and a new way to filter and check if your NFTs are marked as **NSFW**.
+
+## Updates
+
+<CardGroup cols={3}>
+  <Card title="Bug Fixes" icon="bug">
+    Technical bug fixes
+  </Card>
+  
+  <Card title="Improvements" icon="arrow-up">
+    General improvements
+  </Card>
+  
+  <Card title="Error Messages" icon="triangle-exclamation">
+    Error message improvements
+  </Card>
+</CardGroup>
+
+## NSFW Filter
+
+Filter out your NFTs that are marked as **NSFW** using the new `includeNsfw` boolean query param that applies only to the following **three** endpoints:
+
+<Steps>
+  <Step title="Get NFTs by walletId">
+    [API Reference](https://docs.venly.io/reference/listnonfungibles)
+  </Step>
+  
+  <Step title="Get NFTs by Chain">
+    [API Reference](https://docs.venly.io/reference/listnonfungibles_1)
+  </Step>
+  
+  <Step title="Get NFTs by Chain and Wallet Address">
+    [API Reference](https://docs.venly.io/reference/listnonfungiblesbyaddress)
+  </Step>
+</Steps>
+
+### Response Includes isNsfw Parameter
+
+You will receive a **contract.`isNsfw`** boolean in the response body for **all of the above endpoints** and the **following endpoints**:
+
+4. Get NFTs by Chain and Contract Address: [reference](https://docs.venly.io/reference/getnonfungiblecontract)
+5. Get NFTs by Chain, Contract Address, and `tokenId`: [reference](https://docs.venly.io/reference/getnonfungible)
+
+### Parameter Explanations
+
+<AccordionGroup>
+  <Accordion title="includeNsfw Query Parameter" icon="circle-question">
+    **How it works:**
+    - The `includeNsfw` query param is set to **false** by default
+    - If set to **false**, the response body will only return the **non-NSFW** results
+    - If set to **true**, the response body will return all results (**NSFW + non-NSFW**)
+  </Accordion>
+  
+  <Accordion title="isNsfw Response Parameter" icon="circle-info">
+    **Response values:**
+    - If `contract.isNsfw` is **true**, it indicates that your NFT collection is possibly **NSFW**
+    - If `contract.isNsfw` is **false**, it indicates that your NFT collection is possibly **non-NSFW**
+  </Accordion>
+</AccordionGroup>
+
+## Example Request
+
+The following endpoint retrieves NFTs by chain and wallet address: [API Reference](https://docs.venly.io/reference/listnonfungiblesbyaddress)
+
+```http
+GET /api/wallets/MATIC/0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9/nonfungibles?includeNsfw=true
+```
+
+### Query Parameters
+
+| Parameter | Param Type | Description | Data Type | Value | Mandatory |
+|:----------|:-----------|:------------|:----------|:------|:----------|
+| `includeNsfw` | Query | Indication to include possible NSFW NFTs in the response body or not | Boolean | `true` | ❌ |
+
+## Response Body
+
+<Info>
+Look for the `result.contract.isNsfw` parameter:
+- `isNsfw: true`: The NFT collection is possibly NSFW
+- `isNsfw: false`: The NFT collection is non-NSFW
+</Info>
+
+```json
+{
+    "success": true,
+    "result": [
+        {
+            "id": "0",
+            "name": "$1000 USDC",
+            "description": "Owning this badge indicates that the user has received $1000 USDC Airdrop.",
+            "imageUrl": "https://cdn.simplehash.com/assets/594f84cd22e8882adac0eee49f44fa0916f67f9c25a408b80220ced34f39ea9d.jpg",
+            "imagePreviewUrl": "https://lh3.googleusercontent.com/5ooylv-qDiIq03F6tbNY71Gr8dW5uKT4b6TEq6bq8XVlvltEWtbAva_jVuQ3PXR-2GitF4bWAUlyb0ydWBX5Bl71pOBr5x7qlg",
+            "imageThumbnailUrl": "https://lh3.googleusercontent.com/5ooylv-qDiIq03F6tbNY71Gr8dW5uKT4b6TEq6bq8XVlvltEWtbAva_jVuQ3PXR-2GitF4bWAUlyb0ydWBX5Bl71pOBr5x7qlg=s250",
+            "animationUrls": [],
+            "fungible": true,
+            "contract": {
+                "name": "$1000 USDC",
+                "address": "0x43d5ebed23900fd83c5d5327ba1e86afbe1d84a9",
+                "symbol": "$1000 USDC",
+                "media": [
+                    {
+                        "type": "image",
+                        "value": "https://lh3.googleusercontent.com/tagPtZl7s_SdQ0hAR0PtSTGlUEJnGjV3TV2VCdYZEFPevsSTrDCtuDjIxDwHDBGZDr0kmhv2egD_8nouWGBRy3iuG7zMLmRSX_U"
+                    }
+                ],
+                "type": "ERC_1155",
+                "verified": false,
+                "premium": false,
+                "isNsfw": false,
+                "categories": [],
+                "imageUrl": "https://lh3.googleusercontent.com/tagPtZl7s_SdQ0hAR0PtSTGlUEJnGjV3TV2VCdYZEFPevsSTrDCtuDjIxDwHDBGZDr0kmhv2egD_8nouWGBRy3iuG7zMLmRSX_U"
+            },
+            "attributes": [],
+            "balance": 1,
+            "finalBalance": 1,
+            "transferFees": false
+        },
+        {
+            "id": "1",
+            "name": "$1000 USDC Voucher🎁",
+            "description": "You have been selected for the USDC NFT Airdrop! Redeem your voucher for 1000 USDC at https://1000usdc.org",
+            "url": "https://1000usdc.org",
+            "imageUrl": "https://cdn.simplehash.com/assets/0e22471648572082975551060cc4e76e50caafa9ca8c04b68a4cc6607db90602.jpg",
+            "imagePreviewUrl": "https://lh3.googleusercontent.com/smSb5f_RhuSKuPTXUD_7I21aaZgwReqtlB4KNyxv0WJBliGYrpTpc_t_X50Nv7PEuyJnX4bhduLwl7wkylzCK-K_jcQYBiV4y3Y",
+            "imageThumbnailUrl": "https://lh3.googleusercontent.com/smSb5f_RhuSKuPTXUD_7I21aaZgwReqtlB4KNyxv0WJBliGYrpTpc_t_X50Nv7PEuyJnX4bhduLwl7wkylzCK-K_jcQYBiV4y3Y=s250",
+            "animationUrls": [],
+            "fungible": true,
+            "contract": {
+                "name": "$1000 USDC Voucher🎁",
+                "address": "0x51e7b4faf536c0f602b653d28cf4febd4e57765f",
+                "symbol": "1000usdc.org",
+                "media": [
+                    {
+                        "type": "image",
+                        "value": "https://lh3.googleusercontent.com/9P79CsAmgQMv0ZlEb4zUN7YnEsHXES0KWX63LKlN7g28wKcoHkBIUGYEbCvqa4C2zQoauhpWAel894zW7aAECsqwul67hCqJFl1q"
+                    }
+                ],
+                "type": "ERC_1155",
+                "verified": false,
+                "premium": false,
+                "isNsfw": false,
+                "categories": [],
+                "imageUrl": "https://lh3.googleusercontent.com/9P79CsAmgQMv0ZlEb4zUN7YnEsHXES0KWX63LKlN7g28wKcoHkBIUGYEbCvqa4C2zQoauhpWAel894zW7aAECsqwul67hCqJFl1q"
+            },
+            "attributes": [
+                {
+                    "type": "property",
+                    "name": "Website",
+                    "value": "https://1000usdc.org"
+                }
+            ],
+            "balance": 1,
+            "finalBalance": 1,
+            "transferFees": false
+        }
+    ]
+}

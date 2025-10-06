@@ -1,0 +1,40 @@
+---
+title: "Wallet Type Naming Changes"
+description: "Updates to wallet type terminology and default non-custodial wallets"
+icon: "tag"
+date: "2023-09-19"
+---
+
+Updates on the products: **Wallet**, **NFT**, and **Market**.
+
+## Wallet API [0.44.0]
+
+### Wallet Type Naming Changes
+
+<CardGroup cols={2}>
+  <Card title="Non-Custodial" icon="lock-open">
+    **UNRECOVERABLE_WHITE_LABEL**  
+    `walletType = API_WALLET` and `custodial = false`
+  </Card>
+  
+  <Card title="Custodial" icon="lock">
+    **WHITE_LABEL**  
+    `walletType = API_WALLET` and `custodial = true`
+  </Card>
+</CardGroup>
+
+<Info>
+All new wallets created will be non-custodial by default from Venly's perspective
+</Info>
+
+## NFT API [0.27.0]
+
+### Updates
+
+- Technical bug fixes
+
+## Market API [0.31.0]
+
+### Updates
+
+- Technical bug fixes

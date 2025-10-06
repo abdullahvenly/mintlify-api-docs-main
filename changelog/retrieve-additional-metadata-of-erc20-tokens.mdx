@@ -1,0 +1,67 @@
+---
+title: "Retrieve additional Metadata of ERC20 Tokens"
+slug: "retrieve-additional-metadata-of-erc20-tokens"
+type: "improved"
+createdAt: "Thu Jul 18 2024 11:53:00 GMT+0000 (Coordinated Universal Time)"
+hidden: false
+---
+We now allow you to fetch **ERC20 Tokens' thumbnail** and **portfolio percentage**. The `thumbnail` is the URL to the token thumbnail image, and the `portfolio_percentage` is the percentage of the token's value relative to the total portfolio value.
+
+## Retrieve Token Balance Endpoints
+
+You can retrieve the `thumbnail` and `portfolio_percentage` of ERC20 tokens in the response for the following endpoints:
+
+1. [Get all ERC20 Token Balance by walletId](https://docs.venly.io/reference/viewtokenbalances)
+2. [Get specific ERC20 Token Balance by walletId and token address](https://docs.venly.io/reference/viewtokenbalance)
+3. [Get ERC20 Balance by Chain and Wallet Address](https://docs.venly.io/reference/viewtokenbalances_1)
+4. [Get specific ERC20 Token Balance by Chain, Wallet Address, and Token Address](https://docs.venly.io/reference/viewtokenbalance_1)
+
+### ERC20 Tokens' Metadata
+
+When you query the **balance endpoints for ERC20 tokens**, you get back the `thumbnail` and `portfolio_percentage` of the token in the response body. The two new params are described below:
+
+- `thumbnail`: The URL to the token's thumbnail image
+- `portfolio_percentage`: The percentage of the token's value relative to the total portfolio value
+
+### Request Example: [reference](https://docs.venly.io/reference/viewtokenbalances_1)
+
+```http
+GET /api/wallets/ARBITRUM/0x9f0847430a41ff52573857b49A87076e1748ed6A/balance/tokens
+```
+
+### Response Body
+
+```json
+{
+    "success": true,
+    "result": [
+        {
+            "tokenAddress": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+            "rawBalance": "32876284951737501699",
+            "balance": 32.8762849517375,
+            "decimals": 18,
+            "symbol": "UNI",
+            "logo": "https://logo.moralis.io/0xa4b1_0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0_53b65838dbb44ea0bf1ef10445f4da21",
+            "type": "ERC20",
+            "transferable": true,
+            "name": "Uniswap",
+            "exchange": {
+                "usdPrice": 8.056647793652566,
+                "usdBalanceValue": 264.872648619909
+            },
+            "categories": [
+                "Automated Market Maker (AMM)",
+                "Decentralized Exchange (DEX)",
+                "Decentralized Finance (DeFi)"
+            ],
+            "links": {
+                "twitter": "https://twitter.com/Uniswap",
+                "website": "https://uniswap.org/",
+                "reddit": "https://www.reddit.com/r/Uniswap",
+                "discord": "https://discord.gg/FCfyBSbCU5"
+            },
+            "thumbnail": "https://logo.moralis.io/0xa4b1_0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0_53b65838dbb44ea0bf1ef10445f4da21",
+            "portfolioPercentage": "100"
+        }
+    ]
+}

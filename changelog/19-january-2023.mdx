@@ -1,0 +1,58 @@
+---
+title: "Hedera Signing & Sorting Parameters"
+description: "Raw transaction signing on Hedera and sorting parameters for wallet endpoints"
+icon: "arrows-up-down"
+date: "2023-01-19"
+---
+
+Updates on the API products: **Wallet**, **NFT**, and **Market**.
+
+## Wallet API [0.37.0]
+
+### Updates
+
+<CardGroup cols={2}>
+  <Card title="Hedera Signing" icon="signature">
+    Signing raw transactions on Hedera
+  </Card>
+  
+  <Card title="Sorting Parameters" icon="arrow-down-a-z">
+    Added `sortOn` and `sortOrder` parameters to wallet endpoint
+  </Card>
+</CardGroup>
+
+- Added `sortOn` and `sortOrder` parameters to the [GET /api/wallets endpoint](https://venly.readme.io/reference/viewwallets_1)
+- Small improvements and bug fixes
+
+## NFT API [0.22.0]
+
+### Breaking Changes
+
+<Warning>
+**Deprecation of `POST /metadata`**  
+Replaced by `PUT /metadata`
+</Warning>
+
+## Market API [0.25.0]
+
+### Updates
+
+<CardGroup cols={3}>
+  <Card title="UI/UX Fixes" icon="paintbrush">
+    Issues fixed for easy navigation
+  </Card>
+  
+  <Card title="Withdrawal Fees" icon="money-bill">
+    Pending withdrawals show correct fees and gross value
+  </Card>
+  
+  <Card title="Hedera Updates" icon="rotate">
+    Deposit address updated for all users
+  </Card>
+</CardGroup>
+
+- UI / UX issues fixed for an easy to navigate app
+- General bug fixes
+- Pending withdrawal now contains the fees and a correct gross value
+- HEDERA deposit address updated for all the users
+- Fungible items now show correct wallet address

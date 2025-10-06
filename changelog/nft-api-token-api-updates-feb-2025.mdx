@@ -1,0 +1,173 @@
+---
+title: "NFT-API & Token-API Updates"
+description: "Enhanced response data, new endpoints, and refined token management functionality"
+icon: "code"
+date: "2025-02-17"
+---
+
+This update brings key improvements to the Token-API and NFT-API, enhancing response data, introducing new endpoints, and refining existing functionality. These changes improve the overall API experience, offering greater flexibility and control over token management.
+
+## Token-API + NFT-API Version 2.0 and 3.0 Updates
+
+### 1. Response body expanded for Get All Token Mints endpoint (V2 & V3)
+
+**Endpoints Affected:**
+- [`GET /api/v2/tokens/mints`](https://docs.venly.io/v2.0/reference/getall-1)
+- [`GET /api/v3/erc1155/tokens/mints`](https://docs.venly.io/reference/getall-1)
+
+**Change:** 
+- Added a `chain` parameter to the response body
+
+**Example Response Body** (_NFT V3_)
+
+```json
+{
+    "success": true,
+    "result": [
+        {
+            "id": "7061761a-8c7e-4619-a281-052810cca595",
+            "chain": "BSC",
+            "contractAddress": "0xa51e79c53e149ae6ebaf7e6479f0458b59e68d4d",
+            "tokenTypeId": 1,
+            "tokenId": 2,
+            "createdOn": "2024-05-01T11:30:24.432049",
+            "status": "SUCCEEDED",
+            "transactionHash": "0xd2ce027aa959d83a536ebdaa9db923a22714b239cca438729109364d7a4fafed",
+            "destination": {
+                "address": "0xcdA9e3959E7f9c58D2a2088b8F7C9F1C60B1Bd24",
+                "amount": 1
+            }
+        }
+    ]
+}
+```
+
+### 2. Response body expanded for Check Token Mint Status endpoint (V2 & V3)
+
+**Endpoints Affected:**
+- [`GET /api/v2/tokens/mints/{mintId}`](https://docs.venly.io/v2.0/reference/gettokenmint)
+- [`GET /api/v3/erc1155/tokens/mints/{mintId}`](https://docs.venly.io/reference/gettokenmint)
+
+**Change:** 
+- Added a `chain` parameter to the response body
+- Added a `contractAddress` parameter to the response body
+- Added a `tokenTypeId` parameter to the response body
+
+**Example Response Body** (_NFT V3_)
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "c6429476-538f-48e5-9e27-c16d38c02456",
+        "chain": "MATIC",
+        "contractAddress": "0xdc944ec4c805feadd9aa1548d4861b58750ba9ac",
+        "tokenTypeId": 3,
+        "tokenId": 5,
+        "createdOn": "2024-05-29T17:26:06.607087",
+        "status": "SUCCEEDED",
+        "transactionHash": "0xed62b5018d47679e6754484abb092b59800f5e704c546037b2c5ac7b98434177",
+        "destination": {
+            "address": "0x0B8C6bf3305ef22fD28b19ecFc1D6Cee4364B219",
+            "amount": 1
+        }
+    }
+}
+```
+
+### 3. Chain param added to response of Check Token Mint Status - Token API
+
+**Endpoint Affected:**
+- [`GET /api/v3/erc20/tokens/mints/{mintId}`](https://docs.venly.io/reference/geterc20tokenmintstatus)
+
+**Change:** 
+- Added `contract.chain` parameter to the response body
+
+**Example Response Body**
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "7f78e6ed-d733-430c-83a4-5fc28032e667",
+        "createdOn": "2024-09-23T09:28:49.562087",
+        "status": "SUCCEEDED",
+        "transactionHash": "0x95dba6ba9c8bae1d3179486e00eeb778fb9d2435741226e4d98b59e38cf7e875",
+        "destination": {
+            "address": "0xf2b1cEB69E765469a80E8d4c8635B05269889fa7",
+            "amount": 35
+        },
+        "contract": {
+            "chain": "MATIC",
+            "address": "0x1e857475040b732d5adf3f8b2e7cd712914cdd23",
+            "name": "Infinity Token",
+            "symbol": "IFT",
+            "maxSupply": 100,
+            "burnable": true,
+            "owner": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+            "type": "ERC_20"
+        }
+    }
+}
+```
+
+### 4. New Endpoint: Get All ERC20 Token Mints - Token-API
+
+**New Endpoint:**
+```http
+GET /api/v3/erc20/tokens/mints
+```
+
+- This endpoint allows you to retrieve all ERC20 token mints
+- You can further filter the results based on to-from date, status of mints, mintIds, contract address, and company ID
+
+**Documentation:**
+- Read the [guide for this endpoint](https://docs.venly.io/docs/get-all-erc20-token-mints)
+- View the [API-Reference](https://docs.venly.io/reference/getallerc20mints)
+
+### 5. New Endpoint: Archive a token by tokenId (V2 & V3)
+
+**New Endpoints:**
+- [`DELETE /api/v2/contracts/{secretType}/{contractAddress}/tokens/{tokenId}`](https://docs.venly.io/v2.0/reference/archivetoken)
+- [`DELETE /api/v3/erc1155/contracts/{chain}/{contractAddress}/tokens/{tokenId}`](https://docs.venly.io/reference/archivetoken)
+
+**Change:** 
+- You can archive a specific token by `tokenId` using the endpoints specified above
+- Archiving a token will render it inaccessible via API calls
+- The token will continue to exist on-chain
+
+### 6. Changes to Delete Contract Endpoints (V2 & V3)
+
+**Endpoints Affected:**
+- [`DELETE /api/v2/contracts/{secretType}/{contractAddress}`](https://docs.venly.io/v2.0/reference/archivetokencontract)
+- [`DELETE /api/v3/erc1155/contracts/{chain}/{contractAddress}`](https://docs.venly.io/reference/archivetokencontract)
+
+**Change:**
+- Archiving/deleting an NFT contract will also archive all the token-types and minted NFTs under that contract
+- Archived contracts, token-types, and NFTs will not be returned in API calls
+- The archived NFT contract, token-types, and minted NFTs will exist on-chain
+
+### 7. Changes to Delete Token-type Endpoints (V2 & V3)
+
+**Endpoints Affected:**
+- [`DELETE /api/v2/contracts/{secretType}/{contractAddress}/token-types/{tokenTypeId}`](https://docs.venly.io/v2.0/reference/archivetokentype)
+- [`DELETE /api/v3/erc1155/contracts/{chain}/{contractAddress}/token-types/{tokenTypeId}`](https://docs.venly.io/reference/archivetokentype)
+
+**Change:**
+- Archiving/deleting a token-type will also archive all the minted NFTs under that token-type
+- Archived token-types and minted NFTs will not be returned in API calls
+- The archived token-type and minted NFTs will exist on-chain
+
+### 8. Changes to Delete ERC20 Contract Endpoint - Token-API
+
+**Endpoint Affected:**
+- [`DELETE /api/v3/erc20/contracts/{chain}/{contractAddress}`](https://docs.venly.io/reference/archiveerc20tokencontract)
+
+**Change:**
+- Archiving/deleting an ERC20 contract will also archive all the minted tokens under that contract
+- Archived ERC20 contracts and minted tokens will not be returned in API calls
+- The archived ERC20 contract and minted tokens will exist on-chain
+
+---
+
+This changelog outlines the latest updates and enhancements to the Token-API & NFT-API, ensuring better functionality and flexibility for users of both V2 and V3 versions.

@@ -1,0 +1,91 @@
+---
+title: "Sub-User Signing Methods"
+description: "Added signing methods at sub-user level with import and link capabilities"
+icon: "user-pen"
+date: "2023-07-21"
+---
+
+Updates on the products: **Wallet**, **NFT**, and **Market**.
+
+## Wallet API [0.43.0]
+
+### New Features
+
+<CardGroup cols={3}>
+  <Card title="Signing Methods" icon="signature">
+    Create PIN, EMERGENCY_CODE, and BIOMETRIC at sub-user level
+  </Card>
+  
+  <Card title="Import & Link" icon="link">
+    Import and link wallet to sub-user in single endpoint
+  </Card>
+  
+  <Card title="Sub-User Signing" icon="pen-to-square">
+    Sub-users can sign both signatures and transactions
+  </Card>
+</CardGroup>
+
+#### Signing Methods
+
+Signing methods (PIN, EMERGENCY_CODE, and BIOMETRIC) can now be created at the sub-user level. You need to link the wallets to the respective sub-user for the signing methods to work.
+
+#### Import and Link Wallet to Sub-User
+
+You can import and link a wallet to a sub-user through a single endpoint. Add the `userId` in the request body. Use the [endpoint](https://venly.readme.io/reference/importwallet):
+
+```http
+POST /api/wallets/import
+```
+
+#### Sub-User Capabilities
+
+- Sub-user can sign signature requests
+- Sub-user can sign transaction requests
+
+### Changes
+
+#### Get a Sub-User's Signature Requests
+
+You can retrieve all signature requests for wallets linked to a specific sub-user. Optionally you can provide `userId` and `includeUsers` query param. Use the [endpoint](https://venly.readme.io/reference/getusersignaturerequests):
+
+```http
+GET /api/signatures
+```
+
+#### Get a Sub-User's Transaction Requests
+
+You can retrieve all transaction requests for wallets linked to a specific sub-user. Optionally you can provide `userId` and `includeUsers` query param. Use the [endpoint](https://venly.readme.io/reference/getall_1):
+
+```http
+GET /api/transactions
+```
+
+### Additional Updates
+
+- New property `custodial` which indicates if a wallet is custodial or not
+- Technical bug fixes
+
+## NFT API [0.26.0]
+
+### Updates
+
+- Technical Fixes
+
+## Market API [0.30.0]
+
+### Updates
+
+<CardGroup cols={2}>
+  <Card title="Improvements" icon="arrow-up">
+    General fixes and UI/UX improvements
+  </Card>
+  
+  <Card title="Security" icon="shield-check">
+    Security enhanced
+  </Card>
+</CardGroup>
+
+- General fixes
+- Technical bug fixes
+- Security enhanced
+- UI/UX improvements

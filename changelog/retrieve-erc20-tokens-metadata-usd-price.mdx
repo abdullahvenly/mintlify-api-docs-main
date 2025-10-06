@@ -1,0 +1,68 @@
+---
+title: "Retrieve ERC20 Tokens' Metadata & USD Price"
+slug: "retrieve-erc20-tokens-metadata-usd-price"
+type: "improved"
+createdAt: "Tue Jun 25 2024 10:00:00 GMT+0000 (Coordinated Universal Time)"
+hidden: false
+---
+We now allow you to fetch **ERC20 Tokens' metadata** and **USD price**. 
+
+## Retrieve Token Balance Endpoints
+
+You can retrieve the metadata and USD price of ERC20 tokens in the response for the following endpoints:
+
+1. [Get all ERC20 Token Balance by walletId](https://docs.venly.io/reference/viewtokenbalances)
+2. [Get specific ERC20 Token Balance by walletId and token address](https://docs.venly.io/reference/viewtokenbalance)
+3. [Get ERC20 Balance by Chain and Wallet Address](https://docs.venly.io/reference/viewtokenbalances_1)
+4. [Get specific ERC20 Token Balance by Chain, Wallet Address, and Token Address](https://docs.venly.io/reference/viewtokenbalance_1)
+
+### ERC20 Tokens' USD Price
+
+When you query the **balance endpoints for ERC20 tokens**, you get back the USD price of each token. Two new params have been added in the response body of the get token balance endpoints:
+
+- `usdPrice`: The price in USD for one token
+- `usdBalanceValue`: The total price of all tokens in USD
+
+#### Example Response Body
+
+```json
+{
+    "success": true,
+    "result": [
+        {
+            "tokenAddress": "0xca8ebfb8e1460aaac7c272cb9053b3d42412aac2",
+            "rawBalance": "10000000000000000000",
+            "balance": 10,
+            "decimals": 18,
+            "symbol": "GAU",
+            "logo": "https://logo.moralis.io/0xa86a_0xca8ebfb8e1460aaac7c272cb9053b3d42412aac2_6076771e3f17461a9999e782174d8306",
+            "type": "ERC20",
+            "transferable": true,
+            "name": "GAU Token",
+            "possibleSpam": false,
+            "exchange": {
+                "usdPrice": 0.04043523470786568,
+                "usdBalanceValue": 0.40435234707865686
+            }
+        }
+    ]
+}
+```
+
+### Metadata for ERC20 Tokens
+
+When you query the **balance endpoints for ERC20 tokens**, you get the `categories` and `links` for each token in the response body:
+
+- `categories`: The categories under which the token falls.
+- `links`: Social links such as website, Facebook, YouTube, etc.
+
+> 📘 
+> 
+> Supported only on the following chains: 
+> 
+> - Ethereum
+> - Polygon
+> - BSC
+> - Arbitrum
+> - Avalanche
+> - Base

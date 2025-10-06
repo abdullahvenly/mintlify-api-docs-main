@@ -1,0 +1,185 @@
+---
+title: "BASE & XPLA Support"
+description: "Added BASE and XPLA blockchain support to Wallet-API"
+icon: "plus"
+date: "2024-02-22"
+---
+
+**BASE** and **XPLA** have been added to the supported blockchains in **Wallet-API**. Now you can create XPLA/BASE wallets.
+
+## What's New
+
+<CardGroup cols={2}>
+  <Card title="BASE & XPLA Chains" icon="link">
+    Added support for **BASE** and **XPLA** in Wallet-API with full wallet creation and transaction capabilities
+  </Card>
+  
+  <Card title="Expanded Swap Pairs" icon="arrow-right-arrow-left">
+    Increased swap pairs providing more flexibility for exchanging digital assets
+  </Card>
+</CardGroup>
+
+### BASE & XPLA Features
+
+- Added support for **BASE** and **XPLA** in Wallet-API
+- You can now create wallets on the **BASE** and **XPLA** blockchains, expanding the range of supported blockchains
+- Ability to send and receive funds to/from **XPLA** and **BASE** wallets directly through the Wallet API, enabling seamless integration with applications using these blockchains
+
+### Expanded Swap Pairs
+
+- Increased the number of available swap pairs
+- Users now have access to a wider range of swap pairs, providing more flexibility and options for exchanging digital assets with the Wallet API
+
+## Get Supported Chains
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/secrettypes_1)
+
+```http
+GET https://api-wallet-sandbox.venly.io/api/chains
+```
+
+### Response Body
+
+<Tip>
+As you can see, we now support **XPLA** and **BASE**.
+</Tip>
+
+```json
+{
+    "success": true,
+    "result": [
+        "AETERNITY",
+        "ARBITRUM",
+        "AVAC",
+        "BITCOIN",
+        "BSC",
+        "ETHEREUM",
+        "GOCHAIN",
+        "LITECOIN",
+        "VECHAIN",
+        "MATIC",
+        "NEO",
+        "HEDERA",
+        "IMX",
+        "BASE",
+        "XPLA"
+    ]
+}
+```
+
+## Create XPLA Wallet
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/createwallet)
+
+```http
+POST https://api-wallet-sandbox.venly.io/api/wallets
+```
+
+**Headers:**
+
+| Parameter | Type | Value | Description |
+|-----------|------|-------|-------------|
+| `Signing-Method` | Header | `id:value` | `id`: The ID of the signing method<br/>`value`: The value of the signing method |
+
+**Request Body:**
+
+```json
+{
+  "secretType": "XPLA",
+  "description": "XPLA Wallet",
+  "userId": "4a422717-66e8-417a-a238-767c68eea481"
+}
+```
+
+### Response Body
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "d984c7c8-042d-4658-991b-67356877932b",
+        "address": "0x4823D9BC20F8f52ad3aeE3644F16caB189e2ad78",
+        "walletType": "API_WALLET",
+        "secretType": "XPLA",
+        "createdAt": "2024-02-22T14:49:28.642141016",
+        "archived": false,
+        "description": "XPLA Wallet",
+        "primary": false,
+        "hasCustomPin": false,
+        "userId": "4a422717-66e8-417a-a238-767c68eea481",
+        "custodial": false,
+        "balance": {
+            "available": true,
+            "secretType": "XPLA",
+            "balance": 0,
+            "gasBalance": 0,
+            "symbol": "XPLA",
+            "gasSymbol": "XPLA",
+            "rawBalance": "0",
+            "rawGasBalance": "0",
+            "decimals": 18
+        }
+    }
+}
+```
+
+## Create BASE Wallet
+
+### Request
+
+[API Reference](https://docs.venly.io/reference/createwallet)
+
+```http
+POST https://api-wallet-sandbox.venly.io/api/wallets
+```
+
+**Headers:**
+
+| Parameter | Type | Value | Description |
+|-----------|------|-------|-------------|
+| `Signing-Method` | Header | `id:value` | `id`: The ID of the signing method<br/>`value`: The value of the signing method |
+
+**Request Body:**
+
+```json
+{
+  "secretType": "BASE",
+  "description": "BASE Wallet",
+  "userId": "4a422717-66e8-417a-a238-767c68eea481"
+}
+```
+
+### Response Body
+
+```json
+{
+    "success": true,
+    "result": {
+        "id": "bf3f04e6-a154-4a13-9119-99f46dc3fb05",
+        "address": "0x26626Dc0aBd19757473607b23D7773FDC4023c60",
+        "walletType": "API_WALLET",
+        "secretType": "BASE",
+        "createdAt": "2024-02-22T14:51:57.737053568",
+        "archived": false,
+        "description": "BASE Wallet",
+        "primary": false,
+        "hasCustomPin": false,
+        "userId": "4a422717-66e8-417a-a238-767c68eea481",
+        "custodial": false,
+        "balance": {
+            "available": true,
+            "secretType": "BASE",
+            "balance": 0,
+            "gasBalance": 0,
+            "symbol": "ETH",
+            "gasSymbol": "ETH",
+            "rawBalance": "0",
+            "rawGasBalance": "0",
+            "decimals": 18
+        }
+    }
+}

@@ -1,0 +1,62 @@
+---
+title: "Bitcoin Segwit and Native Spam Filtering"
+description: "Added Segwit address support and spam filtering for Wallet-API and Widget"
+icon: "bitcoin-sign"
+date: "2024-01-03"
+---
+
+Added support for Bitcoin and Litecoin Segwit addresses, as well as a native spam filter for ERC20, ERC721, and ERC1155 tokens for the **Wallet-API** and **Wallet Widget**.
+
+## What's New
+
+<CardGroup cols={2}>
+  <Card title="Bitcoin Segwit" icon="bitcoin-sign">
+    Transfer funds to Bitcoin Segwit addresses
+  </Card>
+  
+  <Card title="Litecoin Segwit" icon="coins">
+    Transfer funds to Litecoin Segwit addresses
+  </Card>
+  
+  <Card title="Spam Filtering" icon="shield-check">
+    Native spam detection for ERC20 and NFT tokens
+  </Card>
+  
+  <Card title="Improved Errors" icon="circle-exclamation">
+    Consistent error messages across endpoints
+  </Card>
+</CardGroup>
+
+### Bitcoin Segwit Address
+
+Now you can transfer funds to a Bitcoin Segwit Address.
+
+### Litecoin Segwit Address
+
+Now you can transfer funds to a Litecoin Segwit Address.
+
+### Spam Flag
+
+Like other emerging technologies, ERC20 tokens and NFTs are attracting bad actors exploiting their novel features. To tackle this problem, we have introduced a `possibleSpam` flag which indicates whether or not an ERC20 token might be spam.
+
+The following endpoints will include a `possibleSpam` boolean in the response bodies, and also a new query boolean parameter, `includePossibleSpam` which indicates whether or not to include the spam tokens in the response body.
+
+**Affected Endpoints:**
+
+- `GET /api/wallets/{walletId}/balance/tokens`
+- `GET /api/wallets/{walletId}/balance/tokens/{token}`
+- `GET /api/wallets/{secretType}/{walletAddress}/balance/tokens`
+- `GET /api/wallets/{secretType}/{walletAddress}/balance/tokens/{token}`
+- `GET /api/wallets/{walletId}/nonfungibles`
+- `GET /api/wallets/nonfungibles`
+- `GET /api/wallets/{secretType}/{walletAddress}/nonfungibles`
+
+<Info>
+The `possibleSpam` flag helps protect users from malicious tokens by identifying potentially dangerous assets before they interact with them.
+</Info>
+
+## Bug Fixes
+
+### Error Messages
+
+Error messages are now consistent and aligned for endpoints.

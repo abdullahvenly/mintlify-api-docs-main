@@ -1,0 +1,84 @@
+---
+title: "Get Supported Chains for NFT & Token API"
+description: "New endpoints to fetch supported chains for NFT API and Token API"
+icon: "link"
+date: "2024-10-20"
+---
+
+We have added two new endpoints for the NFT API and the Token API respectively. These endpoints allow you to fetch the list of supported chains for each API.
+
+## Get Supported Chains for NFT API
+
+<Card title="API Reference" icon="book" href="https://docs.venly.io/reference/getsupportedchainserc1155">
+  View the complete API reference for getting supported chains
+</Card>
+
+### Request Endpoint
+
+```http
+GET /api/v3/erc1155/chains
+```
+
+### Response Body
+
+```json
+{
+  "success": true,
+  "result": [
+    "AVAC",
+    "BSC",
+    "ETHEREUM",
+    "MATIC",
+    "HEDERA",
+    "ARBITRUM"
+  ]
+}
+```
+
+## Get Supported Chains for Token API
+
+<Card title="API Reference" icon="book" href="https://docs.venly.io/reference/getsupportedchainserc20">
+  View the complete API reference for getting supported chains
+</Card>
+
+### Request Endpoint
+
+```http
+GET /api/v3/erc20/chains
+```
+
+### Response Body
+
+```json
+{
+  "success": true,
+  "result": [
+    "AVAC",
+    "BSC",
+    "ETHEREUM",
+    "MATIC",
+    "ARBITRUM"
+  ]
+}
+```
+
+## Supported Blockchains
+
+<Tabs>
+  <Tab title="NFT API">
+    - Avalanche (AVAC)
+    - Binance Smart Chain (BSC)
+    - Ethereum
+    - Polygon (MATIC)
+    - Hedera
+    - Arbitrum
+  </Tab>
+  
+  <Tab title="Token API">
+    - Avalanche (AVAC)
+    - Binance Smart Chain (BSC)
+    - Ethereum
+    - Polygon (MATIC)
+    - Arbitrum
+  </Tab>
+</Tabs>

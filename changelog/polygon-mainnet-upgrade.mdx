@@ -1,0 +1,188 @@
+---
+title: "Polygon Mainnet Upgrade"
+description: "MATIC to POL migration guide for Ethereum mainnet holders"
+icon: "arrow-up-right-dots"
+date: "2024-09-03"
+---
+
+Polygon's mainnet upgrade is set for **September 4, 2024**, marking the transition of its native token from **MATIC** to **POL**. Following the upgrade, POL will become the primary token used for gas fees, replacing MATIC.
+
+<Info>
+Read more about the [Polygon Mainnet Upgrade](https://polygon.technology/blog/save-the-date-matic-pol-migration-coming-september-4th-everything-you-need-to-know).
+</Info>
+
+## Migration Required?
+
+<Frame caption="Polygon Migration MATIC to POL" style={{maxWidth: '750px'}}>
+  <img src="https://files.readme.io/890165312b7cbbc3361c0fa0a09faa9da0f14ab239a4021e431bdf7d47ccb65e-image.png" alt="MATIC to POL Migration" />
+</Frame>
+
+### MATIC Holders on Polygon PoS Mainnet
+
+<Info>
+On September 4, 2024, all MATIC tokens on the Polygon PoS chain will automatically migrate to POL tokens. **No user input is required.**
+</Info>
+
+### MATIC Holders on Ethereum Mainnet
+
+Wallet-API users that hold MATIC tokens on the Ethereum chain can upgrade (MATIC to POL) permissionlessly using the [deployed migration contract](https://etherscan.io/address/0x29e7DF7b6A1B2b07b731457f499E1696c60E2C4e#writeProxyContract).
+
+<Tip>
+- **Widget users** can migrate via [Polygon POL Upgrade](https://portal.polygon.technology/pol-upgrade)
+- Read more about the [migration guide for Widget Users](https://docs.venly.io/page/matic-to-pol-migration-guide-for-widget-users)
+</Tip>
+
+## How to Migrate on Ethereum - Wallet-API Users
+
+Below is a detailed description of the migration process from **MATIC** to **POL** for Wallet-API users.
+
+<Steps>
+  <Step title="Retrieve the ERC20 Token Balance">
+    Query the ERC20 token balance in your Ethereum wallet to retrieve the MATIC tokens. You'll need the `tokenAddress` and `rawBalance` for the migration process.
+    
+    ### Request Endpoint
+    
+    [API Reference](https://docs.venly.io/reference/viewtokenbalances)
+    
+    ```http
+    GET /api/wallets/{walletId}/balance/tokens
+    ```
+    
+    ### Response Body
+    
+    <Info>
+    Copy the `tokenAddress` and the `rawBalance` as they will be used later in the guide.
+    </Info>
+    
+    ```json
+    {
+      "success": true,
+      "result": [
+        {
+          "tokenAddress": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+          "rawBalance": "50987335440767736754",
+          "balance": 50.987335,
+          "decimals": 18,
+          "symbol": "MATIC",
+          "logo": "https://logo.moralis.io/0x1_0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0_89c931b3fcf74fe39db7a195bf8a3aa5",
+          "type": "ERC20",
+          "transferable": true,
+          "name": "Matic Token",
+          "possibleSpam": false,
+          "exchange": {
+            "usdPrice": 0.4975086444831248,
+            "usdBalanceValue": 25.366640140942746
+          }
+        }
+      ]
+    }
+    ```
+  </Step>
+  
+  <Step title="Call approve Function on MATIC Token Contract">
+    Create an approval of the MATIC tokens for the migration contract. Call the MATIC token contract with the spender address (migration contract address) and the value (raw value of MATIC tokens to approve).
+    
+    This will set the approval for the migration contract (`0x19c5042aB91C9e4C0C92Cbb6DEEb959a3e13306f`).
+    
+    <Tip>
+    - For this example, the approval `value` is `2000000000000000000` which equals 2 MATIC tokens
+    - If you wish to migrate all MATIC tokens, enter the `value` as the `rawBalance` from Step 1
+    </Tip>
+    
+    ### Request Endpoint
+    
+    [API Reference](https://docs.venly.io/reference/executetransaction_1)
+    
+    ```http
+    POST /api/transactions/execute
+    ```
+    
+    ```json
+    {
+      "transactionRequest": {
+        "type": "CONTRACT_EXECUTION",
+        "functionName": "approve",
+        "value": 0.0,
+        "inputs": [
+          {
+            "type": "address",
+            "value": "0x19c5042aB91C9e4C0C92Cbb6DEEb959a3e13306f"
+          },
+          {
+            "type": "uint256",
+            "value": "2000000000000000000"
+          }
+        ],
+        "walletId": "5a65042e-26ad-44f3-bbd0-379bddd84df1",
+        "to": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+        "secretType": "ETHEREUM"
+      }
+    }
+    ```
+    
+    ### Response Body
+    
+    <Warning>
+    Make sure the **transaction is successful** on the blockchain before proceeding to the next step.
+    </Warning>
+    
+    ```json
+    {
+      "success": true,
+      "result": {
+        "id": "d4e8ddbd-6946-4a2b-bedd-0e130529ee7a",
+        "transactionHash": "0xe55f80ee56a85f15c206b6c308e12a1304375e37625e9b59b176773f92329259"
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Call migrate Function on the Migration Contract">
+    Call the `migrate` function on the [migration contract](https://etherscan.io/address/0x29e7DF7b6A1B2b07b731457f499E1696c60E2C4e#writeProxyContract) by supplying it with the same raw value of MATIC tokens as you did in the previous `approve` contract call.
+    
+    ### Request Endpoint
+    
+    [API Reference](https://docs.venly.io/reference/executetransaction_1)
+    
+    ```http
+    POST /api/transactions/execute
+    ```
+    
+    ```json
+    {
+      "transactionRequest": {
+        "type": "CONTRACT_EXECUTION",
+        "functionName": "migrate",
+        "value": 0.0,
+        "inputs": [
+          {
+            "type": "uint256",
+            "value": "2000000000000000000"
+          }
+        ],
+        "walletId": "a7185cb1-66ec-41c7-94e3-be7a7e17ee67",
+        "to": "0x29e7DF7b6A1B2b07b731457f499E1696c60E2C4e",
+        "secretType": "ETHEREUM"
+      }
+    }
+    ```
+    
+    ### Response Body
+    
+    ```json
+    {
+      "success": true,
+      "result": {
+        "id": "d4e8ddbd-6946-4a2b-bedd-0e130529ee7a",
+        "transactionHash": "0xad8a8d9fdb7f14c3215a3133677edd2485164beef74dcf2680b6fcfdbf188f3f"
+      }
+    }
+    ```
+  </Step>
+</Steps>
+
+## Successful Migration to POL
+
+<Frame>
+  <img src="https://files.readme.io/6a672ddd5af74f412f6efce2f70a85f7d12833aa4eee038f580f3ee5dcee456f-image.png" alt="Successful Migration" />
+</Frame>

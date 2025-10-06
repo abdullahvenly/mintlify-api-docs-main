@@ -1,0 +1,153 @@
+---
+title: "Fiat Onramps & Offramps"
+description: "Generate customized onramp and offramp URLs with Transak, Moonpay, and Ramp Network"
+icon: "money-bill-transfer"
+date: "2025-01-30"
+---
+
+Venly is excited to announce the release of **Fiat Onramp and Offramp API endpoints**, which allow you to generate on/offramp URLs for your users. This is available on all plans, including trials! We have integrated three providers: **Transak**, **Moonpay**, and **Ramp Network**.
+
+## What's New?
+
+Our new endpoints allow you to create **customized onramp and offramp URLs** for seamless integration into your platform.
+
+<CardGroup cols={2}>
+  <Card title="Onramp" icon="arrow-down">
+    Convert fiat currency into cryptocurrency
+  </Card>
+  
+  <Card title="Offramp" icon="arrow-up">
+    Convert cryptocurrency into fiat currency
+  </Card>
+</CardGroup>
+
+## Supported Providers
+
+<CardGroup cols={3}>
+  <Card title="Transak" icon="t">
+    Trusted fiat-to-crypto provider
+  </Card>
+  
+  <Card title="Moonpay" icon="moon">
+    Industry-leading payment solution
+  </Card>
+  
+  <Card title="Ramp Network" icon="r">
+    Reliable crypto gateway
+  </Card>
+</CardGroup>
+
+## Fee Breakdown
+
+<Info>
+**Using your API key** (given to you by the provider): Venly charges 0% in fees.
+</Info>
+
+## Configuring API Keys
+
+### Sandbox Environment
+
+<Tabs>
+  <Tab title="Default Setup">
+    Venly provides its own API keys for MoonPay, Transak, and Ramp Network in sandbox. These keys are ready to use for testing without any additional setup.
+  </Tab>
+  
+  <Tab title="Customization">
+    You can replace the default keys via the integrations section in the [Developer Portal](https://portal.venly.io/integrations) to test with your own credentials.
+  </Tab>
+</Tabs>
+
+### Production Environment
+
+<Warning>
+**API Key Configuration Required**
+
+When moving to production, you must configure your own API keys for MoonPay, Transak, and Ramp Network through the [Portal](https://portal.venly.io/integrations). Venly does not provide API keys for production.
+</Warning>
+
+## Integration Guides
+
+<CardGroup cols={3}>
+  <Card title="Supported Currencies" icon="coins" href="https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies">
+    Get supported fiat & crypto currencies
+  </Card>
+  
+  <Card title="Create OnRamp URL" icon="arrow-down" href="https://docs.venly.io/docs/fiat-on-ramps">
+    Convert fiat to crypto
+  </Card>
+  
+  <Card title="Create OffRamp URL" icon="arrow-up" href="https://docs.venly.io/docs/fiat-off-ramps">
+    Convert crypto to fiat
+  </Card>
+</CardGroup>
+
+## API Endpoints
+
+### Supported Currencies
+- [Get Supported Fiat & Crypto Currencies](https://docs.venly.io/reference/getcurrencies)
+
+### OnRamp URLs
+- [Transak OnRamp](https://docs.venly.io/reference/gettransakfiatonrampurl)
+- [Moonpay OnRamp](https://docs.venly.io/reference/getmoonpayfiatonrampurl)
+- [Ramp Network OnRamp](https://docs.venly.io/reference/getrampnetworkfiatonrampurl)
+
+### OffRamp URLs
+- [Transak OffRamp](https://docs.venly.io/reference/gettransakfiatofframpurl)
+- [Moonpay OffRamp](https://docs.venly.io/reference/getmoonpayfiatofframpurl)
+- [Ramp Network OffRamp](https://docs.venly.io/reference/getrampnetworkfiatofframpurl)
+
+## Why Use Venly's Solution?
+
+<CardGroup cols={2}>
+  <Card title="Easy-to-use" icon="circle-check">
+    Generate URLs with one API call
+  </Card>
+  
+  <Card title="Customize" icon="sliders">
+    Pre-populate parameters for faster checkout
+  </Card>
+  
+  <Card title="Trusted Partnerships" icon="handshake">
+    Work with industry-leading providers
+  </Card>
+  
+  <Card title="Flexibility" icon="arrows-split-up-and-left">
+    Multiple options to suit user needs
+  </Card>
+  
+  <Card title="Security" icon="shield-check">
+    Secure infrastructure with zero compromises
+  </Card>
+</CardGroup>
+
+## Create Customized URLs
+
+<AccordionGroup>
+  <Accordion title="1. Select Your Providers" icon="list-check">
+    Choose from **Transak**, **Moonpay**, and **Ramp Network** based on your business requirements and regions you wish to serve.
+  </Accordion>
+  
+  <Accordion title="2. Define Fiat and Crypto Options" icon="coins">
+    Use parameters like `fiatCurrency` and `cryptoCurrency.symbol` to ensure transactions align with user preferences.
+  </Accordion>
+  
+  <Accordion title="3. Set Transaction Defaults" icon="dollar-sign">
+    Predefine parameters such as `fiatAmount` or `cryptoAmount` to streamline user interactions.
+  </Accordion>
+  
+  <Accordion title="4. Establish Blockchain Network Preferences" icon="network-wired">
+    Select blockchain networks using the `cryptoCurrency.network` parameter (e.g., Ethereum, Bitcoin).
+  </Accordion>
+  
+  <Accordion title="5. Enable Localization" icon="globe">
+    Use the `selectedCountryCode` parameter to tailor the experience for users based on their country.
+  </Accordion>
+  
+  <Accordion title="6. Customize Redirect Flows" icon="arrow-right">
+    Set a `redirectUrl` to direct users back to your platform after transactions.
+  </Accordion>
+  
+  <Accordion title="7. Streamline User Onboarding" icon="user-plus">
+    Pre-fill parameters like `email` and `walletAddress` to reduce friction and speed up transactions.
+  </Accordion>
+</AccordionGroup>

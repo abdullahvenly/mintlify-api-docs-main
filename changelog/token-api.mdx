@@ -1,0 +1,117 @@
+---
+title: "Token API Released"
+description: "Create, mint, and manage ERC20 tokens seamlessly across blockchain networks"
+icon: "coins"
+date: "2024-10-10"
+---
+
+Exciting news: the **Venly Token API** is now available, offering a powerful tool to seamlessly create, mint, and manage ERC20 tokens. This initial release provides all the essential features for deploying token contracts and minting ERC20 tokens across supported blockchain networks.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Create Contracts" icon="file-contract">
+    Deploy ERC20 token contracts on multiple blockchains
+  </Card>
+  
+  <Card title="Mint Tokens" icon="coins">
+    Mint tokens for multiple wallets in single API call
+  </Card>
+  
+  <Card title="Track Status" icon="magnifying-glass">
+    Monitor deployment and minting status in real-time
+  </Card>
+  
+  <Card title="Manage Contracts" icon="list-check">
+    Retrieve and manage all your token contracts
+  </Card>
+</CardGroup>
+
+### 1. Create ERC20 Token Contracts
+
+Easily deploy an ERC20 token contract on the supported blockchains:
+- Matic
+- Ethereum
+- Binance Smart Chain
+- Avalanche
+- Arbitrum
+
+**Customizable Parameters:**
+- **Token Name**: Set a custom name for your token
+- **Symbol**: Choose an optional symbol for your token
+- **Max Supply**: Set an optional limit on the number of ERC20 tokens that can be minted
+- **Burnable Tokens**: Define whether tokens can be burned (removed from circulation)
+- **Owner Rights**: Assign administrative rights to a specific wallet address
+
+### 2. Check Contract Deployment Status
+
+Track the progress of your token contract deployment using the **deployment ID** returned from the token contract creation request.
+
+**Status Updates:**
+- `SUCCEEDED`: The contract is successfully deployed
+- `PENDING`: The contract is being deployed
+- `FAILED`: The contract deployment encountered an error
+
+### 3. Mint ERC20 Tokens
+
+Mint tokens directly from your deployed ERC20 contract by specifying the contract address and the recipient wallet addresses. Supports minting tokens for multiple wallets in a single API call.
+
+### 4. Track Token Minting Status
+
+Monitor the status of your token minting requests using the **mint ID**.
+
+**Status Updates:**
+- `SUCCEEDED`: The tokens were minted and sent successfully
+- `PENDING`: The minting request is being processed
+- `FAILED`: The minting process encountered an error
+
+### 5. Manage Token Contracts
+
+- Retrieve all your token contracts
+- Retrieve token contracts by chain and token contract address
+- Delete token contracts
+
+## Testing
+
+### Sandbox Environment
+
+All API interactions can be conducted in the sandbox environment, allowing developers to experiment and test without affecting live blockchain data or assets.
+
+### Flexible API Usage
+
+- **API Reference**: Execute API calls directly through the Venly API Reference
+- **Postman Integration**: Use Postman to send requests and test API calls easily
+
+<Card title="Getting Started Guide" icon="book" href="https://docs.venly.io/v3.0/docs/token-api-getting-started">
+  Read the complete Getting Started Guide for Token-API
+</Card>
+
+## Gasless ERC20 Transfers
+
+Gasless transactions for ERC-20 tokens offer a seamless way to send ERC20 tokens without spending gas fees yourself. This feature allows users to authorize an ERC20 token transfer via a signed message, allowing someone else to cover the gas costs.
+
+<CardGroup cols={2}>
+  <Card title="transferWithAuthorization" icon="signature" href="https://docs.venly.io/v3.0/docs/gasless-tx-transfer-with-authorization-erc20">
+    Gasless tx using transferWithAuthorization function (EIP-3009)
+  </Card>
+  
+  <Card title="permit & transferFrom" icon="hand-holding-dollar" href="https://docs.venly.io/v3.0/docs/gasless-tx-permit-transferfrom-erc20">
+    Gasless tx using permit & transferFrom function (EIP-2612)
+  </Card>
+</CardGroup>
+
+## Upcoming Features
+
+<AccordionGroup>
+  <Accordion title="Additional Blockchain Support" icon="link">
+    Future updates will extend support to more blockchain networks, enabling even broader token deployment options
+  </Accordion>
+  
+  <Accordion title="Webhooks" icon="webhook">
+    The next release will allow you to configure webhooks to receive notifications when:
+    - Contract deployment succeeds/fails
+    - Token mint succeeds/fails
+  </Accordion>
+</AccordionGroup>
+
+Stay tuned for more updates as we continue to enhance the **Venly Token API!**

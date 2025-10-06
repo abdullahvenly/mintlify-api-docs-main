@@ -1,0 +1,275 @@
+---
+title: "Webhooks"
+description: "Configure webhooks and receive notifications for transactions, contracts, and token operations"
+icon: "webhook"
+date: "2024-03-13"
+---
+
+Introducing **Webhooks** for the **Wallet-API** and **NFT-API**. Configure webhooks and receive notifications for **successful/failed** transactions, contract creation, token-type creation, and token mints.
+
+## Overview
+
+Webhooks allow you to configure your endpoint URL and receive notifications for all your assets. Configure webhooks from the **Wallet-API** or **NFT-API** product section on the [Developer Portal](https://portal.venly.io/).
+
+<Info>
+For example, you can get notified when your transaction is successfully processed on the blockchain or if it fails.
+</Info>
+
+<CardGroup cols={2}>
+  <Card title="Wallet-API" icon="wallet">
+    Receive notifications for all successful and failed transactions on all your wallets
+  </Card>
+  
+  <Card title="NFT-API" icon="image">
+    Receive notifications for contract creations, token-type creations, and token mints
+  </Card>
+</CardGroup>
+
+## Features
+
+### 1. Configure Endpoint for Event Notifications
+
+<Warning>
+The **endpoint** you configure must be able to accept **POST** calls.
+</Warning>
+
+**Wallet-API Events:**
+- Transaction Succeeded
+- Transaction Failed
+
+**NFT-API Events:**
+- Contract Creation Succeeded
+- Contract Creation Failed
+- Token-type creation Succeeded
+- Token-type creation Failed
+- Token Mint Succeeded
+- Token Mint Failed
+
+### 2. Authentication Methods
+
+<Info>
+**Authentication** is to be set up by **you** for your endpoint. This allows you to verify that the calls are coming from **Venly**.
+</Info>
+
+<Tabs>
+  <Tab title="Basic Authentication">
+    <Frame>
+      <img src="https://files.readme.io/df01816-image.png" alt="Basic Authentication" style={{maxWidth: '400px'}} />
+    </Frame>
+  </Tab>
+  
+  <Tab title="API Key">
+    <Frame>
+      <img src="https://files.readme.io/bb1b96b-image.png" alt="API Key Authentication" style={{maxWidth: '400px'}} />
+    </Frame>
+  </Tab>
+</Tabs>
+
+### 3. Retry Mechanism
+
+If your endpoint URL is down, Venly will attempt to resend the notification message **five times** with an interval of **10 seconds** between attempts to ensure delivery. After the last try, the message will be dropped since webhook messages are not stored and won't be retrievable.
+
+**If your endpoint is down for more than 50 seconds:**
+
+<AccordionGroup>
+  <Accordion title="Wallet-API Recovery" icon="wallet">
+    Call the [check transaction status endpoint](https://docs.venly.io/reference/getstatus) using the `transactionHash` of your specific transaction
+  </Accordion>
+  
+  <Accordion title="NFT-API Recovery" icon="image">
+    Call the check status endpoints using the unique `id` from the response body:
+    1. [Check Contract Status](https://docs.venly.io/reference/getcontract_1-1)
+    2. [Check Token-type Status](https://docs.venly.io/reference/gettokentype)
+    3. [Check Token Mint Status](https://docs.venly.io/reference/gettokenmint)
+  </Accordion>
+</AccordionGroup>
+
+## How to Configure Webhooks
+
+<Steps>
+  <Step title="Access Developer Portal">
+    Head over to the [Developer Portal](https://portal.venly.io/)
+  </Step>
+  
+  <Step title="Select Product">
+    Click on the product you want to configure webhooks for (**Wallet API** or **NFT API**)
+  </Step>
+  
+  <Step title="Create Webhook">
+    Scroll down and click on **Create webhook**
+    
+    <Frame caption="Creating a new Webhook for NFT API">
+      <img src="https://files.readme.io/7e4b325-image.png" alt="Create Webhook Button" />
+    </Frame>
+  </Step>
+  
+  <Step title="Add Details">
+    Enter the webhook configuration:
+    - **Description**: Any sample description of the webhook
+    - **Endpoint (POST)**: The endpoint URL that can accept POST calls
+    - **Type**: Select your preferred authentication type
+    - **Username/Header name**: Enter your custom username or header name
+    - **Password/API key**: Enter your custom password or API key
+    - Click **Create**
+    
+    <Frame caption="Adding details for the Webhook">
+      <img src="https://files.readme.io/715c4ef-image.png" alt="Webhook Configuration Form" style={{maxWidth: '400px'}} />
+    </Frame>
+  </Step>
+  
+  <Step title="Webhook Created">
+    The webhook is created **successfully**!
+    
+    <Frame caption="Webhook created Successfully">
+      <img src="https://files.readme.io/c31c36e-image.png" alt="Success Message" />
+    </Frame>
+  </Step>
+  
+  <Step title="Manage Webhooks">
+    Click on the three dots to update or delete a webhook
+    
+    <Frame caption="Update or Delete Webhook">
+      <img src="https://files.readme.io/049c4df-image.png" alt="Webhook Management Options" />
+    </Frame>
+  </Step>
+</Steps>
+
+## Successful Payload Examples
+
+<Info>
+In the payloads you receive, look for `eventType` and `result.status`.
+</Info>
+
+### Successful Transaction
+
+```json
+{
+  "eventType": "TRANSACTION_SUCCEEDED",
+  "result": {
+    "hash": "0xa2b91d7032c71f6810aeb075c17de25c44af7fe7f75ad5c58ffd853d31fad5cd",
+    "status": "SUCCEEDED",
+    "confirmations": 5,
+    "blockHash": "0x35c20162d34a73fabbabcf5ed4d5f8585e3581f246a1a154ede1c01812cf405d",
+    "blockNumber": 46095097,
+    "hasReachedFinality": false,
+    "chain": "MATIC",
+    "from": "0x734dd2331ded9754ad8c39ddda8067a723cc36a9",
+    "to": "0x5e353f92bcaffcae9fd5c8d8ec530d63112f32fb",
+    "value": 0.01,
+    "timestamp": "2024-02-19T10:48:33"
+  }
+}
+```
+
+### Successful Token Mint
+
+```json
+{
+  "eventType": "TOKEN_CREATION_SUCCEEDED",
+  "result": {
+    "id": "3eab2361-5f0e-4122-8fe9-74b6f1fe0a88",
+    "tokenId": 2,
+    "status": "SUCCEEDED",
+    "transactionHash": "0x407845cb6ce187a9f982aa00f4870851fe8877ef599e9d28084210373619dc14",
+    "destination": {
+      "address": "0x7312750DF4d2057b758a61C7017729c6Ec9bB3E9",
+      "amount": 1
+    }
+  }
+}
+```
+
+### Successful Token-type Creation
+
+```json
+{
+  "eventType": "TOKEN_TYPE_CREATION_SUCCEEDED",
+  "result": {
+    "id": "6852f668-2609-43fb-869e-a1de2e429ea9",
+    "status": "SUCCEEDED",
+    "transactionHash": "0x04778d3c6dfa2418a55fe53317520744b0e00100ff4453fd7892fa28f0f146fe",
+    "tokenTypeId": 1
+  }
+}
+```
+
+### Successful Contract Creation
+
+```json
+{
+  "eventType": "CONTRACT_CREATION_SUCCEEDED",
+  "result": {
+    "name": "Test",
+    "description": "Testing",
+    "address": "0xf5b11b4f458cc12a7989a146c5db2e7d500e2241",
+    "id": "a46bef57-c2b9-4eb7-8819-d0b38c445809",
+    "secretType": "MATIC",
+    "symbol": "TE",
+    "status": "SUCCEEDED"
+  }
+}
+```
+
+## Failed Payload Examples
+
+### Failed Transaction
+
+```json
+{
+  "eventType": "TRANSACTION_FAILED",
+  "result": {
+    "hash": "0x68561b2a59413c372a1fab4353b8904e7460726cf3437621b9237ef2ce82d718",
+    "status": "FAILED",
+    "confirmations": 10,
+    "chain": "MATIC",
+    "from": "0x96f06471cb1653617b778841106e40594f8d2105",
+    "to": "0xa89fc45fd76a4f46a48fcd0058ab28a3b9da55d5",
+    "timestamp": "2024-02-19T13:12:29"
+  }
+}
+```
+
+### Failed Contract Creation
+
+```json
+{
+  "eventType": "CONTRACT_CREATION_FAILED",
+  "result": {
+    "name": "DAR-CONTR-69",
+    "description": "DAR-CONTRACT-69",
+    "id": "3fe78ac7-f8e9-4f60-acfe-8829df5bcca0",
+    "secretType": "MATIC",
+    "symbol": "DC62",
+    "status": "FAILED",
+    "owner": "0x075Eea524899C9dEF536D327A27Efce4fC9795ca"
+  }
+}
+```
+
+### Failed Token-type Creation
+
+```json
+{
+  "eventType": "TOKEN_TYPE_CREATION_FAILED",
+  "result": {
+    "id": "e2abb6d1-26c6-422c-9643-b42c17c5c705",
+    "status": "FAILED",
+    "tokenTypeId": 34,
+    "errorMessage": "Could not prepare transaction. Bit size must be 8 bit aligned, and in range 0 < bitSize <= 256"
+  }
+}
+```
+
+### Failed Token Mint
+
+```json
+{
+  "eventType": "TOKEN_CREATION_FAILED",
+  "result": {
+    "id": "f9754e80-ebb0-4cf9-8e82-c4191dd0b44f",
+    "tokenId": 20,
+    "status": "FAILED",
+    "transactionHash": "0x98cfcd58282edc8a6d3f329a01a7350b7f148c31546b1a5c29e0311f339eb8e8",
+    "errorMessage": "Transaction failed"
+  }
+}

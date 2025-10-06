@@ -1,0 +1,258 @@
+---
+title: "NFT-API & Token-API Updates"
+description: "Enhanced filtering, supply tracking, and company-specific queries across multiple endpoints"
+icon: "code"
+date: "2025-02-02"
+---
+
+Key highlights include the addition of parameters in the response bodies. A `storage` object in token-type responses, `burnable` and `supply` details, and expanding filtering capabilities for token mints and contracts. Additionally, we've introduced support for company-specific queries across multiple endpoints, enabling better asset organization and management.
+
+## Token-API + NFT-API Version 2.0 and 3.0 Updates
+
+### 1. Storage Object, Burnable, and Supply Object Added to Get Token-Type by ID Responses (V2 & V3)
+
+**Endpoints Affected:**
+- [`GET /api/v2/token-types/{id}`](https://docs.venly.io/v2.0/reference/gettokentype_1-1)
+- [`GET /api/v3/erc1155/token-types/{id}`](https://docs.venly.io/reference/gettokentype_1)
+
+**Change:** 
+- Added a `storage` object to the response body, which includes `type` and `location` fields.
+- Added `burnable` field to response body to indicate if the token is burnable.
+- Added a `supply` object to the response body, which includes `current`, `pending`, and `max` fields that indicate the number of current mints, pending mints, and maximum mints for a token-type.
+
+**Example Response Body** (_NFT V3_)
+
+```json
+{
+    "success": true,
+    "result": {
+        "chain": "MATIC",
+        "contractAddress": "0x96edd255488e108ada5288bad56f357246bce662",
+        "tokenTypeId": 1,
+        "onChainStatus": "SUCCEEDED",
+        "burnable": true,
+        "supply": {
+            "current": 0,
+            "pending": 0,
+            "max": 100
+        },
+        "storage": {
+            "type": "cloud",
+            "location": "https://metadata-staging.venly.io/metadata/contracts/72113/tokens/{id}"
+        },
+        "metadata": {
+            "name": "Test NFT Collection 1.0",
+            "description": "Enter the Venly Zap Village!",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/3lgO6llMSJ2lxzA-XcrAjA.jpg",
+            "imagePreview": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/3lgO6llMSJ2lxzA-XcrAjA.jpg",
+            "imageThumbnail": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/3lgO6llMSJ2lxzA-XcrAjA.jpg",
+            "backgroundColor": "#8000800",
+            "background_color": "#8000800",
+            "animationUrl": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "animation_url": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg",
+            "externalUrl": "https://www.venly.io/",
+            "external_url": "https://www.venly.io/",
+            "animationUrls": [
+                {
+                    "type": "image",
+                    "value": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/purplevillage.jpeg"
+                },
+                {
+                    "type": "audio",
+                    "value": "https://storage-staging.venly.io/applications/a3079f3a-934c-4716-8d9a-195a0f3f5abb/brain-damage-148577.mp3"
+                },
+                {
+                    "type": "video",
+                    "value": "https://www.shutterstock.com/shutterstock/videos/1107153157/preview/stock-footage-square-purple-neon-loop-fps-full-hd-mp-video.webm"
+                }
+            ],
+            "attributes": [
+                {
+                    "type": "property",
+                    "name": "Area",
+                    "value": "Isolated",
+                    "traitType": "Area",
+                    "trait_type": "Area"
+                },
+                {
+                    "type": "boost",
+                    "name": "Aura",
+                    "value": "+10",
+                    "displayType": "boost_number",
+                    "display_type": "boost_number",
+                    "traitType": "Aura",
+                    "trait_type": "Aura"
+                },
+                {
+                    "type": "stat",
+                    "name": "Greenery",
+                    "value": "80",
+                    "maxValue": "100",
+                    "displayType": "number",
+                    "display_type": "number",
+                    "traitType": "Greenery",
+                    "trait_type": "Greenery"
+                },
+                {
+                    "type": "stat",
+                    "name": "Vegetation",
+                    "value": "500",
+                    "displayType": "number",
+                    "display_type": "number",
+                    "traitType": "Vegetation",
+                    "trait_type": "Vegetation"
+                },
+                {
+                    "type": "system",
+                    "name": "tokenTypeId",
+                    "value": "1",
+                    "traitType": "Token Type ID",
+                    "trait_type": "Token Type ID"
+                },
+                {
+                    "type": "property",
+                    "name": "maxSupply",
+                    "value": "100",
+                    "traitType": "Max Supply",
+                    "trait_type": "Max Supply"
+                }
+            ],
+            "contract": {
+                "address": "0x96edd255488e108ada5288bad56f357246bce662",
+                "name": "Venly-8201",
+                "symbol": "DNC",
+                "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "imageUrl": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "image_url": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+                "description": "This NFT collection is created for the dynamic NFTs tutorial video.",
+                "externalLink": "https://www.venly.io/",
+                "external_link": "https://www.venly.io/",
+                "externalUrl": "https://www.venly.io/",
+                "external_url": "https://www.venly.io/",
+                "media": [],
+                "type": "ERC_1155"
+            },
+            "fungible": false
+        }
+    }
+}
+```
+
+### 2. Filter All Token Mints by Destination Address (V2 & V3)
+
+**Endpoints Affected:**
+- [`GET /api/v2/tokens/mints`](https://docs.venly.io/v2.0/reference/getall-1)
+- [`GET /api/v3/erc1155/tokens/mints`](https://docs.venly.io/reference/getall-1)
+
+**Change:** 
+- `destinationAddress` query param added.
+- Added the ability to filter token mints by `destinationAddress`.
+
+### 3. Filter All Token Mints by Contract Address (V2 & V3)
+
+**Endpoints Affected:**
+- [`GET /api/v2/tokens/mints`](https://docs.venly.io/v2.0/reference/getall-1)
+- [`GET /api/v3/erc1155/tokens/mints`](https://docs.venly.io/reference/getall-1)
+
+**Change:** 
+- `contractAddress` query param added.
+- Added the ability to filter token mints by `contractAddress`, supporting both complete and partial matches.
+
+### 4. Supply Object Included in Get All Token-Types Responses (V2 & V3)
+
+**Endpoint Affected:**
+- [`GET /api/v2/token-types`](https://docs.venly.io/v2.0/reference/getalltokentypes)
+- [`GET /api/v3/erc1155/token-types`](https://docs.venly.io/reference/getalltokentypes)
+
+**Change:** 
+- The `supply` object is now included in the response for get all token types.
+- The `supply` object includes `current`, `pending`, and `max` fields that indicate the number of current mints, pending mints, and maximum mints for a token-type.
+
+**Example Response Body** (_NFT V3_)
+
+```json
+{
+    "success": true,
+    "result": [
+        {
+            "chain": "MATIC",
+            "contractAddress": "0xc4425de7d5a2502c47fd353709e9728d4ead93b6",
+            "tokenTypeId": 1,
+            "name": "Test NFT Collection 1.0",
+            "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/3lgO6llMSJ2lxzA-XcrAjA.jpg",
+            "imagePreview": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/3lgO6llMSJ2lxzA-XcrAjA.jpg",
+            "imageThumbnail": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/3lgO6llMSJ2lxzA-XcrAjA.jpg",
+            "fungible": false,
+            "onChainStatus": "SUCCEEDED",
+            "supply": {
+                "current": 2,
+                "pending": 0,
+                "max": 100
+            }
+        },
+        {
+            "chain": "MATIC",
+            "contractAddress": "0xc4425de7d5a2502c47fd353709e9728d4ead93b6",
+            "tokenTypeId": 37,
+            "name": "NFT v1.0 Token-Type-1",
+            "image": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+            "imagePreview": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+            "imageThumbnail": "https://storage-qa.venly.io/applications/1f64ded9-2a05-4824-b682-661023359357/StickFigureHi.png",
+            "fungible": false,
+            "onChainStatus": "SUCCEEDED",
+            "supply": {
+                "current": 8,
+                "pending": 0,
+                "max": 100
+            }
+        }
+    ]
+}
+```
+
+### 5. CompanyId Query Param for Get Contract Endpoints
+
+**Endpoints Affected:**
+- [`GET /api/v2/contracts`](https://docs.venly.io/v2.0/reference/getcontracts-1)
+- [`GET /api/v3/erc1155/contracts`](https://docs.venly.io/reference/getcontracts)
+- [`GET /api/v3/erc20/contracts`](https://docs.venly.io/reference/getallerc20contracts)
+
+**Change:** 
+- Added the ability to pass a `companyId` query parameter to filter contracts by company.
+
+### 6. CompanyId Query Param for Get All Token Mints Endpoints (V2 & V3)
+
+**Endpoints Affected:**
+- [`GET /api/v2/tokens/mints`](https://docs.venly.io/v2.0/reference/getall-1)
+- [`GET /api/v3/erc1155/tokens/mints`](https://docs.venly.io/reference/getall-1)
+
+**Change:** 
+- Added the ability to pass a `companyId` query parameter to filter mints by company.
+
+### 7. CompanyId Field in Contract Deployment Requests
+
+**Endpoints Affected:**
+- [`POST /api/v2/contracts/deployments`](https://docs.venly.io/v2.0/reference/deploycontract-1)
+- [`POST /api/v3/erc1155/contracts/deployments`](https://docs.venly.io/reference/deploycontract)
+- [`POST /api/v3/erc20/contracts/deployments`](https://docs.venly.io/reference/deployerc20contract)
+
+**Change:** 
+- Added a `companyId` field to the request body for contract deployment, allowing the association of contracts with a specific company.
+
+**Example Request Body** (_NFT V3_)
+
+```json
+{
+    "name": "Venly-Test-Contract ",
+    "symbol": "DNC",
+    "description": "This NFT collection is created for testing.",
+    "image": "https://storage-staging.venly.io/applications/bff93371-db40-4363-9692-4fbe64a34b54/logovenly.png",
+    "externalUrl": "https://www.venly.io/",
+    "chain": "MATIC",
+    "companyId": "f407a5c1-12dc-4d5c-8fd3-71d7d462009f"
+}
+```
+
+---
+
+This changelog outlines the latest updates and enhancements to the Token-API & NFT-API, ensuring better functionality and flexibility for users of both V2 and V3 versions.

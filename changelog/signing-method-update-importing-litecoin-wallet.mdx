@@ -1,0 +1,59 @@
+---
+title: "Signing Method Update & Importing Litecoin Wallet"
+slug: "signing-method-update-importing-litecoin-wallet"
+type: "fixed"
+createdAt: "Fri Jun 21 2024 13:00:00 GMT+0000 (Coordinated Universal Time)"
+hidden: false
+---
+This release includes updates to **signing method use**, **improved error messages**, and the ability to import a **Litecoin wallet with a passphrase**.
+
+### Signing Method Updates
+
+- The maximum allowed consecutive number of incorrect attempts is **three**.
+- After three consecutive incorrect attempts, the signing method is locked for **24 hours**.
+- The counter resets when you have a successful attempt.
+- If the maximum incorrect attempts have been reached **10 times**, the signing method is permanently blocked (_no 24-hour waiting time_)
+- You must contact [support](mailto:support@venly.io) to unlock your permanently blocked signing method.
+
+### Improved Error Messages
+
+- Improved error messages with signing methods.
+- The error response includes details of the issue for example:
+  - If the signing method is required for a call.
+  - If the signing method is not needed for a call.
+- Improved error message when you enter an incorrect ENUM parameter value.
+
+### Import Litecoin Wallet with Passphrase
+
+You can now import a Litecoin wallet using a passphrase.
+
+#### Example Request: [reference](https://docs.venly.io/reference/importwallet)
+
+```http
+POST /api/wallets/import
+```
+
+**Header Parameters:**
+
+| Parameter        | Param Type | Value      | Description                                                                                     |
+| :--------------- | :--------- | :--------- | :---------------------------------------------------------------------------------------------- |
+| `Signing-Method` | Header     | `id:value` | `id`: This is the ID of the signing method<br/>`value`: This is the value of the signing method |
+
+#### Request Body
+
+```json
+{
+  "importWalletType": "LITECOIN_WIF_PASSPHRASE",
+  "userId": "d807d23d-a4d9-4615-ac50-49a8ced9fed6",
+  "wif": "wif",
+  "passphrase": "passphrase"
+}
+```
+
+| Parameter                | Param Type | Description                                          | Data Type | Mandatory |
+| :----------------------- | :--------- | :--------------------------------------------------- | :-------- | :-------- |
+| `importWalletType`       | Body       | The type of import (eg. **LITECOIN_WIF_PASSPHRASE**) | String    | ✅         |
+| `wif`                    | Body       | The wif (wallet import format)                       | String    | ✅         |
+| `passphrase`             | Body       | The passphrase of the wallet                         | String    | ✅         |
+| `userId`                 | Body       | The ID of the user you want to link this wallet to   | String    | ❌         |
+| `pincode` (_Deprecated_) | Body       | The pincode to encrypt the wallet                    | String    | ❌         |

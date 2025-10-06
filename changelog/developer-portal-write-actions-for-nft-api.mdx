@@ -1,0 +1,81 @@
+---
+title: "Developer Portal - Write Actions for NFT API"
+slug: "developer-portal-write-actions-for-nft-api"
+type: "added"
+createdAt: "Mon Mar 10 2025 09:00:00 GMT+0000 (Coordinated Universal Time)"
+hidden: false
+---
+We're excited to introduce new enhancements to the **Venly Developer Portal**, simplifying **NFT management** and **PAY** webhook configuration—no manual API calls required. You can now **create and deploy NFT contracts**, **create token types**, and **mint tokens** directly from the portal interface. Additionally, we've made it easier to configure, edit, and delete PAY API webhooks. These updates provide a seamless experience for non-developers.
+
+## NFT API – Actions Now Available from the Developer Portal!
+
+Developers can now seamlessly manage NFT-related actions directly from the Venly Developer Portal, eliminating the need for manual API calls. The following features have been added:
+
+### Create and Deploy an NFT Contract
+
+Easily create and deploy ERC-1155 NFT contracts via the **[NFT API](https://portal.venly.io/nft-api/contracts)** section of the [portal ](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) by defining the following parameters:
+
+- **Name**: The name of your NFT collection.
+- **Description**: A description of your NFT collection.
+- **Chain**: Select the blockchain to deploy the NFT contract.
+- **External URL**: URL that directs to your website, landing page, etc.
+- **Image**: The image of your NFT collection.
+- **Optional Parameters**:
+  - **Royalties Fee**: Define a percentage (_0-100_) of royalties on your NFT contract.
+  - **Payout Address**: Define the wallet address to which the royalties payout will be sent.
+  - **Owner**: Define an owner (_wallet address_) that will have admin rights on the NFT contract.
+
+![](https://files.readme.io/cee8f3eb2ef7d6a038944b159d4f350ad79f6bd300805de9ac6921ee8ed69ba2-image.png)
+
+### Create and Deploy a Token Type
+
+Define and deploy token-types by opening an NFT contract and by defining the following parameters:
+
+- **Name**: The name of the token-type.
+- **Description**: The description of the token-type.
+- **Image**: The image for the token-type.
+- **Optional Parameters**:
+  - **Properties**: Define additional properties of the token-type.
+  - **Media**: You can add an additional audio, video, or image to the token-type.
+  - **External URL**: Specify a URL that directs to your website, landing page, etc.
+  - **Max Supply**: Define a maximum supply of tokens that can be minted under the token-type.
+  - **Fungible**: Specify if the tokens should be fungible or not. (_default is non-fungible_)
+  - **Burnable**: Specify if the tokens should be burnable or not.
+
+![](https://files.readme.io/a99f1f335cbf2bcdcd2a73c82bb79cb2ae0f313b8d5e3fc31c338d1e5bd15154-image.png)
+
+### Mint Tokens
+
+Mint NFTs or fungible tokens to a wallet address or an email address, streamlining distribution. Open a token-type to mint NFTs.
+
+#### Mint multiple NFTs to multiple wallet addresses simultaneously!
+
+- You can specify multiple wallet addresses and custom number of NFTs to be minted to each address, as shown below.
+
+![](https://files.readme.io/c1f98b0ea3a531e04da5b246412e4edf6c6fbb7fb5f41de6b823d8b14edc944d-image.png)
+
+####  Mint multiple NFTs to multiple email addresses simultaneously!
+
+- You can specify multiple email addresses and custom number of NFTs to be minted to each email, as shown below.
+
+> 📘 
+> 
+> If the email address of the user does not have a wallet, then an wallet onboarding link will be sent to the user and they can sign up to create a Venly wallet which will have their minted NFT!
+
+![](https://files.readme.io/34d59e6427f686b8dfb27313fc4351ec683b2ccc216a806643e4ad7ff050fc92-image.png)
+
+## PAY API – Webhooks Configuration Now in the Developer Portal
+
+Managing PAY API webhooks is now more efficient with the ability to configure and update webhooks directly from the Venly Developer Portal:
+
+- **Configure PAY Webhook**: Set up webhooks to receive real-time notifications on successful or failed end-user checkout transactions.
+- **Edit/Delete PAY Webhook**: Modify existing webhook configurations or remove them as needed, providing improved flexibility and control.
+- **Ping Webhooks**: Ping a webhook from the portal to test if your webhook was configured correctly.
+
+> 📘 
+> 
+> Read how to [configure PAY webhooks](https://docs.venly.io/docs/webhooks-pay-api) via the Portal.
+
+![](https://files.readme.io/ab8eb863226ef1b987e267092b10f60be91db0d2dbbb76ed9825eac7970dbaf0-image.png)
+
+These enhancements simplify the experience for non-developers, making it easier for them to interact with Venly's NFT and manage PAY webhooks through the Developer Portal.

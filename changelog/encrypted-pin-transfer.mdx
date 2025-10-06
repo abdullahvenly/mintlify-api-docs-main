@@ -1,0 +1,107 @@
+---
+title: "Encrypted PIN Transfer & New Security Endpoint"
+description: "Secure PIN sharing with advanced encryption and new security endpoint for public key access"
+icon: "lock"
+date: "2024-07-16"
+---
+
+We are excited to introduce the **Encrypted PIN Transfer** feature, enhancing the security of transferring user PINs. It allows for secure PIN sharing without revealing the actual PIN, utilizing advanced encryption techniques. We have also added a **new security endpoint** which exposes the Venly public key used for encryption.
+
+## Encrypted PIN Transfer
+
+It allows you to transfer the end-users signing methods (PIN, Emergency Code, Biometrics) in a secure and encrypted way so that it is not visible on your system in any way. Your system won't be able to view or read the end-user signing method's value.
+
+This feature also ensures that the original end-user request body is not tampered with and helps avoid duplicate transactions.
+
+<Card title="Implementation Guide" icon="book" href="https://docs.venly.io/docs/encrypted-pin-transfer">
+  Read the detailed guide on how to implement encrypted PIN transfer
+</Card>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="AES 256-bit Encryption" icon="shield-check">
+    Robust security encrypting the signing method body with a random AES 256-bit key
+  </Card>
+  
+  <Card title="RSA-2048 Public Key" icon="key">
+    Uses Venly's RSA-2048 public key to encrypt the AES key
+  </Card>
+  
+  <Card title="SHA256 Hashing" icon="hashtag">
+    Ensures data integrity with SHA256 hashing for the request body
+  </Card>
+  
+  <Card title="Base64 Encoding" icon="code">
+    Secure data transmission in headers with base64 encoding
+  </Card>
+  
+  <Card title="Idempotency Key" icon="fingerprint">
+    Unique UUID prevents duplicate request submissions
+  </Card>
+</CardGroup>
+
+### Feature Details
+
+<AccordionGroup>
+  <Accordion title="AES 256-bit Key Encryption" icon="shield-check">
+    Ensures robust security by encrypting the signing method body with a random AES 256-bit key. Provides a high level of security, protecting sensitive information from unauthorized access.
+  </Accordion>
+  
+  <Accordion title="RSA-2048 Public Key" icon="key">
+    Uses the RSA-2048 public key from Venly's public endpoint to encrypt the AES key. It adds an extra layer of security by using the Venly public key.
+  </Accordion>
+  
+  <Accordion title="SHA256 Hashing" icon="hashtag">
+    Implements SHA256 hashing for the request body. Ensures that the data has not been tampered with, maintaining the integrity of the information being transferred.
+  </Accordion>
+  
+  <Accordion title="Base64 Encoding" icon="code">
+    Applies base64 encoding for secure data transmission in headers. Simplifies data transmission, ensuring that the encrypted data can be safely sent over the network.
+  </Accordion>
+  
+  <Accordion title="Idempotency Key" icon="fingerprint">
+    This unique UUID prevents your application from submitting the same request multiple times without the end user's consent. Helps avoid duplicate transactions, ensuring that each request is processed only once.
+  </Accordion>
+</AccordionGroup>
+
+## Benefits to End Users
+
+<CardGroup cols={2}>
+  <Card title="Enhanced Security" icon="shield">
+    User data is better protected against breaches and unauthorized access through encrypted PIN transfer
+  </Card>
+  
+  <Card title="Improved Data Integrity" icon="check-double">
+    SHA256 hashing ensures that the data remains unchanged during transmission
+  </Card>
+</CardGroup>
+
+## New Security Endpoint
+
+The following endpoint has been added, exposing the Venly public key used for encryption in the encrypted PIN transfer.
+
+### Endpoint
+
+[API Reference](https://docs.venly.io/reference/getKeys)
+
+```http
+GET https://api-wallet.venly.io/api/security
+```
+
+### Response Body
+
+```json
+{
+  "success": true,
+  "result": {
+    "encryptionKeys": [
+      {
+        "id": "837943da-82aa-49c5-bab7-503010985ae9",
+        "keyspec": "RSA_2048",
+        "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnDcmfHx3yZxwgZW7r+iUlUdI4a6Ot5WP8P4gzc/emfafLgOGQCoZue6n99BD6iRynnwqHUKd3fS50UX5vmZmXOJGHXlXCRsv5Z1/P32s/q5bLnTGpmzZOQXeiaOMbXgcOWcS0XhVGfioB3VsfURFBOU7okmMY0iAPPA7cdBK5fLTb0CYulMdIKfgWzeBBbqT0J6mRdUfbvXqA2gOLmaZRXKerdJUBbnNc3oOxgsk2noMlyOUId6SZsJYxQZRyjErBSjM+qNitEYLKO8tlxiPtLFWOGAa782nSMNJaLcdGWdz5TeADyvlJbbsvItA1lDWTbnJQyeN0bMDzL5XYcPTkQIDAQAB",
+        "encryptionAlgorithm": "RSAES_OAEP_SHA_256"
+      }
+    ]
+  }
+}

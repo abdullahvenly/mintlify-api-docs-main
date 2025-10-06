@@ -1,0 +1,88 @@
+---
+title: "Sub-User Management & Transaction Controls"
+description: "New sub-user management endpoints, transaction controls, and emergency code features"
+icon: "users-gear"
+date: "2023-07-10"
+---
+
+Updates on the products: **Wallet**, **NFT**, and **Market** with addition of new endpoints for the Wallet-API.
+
+## Wallet API [0.42.0]
+
+### Key Updates
+
+<CardGroup cols={3}>
+  <Card title="Sub-User Management" icon="users">
+    Complete sub-user lifecycle management
+  </Card>
+  
+  <Card title="Transaction Controls" icon="rotate-left">
+    Reset and cancel transaction capabilities
+  </Card>
+  
+  <Card title="Emergency Codes" icon="shield-exclamation">
+    Create, update, and validate emergency codes
+  </Card>
+</CardGroup>
+
+### New Endpoints
+
+#### Transaction Management
+- [Reset transaction](https://venly.readme.io/reference/reset)
+- [Cancel transaction](https://venly.readme.io/reference/cancel)
+
+#### Sub-User Management
+- [Create sub-user](https://venly.readme.io/reference/createuser)
+- [Get information about a sub-user](https://venly.readme.io/reference/getuser)
+- [Get all sub-user's information](https://venly.readme.io/reference/getall)
+- [Update reference of a sub-user](https://venly.readme.io/reference/updateuser)
+- [Delete a sub-user](https://venly.readme.io/reference/deleteuser)
+
+#### Signing Methods
+- [Create sub-users signing method](https://venly.readme.io/reference/createsigningmethod)
+- [Update sub-users signing method](https://venly.readme.io/reference/updatesigningmethod)
+- [Delete sub-users signing method](https://venly.readme.io/reference/deletesigningmethod)
+
+#### Wallet Operations
+- [Create a wallet for sub-user](https://venly.readme.io/reference/createwallet)
+- [Link an existing wallet to sub-user](https://venly.readme.io/reference/linkwallettouser)
+
+### Additional Features
+
+- See signing methods when they are created
+- Transactions table
+- Automatic emergency code generation
+- Users can now create, update, and validate emergency codes for wallets
+- Upgraded to the latest version of web3j
+- Signing Methods Validation migrated to Headers
+- Technical Fixes
+
+## NFT API [0.25.0]
+
+### Updates
+
+<CardGroup cols={2}>
+  <Card title="Minted NFT Count" icon="hashtag">
+    Users can now retrieve the number of minted NFTs
+  </Card>
+  
+  <Card title="Improvements" icon="arrow-up">
+    General functionality improvements
+  </Card>
+</CardGroup>
+
+## Market API [0.29.0]
+
+### Updates
+
+- Set up Redis as cache
+- Discord link updated in Market
+- General bugs fixed
+- Technical bug fixes
+
+## Market API [0.28.0]
+
+### Updates
+
+- General bug fixes
+- Technical improvements

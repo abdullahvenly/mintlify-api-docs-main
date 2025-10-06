@@ -1,0 +1,47 @@
+---
+title: "Migration from Mumbai to Amoy for Polygon Testnet"
+description: "Polygon testnet migrated from Mumbai to Amoy for better performance and stability"
+icon: "arrow-right-arrow-left"
+date: "2024-04-12"
+---
+
+Venly has migrated from the **Mumbai testnet** to the **Amoy testnet** for **Polygon** (_MATIC_). Effective immediately all assets in **MATIC testnet wallets** have been wiped clean. The testnet chain for Polygon has migrated to **Amoy** from Mumbai because it can process more transactions and has lower fees. The Amoy testnet offers a low-risk setting for developing, testing, and experimenting with projects.
+
+## Amoy Testnet for Polygon (MATIC)
+
+Amoy will utilize **Ethereum's Sepolia testnet** as its foundation (_L1_) chain. This means that developers working on Amoy can rely on essential support like validators, infrastructure, funding sources, tools, and other resources, ensuring a stable and secure environment for their projects both now and in the future.
+
+<Tip>
+All new MATIC testnet wallets will be created on the Amoy testnet blockchain.
+</Tip>
+
+## Why did we migrate to Amoy?
+
+The popular Mumbai testnet for the Polygon network relies on **Ethereum's Goerli** testnet as its foundation. This means **Mumbai** depends on **Goerli** for creating blocks.
+
+However, **Goerli is set to deprecate** by the end of the first quarter of 2024, with major service providers planning to stop supporting it. This change is imminent.
+
+Without Goerli, Mumbai will no longer function properly, so we decided to stop support for **Mumbai** and migrate to **Amoy**.
+
+## What This Means for You
+
+- Unable to create wallets on the Mumbai testnet chain
+- Unable to access the assets in your Mumbai wallets (_such as tokens and NFTs_)
+- Unable to deploy contracts on the Mumbai testnet
+- Unable to access wallets created through Wallet-API, SDKs, and Widget
+
+<Info>
+Nothing needs to be done on your end. The switch to Amoy is automatic.
+</Info>
+
+## FAQs
+
+<AccordionGroup>
+  <Accordion title="What will happen to my tokens, NFTs, contracts, etc?" icon="circle-question">
+    Contracts deployed to Mumbai can no longer be used on the network, so users won't be able to interact with them. Additionally, all wallets holding items like tokens and NFTs have been emptied.
+  </Accordion>
+  
+  <Accordion title="When will services be completely stopped for the Mumbai testnet?" icon="calendar">
+    We have officially stopped support for the Mumbai testnet on April 10th 12:00 AM CEST.
+  </Accordion>
+</AccordionGroup>

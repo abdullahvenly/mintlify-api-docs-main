@@ -1,0 +1,66 @@
+---
+title: "Custodial to Non-Custodial Migration"
+description: "Move from custodial to non-custodial wallets with new migration features"
+icon: "key"
+date: "2023-10-25"
+---
+
+New updates and improvements for **Wallet** and **NFT** API. Mainly the move from custodial to non-custodial.
+
+## Wallet API [0.45.0]
+
+### Bug Fixes
+
+**Error Messages**  
+Errors messages are now consistent and aligned between `transactions` and `signatures` endpoints.
+
+### New Features
+
+<CardGroup cols={2}>
+  <Card title="Migrate to Non-Custodial" icon="arrow-right">
+    Custodial or WHITE_LABEL wallets can now be migrated to non-custodial
+  </Card>
+  
+  <Card title="Auto-Migration" icon="bolt">
+    Automatic migration when linking wallets to users
+  </Card>
+</CardGroup>
+
+#### Migrate Wallets to Non-Custodial
+
+Custodial or WHITE_LABEL wallets can now be migrated to non-custodial using the [endpoint](https://venly.readme.io/reference/updatewallettype), with a `"custodial" : "false"` in the request body.
+
+```http
+PATCH /api/wallets/{id}/walletType
+```
+
+**Request Body:**
+```json
+{
+  "custodial": false
+}
+```
+
+#### Auto-Migration on User Link
+
+When you create a sub-user and link a wallet to them, the wallet will automatically migrate to non-custodial. Please create an emergency_code signing method for your sub-users.
+
+<Warning>
+Make sure to create an emergency_code signing method for your sub-users when auto-migrating wallets.
+</Warning>
+
+### Breaking Changes
+
+**walletType Removed**
+
+The `walletType` parameter has been removed when creating a new wallet. Now you don't have to specify this parameter in the request body, as our Wallet-API will automatically create non-custodial wallets, with `"walletType" : "API_WALLET"`.
+
+<Info>
+All new wallets are automatically created as non-custodial with `"walletType" : "API_WALLET"`.
+</Info>
+
+## Market API [0.32.0]
+
+### Updates
+
+- Technical bug fixes

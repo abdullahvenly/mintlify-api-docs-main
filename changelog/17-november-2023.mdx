@@ -1,0 +1,66 @@
+---
+title: "Migration to Sepolia Testnet"
+description: "Migration from Goerli to Sepolia testnet for Ethereum and Arbitrum"
+icon: "arrow-right-arrow-left"
+date: "2023-11-17"
+---
+
+In the coming weeks, Goerli testnet will be deprecated on Ethereum and Arbitrum. We will **migrate on the 15th of December** from Goerli to Sepolia on both Ethereum and Arbitrum.
+
+Sepolia was a proof-of-authority testnet created in October 2021 by Ethereum core developers and maintained ever since. Sepolia was designed to simulate harsh network conditions, and has shorter block times, which enable faster transaction confirmation times and feedback for developers.
+
+<CardGroup cols={2}>
+  <Card title="Sepolia Ethereum" icon="link" href="https://sepolia.etherscan.io/">
+    Ethereum block explorer
+  </Card>
+  
+  <Card title="Sepolia Arbitrum" icon="link" href="https://sepolia.arbiscan.io/">
+    Arbitrum block explorer
+  </Card>
+</CardGroup>
+
+## Timeline
+
+<Warning>
+**15th of December**: Switch from Goerli to Sepolia Testnet
+</Warning>
+
+## Impact
+
+In general all of our systems will remain operational, and all changes needed will happen in the background, no code changes are required to make use of the Sepolia testnet work on Ethereum and Arbitrum.
+
+As we are switching to a different testnet network that also means that all existing objects on the current Goerli will not exist on the Sepolia network. Therefore we will purge the data in the Sandbox environment. Below is described per API product what that means.
+
+### Wallet API
+
+<AccordionGroup>
+  <Accordion title="What Will Remain" icon="check">
+    - All wallets, users and recovery methods will remain
+  </Accordion>
+  
+  <Accordion title="What Will Be Lost" icon="triangle-exclamation">
+    - All assets, such as native tokens, erc20, erc721, erc1155 or custom contracts will not migrate and will not exist on Sepolia
+    - All existing wallets will be empty
+  </Accordion>
+</AccordionGroup>
+
+### NFT API
+
+- Existing contracts and token types will not be migrated and will have to be recreated if needed
+
+### NFT Analytics
+
+- No impact
+
+### Market API
+
+- No impact on users and their balances
+- All Ethereum and Arbitrum offers will be cancelled and returned to the seller's wallet
+
+## Support
+
+<Info>
+If you have any additional questions or concerns, please reach out to our [support team](https://support.venly.io).
+
+Always happy to help!
+</Info>

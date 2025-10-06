@@ -1,0 +1,191 @@
+---
+title: "Developer Portal - Improved NFT Insights"
+description: "Enhanced NFT monitoring with detailed mint information, filtering, and webhook testing"
+icon: "chart-mixed"
+date: "2025-02-25"
+---
+
+We are excited to announce additional improvements to the **NFT-Insights** feature in the Venly Portal. Now, you get the ability to view and filter detailed token mint information, view details of a specific NFT, and the ability to delete/archive an NFT contract. We also added the webhook ping feature that allows you to test your webhook configuration directly from the Portal.
+
+## Mints Tab
+
+A new Mints tab has been added to the NFT-API page, enabling you to monitor all token mints in detail. You can switch between environments from the top-right corner to view sandbox and production token mints separately.
+
+### 1. View All Token Mints
+
+Each mint record includes:
+
+<CardGroup cols={3}>
+  <Card title="Timestamp" icon="clock">
+    Date and time of the token mint
+  </Card>
+  
+  <Card title="Destination" icon="location-dot">
+    Destination address of the token mint
+  </Card>
+  
+  <Card title="Transaction Hash" icon="hashtag">
+    Blockchain transaction hash
+  </Card>
+  
+  <Card title="Contract" icon="file-contract">
+    Contract address
+  </Card>
+  
+  <Card title="Token Type" icon="layer-group">
+    Token-type ID
+  </Card>
+  
+  <Card title="Amount" icon="coins">
+    Number of tokens minted
+  </Card>
+  
+  <Card title="Status" icon="circle-check">
+    Mint status indicator
+  </Card>
+  
+  <Card title="Navigation" icon="arrows-left-right">
+    Page navigation controls
+  </Card>
+</CardGroup>
+
+<Frame>
+  <img src="https://files.readme.io/1e6ec44e4114a24d7cb76464d8edb34bb0ddb25831490e3b6011d5f8e421eb26-image.png" alt="View All Token Mints" />
+</Frame>
+
+### 2. Filter Token Mints
+
+Token mints can be filtered by:
+
+- **Contract address** (partial match also works)
+- **Status**: `SUCCEEDED`, `PENDING`, `FAILED`
+- **Date Range**
+- **Destination address** (partial match also works)
+
+<Frame>
+  <img src="https://files.readme.io/bc95c7ef779e60afae2da1db5348ae4d3095432112a069c647ae95f81ffa3bd3-image.png" alt="Filter Token Mints" />
+</Frame>
+
+### 3. View Details of a Token Mint
+
+Clicking on a specific token mint will open up a side panel that includes detailed information on the token. The details include:
+
+<AccordionGroup>
+  <Accordion title="Basic Information" icon="info-circle">
+    - Destination address
+    - Transaction hash
+    - Token ID
+    - Amount of tokens minted
+    - The Mint ID
+    - Mint Number of the token
+  </Accordion>
+  
+  <Accordion title="Contract Details" icon="file-contract">
+    - Token-type ID
+    - Contract address
+    - Type of token: `Fungible` or `Non-fungible`
+    - Chain of the token
+  </Accordion>
+  
+  <Accordion title="Attributes" icon="list">
+    - Properties
+    - Stats
+    - Boosts
+  </Accordion>
+</AccordionGroup>
+
+<Frame>
+  <img src="https://files.readme.io/2f255f234b019c407361e4c362667c7e744ad0ab1c5046b05f448f1f777a1d00-image.png" alt="Token Mint Details" />
+</Frame>
+
+## View Detailed NFT Information
+
+Navigate to the **Contracts** tab on the NFT-API page. Open a contract, select a token-type, and view all minted NFTs. Clicking on a specific NFT provides its details, including:
+
+- Token ID
+- Token-type ID
+- Contract address
+- Type of token: `Fungible` or `Non-fungible`
+- Chain of the token
+- Attributes of the token: `Properties`, `Stats`, and `Boosts`
+- Owner: The wallet address(es) that own the token
+
+<Frame>
+  <img src="https://files.readme.io/87952ca56e9782539a76f58c762a780b8302feb288ef25982f0df225c9167a5f-image.png" alt="Detailed NFT Information" />
+</Frame>
+
+## Delete NFT Contracts
+
+On the NFT-API page, open a contract from the **Contracts** tab. Click on the three dots at the top right, and you will see an option to delete the contract.
+
+<Warning>
+### Important Notes
+
+- Deleting a contract archives it along with all associated token-types and minted tokens
+- Archived contracts and tokens will no longer appear in API responses or the Portal
+- Deletion is permanent—archived contracts cannot be searched or recovered
+- Archived items still exist on-chain but are no longer visible in Venly services
+</Warning>
+
+<Frame>
+  <img src="https://files.readme.io/9dd6b3b663774b7f9fabbf829d4c2876dfb2cb1abda822f8a32f93be4875a90a-image.png" alt="Delete NFT Contract" />
+</Frame>
+
+## Ping Webhooks Directly from Portal
+
+You can now ping webhooks directly from the Portal. You can now test webhooks without executing a transaction! This feature is available in the **Configuration** tab of both the NFT-API and Wallet-API pages.
+
+### How It Works
+
+<Steps>
+  <Step title="Configure Webhook">
+    Configure a webhook in the Configuration tab of NFT-API or Wallet-API
+  </Step>
+  
+  <Step title="Click Ping Button">
+    Click the Ping button next to the webhook
+  </Step>
+  
+  <Step title="Verify Setup">
+    A test message is sent to your webhook, verifying its setup
+  </Step>
+</Steps>
+
+### Sample Webhook Payload
+
+```json
+{
+  "eventType": "PING",
+  "result": {
+    "id": "1cb7b65f-7f7c-4e35-a3c5-dcf4c2db6d05",
+    "createdOn": "2025-02-25T11:40:38.220435822",
+    "status": "SUCCEEDED"
+  }
+}
+```
+
+<Frame>
+  <img src="https://files.readme.io/69b318a9e41684d9e990244ed58a49a7c926b559ec800cc001555d8f8c083dc0-image.png" alt="Ping Webhooks" />
+</Frame>
+
+## Benefits of the NFT-Insights
+
+<CardGroup cols={2}>
+  <Card title="Improved Visibility" icon="eye">
+    Gain full transparency into NFT assets across sandbox and production environments
+  </Card>
+  
+  <Card title="Efficient Search & Navigation" icon="magnifying-glass">
+    Easily locate contracts, token types, and tokens with intuitive search and filtering
+  </Card>
+  
+  <Card title="Enhanced Data Management" icon="database">
+    Access detailed NFT insights to optimize asset tracking and decision-making
+  </Card>
+  
+  <Card title="Streamlined Workflow" icon="workflow">
+    Simplified navigation and structured insights for a smoother operational experience
+  </Card>
+</CardGroup>
+
+We believe these enhancements will significantly improve your ability to manage NFTs. If you have questions or feedback, reach out to our support team—your insights help us continue to improve!
