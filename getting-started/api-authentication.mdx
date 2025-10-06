@@ -1,0 +1,289 @@
+---
+title: "API Authentication"
+description: "Learn how to authenticate with Venly's API services using OAuth 2.0"
+icon: "code"
+---
+
+# API Authentication
+
+In this section, we will discuss how to authenticate to our Venly API products which contain the **Wallet-API**, **NFT-API**, and **PAY-API**.
+
+<Info>
+Venly uses **OAuth 2.0 + JWT** authorization for its APIs.
+</Info>
+
+---
+
+## Authentication Flow Diagram
+
+<Frame caption="Authentication Flow">
+  <img
+    src="https://files.readme.io/8ef81ec-image.png"
+    alt="Authentication Flow Diagram"
+  />
+</Frame>
+
+---
+
+## Authentication Steps
+
+<Frame caption="Authenticating API Services">
+  <img
+    src="https://files.readme.io/350e70d7198d051a710b53ddf226125d2d1d570ab53778e83a8d74b1e6d7217c-image.png"
+    alt="API Authentication Steps"
+  />
+</Frame>
+
+To authenticate calls for API products, follow these steps:
+
+---
+
+### 1. Obtain Access Credentials
+
+Get your **Client ID** and **Client Secret** from the [authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) section of the [Developer Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+<Warning>
+**Two Types of Access Credentials:**
+
+- **Sandbox Credentials** - For the sandbox environment to test with testnets
+- **Production Credentials** - For the production environment for deploying on mainnet
+
+You can switch between the access credentials from the [authentication page](https://portal.venly.io/authentication) by hitting the **toggle button**.
+</Warning>
+
+<Frame caption="Access Credentials - Developer Portal">
+  <img
+    src="https://files.readme.io/d1b11d4-image.png"
+    alt="Developer Portal Access Credentials"
+  />
+</Frame>
+
+---
+
+### 2. Request Access Token
+
+Make a `POST` request to the authentication endpoint with your client credentials to get an `access_token` (bearer token).
+
+<Info>
+Use **sandbox credentials** with the sandbox endpoint and **production credentials** with the production endpoint.
+</Info>
+
+#### Sandbox Environment Endpoint
+
+Runs on testnet chains and is used for trying out or testing purposes:
+
+```http
+POST https://login-sandbox.venly.io/auth/realms/Arkane/protocol/openid-connect/token
+```
+
+#### Production Environment Endpoint
+
+Runs on mainnet chains and used for real API calls:
+
+```http
+POST https://login.venly.io/auth/realms/Arkane/protocol/openid-connect/token
+```
+
+#### Request Body
+
+<CodeGroup>
+```json JSON
+{
+    "grant_type": "client_credentials",
+    "client_id": "<your_client_id>",
+    "client_secret": "<your_client_secret>"
+}
+```
+
+```bash cURL (Sandbox)
+curl -X POST 'https://login-sandbox.venly.io/auth/realms/Arkane/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=YOUR_CLIENT_ID' \
+  -d 'client_secret=YOUR_CLIENT_SECRET'
+```
+
+```bash cURL (Production)
+curl -X POST 'https://login.venly.io/auth/realms/Arkane/protocol/openid-connect/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'grant_type=client_credentials' \
+  -d 'client_id=YOUR_CLIENT_ID' \
+  -d 'client_secret=YOUR_CLIENT_SECRET'
+```
+</CodeGroup>
+
+#### Request Parameters
+
+| Name | Type | Description |
+|:-----|:-----|:------------|
+| `grant_type` | string | This will always be `client_credentials` |
+| `client_id` | string | Client ID provided to you by [Developer Portal](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) |
+| `client_secret` | string | Client Secret provided to you by [Developer Portal](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) |
+
+#### Response Body
+
+```json
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmQi1UenBOb0hBVGhwT2J4aW9qTDBrdm83MldmRzRXRXh1eFpiaXlGQUhzIn0...",
+    "expires_in": 360,
+    "refresh_expires_in": 0,
+    "token_type": "Bearer",
+    "not-before-policy": 1572970662,
+    "scope": "view:wallet-analytics save:signature whitelabel sign:wallets view:archived-wallets save:transaction"
+}
+```
+
+---
+
+### 3. Use Access Token
+
+Include the `access_token` in the `Authorization` header of your API requests as a Bearer token.
+
+```http
+Authorization: Bearer <your_access_token>
+```
+
+**Example API Call:**
+
+<CodeGroup>
+```bash cURL
+curl -X GET 'https://api-wallet-sandbox.venly.io/api/wallets' \
+  -H 'Authorization: Bearer YOUR_ACCESS_TOKEN' \
+  -H 'Content-Type: application/json'
+```
+
+```javascript JavaScript
+const response = await fetch('https://api-wallet-sandbox.venly.io/api/wallets', {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+```python Python
+import requests
+
+headers = {
+    'Authorization': f'Bearer {access_token}',
+    'Content-Type': 'application/json'
+}
+
+response = requests.get('https://api-wallet-sandbox.venly.io/api/wallets', headers=headers)
+```
+</CodeGroup>
+
+---
+
+### 4. Refresh Token (When Needed)
+
+The access token is valid for **6 minutes**. After 6 minutes, you will need to request a new access token.
+
+<Info>
+The `refresh_token` is provided but is **deprecated** and should not be used to receive a new `access_token`. Use the same method to request a new access token instead.
+</Info>
+
+#### Token Expiration Check
+
+The expiration is in the token itself, so it would be better to read the expiry and only fetch a new token if it is expired.
+
+For example in JavaScript, this can be done with the help of [jwt-decode](https://www.npmjs.com/package/jwt-decode):
+
+```javascript
+import jwtDecode from 'jwt-decode';
+
+const isTokenExpired = (token) => {
+  if (!token) return true;
+  
+  try {
+    const decodedToken = jwtDecode(token);
+    const currentTime = Date.now() / 1000;
+    return decodedToken.exp < currentTime;
+  } catch (error) {
+    console.error('Error decoding token:', error);
+    return true;
+  }
+};
+
+// Usage
+if (isTokenExpired(accessToken)) {
+  // Request new access token
+  accessToken = await getNewAccessToken();
+}
+```
+
+---
+
+## Using the Bearer Token in API Calls
+
+In the result of the previous call, an `access_token` is returned. This `access_token` must be passed with every **API call** you do (as a Bearer token in the authorization header).
+
+To run API calls on our documentation tool, you can enter the `access_token` as shown below to authenticate calls:
+
+<Frame caption="Entering Bearer Token to Authenticate API Calls">
+  <img
+    src="https://files.readme.io/9d949d0-image.png"
+    alt="Bearer Token Authentication in API Documentation"
+  />
+</Frame>
+
+---
+
+## Video Guide
+
+<iframe
+  src="https://www.loom.com/embed/8c621db1c0004f00b924d322161eee2c?sid=61fd9746-40b9-427d-9e40-3f95105c68dc"
+  frameBorder="0"
+  allowFullScreen
+  style={{
+    width: '100%',
+    height: '400px'
+  }}
+/>
+
+---
+
+## API Security Best Practices
+
+Authentication is a critical aspect of securing access to resources. Following best practices and using secure authentication methods can protect your system and its data from unauthorized access.
+
+<CardGroup cols={2}>
+  <Card title="Store Credentials Securely" icon="lock">
+    Never hardcode credentials in your code. Use environment variables or secure secret management systems.
+  </Card>
+  
+  <Card title="Rotate Credentials Regularly" icon="arrows-rotate">
+    Regularly rotate your Client Secret to maintain security and reduce the risk of compromised credentials.
+  </Card>
+  
+  <Card title="Use HTTPS Only" icon="shield-check">
+    Always use HTTPS for API requests to ensure encrypted communication and prevent token interception.
+  </Card>
+  
+  <Card title="Implement Token Caching" icon="clock">
+    Cache access tokens and check expiration before requesting new ones to reduce unnecessary authentication calls.
+  </Card>
+</CardGroup>
+
+<Card title="API Security Best Practices" icon="shield-halved" href="https://docs.venly.io/docs/api-security-best-practices">
+  Learn more about the best practices for API security
+</Card>
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Wallet-API" icon="wallet" href="https://docs.venly.io/docs/wallet-api-overview">
+    Build wallet functionality and manage user accounts
+  </Card>
+  
+  <Card title="NFT-API" icon="image" href="https://docs.venly.io/docs/nft-api-overview">
+    Create, mint, and manage NFTs
+  </Card>
+  
+  <Card title="PAY-API" icon="credit-card" href="https://docs.venly.io/docs/pay-api-overview">
+    Integrate crypto and fiat payments
+  </Card>
+</CardGroup>

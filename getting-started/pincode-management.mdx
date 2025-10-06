@@ -1,0 +1,469 @@
+---
+title: "Pincode Management"
+description: "Learn how to securely manage PIN codes for wallet access and transactions"
+icon: "lock-keyhole"
+---
+
+# Pincode Management
+
+## PIN Code
+
+When using the Wallet-API to create a wallet, including a **PIN code** is mandatory. This PIN code is critical in enabling the user to carry out functions on their wallets.
+
+### PIN Code Uses
+
+<CardGroup cols={2}>
+  <Card title="Wallet Access" icon="door-open">
+    The PIN code grants your users **access to their wallets**
+  </Card>
+  
+  <Card title="Recovery Mechanism" icon="life-ring">
+    If a user forgets any of their signing methods (`emergency_code`, `biometrics`), the PIN code serves as a **recovery mechanism**
+  </Card>
+  
+  <Card title="Transaction Authorization" icon="signature">
+    The PIN code allows your users to **sign signature requests** and **authorize transactions**
+  </Card>
+  
+  <Card title="Share Encryption" icon="shield">
+    The PIN code plays a role in **encrypting** the **user-owned share**
+  </Card>
+</CardGroup>
+
+<Info>
+In addition to the PIN code, your users can also perform all the mentioned functions using other signing methods, such as the **emergency code** and **biometrics**.
+</Info>
+
+---
+
+## PIN Code Management
+
+The PIN code's significance lies in being the gateway for users to access and interact with their wallets, making its secure management imperative.
+
+Proper handling and safeguarding of the **PIN code** are essential to ensure the security and confidentiality of the user's wallet and assets.
+
+We will discuss some **recommendations** for **managing the PIN code** based on different use cases.
+
+---
+
+## Use Cases Involving User Interaction
+
+The initial three use cases will involve scenarios where user interaction is necessary to interact with the wallets.
+
+### 1. User Creates PIN Code
+
+<Tip>
+**When to use:** Major user interaction is needed
+</Tip>
+
+<Frame>
+  <img
+    src="https://files.readme.io/6e62320-image.png"
+    alt="User Creates PIN Code Flow"
+  />
+</Frame>
+
+#### Use Case Scenario
+
+In this scenario, the **PIN code** functionality is accessible to the user. Upon wallet creation, the **user** must input their PIN code, which is then utilized to generate their wallets.
+
+Once the user provides their **PIN code**, it is securely passed through the **Wallet-API** to create their wallets. This ensures the PIN code is not stored in plain text and remains confidential throughout the wallet creation procedure.
+
+Provide clear guidelines on creating a strong and unique PIN, which should be six digits long. Please encourage them to avoid easily guessable combinations like birthdates or repetitive sequences.
+
+#### Wallet Creation Flow
+
+<Steps>
+  <Step title="User Enters PIN">
+    The user enters their **PIN code** at the time of wallet creation
+  </Step>
+  
+  <Step title="Create Wallet">
+    You create a **wallet** with the user's PIN code
+  </Step>
+  
+  <Step title="Never Store PIN">
+    You never store the **PIN code**
+  </Step>
+</Steps>
+
+#### User Interaction with Wallet Flow
+
+<Steps>
+  <Step title="User Provides PIN">
+    The **user** needs to provide the **PIN code** whenever they want to interact with their wallet
+  </Step>
+  
+  <Step title="Use PIN for Endpoints">
+    You use the **PIN code** to call the necessary Venly endpoints
+  </Step>
+</Steps>
+
+---
+
+### 2. User Creates Another Secret: Password
+
+<Tip>
+**When to use:** Used for a good user experience
+</Tip>
+
+<Frame>
+  <img
+    src="https://files.readme.io/c4f5a34-image.png"
+    alt="Password-Based PIN Management"
+  />
+</Frame>
+
+#### Use Case Scenario
+
+When aiming to maintain a high level of security without exposing the PIN code functionality to the user, a viable solution is to employ **encryption** while utilizing a **user-known secret**, such as a **password**.
+
+To enhance user experience, a seamless approach involves allowing users to set a **password** during the signup process with your app. This way, the same **password** they use to access your app can be utilized as the **user-known secret** to **encrypt** and **decrypt** their PIN code.
+
+This implementation simplifies the **authentication process** for users, as they only need to remember **one password** to access your application and their wallets.
+
+<Warning>
+**Your Responsibilities:**
+- It will be **your responsibility** to validate and ensure the password's strength
+- Additionally, **you** will need to handle the encryption and decryption of the user's PIN code using their chosen password
+</Warning>
+
+It is essential to employ strong encryption algorithms and follow industry best practices for data protection. Utilizing hashing algorithms, salting techniques, and encryption standards helps ensure that both the **password** and the encrypted **PIN code** remain highly secure.
+
+#### Wallet Creation Flow
+
+<Steps>
+  <Step title="Generate Random PIN">
+    Your app generates a random **PIN code**
+  </Step>
+  
+  <Step title="Create Wallet">
+    You create the **wallet** with the generated PIN code
+  </Step>
+  
+  <Step title="Encrypt PIN">
+    You **encrypt** the generated PIN code with a user-known secret (a **password** they provide)
+  </Step>
+  
+  <Step title="Store Encrypted PIN">
+    You store the encrypted PIN code
+  </Step>
+</Steps>
+
+#### User Interaction with Wallet Flow
+
+<Steps>
+  <Step title="User Enters Password">
+    The user enters their user-known secret (**password**)
+  </Step>
+  
+  <Step title="Decrypt PIN">
+    You **decrypt** the stored encrypted **PIN code** with the provided user-secret (password)
+  </Step>
+  
+  <Step title="Call Endpoints">
+    Use the **decrypted PIN** code to call the necessary Venly endpoints
+  </Step>
+</Steps>
+
+---
+
+### 3. User Creates Another Secret: Biometric
+
+<Tip>
+**When to use:** Used for mobile devices
+</Tip>
+
+<Frame>
+  <img
+    src="https://files.readme.io/d586365-image.png"
+    alt="Biometric-Based PIN Management"
+  />
+</Frame>
+
+#### Use Case Scenario
+
+In the context of a mobile app, you can utilize the **biometric** capabilities inherent in the user's mobile phone to establish and safeguard wallets.
+
+By integrating **biometric** features such as fingerprint recognition or facial authentication, you can offer a secure and convenient method for users to create and access their wallets, enhancing the overall user experience.
+
+#### Wallet Creation Flow
+
+<Steps>
+  <Step title="Create Wallet">
+    Create a user's wallet with a random **PIN code**
+  </Step>
+  
+  <Step title="Request Biometric">
+    Request **biometric** authentication from the user
+  </Step>
+  
+  <Step title="Link Biometric">
+    Link the **biometric** to the wallet using the **biometric ID**
+  </Step>
+  
+  <Step title="Store Biometric ID">
+    Store the **biometric ID**
+  </Step>
+</Steps>
+
+#### User Interaction with Wallet Flow
+
+<Steps>
+  <Step title="Request Authentication">
+    Request **biometric** authentication from the user
+  </Step>
+  
+  <Step title="Use Biometric ID">
+    Use the **biometric ID** to call the necessary Venly endpoints
+  </Step>
+</Steps>
+
+---
+
+## Use Cases Involving Minimal or No User Interaction
+
+The following three use cases will involve scenarios where minimal or no user interaction is required to interact with the wallets.
+
+### 4. Create a Master PIN for All Wallets
+
+<Tip>
+**When to use:** When you want to interact with wallets without user interaction
+</Tip>
+
+<Frame>
+  <img
+    src="https://files.readme.io/397b34e-image.png"
+    alt="Master PIN Management"
+  />
+</Frame>
+
+#### Use Case Scenario
+
+Another viable option is to employ a **master PIN** for each wallet created on behalf of your users. Unlike the previous method, where users were involved in choosing their PIN codes, this approach eliminates their direct input.
+
+This enables you to **interact** with the wallets without **user involvement**. This approach grants you greater control over the wallets' functionality.
+
+#### Example Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Periodic Payments" icon="calendar-clock">
+    Implement automated transfers at defined intervals, facilitating seamless recurring transactions
+  </Card>
+  
+  <Card title="NFT Distribution" icon="image">
+    Distribute NFTs directly to your users' wallets without user involvement
+  </Card>
+</CardGroup>
+
+This method is suggested primarily for cases where direct interaction with wallets is necessary, and **user involvement is not required**.
+
+<Warning>
+**Security Consideration:**
+
+Employing a **master PIN** for each created wallet introduces potential security risks. Caution should be exercised when using this approach, and thorough security measures should be implemented to mitigate vulnerabilities.
+</Warning>
+
+#### Wallet Creation Flow
+
+<Steps>
+  <Step title="Create Master PIN">
+    You create a **master PIN**
+  </Step>
+  
+  <Step title="Use Master PIN">
+    You use the same master PIN to create **wallets**
+  </Step>
+</Steps>
+
+---
+
+### 5. Sending Emergency Code to User
+
+<Tip>
+**When to use:** When minimal user interaction is needed
+</Tip>
+
+<Frame>
+  <img
+    src="https://files.readme.io/53d3867-image.png"
+    alt="Emergency Code Flow"
+  />
+</Frame>
+
+#### Use Case Scenario
+
+Another viable alternative is implementing Venly's **emergency code** mechanism. Venly allows users to generate an emergency code through **manual input** or **automatic generation**.
+
+The emergency code needs to be **25 characters** long to ensure high entropy.
+
+This emergency code is a valuable tool to **reset** a forgotten PIN code or facilitate transaction signing when required.
+
+The **emergency code** can only be created with a known **PIN**, so it should be generated during wallet creation. Your users can rest assured that they have a reliable **backup option** to regain access to their wallet or execute transactions securely if required.
+
+#### Wallet Creation Flow
+
+<Steps>
+  <Step title="Generate Random PIN">
+    Your app generates a random **PIN code**
+  </Step>
+  
+  <Step title="Create Wallet">
+    You create the **wallet** with the generated PIN code
+  </Step>
+  
+  <Step title="Request Emergency Code">
+    You request the **emergency code** with the generated PIN code
+  </Step>
+  
+  <Step title="Send to User">
+    You send the **emergency code** to the user (e.g., via email)
+  </Step>
+  
+  <Step title="Forget PIN">
+    You forget / never store the PIN code
+  </Step>
+</Steps>
+
+#### User Interaction with Wallet Flow
+
+<Steps>
+  <Step title="Retrieve Code">
+    The user retrieves the **emergency code** from their email
+  </Step>
+  
+  <Step title="Enter Code">
+    The user enters the **emergency code** in your app
+  </Step>
+  
+  <Step title="Perform Functions">
+    Your user can perform a **PIN reset** with a user-chosen PIN or perform any **function** with the emergency code (perform transfer, sign transaction, etc.)
+  </Step>
+</Steps>
+
+---
+
+### 6. Throwaway PIN and Lock Wallet
+
+<Tip>
+**When to use:** When no interaction is needed at all
+</Tip>
+
+<Frame>
+  <img
+    src="https://files.readme.io/52ea6cf-image.png"
+    alt="Locked Wallet Flow"
+  />
+</Frame>
+
+#### Use Case Scenario
+
+Consider implementing a **random PIN code** system, where a unique PIN is generated during wallet creation but is promptly erased from the system afterward.
+
+This process guarantees that the **PIN code** remains entirely **confidential**, as neither the user nor you can access the PIN code at any stage.
+
+In this scenario, the wallet's transaction capability is restricted. Due to the secrecy of the PIN code (unknown to the user, you, or Venly), the wallet is effectively "**locked**," allowing assets to be added but not withdrawn or transferred out.
+
+Reading the content of the wallet remains possible.
+
+<Info>
+You can also save the PIN codes somewhere safe, if you want to access the wallets in the future.
+</Info>
+
+#### Example Scenario
+
+- The created wallets are used to drop permanent NFTs for loyal customers
+
+#### Wallet Creation Flow
+
+<Steps>
+  <Step title="Generate Random PIN">
+    Your app generates a **random PIN code**
+  </Step>
+  
+  <Step title="Create Wallet">
+    You create the **wallet** with the generated PIN code
+  </Step>
+  
+  <Step title="Forget PIN">
+    You forget/never store the PIN code
+  </Step>
+  
+  <Step title="Drop NFT">
+    The created wallet is used to drop an **NFT**
+  </Step>
+</Steps>
+
+---
+
+## PIN Code Management Summary
+
+<CardGroup cols={3}>
+  <Card title="User-Controlled" icon="user">
+    Use cases 1-3 where users control their PIN
+  </Card>
+  
+  <Card title="System-Managed" icon="server">
+    Use cases 4-6 where system manages PIN
+  </Card>
+  
+  <Card title="Security First" icon="shield">
+    Always prioritize security regardless of approach
+  </Card>
+</CardGroup>
+
+---
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="PIN Strength" icon="lock">
+    - Always use 6-digit PINs
+    - Avoid sequential numbers (123456)
+    - Avoid repeated numbers (111111)
+    - Avoid birthdates or easily guessable combinations
+  </Accordion>
+  
+  <Accordion title="Encryption Standards" icon="shield-halved">
+    - Use industry-standard encryption algorithms
+    - Implement proper key management
+    - Use salting and hashing where appropriate
+    - Follow NIST or equivalent security guidelines
+  </Accordion>
+  
+  <Accordion title="Storage Security" icon="database">
+    - Never store PINs in plain text
+    - Use secure key vaults
+    - Implement proper access controls
+    - Regular security audits
+  </Accordion>
+  
+  <Accordion title="User Education" icon="graduation-cap">
+    - Educate users on PIN security
+    - Provide clear guidelines for PIN creation
+    - Explain recovery options
+    - Communicate security best practices
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Learn More
+
+<CardGroup cols={2}>
+  <Card title="Private Key Management" icon="key" href="/getting-started/private-key-management">
+    Learn how private keys are managed
+  </Card>
+  
+  <Card title="Infrastructure Security" icon="shield" href="/getting-started/infrastructure">
+    Understand Venly's security architecture
+  </Card>
+  
+  <Card title="Wallet API Guide" icon="wallet" href="/guides/wallet-api/overview">
+    Explore Wallet API documentation
+  </Card>
+  
+  <Card title="Create a Wallet" icon="plus" href="/guides/wallet-api/create-a-wallet">
+    Learn how to create wallets
+  </Card>
+</CardGroup>
