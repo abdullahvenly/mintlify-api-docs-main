@@ -1,0 +1,42 @@
+---
+title: "getBalanceByAddress"
+slug: "getbalancebyaddress"
+excerpt: "Fetch the native balance of a wallet."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:43:31 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns  all the wallets for the specified user (bearer token)
+
+```javascript
+venlyConnect.api.getBalanceByAddress("MATIC", "0xA5dC4fb59eBCaf00100C00776b45c3E4b58c6B95");
+```
+
+### Signature:
+
+```javascript
+venlyConnect.api.getBalanceByAddress(secretType: SecretType, walletAddress: string): Promise<WalletBalance>
+```
+
+### Returns:
+
+```javascript
+Promise<WalletBalance>
+```
+
+### Parameters:
+
+| Parameter       | Required | Description                                                              |
+| --------------- | -------- | ------------------------------------------------------------------------ |
+| `secretType`    | `True`   | Parameter to indicate on which chain the token balance should be fetched |
+| `walletAddress` | `True`   | The address of the wallet to fetch balance for                           |
+
+### Example:
+
+```javascript
+venlyConnect.api.getBalanceByAddress("MATIC", "0xA5dC4fb59eBCaf00100C00776b45c3E4b58c6B95");
+```
+
+## Object Types
+
+> 📘 - [WalletBalance](https://venly.readme.io/docs/walletbalance)

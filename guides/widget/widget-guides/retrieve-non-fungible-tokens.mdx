@@ -1,0 +1,331 @@
+---
+title: "Retrieve non-fungible tokens"
+slug: "retrieve-non-fungible-tokens"
+excerpt: "How to retrieve non-fungible tokens for a wallet."
+hidden: false
+createdAt: "Mon Oct 16 2023 12:55:31 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:24:02 GMT+0000 (Coordinated Universal Time)"
+---
+# Introduction
+
+To fetch the non-fungible tokens for a certain wallet, you need to call the function [`getNonfungibles`](https://venly.readme.io/docs/getnonfungibles) , to get all non-fungibles in all the wallets that a user has connected to your application use [`getAllNonfungibles`](https://venly.readme.io/docs/getallnonfungibles).
+
+## By wallet ID
+
+### Function:
+
+```javascript
+venlyConnect.api.getNonfungibles(walletId: string);
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getNonfungibles("c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1").then((items) => {
+ console.log("Your items: ", items);
+})
+```
+
+### Returns:
+
+```javascript
+[
+  {
+    id: "4",
+    name: "Zap Village",
+    description: "Enter the Venly Zap Village!",
+    imageUrl: "https://cdn.simplehash.com/assets/bd615a8b9794af04d85d1e8b670efa1d8693c5db44fceb0c08635026d8391c50.png",
+    imagePreviewUrl: "https://lh3.googleusercontent.com/bmoIbpwC61Fzti43tCrO2I8ylJB67ly7JOwER5U8qxQBUyFfvJdesnQUwdSPULkwEp2uocvcU1XSJGHroy6q74M27WybaGRqx20",
+    imageThumbnailUrl: "https://lh3.googleusercontent.com/bmoIbpwC61Fzti43tCrO2I8ylJB67ly7JOwER5U8qxQBUyFfvJdesnQUwdSPULkwEp2uocvcU1XSJGHroy6q74M27WybaGRqx20=s250",
+    animationUrls: [],
+    fungible: false,
+    contract: {
+      name: "Venly NFT Collection",
+      description: "This is a Venly exclusive NFT collection.",
+      address: "0xb014ccd10375063e29e3ae75fe1c53a18ce97224",
+      symbol: "VENFCO",
+      media: [
+        {
+          type: "image",
+          value: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+        }
+      ],
+      type: "ERC1155",
+      verified: false,
+      premium: false,
+      categories: [],
+      url: "https://www.venly.io/",
+      imageUrl: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+    },
+    attributes: [
+      {
+        name: "Token Type ID",
+        value: "1"
+      }
+    ],
+    balance: 1,
+    finalBalance: 1,
+    transferFees: false
+  }
+]
+```
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/u618yq5r/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## By wallet Address
+
+### Function:
+
+```javascript
+venlyConnect.api.getNonfungiblesByAddress(secretType: SecretType, walletAddress: string);
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getNonfungiblesByAddress("MATIC","0x10BCdb57aEbE5b195B750CCd4F506783aF0B52Cf").then((items) => {
+ console.log("Your items: ", items);
+})
+```
+
+### Returns:
+
+```javascript
+[
+  {
+    id: "2",
+    name: "Zap Village",
+    description: "Enter the Venly Zap Village!",
+    imageUrl: "https://cdn.simplehash.com/assets/bd615a8b9794af04d85d1e8b670efa1d8693c5db44fceb0c08635026d8391c50.png",
+    imagePreviewUrl: "https://lh3.googleusercontent.com/bmoIbpwC61Fzti43tCrO2I8ylJB67ly7JOwER5U8qxQBUyFfvJdesnQUwdSPULkwEp2uocvcU1XSJGHroy6q74M27WybaGRqx20",
+    imageThumbnailUrl: "https://lh3.googleusercontent.com/bmoIbpwC61Fzti43tCrO2I8ylJB67ly7JOwER5U8qxQBUyFfvJdesnQUwdSPULkwEp2uocvcU1XSJGHroy6q74M27WybaGRqx20=s250",
+    animationUrls: [],
+    fungible: false,
+    contract: {
+      name: "Venly NFT Collection",
+      description: "This is a Venly exclusive NFT collection.",
+      address: "0xb014ccd10375063e29e3ae75fe1c53a18ce97224",
+      symbol: "VENFCO",
+      media: [
+        {
+          type: "image",
+          value: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+        }
+      ],
+      type: "ERC1155",
+      verified: false,
+      premium: false,
+      categories: [],
+      url: "https://www.venly.io/",
+      imageUrl: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+    },
+    attributes: [
+      {
+        name: "Token Type ID",
+        value: "1"
+      }
+    ],
+    balance: 1,
+    finalBalance: 1,
+    transferFees: false
+  }
+]
+```
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/u7kbxma1/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## All
+
+Call that returns all non-fungibles for the user for all wallets that are connected to your application—optional filter to filter based on secret type.
+
+### Function:
+
+```javascript
+venlyConnect.api.getAllNonfungibles(secretTypes?: SecretType[]);
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getAllNonfungibles().then((items) => {
+ console.log("Your items: ", items);
+})
+```
+
+### Returns:
+
+```javascript
+[
+  {
+    walletId: "9100ca80-0d16-4aff-a13b-bce795d4a219",
+    walletAddress: "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+    walletType: "WIDGET_WALLET",
+    secretType: "MATIC",
+    items: [
+      {
+        id: "39",
+        name: "Spaceship",
+        description: "Venly Spaceship NFT",
+        imageUrl: "https://cdn.simplehash.com/assets/9e3d722315ac623b5bdb03d83f9e6c6c90f6ec7610f91e00c83bf742f813d739.png",
+        imagePreviewUrl: "https://lh3.googleusercontent.com/xhkYxRC5vXBXzzLSKAcqRVM08lYjwnwWCiulNfVjZX1gx6ZKapbl5_ocHyPl3hSwhHE5X-oz8tld5olmAZ4cLO_VDaxl6268J0A",
+        imageThumbnailUrl: "https://lh3.googleusercontent.com/xhkYxRC5vXBXzzLSKAcqRVM08lYjwnwWCiulNfVjZX1gx6ZKapbl5_ocHyPl3hSwhHE5X-oz8tld5olmAZ4cLO_VDaxl6268J0A=s250",
+        animationUrls: [],
+        fungible: false,
+        contract: {
+          name: "Venly Test NFT Collection",
+          description: "This is a testnet NFT collection created for the guide: How to view your testnet NFTs on OpenSea Testnet.",
+          address: "0x51e6f78370f44c828a31727ed3a9fbefc47f4071",
+          symbol: "VETENFCO",
+          media: [
+            {
+              type: "image",
+              value: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+            }
+          ],
+          type: "ERC_1155",
+          verified: false,
+          premium: false,
+          isNsfw: false,
+          categories: [],
+          url: "https://www.venly.io/",
+          imageUrl: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+        },
+        attributes: [
+          {
+            type: "property",
+            name: "Token Type ID",
+            value: "34"
+          },
+          {
+            type: "property",
+            name: "Max Supply",
+            value: "100"
+          },
+          {
+            type: "property",
+            name: "Mint Number",
+            value: "5"
+          }
+        ],
+        balance: 1,
+        finalBalance: 1,
+        transferFees: false
+      },
+      {
+        id: "38",
+        name: "Spaceship",
+        description: "Venly Spaceship NFT",
+        imageUrl: "https://cdn.simplehash.com/assets/9e3d722315ac623b5bdb03d83f9e6c6c90f6ec7610f91e00c83bf742f813d739.png",
+        imagePreviewUrl: "https://lh3.googleusercontent.com/xhkYxRC5vXBXzzLSKAcqRVM08lYjwnwWCiulNfVjZX1gx6ZKapbl5_ocHyPl3hSwhHE5X-oz8tld5olmAZ4cLO_VDaxl6268J0A",
+        imageThumbnailUrl: "https://lh3.googleusercontent.com/xhkYxRC5vXBXzzLSKAcqRVM08lYjwnwWCiulNfVjZX1gx6ZKapbl5_ocHyPl3hSwhHE5X-oz8tld5olmAZ4cLO_VDaxl6268J0A=s250",
+        animationUrls: [],
+        fungible: false,
+        contract: {
+          name: "Venly Test NFT Collection",
+          description: "This is a testnet NFT collection created for the guide: How to view your testnet NFTs on OpenSea Testnet.",
+          address: "0x51e6f78370f44c828a31727ed3a9fbefc47f4071",
+          symbol: "VETENFCO",
+          media: [
+            {
+              type: "image",
+              value: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+            }
+          ],
+          type: "ERC_1155",
+          verified: false,
+          premium: false,
+          isNsfw: false,
+          categories: [],
+          url: "https://www.venly.io/",
+          imageUrl: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+        },
+        attributes: [
+          {
+            type: "property",
+            name: "Token Type ID",
+            value: "34"
+          },
+          {
+            type: "property",
+            name: "Max Supply",
+            value: "100"
+          },
+          {
+            type: "property",
+            name: "Mint Number",
+            value: "4"
+          }
+        ],
+        balance: 1,
+        finalBalance: 1,
+        transferFees: false
+      },
+      {
+        id: "37",
+        name: "Spaceship",
+        description: "Venly Spaceship NFT",
+        imageUrl: "https://cdn.simplehash.com/assets/9e3d722315ac623b5bdb03d83f9e6c6c90f6ec7610f91e00c83bf742f813d739.png",
+        imagePreviewUrl: "https://lh3.googleusercontent.com/xhkYxRC5vXBXzzLSKAcqRVM08lYjwnwWCiulNfVjZX1gx6ZKapbl5_ocHyPl3hSwhHE5X-oz8tld5olmAZ4cLO_VDaxl6268J0A",
+        imageThumbnailUrl: "https://lh3.googleusercontent.com/xhkYxRC5vXBXzzLSKAcqRVM08lYjwnwWCiulNfVjZX1gx6ZKapbl5_ocHyPl3hSwhHE5X-oz8tld5olmAZ4cLO_VDaxl6268J0A=s250",
+        animationUrls: [],
+        fungible: false,
+        contract: {
+          name: "Venly Test NFT Collection",
+          description: "This is a testnet NFT collection created for the guide: How to view your testnet NFTs on OpenSea Testnet.",
+          address: "0x51e6f78370f44c828a31727ed3a9fbefc47f4071",
+          symbol: "VETENFCO",
+          media: [
+            {
+              type: "image",
+              value: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+            }
+          ],
+          type: "ERC_1155",
+          verified: false,
+          premium: false,
+          isNsfw: false,
+          categories: [],
+          url: "https://www.venly.io/",
+          imageUrl: "https://lh3.googleusercontent.com/-sC688AxFU2jjeDgE5_bIVSypRJwti4BuGlxl0-51UKJLIWzhbICAJafB-AHbS_IEw60YFboqt6fD4iCpJZSJJ2g_Zuo97e14zM"
+        },
+        attributes: [
+          {
+            type: "property",
+            name: "Token Type ID",
+            value: "34"
+          },
+          {
+            type: "property",
+            name: "Max Supply",
+            value: "100"
+          },
+          {
+            type: "property",
+            name: "Mint Number",
+            value: "3"
+          }
+        ],
+        balance: 1,
+        finalBalance: 1,
+        transferFees: false
+      }
+    ]
+  }
+]
+```
+
+## Function Reference
+
+The function reference describes the different functions available in the Widget. It documents the signature, parameters, and possible options for each function.
+
+> 📘 - [getNonFungibles](https://venly.readme.io/docs/getnonfungibles)
+> - [getAllNonFungibles](https://venly.readme.io/docs/getallnonfungibles)

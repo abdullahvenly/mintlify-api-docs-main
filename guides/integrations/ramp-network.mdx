@@ -1,0 +1,52 @@
+---
+title: "Ramp Network"
+slug: "ramp-network"
+excerpt: "Create onramp and offramp URLs with the Ramp Network integration."
+hidden: false
+icon: "arrow-right-arrow-left"
+createdAt: "Wed Oct 30 2024 09:18:06 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Feb 12 2025 08:48:03 GMT+0000 (Coordinated Universal Time)"
+---
+## Ramp Network \<> Venly
+
+Ramp Network specializes in seamless fiat-to-crypto and crypto-to-fiat transactions and is tightly integrated into Venly’s platform. Businesses using Venly can create both on-ramp and off-ramp URLs through Ramp’s infrastructure, providing users with a complete entry and exit point for cryptocurrencies. 
+
+Ramp Network, known for its efficient fiat-to-crypto and crypto-to-fiat conversion solutions, is now deeply integrated into Venly's platform. This collaboration enables businesses leveraging Venly to easily offer their users seamless entry (on-ramp) and exit (off-ramp) points for cryptocurrency transactions. By combining Ramp Network’s robust infrastructure with Venly's developer-friendly API, businesses can create tailored financial workflows that cater to diverse customer needs.
+
+## How to Create Ramp Network On/Off Ramp URLs
+
+Venly provides a straightforward process for developers to create custom URLs using its API. These URLs direct users to Ramp Network’s interface, streamlining the purchase or sale of cryptocurrencies.
+
+### Guides
+
+- **On-Ramp URL Creation**: Learn how to [generate a Ramp Network on-ramp URL](https://docs.venly.io/docs/fiat-on-ramps#ramp-network-onramp) for crypto purchases.
+- **Off-Ramp URL Creation**: Learn how to [generate a Ramp Network off-ramp URL](https://docs.venly.io/docs/fiat-off-ramps#ramp-network-offramp) for selling crypto.
+
+### API Endpoints
+
+- [Create a Ramp Network OnRamp URL](https://docs.venly.io/reference/getrampnetworkfiatonrampurl)
+- [Create a Ramp Network OffRamp URL](https://docs.venly.io/reference/getrampnetworkfiatofframpurl)
+
+### Fetch Supported Fiat & Crypto Currencies
+
+Venly’s API ensures up-to-date information on the currencies supported by **Ramp Network**.  Access this data dynamically, guaranteeing compatibility with the latest fiat and crypto pairs.
+
+- Learn how to get the [supported fiat & crypto currencies for Ramp Network](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies)
+
+## How does it work?
+
+The user is directed to the generated onramp URL and follows these steps:  
+
+1. **Choose Purchase Details**: Specify the cryptocurrency, fiat currency, and desired amount (_unless provided in the URL_).  
+2. **Log In or Sign Up**: Log in to Ramp Network's widget or create an account if new.  
+3. **Select Payment Method**: Pick a suitable payment option.  
+4. **Complete KYC**: If required, complete Ramp Network’s KYC process.  
+5. **Confirm the Transaction**: Review the details and confirm the purchase.  
+
+> 👍 Once the transaction is confirmed, Ramp Network processes the payment and transfers cryptocurrency directly to the user’s wallet (for on-ramp) or fiat currency to the selected payout method (for off-ramp).
+
+## Generated URL Preview
+
+When creating a Ramp Network URL, the output reflects the transaction parameters specified during setup. Here’s an example:
+
+![](https://files.readme.io/19c88f6f9c27163c00e654f129f914e58c77fc944285af5181db190cb25ff0eb-image.png)

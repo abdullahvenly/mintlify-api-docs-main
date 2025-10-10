@@ -1,0 +1,65 @@
+---
+title: "executeTokenAssociation"
+slug: "executetokenassociation"
+excerpt: "Associate a token to a Hedera account."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:29:28 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:41:42 GMT+0000 (Coordinated Universal Time)"
+---
+This is not a dedicated function, but more a specific transaction type
+
+> 🚧 This transaction type is only available for Hedera accounts
+
+```
+venlyConnect.signer.executeNativeTransaction({
+    secretType: 'HEDERA',
+    type: 'HEDERA_TOKEN_ASSOCIATION',
+    walletId: 'd1e091d7-0fab-4f46-8afd-ad31f1e735d7',
+    tokenIds: ['0.0.2278508', '0.0.2278508', '0.0.2278508', '0.0.2278508']
+}
+```
+
+### Signature:
+
+```
+signer.executeNativeTransaction(hederaTokenAssociationRequest, options?): Promise<SignerResult>
+```
+
+### Returns:
+
+```
+Promise<SignerResult>
+```
+
+### Parameters:
+
+| Parameter                       | Required | Description                                                                                                                                                                                                 |
+| ------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `hederaTokenAssociationRequest` | `True`   | The hederaTokenAssociationRequest you want to execute. For more info on how this request should look like, see [HederaTokenAssociationRequest](https://venly.readme.io/docs/hederatokenassociationrequest). |
+| `options`                       | `False`  | Redirect options you want to pass. Only available when using a REDIRECT [`signer`](https://venly.readme.io/docs/signer)                                                                                     |
+
+### Example:
+
+```
+venlyConnect.signer.executeNativeTransaction({
+    secretType: 'HEDERA',
+    type: 'HEDERA_TOKEN_ASSOCIATION',
+    walletId: 'd1e091d7-0fab-4f46-8afd-ad31f1e735d7',
+    tokenIds: ['0.0.2278508', '0.0.2278508', '0.0.2278508', '0.0.2278508']
+}).then((signerResult) => {
+    if (signerResult.success) {
+        console.log(`The tokens have been successfuly associated`);
+    } else {
+        console.warn(`Something went wrong while associating the tokens`);
+    }
+}).catch((reason) => {
+    console.log(error);
+});
+```
+
+## Object Types
+
+> 📘 - [Signer](https://venly.readme.io/docs/signer)
+> - [HederaTokenAssociationRequest](https://venly.readme.io/docs/hederatokenassociationrequest)
+> - [RedirectOptions](https://venly.readme.io/docs/redirectoptions)
+> - [SignerResult](https://venly.readme.io/docs/signerresult)

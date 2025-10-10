@@ -1,0 +1,52 @@
+---
+title: "MoonPay"
+slug: "moonpay"
+excerpt: "Create onramp and offramp URLs with the MoonPay integration."
+hidden: false
+icon: "moon"
+createdAt: "Wed Oct 30 2024 09:17:17 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Feb 12 2025 08:47:40 GMT+0000 (Coordinated Universal Time)"
+---
+## Moonpay \<> Venly
+
+Venly’s integration with MoonPay brings a world of convenience and accessibility to businesses and users entering the cryptocurrency space. With MoonPay’s trusted payment solutions seamlessly embedded into Venly’s platform, users can effortlessly buy cryptocurrencies using popular payment methods like credit cards, Apple Pay, Google Pay, and bank transfers.
+
+Venly enhances the experience by allowing businesses to generate custom links tailored to their users’ needs, simplifying the process of buying or selling crypto with just a few clicks.
+
+## Creating an on/off ramp URL for Moonpay
+
+Venly makes it easy for businesses and developers to generate customized URLs for MoonPay’s on-ramp (buy crypto) and off-ramp (sell crypto) services. This URL can be customized to specify details such as the type of cryptocurrency, fiat currency, and amount, providing a smooth purchase/sell flow.
+
+### Guides
+
+- Learn how to [create a Moonpay **Onramp URL**](https://docs.venly.io/docs/fiat-on-ramps#moonpay-onramp)
+- Learn how to [create a Moonpay **Offramp URL**](https://docs.venly.io/docs/fiat-off-ramps#moonpay-offramp)
+
+### API Endpoints
+
+- [Create a Moonpay OnRamp URL](https://docs.venly.io/reference/getmoonpayfiatonrampurl)
+- [Create a Moonpay OffRamp URL](https://docs.venly.io/reference/getmoonpayfiatofframpurl)
+
+### Get Supported Fiat & Crypto Currencies for Moonpay
+
+Keep your platform up-to-date with the latest supported fiat and cryptocurrency options by dynamically fetching data from Venly’s API. This ensures compatibility with MoonPay’s constantly updated fiat and crypto currency list.
+
+- Learn how to get the [supported fiat & crypto currencies for Moonpay](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies)
+
+## How does it work?
+
+To purchase cryptocurrency, the user completes the following steps by visiting the generated onramp URL:  
+
+1. **Select Details**: Confirm the cryptocurrency, fiat currency, and purchase amount (_unless it is already defined in the URL_).  
+2. **Log In**: Login/Signup using multi-factor authentication (MFA).  
+3. **Choose Payment Method**: Select a preferred payment method.  
+4. **Complete KYC**: If new to MoonPay, complete the KYC process.  
+5. **Confirm Purchase**: Review and confirm the transaction.  
+
+> 👍 Once the transaction is complete, Moonpay sends the cryptocurrency to the user’s wallet for purchases (on-ramp) or transfers the money to their chosen payout method for sales (off-ramp).
+
+## Generated URL Preview
+
+Generated URLs can be customized to include transaction-specific details. Here’s an example:
+
+![](https://files.readme.io/636af2a7a121f960225ba71d7a37faf9cbc6de0b761cf3c2bba97b02ea11dfb6-image.png)

@@ -1,0 +1,32 @@
+---
+title: "Configuration"
+slug: "configuration"
+excerpt: "Configuring and customising the widget"
+hidden: false
+createdAt: "Fri May 17 2024 13:46:56 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Mar 05 2025 12:27:20 GMT+0000 (Coordinated Universal Time)"
+---
+The Widget is a front-end  JavaScript component allowing projects to interact with the consumers' blockchain wallets. To properly configure the widget, the projects require you to configure three elements.  The widget configuration is done via the [Developer Portal](https://portal.venly.io/wallet-widget/details/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal).
+
+> 🚧 Configuration between Sandbox and Production is kept separate, allowing you to configure your test environment differently from your production environment. To toggle in the upper right corner can be used to switch between the two environments.
+
+![Toggle between environments](https://files.readme.io/b986733-image.png)
+
+### Valid Redirect URLs
+
+Each project receives its Client ID to authenticate. To prevent the Client ID from being used outside of the project, it is required to define the URLs with which to initialize the widget in combination with a project's Client ID.
+
+> ❗️ Any URL that tries to access the Widget with your Client ID will be blocked unless it is defined in the Allow list.
+
+We also allow you to define a Logout redirect URL, which is the URL we will direct a project consumer to after logging out of the Widget. 
+
+> 📘 Make sure to always defined a log out redirect URL as well as minimum one initialisation URL.
+
+![Example Widget Configuration](https://files.readme.io/8f57079-image.png)
+
+
+### Customize the widget
+
+You can customize the widget screen by uploading your project's logo and defining a description. The logo will be displayed to your user each time there is an interaction between Venly and the user.
+
+![Adding a custom logo and description](https://files.readme.io/67f429e-Sarari_-_Dark.png)

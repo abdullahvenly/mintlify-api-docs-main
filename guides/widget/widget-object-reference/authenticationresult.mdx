@@ -1,0 +1,51 @@
+---
+title: "AuthenticationResult"
+slug: "authenticationresult"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 09:56:47 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+You can supply two callback functions to the `AuthenticationResult` `authenticated` and `notAuthenticated`, each will be passed the [`KeycloakInstance`](https://venly.readme.io/docs/keycloakinstance).
+
+### Signature:
+
+```javascript
+{
+    auth: KeycloakInstance,
+    isAuthenticated: boolean,
+    authenticated: (onAuthenticated: (auth: KeycloakInstance) => void) => AuthenticationResult;
+    notAuthenticated: (onNotAuthenticated: (auth: KeycloakInstance) => void) => AuthenticationResult;
+}
+```
+
+### Parameters:
+
+| Parameter          | **Required** | Description                                                                               |
+| ------------------ | ------------ | ----------------------------------------------------------------------------------------- |
+| `authenticated`    | `True`       | a callback function to be executed when the user is authenticated after the call.         |
+| `notAuthenticated` | `True`       | a callback function to be executed when the user is **not** authenticated after the call. |
+
+### Example:
+
+```javascript
+// Check if a user is authenticated.
+venlyConnect.checkAuthenticated()
+            .then((result) => result.authenticated((auth) => {
+                                        console.log('The user is authenticated: ' + auth.subject);
+                                     })
+                                     .notAuthenticated((auth) => {
+                                        console.log('The user is not authenticated');
+                                     })
+             );
+
+// Check if a user is authenticated. If not, show the login form
+venlyConnect.authenticate()
+            .then((result) => result.authenticated((auth) => {
+                                       console.log('The user is authenticated: '  + auth.subject);
+                                    })
+                                    .notAuthenticated((auth) => {
+                                       console.log('The user is not authenticated');
+                                    })
+            );
+```

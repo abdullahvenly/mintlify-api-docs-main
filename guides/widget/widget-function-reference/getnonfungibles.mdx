@@ -1,0 +1,41 @@
+---
+title: "getNonfungibles"
+slug: "getnonfungibles"
+excerpt: "Fetch non-fungible items by wallet ID."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:44:13 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns the non-fungible (ERC721, ERC1155) items for a given wallet
+
+```javascript
+venlyConnect.api.getNonfungibles("d91b644a-076f-44bf-ae90-29251df19784");
+```
+
+### Signature:
+
+```javascript
+getNonfungibles = (walletId: string): Promise<NFT[]>
+```
+
+### Returns:
+
+```javascript
+Promise<NFT[]>
+```
+
+### Parameters:
+
+| Parameter  | Required | Description                                              |
+| ---------- | -------- | -------------------------------------------------------- |
+| `walletId` | `True`   | Wallet ID of the wallet you want to fetch the balance of |
+
+### Example:
+
+```javascript
+venlyConnect.api.getNonfungibles("d91b644a-076f-44bf-ae90-29251df19784");
+```
+
+## Object Types
+
+> 📘 - [NFT](https://venly.readme.io/docs/nft)

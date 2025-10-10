@@ -1,0 +1,60 @@
+---
+title: "Retrieve token balance"
+slug: "retrieve-token-balance"
+excerpt: "How to retrieve the balance of a token for a wallet"
+hidden: false
+createdAt: "Mon Oct 16 2023 12:56:55 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:09:05 GMT+0000 (Coordinated Universal Time)"
+---
+# Introduction
+
+To fetch the balance of a certain token for a wallet, you need to call the function [`getTokenBalance`](https://venly.readme.io/docs/gettokenbalance) which will return a promise containing a [`TokenBalance`](https://venly.readme.io/docs/tokenbalance) object. If you need the entire balance a certain wallet holds, it is recommended to use the [`getTokenBalances`](https://venly.readme.io/docs/gettokenbalances) function. 
+
+### Function:
+
+```javascript
+venlyConnect.api.getTokenBalance("<WALLET_ID>", "<TOKEN_ADDRESS>");
+venlyConnect.api.getTokenBalanceByAddress("<SECRET_TYPE", "<WALLET_ADDRESS>", "<TOKEN_ADDRESS>");
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getTokenBalance("c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1","0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0").then((tokenBalance) => {
+ console.log("The balance of",tokenBalance.symbol,"is",tokenBalance.balance);
+})
+```
+
+### Returns:
+
+```javascript
+{
+  tokenAddress: "0xab7950c514d156ea506090da62ffa1f6915efd6a",
+  rawBalance: "50000000000000000000",
+  balance: 50,
+  decimals: 18,
+  symbol: "IFT",
+  logo: "https://logos.covalenthq.com/tokens/43113/0xab7950c514d156ea506090da62ffa1f6915efd6a.png",
+  type: "ERC20",
+  transferable: true,
+  name: "Infinity Test Token",
+  exchange: {
+    usdBalanceValue: 0
+  }
+}
+```
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/yakbjvfx/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [getTokenBalance](https://venly.readme.io/docs/gettokenbalance)
+> - [getTokenBalanceByAddress](https://venly.readme.io/docs/gettokenbalancebyaddress)
+> - [getTokenBalances](https://venly.readme.io/docs/gettokenbalances)
+> - [getTokenBalancesByAddress](https://venly.readme.io/docs/gettokenbalancesbyaddress)

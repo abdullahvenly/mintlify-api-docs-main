@@ -1,0 +1,71 @@
+---
+title: "executeGasTransfer"
+slug: "executegastransfer"
+excerpt: "Transfer gas from one destination to another."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:25:05 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:34:04 GMT+0000 (Coordinated Universal Time)"
+---
+This function transfers gas (ex. ETH / VTHO / GAS / …​ ) from one address to another. The destination can be any blockchain address, a wallet, or a smart contract, it can even be an email address.
+
+> 📘 🧙 In case the chain doesn't have a distinct gas token the native token will be used in the transfer.
+
+```javascript
+venlyConnect.signer.executeGasTransfer({
+    walletId: '6683c01d-2e10-4982-9b3a-c6ecd45896bb',
+    to: 'AN2VD52SLntUGFwzZyjzsRqBBkUzjKpKpT',
+    value: 18,
+    secretType: 'NEO',
+})
+```
+
+> 📘 🧙 You don’t have to take into account the number of decimals for different tokens, Venly handles that for you.
+> 
+> **Example:** If a token has 18 decimals and you want to transfer 1 token, provide the value 1. Venly will translate this to the correct non-decimal value (1 \* 10e18).
+
+### Signature:
+
+```javascript
+signer.executeGasTransfer(gasTransferRequestDto, options?): Promise<SignerResult>
+```
+
+### Returns:
+
+```javascript
+Promise<SignerResult>
+```
+
+### Parameters:
+
+| Parameter                                                                     | Required | Description                                                                                                                                                                       |
+| ----------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`gasTransferRequestDto`](https://venly.readme.io/docs/gastransferrequestdto) | `True`   | The transfer request you want to execute. For more info on how this request should look like, see [`gasTransferRequestDto`](https://venly.readme.io/docs/gastransferrequestdto) . |
+| [`options`](https://venly.readme.io/docs/redirectoptions)                     | `False`  | Redirect options you want to pass. Only available when using a REDIRECT [`signer`](https://venly.readme.io/docs/signer)                                                           |
+
+### Example:
+
+```javascript
+venlyConnect.signer.executeGasTransfer({
+    walletId: '6683c01d-2e10-4982-9b3a-c6ecd45896bb',
+    to: 'AN2VD52SLntUGFwzZyjzsRqBBkUzjKpKpT',
+    value: 18,
+    secretType: 'NEO',
+}).then((signerResult) => {
+   if (signerResult.success) {
+       console.log(`Transaction ${signerResult.result.transactionHash} has been successfully executed!`);
+   } else {
+       console.warn(`Something went wrong while executing the transaction`);
+   }
+}).catch((reason) => {
+    console.log(error);
+});
+```
+
+> 📘 🧙 Using the `network` parameter, the node to which the transaction is sent can be set manually.  It allows you to submit a transaction to any mainnet or testnet node of your choosing, public or private. ( Ethereum only)
+
+## Object Types
+
+> 📘 - [Signer](https://venly.readme.io/docs/signer)
+> - [GasTransferRequestDto](https://venly.readme.io/docs/gastransferrequestdto)
+> - [RedirectOptions](https://venly.readme.io/docs/redirectoptions)
+> - [SignerResult](https://venly.readme.io/docs/signerresult)

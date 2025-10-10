@@ -1,0 +1,51 @@
+---
+title: "importWallet"
+slug: "importwallet-1"
+excerpt: "Imports a wallet from one chain into another"
+hidden: false
+createdAt: "Mon Oct 16 2023 17:11:26 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:43:32 GMT+0000 (Coordinated Universal Time)"
+---
+This function imports a wallet from one chain (e.g. BSC, MATIC or ETHEREUM) into another
+
+```
+venlyConnect.signer.importWallet({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: 'MATIC',
+})
+```
+
+### Signature:
+
+```javascript
+signer.importWallet(request: ImportWalletRequest): Promise<SignerResult>
+```
+
+### Returns:
+
+```javascript
+Promise<SignerResult>
+```
+
+### Parameters:
+
+| Parameter             | Required | Description                                                                                                          |
+| --------------------- | -------- | -------------------------------------------------------------------------------------------------------------------- |
+| `importWalletRequest` | True     | The import request you want to execute. For more info on how this request should look like, see importWalletRequest. |
+
+### Example:
+
+```javascript
+venlyConnect.signer.importWallet({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: 'MATIC',
+}).then((signerResult) => {
+    if (signerResult.success) {
+        console.log(`Wallet 71dec640-4eb8-4321-adb8-b79461573fc4 has successfully been imported into ${signerResult.result.chain} and has id ${signerResult.result.id}`);
+    } else {
+        console.warn(`Something went wrong while importing the wallet`);
+    }
+}).catch((reason) => {
+    console.log(error);
+});
+```

@@ -1,0 +1,41 @@
+---
+title: "getBalance"
+slug: "getbalance"
+excerpt: "Fetch the native balance of a wallet."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:41:32 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns  all the wallets for the specified user (bearer token)
+
+```javascript
+venlyConnect.api.getBalance("d91b644a-076f-44bf-ae90-29251df19784");
+```
+
+### Signature:
+
+```javascript
+venlyConnect.api.getBalance(walletId: string): Promise<WalletBalance>
+```
+
+### Returns:
+
+```javascript
+Promise<WalletBalance>
+```
+
+### Parameters:
+
+| Parameter                                                    | Required | Description                                              |
+| ------------------------------------------------------------ | -------- | -------------------------------------------------------- |
+| [`walletId`](https://venly.readme.io/docs/wallet#parameters) | `True`   | Wallet ID of the wallet you want to fetch the balance of |
+
+### Example:
+
+```javascript
+venlyConnect.api.getBalance("d91b644a-076f-44bf-ae90-29251df19784");
+```
+
+## Object Types
+
+> 📘 - [WalletBalance](https://venly.readme.io/docs/walletbalance)

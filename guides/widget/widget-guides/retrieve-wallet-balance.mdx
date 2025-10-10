@@ -1,0 +1,56 @@
+---
+title: "Retrieve wallet balance"
+slug: "retrieve-wallet-balance"
+excerpt: "How to retrieve the native balance of a wallet"
+hidden: false
+createdAt: "Mon Oct 16 2023 13:00:34 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:00:07 GMT+0000 (Coordinated Universal Time)"
+---
+# Intro
+
+To fetch the balance of a wallet of a certain user you need to call the function [`getBalance`](https://venly.readme.io/docs/getbalance), which will return a promise containing a [`WalletBalance`](https://venly.readme.io/docs/walletbalance) object.
+
+> 📘 🧙 If you only want to retrieve the balance of a user's wallet then `getBalance` is the perfect function, but if you also need to fetch his wallets or get some profile information, and maybe even need to authenticate the user, then it is recommended to [retrieve the user account](https://venly.readme.io/docs/retrieve-a-user-account).
+
+### Function:
+
+```javascript
+venlyConnect.api.getBalance("<WALLET_ID>");
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getBalance("d91b644a-076f-44bf-ae90-29251df19784").then((balance) => {
+ console.log("The balance is",balance.balance);
+})
+```
+
+### Returns:
+
+```javascript
+{
+  available: true,
+  secretType: "MATIC",
+  balance: 0.06533725908157759,
+  gasBalance: 0.06533725908157759,
+  symbol: "POL",
+  gasSymbol: "POL",
+  rawBalance: "65337259081577592",
+  rawGasBalance: "65337259081577592",
+  decimals: 18
+}
+```
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/1pn8ehsj/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [getBalance](https://venly.readme.io/docs/getbalance)
+> - [getBalanceByAddress](https://venly.readme.io/docs/getbalancebyaddress)

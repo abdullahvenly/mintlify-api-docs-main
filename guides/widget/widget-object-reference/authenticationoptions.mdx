@@ -1,0 +1,29 @@
+---
+title: "AuthenticationOptions"
+slug: "authenticationoptions"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 09:50:38 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+  redirectUri?: string,
+  windowMode: WindowMode,
+  useOverlayWithPopup?: boolean,
+  closePopup?: boolean,
+  idpHint?: string
+}
+```
+
+### Parameters:
+
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `redirectUri` | The URI you want the user to be redirected after checking authentication. Only used when [`windowMode`](https://venly.readme.io/docs/initializing-options) `= REDIRECT.` Not required, default is the current URI | `'https://foo.io'` |
+| `windowMode` | Show login form in POPUP, or login using redirect. Default is [`windowMode`](https://venly.readme.io/docs/initializing-options) passed in [`ConstructorOptions`](https://venly.readme.io/docs/constructoroptions). | `'REDIRECT'` |
+| `useOverlayWithPopup` | When using a popup, show an overlay on the parent screen. Default is [`useOverlayWithPopup`](https://venly.readme.io/docs/initializing-options) passed in [`ConstructOptions`](https://venly.readme.io/docs/constructoroptions). | `false` |
+| `idpHint` | When passed, the initial login screen where a user can choose between social logins and regular signings is skipped and goes directly to the given identity provider | `google`, `facebook`, `twitter`, `apple`, `password`, `register` (_this immediatly triggers the registration flow for new users_) |
+| `emailHint` | When choosing `idpHint` = `password`, an `emailHint` can be provided. This will prefill the email address in the login screen. | **Example**: `emailHint`: `test@test.com` |

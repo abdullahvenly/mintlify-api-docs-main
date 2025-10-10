@@ -1,0 +1,34 @@
+---
+title: "ImportWalletRequest"
+slug: "importwalletrequest"
+excerpt: "Data structure for performing an import wallet."
+hidden: false
+createdAt: "Tue Oct 17 2023 10:16:22 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+  walletId! : string;
+  to! : SecretType;
+}
+```
+
+> 🚧 Currently to only supports ETHEREUM, MATIC and BSC
+
+### Parameters:
+
+| Parameter  | Required | Type       | Description                                             |
+| ---------- | -------- | ---------- | ------------------------------------------------------- |
+| `walletId` | True     | String     | ID of the wallet one wants to import into another chain |
+| `to`       | True     | SecretType | The chain you want to import the wallet into            |
+
+### Example:
+
+```json
+{
+  "walletsId" : "cdc4c08a-b8fa-4e4c-z5a2-92c87b80f174",
+  "to" : "MATIC"
+}
+```

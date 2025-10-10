@@ -1,0 +1,40 @@
+---
+title: "Ethers.js"
+slug: "ethersjs"
+excerpt: "Overview, installation, and initialization settings for ethers.js"
+hidden: false
+createdAt: "Mon May 15 2023 14:37:54 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 31 2024 11:46:20 GMT+0000 (Coordinated Universal Time)"
+---
+## Overview
+
+The **ethers.js** library strives to serve as a comprehensive and concise tool for engaging with the Ethereum Blockchain and its broader ecosystem.
+
+Safeguard your private keys within your client securely. Import and export JSON wallets, supporting Geth, Parity, and crowdsale formats. Manage BIP 39 mnemonic phrases (12-word backup phrases) and HD Wallets effortlessly. Utilize meta-classes to generate JavaScript objects from any contract ABI. Access an extensive set of meticulously maintained test cases. The library is fully TypeScript ready, equipped with definition files and complete TypeScript source code.
+
+> 📘 Ethers.js native [documentation](https://docs.ethers.org/v5/)
+
+### Installation:
+
+```javascript
+npm install ethers @venly/web3-provider
+```
+
+### Initialization:
+
+```javascript
+import { ethers } from 'ethers';
+import { VenlyProvider } from '@venly/web3-provider';
+
+const Venly = new VenlyProvider();
+const options: VenlyProviderOptions = {
+  clientId: 'YOUR_CLIENT_ID'
+};
+
+const provider = await Venly.createProvider(options);
+const ethers = new ethers.providers.Web3Provider(provider);
+```
+
+### JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/nipee/7td0kLeu/embedded/" width="100%" height="400" frameborder="0"></iframe>

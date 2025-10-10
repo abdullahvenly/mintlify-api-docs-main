@@ -1,0 +1,53 @@
+---
+title: "Transak"
+slug: "transak"
+excerpt: "Create onramp and offramp URLs with the Transak integration."
+hidden: false
+icon: "credit-card"
+createdAt: "Wed Oct 30 2024 09:17:41 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Feb 12 2025 08:47:50 GMT+0000 (Coordinated Universal Time)"
+---
+## Transak \<> Venly
+
+Businesses can integrate Transak’s features into their applications via Venly’s API, enabling seamless cryptocurrency purchases and selling crypto for fiat.
+
+Whether you're a business aiming to onboard customers to cryptocurrency or a developer building financial applications, this integration makes it simple to offer robust crypto entry and exit points.
+
+With this integration, Venly users can generate customizable on-ramp and off-ramp URLs tailored to their end-users needs, providing end users with a convenient way to access cryptocurrencies using credit cards, bank transfers, and regional payment options. End users can also sell their crypto for fiat using the off-ramp URLs.
+
+## Creating an on/off ramp URL for Transak
+
+Venly provides API endpoints to generate Transak on-ramp and off-ramp URLs. These generated URLs take your user to Transak's checkout page, streamlining the purchase or sale of cryptocurrencies.
+
+### Guides
+
+- **On-Ramp URL Creation**: Learn how to [create a Transak on-ramp URL](https://docs.venly.io/docs/fiat-on-ramps#transak-onramp) for buying cryptocurrency.
+- **Off-Ramp URL Creation**: Learn how to [create a Transak off-ramp URL](https://docs.venly.io/docs/fiat-off-ramps#transak-offramp) for selling cryptocurrency to fiat.
+
+### API Endpoints
+
+- [Create a Transak OnRamp URL](https://docs.venly.io/reference/gettransakfiatonrampurl)
+- [Create a Transak OffRamp URL](https://docs.venly.io/reference/gettransakfiatofframpurl)
+
+### Get Supported Fiat & Crypto Currencies for Transak
+
+Stay updated with the latest supported currencies for Transak by dynamically fetching data through Venly’s API. This ensures you always have accurate and up-to-date fiat and cryptocurrency options for your users.
+
+- Learn how to get the [supported fiat & crypto currencies for Transak](https://docs.venly.io/docs/on-ramp-off-ramp-supported-fiat-crypto-currencies)
+
+## How does it work?
+
+The user is directed to the generated onramp URL which is the "Buy Crypto" page and follows these steps:  
+
+1. **Placing an Order**: The user selects their desired cryptocurrency, specifies their preferred fiat currency, and chooses a payment method (_unless provided in the URL_).  
+2. **KYC Process**: First-time buyers with Transak complete their KYC verification process.  
+3. **Fiat Payment**: Transak processes the user's fiat payment.  
+4. **Crypto Delivery**: Transak converts the fiat to crypto and transfers it to the user's wallet.  
+
+> 👍 Once the transaction is confirmed, Transak finalizes the payment and transfers cryptocurrency to the user’s wallet for on-ramp transactions or fiat currency to their chosen payout method for off-ramp transactions.
+
+## Generated URL Preview
+
+The URLs you generate with Venly’s API can reflect custom transaction details, like currency pairs and payment amounts. For example:
+
+![](https://files.readme.io/085fd51bcbb390faf573dae3725668a12f68665a3fe736c0ad00c5e30b1fcd2b-image.png)

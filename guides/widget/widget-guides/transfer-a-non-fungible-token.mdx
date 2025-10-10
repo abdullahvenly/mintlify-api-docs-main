@@ -1,0 +1,88 @@
+---
+title: "Transfer an NFT"
+slug: "transfer-a-non-fungible-token"
+excerpt: "How to perform a non-fungible transfer. E.g transfer an ERC721 or ERC1155 token from one wallet to another."
+hidden: false
+createdAt: "Mon Oct 16 2023 13:15:53 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:40:46 GMT+0000 (Coordinated Universal Time)"
+---
+# Intro
+
+It is not possible to transfer value from a wallet without the approval of the user. Therefore to be able to transfer a token, we will need to do two things: i) create the transfer and ii) ask the user for his approval.
+
+The object that can ask the user for his approval is called a [`Signer`](https://venly.readme.io/docs/signer), once we've created a `Signer` object we can use the `Signer` to perform the token transfer.
+
+> 🚧 To perform actions on a wallet , such as transactions or signatures,** the wallet has to be linked to your application**.  The easiest way to link a wallet to your application in to use **[getAccount](https://docs.venly.io/docs/widget-user-authentication#get-user-account)** flow.  The benefits of using the getAccount flow is that this flow bundles multiple actions into one call.
+
+### Function:
+
+```javascript
+//Asking the signer to transfer a certain value to a certain destination.
+venlyConnect.signer.executeNftTransfer({
+    walletId: '<WALLET_ID>',
+    to: '<BLOCKCHAIN ADDRESS>',
+    tokenAddress: '<TOKEN_BLOCKCHAIN ADDRESS>',
+    tokenId: '<TOKEN_ID>',
+    secretType: '<BLOCKCHAIN>',
+})
+```
+
+### Example:
+
+#### Address
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+
+//Asking the signer to transfer NFT token to a blockchain address.
+venlyConnect.signer.executeNftTransfer({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: '0xf147cA0b981C0CD0955D1323DB9980F4B43e9FED',
+    tokenAddress: '0x158b6a3540eeced8ecb40f9389e88f0902a3da9f'
+    tokenId: '65'
+    secretType: 'ETHEREUM',
+
+})
+```
+
+#### Email
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+
+//Asking the signer to transfer NFT tokens to an email address
+venlyConnect.signer.executeNftTransfer({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: 'john.smith@gmail.com',
+    tokenAddress: '0x158b6a3540eeced8ecb40f9389e88f0902a3da9f'
+    tokenId: '65'
+    secretType: 'ETHEREUM',
+
+})
+```
+
+> 📘 The destination of a token transfer is not limited to a blockchain address, we also support **email addresses** and [Unstoppable domains](https://unstoppabledomains.com/).
+
+### Returns:
+
+```javascript
+{
+  status: "SUCCESS",
+  result: {
+    id: "046b6c74-e681-4398-a932-546c8c25034d",
+    transactionHash: "0x7889109ae7a929a968f1d86a6efe396129d1f72a6df574a051516ef247e8a616"
+  }
+}
+```
+
+## JS Fiddle Example
+
+<iframe width="100%" height="600" src="https://jsfiddle.net/abdullah066/nhy4dgmc/embedded/" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [createSigner](https://venly.readme.io/docs/createsigner)
+> - [executeNftTransfer](https://venly.readme.io/docs/executenfttransfer)

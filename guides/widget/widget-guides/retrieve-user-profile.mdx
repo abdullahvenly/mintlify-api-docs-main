@@ -1,0 +1,53 @@
+---
+title: "Retrieve user profile"
+slug: "retrieve-user-profile"
+excerpt: "How to retrieve a user's profile."
+hidden: false
+createdAt: "Mon Oct 16 2023 12:58:06 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 01:55:18 GMT+0000 (Coordinated Universal Time)"
+---
+# Introduction
+
+To get the profile of a user you need to call the function [`getProfile`](https://venly.readme.io/docs/getprofile), which will return a promise including the user's information.
+
+> 📘 🧙 If you only want to retrieve a user's profile`getProfile` is a perfect function, but if you also need to retrieve his wallets and even authenticate the user, then it is recommended to [retrieve the user account](https://venly.readme.io/docs/retrieve-a-user-account).
+
+### Function:
+
+```javascript
+venlyConnect.api.getProfile()
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getProfile().then((profile) => {
+   console.log(`Users email, ${profile.email}, has been successfully executed!`);
+});
+```
+
+### Returns:
+
+```javascript
+{
+  userId: "4c56c8c3-faba-4475-9334-ff11f0280aed",
+  username: "abdullah.baig@venly.io",
+  email: "abdullah.baig@venly.io",
+  firstName: "Abdullah",
+  lastName: "Baig",
+  nickname: "FulfilledBear",
+  hasCustodialWallets: false
+}
+```
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/buz9raev/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function, you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [getprofile](https://venly.readme.io/docs/getprofile)

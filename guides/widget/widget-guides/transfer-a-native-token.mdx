@@ -1,0 +1,83 @@
+---
+title: "Transfer a native token"
+slug: "transfer-a-native-token"
+excerpt: "How to perform a basic transfer. E.g transfer ETH from one wallet to another."
+hidden: false
+createdAt: "Mon Oct 16 2023 13:12:36 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:36:16 GMT+0000 (Coordinated Universal Time)"
+---
+# Intro
+
+It is not possible to transfer value from a wallet without the approval of the user. Therefore to be able to transfer a token, we will need to do two things: i) create the transfer and ii) ask the user for his approval.
+
+The object that can ask the user for his approval is called a [`Signer`](https://venly.readme.io/docs/signer), once we've created a `Signer` object we can use the `Signer` to perform a transaction.
+
+> 🚧 To perform actions on a wallet , such as transactions or signatures,** the wallet has to be linked to your application**.  The easiest way to link a wallet to your application in to use **[getAccount](https://docs.venly.io/docs/widget-user-authentication#get-user-account)** flow.  The benefits of using the getAccount flow is that this flow bundles multiple actions into one call.
+
+### Function:
+
+```javascript
+//Asking the signer to transfer a certain value to a certain destination.
+venlyConnect.signer.executeTransfer({
+    walletId: '<WALLET_ID>',
+    to: '<BLOCKCHAIN ADDRESS>',
+    value: 3.1415,
+    secretType: '<BLOCKCHAIN>',
+})
+```
+
+### Example:
+
+#### Address
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+
+//Asking the signer to transfer to a blockchain address.
+venlyConnect.signer.executeTransfer({
+    walletId: 'c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1',
+    to: '0xf147cA0b981C0CD0955D1323DB9980F4B43e9FED',
+    value: 0.01415,
+    secretType: 'ETHEREUM',
+})
+```
+
+#### Email
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+
+//Asking the signer to transfer to an email address.
+venlyConnect.signer.executeTransfer({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: 'john.smith@gmail.com',
+    value: 0.01415,
+    secretType: 'ETHEREUM',
+})
+```
+
+> 📘 🧙 The destination of a transfer is not limited to a blockchain address, we also support **email addresses** and [Unstoppable domains](https://unstoppabledomains.com/).
+
+### Returns:
+
+```javascript
+{
+  status: "SUCCESS",
+  result: {
+    id: "9d4c550d-78b2-4e9d-850c-d376f198293c",
+    transactionHash: "0xcf8b99b7a11decd5b650c48435632c0e0a7b8b01f382addfd5932fdfa6d9ee62"
+  }
+}
+```
+
+## JS Fiddle Example
+
+<iframe width="100%" height="600" src="https://jsfiddle.net/abdullah066/hoe2f78w/embedded/" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function, you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [createSigner](https://venly.readme.io/docs/createsigner)
+> - [executeTransfer](https://venly.readme.io/docs/executetransfer)

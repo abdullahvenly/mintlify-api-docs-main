@@ -1,0 +1,61 @@
+---
+title: "TransferRequestDto"
+slug: "transferrequestdto"
+excerpt: "Data structure for performing a native token transfer."
+hidden: false
+createdAt: "Tue Oct 17 2023 10:28:51 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+  walletId! : string;
+  to! : string;
+  secretType! : SecretType;
+  data! : string;
+  value! : BigDecimal;
+  chainSpecificFields? : object;
+}
+```
+
+### Parameters:
+
+<table data-header-hidden><thead><tr><th width="219">Parameter</th><th>Required</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td>Parameter</td><td>Required</td><td>Type</td><td>Description</td></tr><tr><td><code>walletId</code></td><td><code>True</code></td><td><code>String</code></td><td>ID of the wallet one wants to sign with.</td></tr><tr><td><code>to</code></td><td><code>True</code></td><td><code>String</code></td><td>Destination address of the transaction. Can be an address or an email address.</td></tr><tr><td><code>secretType</code></td><td><code>True</code></td><td><a href="https://venly.readme.io/docs/secrettype"><code>SecretType</code></a></td><td>Chain the transaction will be executed on.</td></tr><tr><td><code>data</code></td><td><code>False</code></td><td><code>String</code></td><td>Data you want to send. This field will be ignored when building a token transaction request</td></tr><tr><td><code>value</code></td><td><code>True</code></td><td><code>Number</code></td><td>Token value that should be transferred.</td></tr><tr><td><code>ChainSpecificFields</code></td><td><code>False</code></td><td><code>Object</code></td><td>This field can be used to pass properties specific to a chain. More info: <a href="https://venly.readme.io/docs/chain-specific-fields">Chain specific fields</a></td></tr></tbody></table>
+
+> 📘 🧙 You don’t have to take into account the number of decimals for different tokens, Venly handles that for you.
+> 
+> **Example:** If a token has 18 decimals and you want to transfer 1 token, provide the value 1. Venly will translate this to the correct non-decimal value (1 \* 10e18).
+
+### Example:
+
+#### Plain
+
+```json
+{
+  "walletsId" : "cdc4c08a-b8fa-4e4c-z5a2-92c87b80f174",
+  "to" : "0xdc71b72db51e227e65a45004ab2798d31e8934c9",
+  "secretType" : "VECHAIN",
+  "data" : "0x",
+  "value" : 1.15
+}
+```
+
+#### With Hedera Memo
+
+```json
+{
+    "secretType": "HEDERA",
+    "walletId": "d1e091d7-0fab-4f46-8afd-ad31f1e735d7",
+    "to": "0.0.2278508",
+    "value": "0.0314",
+    "chainSpecificFields": {
+        "transactionMemo": "0.0.2810009"
+    }
+}
+```
+
+## Function Types
+
+> 📘 - [executeTransfer](https://venly.readme.io/docs/executetransfer)
+> - [chainSpecificFields](https://venly.readme.io/docs/chain-specific-fields)

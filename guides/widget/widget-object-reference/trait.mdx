@@ -1,0 +1,31 @@
+---
+title: "Trait"
+slug: "trait"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 10:24:34 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+export interface Trait {
+    traitType?: string;
+    value?: string;
+    displayType?: string;
+    traitCount?: string;
+}
+```
+
+### Parameters:
+
+| Parameter     | Required? | Type   | Description                                |
+| :------------ | :-------- | :----- | :----------------------------------------- |
+| `traitType`   | False     | String | The type of the trait, ex: boost           |
+| `value`       | False     | String | The value of the trait, ex: 5              |
+| `displayType` | False     | String | Chain the transaction will be executed on. |
+| `traitCount`  | False     | String | The number of items having the trait.      |
+
+## Function Reference
+
+> 📘 - [getNonFungibles](https://venly.readme.io/docs/getnonfungibles)

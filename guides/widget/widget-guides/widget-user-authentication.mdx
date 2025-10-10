@@ -1,0 +1,34 @@
+---
+title: "User authentication"
+slug: "widget-user-authentication"
+excerpt: "Authenticate a user using the Widget."
+hidden: false
+createdAt: "Mon Oct 16 2023 12:44:16 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Mar 19 2024 11:15:37 GMT+0000 (Coordinated Universal Time)"
+---
+## Authenticate a user
+
+To authenticate a user using the **Widget**, you can use the _`authenticate`_ function. More details on the signature of this function and how it can be used, can be found on the documentation below.
+
+> 📘 This function is used to check if the user is authenticated, and if it is not, it asks for authentication. More details in the [function reference](https://venly.readme.io/docs/authenticate).
+
+## Check if user is authenticated
+
+To check if a user is authenticated you can use  _`checkAuthenticated`_ function of the Widget API. More details on how this function can be called, and use-cases can be found in the documentation below.
+
+> 📘 This function call will check if the user is authenticated and redirect the user to `options.redirectUri` (if present). More details in the [function reference](https://venly.readme.io/docs/checkauthenticated).
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/3dhet51m/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Get user account
+
+This function is used when you want to get the wallets of a user for a specific chain. More details on how the function can be called and what the function returns can be found on the documentation below.
+
+> 📘 This function will return the wallets of a user for a specific chain and if needed authenticate the user and create a wallet. More details in the [function reference](https://venly.readme.io/docs/getaccount).
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/aymeL7vc/embedded/" width="100%" height="400" frameborder="0"></iframe>

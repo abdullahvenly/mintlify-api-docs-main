@@ -1,0 +1,48 @@
+---
+title: "Authenticating with Venly"
+slug: "authenticating-widget-with-venly"
+excerpt: "Authenticating with Venly and types of authentication"
+hidden: false
+createdAt: "Thu Oct 19 2023 10:12:19 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Mar 05 2025 12:30:57 GMT+0000 (Coordinated Universal Time)"
+---
+## Intro
+
+Authenticating with Venly is done using [OpenID Connect](https://openid.net/connect/), which combines the OAuth 2.0 protocol together with a simple identity layer. We use OpenID Connect's [Authorization Code Flow](https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth) for our authentication and authorization.
+
+> 📘 An application requires a specific Client ID to connect to our [environments](https://venly.readme.io/docs/selecting-environments-and-networks). This not only improves security but also allows custom branding. 
+> 
+> You will receive a `clientId` that is linked to your specific domain (URI). 
+> 
+> Only calls initiated from this whitelisted domain (in combination with the `clientId`) will be accepted.
+
+## Authentication code
+
+If you provide your own implementation of `bearerTokenProvider`, the web3 provider will not attempt to obtain an authentication code but rather use the one provided by you.
+
+## Authenticating the Widget
+
+To communicate with Venly, a **Client ID** is required in pair with whitelisted URLs.
+
+1. You need a Venly business account, if you don't have one, register in our [Developer Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal), or follow our step-by-step guide, [Getting Started with Venly](https://venly.readme.io/docs/getting-started).
+2. You need your **Client ID** which can be obtained from the [Authentication](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) page in the [Portal](https://portal.venly.io/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) as shown below.
+
+![Obtaining Client ID for Widget](https://files.readme.io/1f89ea0-image.png)
+
+
+3. You will also need to define valid whitelisted URLs from the [Widget section](https://portal.venly.io/wallet-widget/details/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) of the [Portal](https://portal.venly.io/?utm_source=Venly_docs&utm_medium=developer_guides&utm_campaign=General+-+Marketing&utm_term=business_portal).
+
+> ❗️ To prevent the Client ID from being used outside of the project, it is required to define the URLs with which to initialize the widget in combination with a project's Client ID.
+> 
+> Any URL that tries to access the Widget with your Client ID will be blocked unless it is defined in the Allow list.
+
+> 📘 **Log out redirect URL**: The URL where your user will be directed to when they log out from the widget.
+> 
+> **Initialisation URLs**: These are the URLs from which the widget will be accessed by you.
+> 
+> **NOTE**: Make sure to always defined a log out redirect URL as well as minimum one initialisation URL.
+
+![Whitelisting Domains](https://files.readme.io/58f5db8-image.png)
+
+
+> 👍 Connecting to the [production environment](https://docs.venly.io/docs/selecting-environments-and-networks) and the different mainnets allows for custom branding of the [Widget](https://docs.venly.io/docs/widget-overview).

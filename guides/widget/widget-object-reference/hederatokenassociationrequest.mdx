@@ -1,0 +1,42 @@
+---
+title: "HederaTokenAssociationRequest"
+slug: "hederatokenassociationrequest"
+excerpt: "Data structure for performing a Hedera token association."
+hidden: false
+createdAt: "Tue Oct 17 2023 10:13:30 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```
+{
+    walletId! : string;
+    secretType! : 'HEDERA',
+    type! : 'HEDERA_TOKEN_ASSOCIATION',
+    tokenIds!: string[]
+}
+```
+
+### Parameters:
+
+| Parameter    | Required | Type       | Description                                                                           |
+| ------------ | -------- | ---------- | ------------------------------------------------------------------------------------- |
+| `walletId`   | `True`   | `String`   | ID of the wallet one wants to associate tokens with.                                  |
+| `secretType` | `True`   | `String`   | Chain the association will be executed on. Currently only `HEDERA` is supported       |
+| `type`       | `True`   | `String`   | The type of transaction one wants to execute. In this case `HEDERA_TOKEN_ASSOCIATION` |
+| `tokenIds`   | `True`   | `String[]` | An array of strings containing the ID's of the tokens one wants to associate          |
+
+### Example:
+
+```
+{
+    secretType: 'HEDERA',
+    type: 'HEDERA_TOKEN_ASSOCIATION',
+    walletId: 'd1e091d7-0fab-4f46-8afd-ad31f1e735d7',
+    tokenIds: ['0.0.2278508', '0.0.2278508', '0.0.2278508', '0.0.2278508']
+}
+```
+
+## Function Types
+
+> 📘 - [executeTokenAssociation](https://venly.readme.io/docs/executetokenassociation)

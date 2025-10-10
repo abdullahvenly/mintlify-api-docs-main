@@ -1,0 +1,35 @@
+---
+title: "getAllNonFungibles"
+slug: "getallnonfungibles"
+excerpt: ""
+hidden: false
+createdAt: "Mon Oct 16 2023 14:36:04 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns all non-fungible items for a user (of all linked wallets) that can be filtered based on `secretType` (optional) 
+
+```javascript
+venlyConnect.api.getAllNonfungibles();
+```
+
+### Signature:
+
+```javascript
+getAllNonfungibles = (secretTypes?: SecretType[]): Promise<WalletItems[]>
+```
+
+### Returns:
+
+```javascript
+Promise<WalletItems[]>
+```
+
+### Parameters:
+
+| Parameter     | Required | Description                                                                                             |
+| :------------ | :------- | :------------------------------------------------------------------------------------------------------ |
+| `secretTypes` | `False`  | An optional list of [secretTypes ](https://venly.readme.io/docs/secrettype)for which you want to filter |
+
+## Object Types
+
+> 📘 - [WalletItems](https://venly.readme.io/docs/walletitems)

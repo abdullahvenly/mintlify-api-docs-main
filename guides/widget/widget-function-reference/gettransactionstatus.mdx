@@ -1,0 +1,53 @@
+---
+title: "getTransactionStatus"
+slug: "gettransactionstatus"
+excerpt: "Fetch transaction status."
+hidden: false
+createdAt: "Mon Oct 16 2023 17:05:37 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns the status for a specific transaction. 
+
+```javascript
+venlyConnect.api.getTransactionStatus("0xe95cfd4c68e4b43f60adb8a97dc10264ad0046518946a768d980ee454e492645", "ETHEREUM");
+```
+
+> 📘 🧙 Returns `UNKNOWN` when the specific chain is not supported.
+
+### Signature:
+
+```javascript
+venlyConnect.api.getTransactionStatus(transactionHash: string, secretType: SecretType): Promise<TxStatusResult>
+```
+
+### Returns:
+
+```javascript
+Promise<TxStatusResult>
+```
+
+```javascript
+{
+    status: 'UNKNOWN' | 'PENDING' | 'FAILED' | 'SUCCEEDED'
+}
+```
+
+### Parameters:
+
+| Parameter                                               | Required | Description                                |
+| ------------------------------------------------------- | -------- | ------------------------------------------ |
+| `transactionHash`                                       | `True`   | Transaction hash                           |
+| [`secretType`](https://venly.readme.io/docs/secrettype) | `True`   | Blockchain related to the transaction hash |
+
+### Example:
+
+```javascript
+venlyConnect.api.getTransactionStatus("0xe95cfd4c68e4b43f60adb8a97dc10264ad0046518946a768d980ee454e492645", "ETHEREUM");
+```
+
+> 📘 🧙 Using the `network` parameter, the node to which the transaction is sent can be set manually.  It allows you to submit a transaction to any mainnet or testnet node of your choosing, public or private. ( Ethereum only)
+
+## Object Types
+
+> 📘 - [SecretType](https://venly.readme.io/docs/secrettype)
+> - [TxStatusResult](https://venly.readme.io/docs/txstatusresult)

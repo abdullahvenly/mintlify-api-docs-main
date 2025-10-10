@@ -1,0 +1,123 @@
+---
+title: "NFT API – Improved Token ID Sequencing for V2 & V3"
+description: "Enhancement to NFT Token ID and Token Type ID assignment in Venly NFT API v2 and v3"
+icon: "list-ol"
+date: "2025-07-10"
+---
+
+We've enhanced how Token IDs and Token Type IDs are assigned when minting NFTs. Previously, ID assignment could create non-sequential gaps, making token tracking difficult. Now, all IDs follow predictable sequential patterns.
+
+## What's New
+
+### Sequential NFT Token IDs
+
+All minted NFT tokens under a contract (regardless of token type) receive sequential Token IDs starting from **1**.
+
+**Example:**
+
+Mint 3 NFTs from any token type → Token IDs assigned: **1, 2, 3**
+
+### Non-Fungible Token Type IDs
+
+Non-fungible token types under a contract receive sequential Token Type IDs starting from **1,000,000,001**.
+
+**Example:**
+
+- Create first non-fungible token type → Token Type ID: **1,000,000,001**
+- Create second non-fungible token type → Token Type ID: **1,000,000,002**
+
+### Fungible Token Type IDs
+
+Fungible token types under a contract receive sequential Token Type IDs starting from **1**.
+
+**Example:**
+
+- Create first fungible token type → Token Type ID: **1**
+- Create second fungible token type → Token Type ID: **2**
+
+### Fungible Token ID Alignment
+
+For fungible tokens only: The Token ID always equals the Token Type ID.
+
+**Example:**
+
+Fungible token type created with Token Type ID **3** → All minted tokens from this type have Token ID **3**
+
+## Example Scenarios
+
+### Scenario 1: Non-Fungible Tokens Only
+
+<Steps>
+  <Step title="Create NFT Token Type">
+    Token Type ID: **1,000,000,001**
+  </Step>
+  
+  <Step title="Mint 2 NFTs">
+    Token IDs: **1, 2**
+  </Step>
+  
+  <Step title="Create Another NFT Token Type">
+    Token Type ID: **1,000,000,002**
+  </Step>
+  
+  <Step title="Mint 1 NFT">
+    Token ID: **3**
+  </Step>
+</Steps>
+
+**Result:** Sequential Token IDs **1, 2, 3** across all NFTs
+
+### Scenario 2: Mixed Fungible and Non-Fungible Tokens
+
+<Steps>
+  <Step title="Create NFT Token Type">
+    Token Type ID: **1,000,000,001**
+  </Step>
+  
+  <Step title="Mint 2 NFTs">
+    Token IDs: **1, 2**
+  </Step>
+  
+  <Step title="Create Fungible Token Type">
+    Token Type ID: **3**
+  </Step>
+  
+  <Step title="Mint Fungible Tokens">
+    Token ID: **3** (matches Token Type ID)
+  </Step>
+  
+  <Step title="Create Another NFT Token Type">
+    Token Type ID: **1,000,000,002**
+  </Step>
+  
+  <Step title="Mint 1 NFT">
+    Token ID: **4**
+  </Step>
+</Steps>
+
+**Final Results:**
+
+- **Token Type IDs:** 1,000,000,001 (non-fungible), 3 (fungible), 1,000,000,002 (non-fungible)
+- **Token IDs:** 1, 2, 3, 4 (where Token ID 3 represents all fungible tokens from Token Type ID 3)
+
+## Key Benefits
+
+<CardGroup cols={2}>
+  <Card title="Eliminates ID Gaps" icon="check">
+    All Token IDs follow sequential order without skipping numbers
+  </Card>
+  
+  <Card title="Simplified Tracking" icon="magnifying-glass">
+    Predictable ID patterns make collection management easier
+  </Card>
+  
+  <Card title="Clear Differentiation" icon="split">
+    Non-fungible token types use 1,000,000,000+ range; fungible types use 1+ range
+  </Card>
+  
+  <Card title="Consistent Alignment" icon="equals">
+    Fungible tokens maintain Token ID = Token Type ID relationship
+  </Card>
+</CardGroup>
+
+This update provides complete predictability for NFT collection management and presentation.

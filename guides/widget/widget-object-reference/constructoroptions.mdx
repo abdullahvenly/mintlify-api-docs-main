@@ -1,0 +1,28 @@
+---
+title: "ConstructorOptions"
+slug: "constructoroptions"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 09:57:29 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+  environment?: string,
+  windowMode?: WindowMode,
+  signMethod?: string,
+  bearerTokenProvider?: () => string,
+  useOverlayWithPopup?: boolean;
+}
+```
+
+### Parameters:
+
+| Option                                                                       | Description                                                                                                                                                                                                                                                                                                                                       |
+| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`environment`](https://venly.readme.io/docs/environment-sandbox-production) | The environment to which you want to connect, possible values are `local`, `sandbox`, `prod`. Default set to `prod`.                                                                                                                                                                                                                              |
+| [`windowMode`](https://venly.readme.io/docs/windowmode)                      | The sign method you want to use, possible values are `POPUP` or `REDIRECT`. Default set to `POPUP`.                                                                                                                                                                                                                                               |
+| `bearerTokenProvider`                                                        | You can implement all the authentication handling yourself and provide Venly Connect with your own bearer token provider. The bearer token provider is a function returning the bearer token (access token) to login to Venly. Default the [Venly Connect authentication client](https://venly.readme.io/docs/authenticating-with-venly) is used. |
+| `useOverlayWithPopup`                                                        | When using a popup, show an overlay on the parent screen. Default set to `true`.                                                                                                                                                                                                                                                                  |

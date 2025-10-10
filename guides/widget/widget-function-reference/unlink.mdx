@@ -1,0 +1,41 @@
+---
+title: "unlink"
+slug: "unlink"
+excerpt: "Unlink a wallet from an application."
+hidden: false
+createdAt: "Mon Oct 16 2023 17:23:04 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+This function allows a project to unlink a wallet from its application.
+
+```javascript
+venlyConnect.api.unlink("d91b644a-076f-44bf-ae90-29251df19784")
+```
+
+### Signature:
+
+```javascript
+venlyConnect.api.unlink(walletId: string): Promise<void>
+```
+
+### Returns:
+
+```javascript
+Promise<void>
+```
+
+### Parameters:
+
+| Parameter  | Required | Description                                     |
+| ---------- | -------- | ----------------------------------------------- |
+| `walletId` | `True`   | The wallet ID of the wallet you want to unlink. |
+
+### Example:
+
+```javascript
+venlyConnect.api.unlink("d91b644a-076f-44bf-ae90-29251df19784")   
+             .then(() => {
+                 // Update UI
+                 myFunction();
+             });
+```

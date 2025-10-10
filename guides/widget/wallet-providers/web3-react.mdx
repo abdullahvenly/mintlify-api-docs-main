@@ -1,0 +1,36 @@
+---
+title: "Web3-React"
+slug: "web3-react"
+excerpt: "Overview, installation, and initialization settings for web3-react."
+hidden: false
+createdAt: "Mon May 15 2023 14:38:13 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 17 2024 15:38:47 GMT+0000 (Coordinated Universal Time)"
+---
+## Overview
+
+**web3-react** offers abstractions that facilitate the connection of your decentralized application (dApp) to web3 connectors. It also exposes methods for seamless interaction with these connections.
+
+> 📘 Web3-react native [documentation](https://docs.uniswap.org/sdk/web3-react/overview)
+
+### Installation:
+
+```javascript
+npm install web3-react @venly/web3-react-venly
+```
+
+### Initialization:
+
+```javascript
+import { initializeConnector } from '@web3-react/core'
+import { Venly } from '@venly/web3-react-venly';
+
+export const [venly, hooks] = initializeConnector<Venly>(
+  (actions) =>
+    new Venly({
+      actions,
+      options: {
+        clientId: 'YOUR_CLIENT_ID'
+      },
+    })
+)
+```
