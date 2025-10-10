@@ -1,0 +1,209 @@
+---
+title: "Getting started"
+slug: "widget-getting-started"
+excerpt: "Learn how to get up and running with the native integration of the Venly Widget."
+hidden: false
+createdAt: "Tue May 16 2023 12:17:53 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Mar 05 2025 12:28:03 GMT+0000 (Coordinated Universal Time)"
+---
+# Getting up and running with Venly Widget
+
+In this guide, we will walk through the steps required to start with the native integration of the Widget. 
+
+> 📘 **NOTE:**
+> 
+> - In this guide, we will be integrating the widget natively. 
+> - All of the steps will be performed on [JS Fiddles](https://jsfiddle.net/).
+> - We will work with sandbox credentials.
+> - All functions will be performed on sandbox environment.
+
+## Prerequisites
+
+1. Your Widget **Client ID** (_Can be obtained from the [Developer Portal](https://portal.venly.io/authentication/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)_)
+2. Finished [configuring the Widget](doc:configuration)
+
+## Authenticating the Widget
+
+To communicate with Venly, a **Client ID** is required along with whitelisted domains, from which you can perform the widget calls.
+
+> 📘 [Learn more about Widget authentication](https://docs.venly.io/docs/widget-authentication)
+
+## Initializing/Including the Widget
+
+### Step 1: Including the widget
+
+When running on the JS Fiddle, you can add the following code in your HTML to include the Widget:
+
+```html
+<head>
+    <title>Venly Widget</title>
+    <script type="text/javascript" src="https://unpkg.com/@venly/connect"></script>
+    <!--Including the widget-->
+</head>
+```
+
+> 📘 [Including the Widget in a JavaScript Framework](https://docs.venly.io/docs/initializing-widget#step-1-including-the-widget)
+
+### Step 2: Initializing the Widget, with Venly Connect
+
+Create a `VenlyConnect` instance with your **Client ID** with the following script. Your Venly **Client ID** is required when calling this function, as it identifies your app to Venly. We have also specified the sandbox environment here.
+
+```javascript
+const venlyConnect = new VenlyConnect('your_client_id', {
+  environment: 'sandbox'
+}); 
+```
+
+The `VenlyConnect` object is your entry point to the rest of the widget functionalities.
+
+> 📘 [Initializing the Widget in a JavaScript Framework](https://docs.venly.io/docs/initializing-widget#step-2-initializing-the-widget-with-venly-connect)
+
+### Step 3: Getting the basics ready
+
+Following is a JS Fiddle whose code you can easily copy and try yourself. We have added HTML, CSS, and JavaScript code. Following is a brief explanation of the code:
+
+#### HTML:
+
+- Included the widget in a `<script>`
+- Added image URL of the Venly logo (_You can replace this with your own_)
+- Created a button called **Connect with Widget** (_`getAccount()` function will be added later_)
+- Created a `<textarea>` to display the response
+- Added basic `h1`, `h2`, and `body` tags
+
+#### CSS:
+
+- Copy the CSS code as it is (_You can make changes according to your company color scheme_)
+
+#### JavaScript
+
+- Initialized the Widget with a **`Testaccount` Client Id** (_add your own Client Id here_) and set the environment as **sandbox**
+- Created a function that will output the response of the function calls in a human-readable manner
+
+<iframe src="https://jsfiddle.net/abdullah066/ay97bhzn/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Connecting with Widget
+
+Now let's learn how your end-user will connect with the widget. 
+
+- Defined a constant called `chain` and set the value as **MATIC**. You can pick from the list of other chains we support. All the functions and wallet creations will happen on our selected **MATIC** chain.
+- Added a `getAccount()` function which will allow your end-user to quickly sign in or sign up if they don't have an account. 
+- Added the `getProfile()` function which will fetch your end-user profile details.
+- Added the `logOut()` function to log out the currently logged-in user.
+- In the HTML section, we created and assigned the relevant buttons.
+
+> 📘 - Replace the `Testaccount` with your **Client Id**.
+> - Try the JS Fiddle yourself.
+
+<iframe src="https://jsfiddle.net/abdullah066/aymeL7vc/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Creating Wallets
+
+Next, let's see how to create wallets. Since you are currently using the sandbox environment, the wallets will be created on a testnet chain. 
+
+In this next fiddle, we have:
+
+- Added the `manageWallets()` function that accepts the `chain` variable (_we previously defined the `chain` constant and assigned it `MATIC` value_).
+- The `manageWallets()` function allows your users to connect existing wallets with your app, or create new wallets.
+- Added the `getWallets()` function which will fetch all of your user's wallets. (_this function will fetch details for all your user's wallets including the wallet `address`_)
+- In the HTML section, we created and assigned the relevant buttons.
+
+> 📘 - Try the fiddle yourself and create 2 wallets.
+> - Next try the **Get All Wallets** to view your wallets.
+
+### Example as a new user
+
+- Using the Fiddle, first, connect your account.
+- Next, click on **Manage Wallets**, and a pop-up will appear.
+- You can either sign in or sign up using the provided options.
+- Click on **Create new wallet**.
+- Enter your **6-digit PIN** for the wallet and click **Submit**. Confirm the PIN again.
+- Next, it is mandatory to enable an emergency code that can be used for PIN resets.
+- Copy the emergency code and save it somewhere safe. Click continue.
+- Your new wallet will be created! 
+- Do this again to create a second wallet.
+
+![Create new wallet as a new user](https://files.readme.io/f9dc73c-Untitledvideo-MadewithClipchamp-ezgif.com-video-to-gif-converter.gif)
+
+
+### Example as an existing user
+
+- Using the Fiddle, first, connect your account.
+- Next, click on **Manage Wallets**, and a pop-up will appear.
+- You can also view and connect your existing wallets.
+- Scroll to the bottom and click on **Create new wallet**.
+- Enter your **6-digit PIN** for the wallet and click **Submit**.
+- Your new wallet will be created! 
+- Do this again to create a second wallet.
+
+![Create a new wallet as an existing user](https://files.readme.io/58c63f2-Untitled_video_-_Made_with_Clipchamp_2.gif)
+
+
+<iframe src="https://jsfiddle.net/abdullah066/xpbd8hfr/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+You now have two wallets on the Polygon (_MATIC_) testnet blockchain. Let's explore how to add testnet tokens to your wallet using the [Polygon Amoy Faucet](https://docs.venly.io/docs/faucets#faucet-for-venly-developers).
+
+> 📘 Learn more about [testnet tokens and Faucets](https://docs.venly.io/docs/faucets).
+
+## Topping Up Wallet
+
+To request tokens from the Venly Faucet, you need to follow these steps:
+
+1. Go to Venly's [Developer Portal](https://portal-staging.venly.io/wallet-api/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal) and navigate to **[Faucet](https://portal.venly.io/faucet/?utm_source=website&utm_medium=docs&utm_campaign=General+-+Venly+Internal)**. 
+2. Choose the token you want to request, in this case, choose **MATIC**.
+3. Enter your **wallet address** or **wallet UUID** associated with Venly. This ensures that the tokens are sent to the correct wallet
+4. Click on the "Request tokens" button to submit your request. Tokens will be sent to your wallet shortly after.
+
+![Request MATIC testnet tokens](https://files.readme.io/9b3d0da-image.png)
+
+
+> 📘 Now you should have some MATIC tokens in your first wallet while your second wallet is empty.
+
+## Execute Crypto Transfer
+
+Next, we will see how to execute a crypto transaction where we will send tokens from your first wallet to the second wallet.
+
+In the next fiddle, we have:
+
+- Added an `executeTransfer()` function that will carry out the transfer of tokens from your first wallet to the second. It accepts the following fields:
+  - **`walletId`**: The `walletId` of the wallet executing the transaction (_first wallet_)
+  - **`to`**: The recipients wallet address (_second wallet_)
+  - **`value`**: Amount of tokens to transfer
+  - **`secretType`**: The blockchain of the transaction (_in this case, MATIC_)
+- Added the `getBalance()` function which fetches the balance of a wallet by `walletId`.
+- In the HTML section, we created and assigned the relevant buttons.
+
+<iframe src="https://jsfiddle.net/abdullah066/87pf5nz2/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+### Example
+
+- Click on the **Get All Wallets** button and copy the respective data required for the `executeTransfer()` function.
+- Modify the data for the `executeTransfer()` function. 
+- Modify the `walletId` for the `getBalance()` function by adding the `walletId` of the **second** **wallet**.
+- **Save** and **run** the fiddle again. Connect with the widget and click on **Get Balance**, in the result the `balance` field will be 0.
+- Now click on **Execute Transfer**:
+  - A pop-up will appear.
+  - Confirm the details of the transaction and click **Submit**.
+  - Enter your 6-digit PIN and click **Submit**.
+  - You will see **Sign successful** message and the pop-up will close.
+
+![Executing Crypto Transaction](https://files.readme.io/cc46182-Untitled_video_-_Made_with_Clipchamp_4.gif)
+
+
+- Copy and save the `transactionHash` that you get in the **response body**. 
+- Next, click on the **Get Balance** again and the `balance` of your second wallet will be >0.
+- Alternatively, you can also check the status of the transaction by pasting the `transactionHash` on the [Polygon Testnet Explorer](https://mumbai.polygonscan.com/) (_in case of MATIC_).
+
+![Checking the status of a Matic transaction on polygonscan.com](https://files.readme.io/aab2254-Sarari_-_Dark_1.png)
+
+
+> 👍 From the **Get Balance** you can confirm that your very first transaction was successful.
+
+***
+
+![Integrate blockchain with Venly](https://raw.githubusercontent.com/Venly/content-management/524860343ff47ac5fa8263e079534d6c58799f33/marketing/CTA%20Footer/CTA.png)
+
+Schedule a **demo** with our team to explore tailored solutions or dive in and start building right away on our **portal**.

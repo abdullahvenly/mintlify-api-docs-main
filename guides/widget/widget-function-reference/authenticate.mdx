@@ -1,0 +1,71 @@
+---
+title: "authenticate"
+slug: "authenticate"
+excerpt: "Authenticate a user to Venly."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:19:36 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Feb 09 2024 12:19:47 GMT+0000 (Coordinated Universal Time)"
+---
+This function will check if the user is authenticated and if not, ask the user to authenticate. 
+
+```javascript
+venlyConnect.flows.authenticate({ windowMode: 'REDIRECT' });
+```
+
+- If [`windowMode`](https://docs.venly.io/docs/windowmode) = 'REDIRECT', the user will be redirected to `options.redirectUri` with the result after logging in.
+- If [`windowMode`](https://docs.venly.io/docs/windowmode) = 'POPUP', the popup will close and the promise resolved when the user finishes the request. No extra options are required.
+
+> 🚧 If you set the [`redirectUri`](https://venly.readme.io/docs/authenticationoptions#parameters) option, make sure that the SDK and the [`AuthenticationResult`](https://venly.readme.io/docs/authenticationresult) handling is also present on the page you redirect to.
+
+### Signature:
+
+```javascript
+venlyConnect.flows.authenticate(options?: AuthenticationOptions): Promise<AuthenticationResult>    
+```
+
+### Returns:
+
+```javascript
+Promise<AuthenticationResult>
+```
+
+### Parameters:
+
+| Parameter | Type                                                                          | Required | Description                |
+| --------- | ----------------------------------------------------------------------------- | -------- | -------------------------- |
+| `options` | [`AuthenticationOptions`](https://venly.readme.io/docs/authenticationoptions) | `False`  | Provide extra auth options |
+
+### Examples:
+
+```javascript
+// Example 1
+// Redirect to the current page
+venlyConnect.flows.authenticate({ windowMode: 'REDIRECT' });
+```
+
+```javascript
+// Example 2
+// Redirect to https://foo.io
+venlyConnect.flows.authenticate({ redirectUri: 'https://foo.io', windowMode: 'REDIRECT'});
+```
+
+```javascript
+// Example 3
+// Login using popup
+venlyConnect.flows.authenticate({ windowMode: 'POPUP' })
+    .then((result: AuthenticationResult) => {
+        result
+            .authenticated((auth: KeycloakInstance) => {
+                alert('logged in: ' + auth.subject);
+            })
+            .notAuthenticated((auth: KeycloakInstance) => {
+                alert('not logged in');
+            });
+    });
+```
+
+## Object Types
+
+> 📘 - [AuthenticationOptions](https://venly.readme.io/docs/authenticationoptions)
+> - [AuthenticationResult](https://venly.readme.io/docs/authenticationresult)
+> - [KeycloakInstance](https://venly.readme.io/docs/keycloakinstance)

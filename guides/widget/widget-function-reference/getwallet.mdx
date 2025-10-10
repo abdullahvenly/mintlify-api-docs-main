@@ -1,0 +1,41 @@
+---
+title: "getWallet"
+slug: "getwallet"
+excerpt: "Fetch a specific wallet"
+hidden: false
+createdAt: "Mon Oct 16 2023 17:08:11 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns the details for a specific wallet (native balance is also included)
+
+```javascript
+venlyConnect.api.getWallet("d91b644a-076f-44bf-ae90-29251df19784")
+```
+
+### Signature:
+
+```javascript
+venlyConnect.api.getWallet(walletId: string): Promise<Wallet>
+```
+
+### Returns:
+
+```javascript
+Promise<Wallet>
+```
+
+### Parameters:
+
+| Parameter  | Required | Description                               |
+| ---------- | -------- | ----------------------------------------- |
+| `walletId` | `True`   | Wallet ID of the wallet you want to fetch |
+
+### Example:
+
+```javascript
+venlyConnect.api.getWallet("d91b644a-076f-44bf-ae90-29251df19784");
+```
+
+## Object Types
+
+> 📘 - [Wallet](https://venly.readme.io/docs/wallet)

@@ -1,0 +1,89 @@
+---
+title: "Updated Ethereum Deployment Funding"
+description: "Ethereum contract deployments now require funded company wallets for NFT-API v3 and Token-API"
+icon: "ethereum"
+date: "2025-09-12"
+---
+
+We're updating how Ethereum contract operations are funded in the **NFT-API v3** and the **Token-API**.
+
+From now on, contract deployments on Ethereum requires a funded company wallet for both NFT contracts and Token contracts.
+
+Previously, Venly sponsored contract deployment costs automatically. Going forward, you will need to fund your Ethereum company wallet with at least **0.02 ETH** before deploying a contract. This ensures you have enough funds not only for the contract deployment but also to cover minting operations right after. Learn more below.
+
+## What's New
+
+<CardGroup cols={2}>
+  <Card title="Funded Wallet Required" icon="wallet">
+    On Ethereum, NFT and Token contract deployments now requires funding from your Ethereum company wallet
+  </Card>
+  
+  <Card title="No More Sponsorship" icon="circle-xmark">
+    Venly will no longer sponsor contract deployment costs for Ethereum
+  </Card>
+  
+  <Card title="Create Company Wallet Endpoint" icon="plus">
+    Venly provides a Create Company Wallet endpoint so you can create and fund your Ethereum company wallet before attempting a deployment
+  </Card>
+  
+  <Card title="Recommended Funding" icon="coins">
+    We recommend funding your Ethereum company wallet with at least 0.02 ETH to cover contract deployment and subsequent minting operations
+  </Card>
+</CardGroup>
+
+<Tip>
+Learn how to [retrieve your company wallet details](#) if you already have one.
+</Tip>
+
+## Recommended Workflow
+
+<Steps>
+  <Step title="Create Ethereum Company Wallet">
+    Use the Create Company Wallet endpoint
+  </Step>
+  
+  <Step title="Fund Wallet">
+    Add at least 0.02 ETH to cover contract deployment and minting costs
+  </Step>
+  
+  <Step title="Deploy Contract">
+    NFT and Token contract deployments succeed
+  </Step>
+</Steps>
+
+## Scenarios
+
+<AccordionGroup>
+  <Accordion title="No Ethereum company wallet yet" icon="plus">
+    Create one first using the Create Company Wallet endpoint, then fund it before deploying an NFT or Token contract.
+  </Accordion>
+  
+  <Accordion title="Ethereum company wallet exists but is unfunded" icon="triangle-exclamation">
+    Contract deployment will fail until you fund and retry.
+  </Accordion>
+  
+  <Accordion title="Ethereum company wallet is funded with at least 0.02 ETH" icon="circle-check">
+    Operations succeed as expected.
+  </Accordion>
+</AccordionGroup>
+
+## For Other Chains
+
+<CardGroup cols={2}>
+  <Card title="Automatic Creation" icon="wand-magic-sparkles">
+    Venly still automatically creates and funds the company wallets
+  </Card>
+  
+  <Card title="No Manual Funding" icon="check">
+    Deployments work without requiring manual funding
+  </Card>
+</CardGroup>
+
+## Before vs After
+
+| Ethereum Contract Operations (NFT v3) | Old Behavior (Before) | New Behavior (After) |
+|---------------------------------------|----------------------|---------------------|
+| NFT contract deployment | Venly sponsored the deployment costs | Now requires manual funding with ETH |
+| Token contract deployment | Venly sponsored the deployment costs | Now requires manual funding with ETH |
+| Token type creation | Required manual funding with ETH | Still requires manual funding with ETH |
+| NFT minting | Required manual funding with ETH | Still requires manual funding with ETH |

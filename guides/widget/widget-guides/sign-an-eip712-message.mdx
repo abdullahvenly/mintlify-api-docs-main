@@ -1,0 +1,110 @@
+---
+title: "Sign an EIP712 message"
+slug: "sign-an-eip712-message"
+excerpt: "How to ask users to sign an EIP712 structured message."
+hidden: false
+createdAt: "Mon Oct 16 2023 13:01:45 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed May 22 2024 08:18:38 GMT+0000 (Coordinated Universal Time)"
+---
+# Intro
+
+Signing an EIP712 structured message is similar to [signing a message](https://venly.readme.io/docs/sign-a-message).
+
+The object that can ask the user for his approval is called a [`Signer`](https://venly.readme.io/docs/signer), once we've created a `Signer` object we can use the `Signer` to sign the EIP712 message.
+
+> 🚧 To perform actions on a wallet , such as transactions or signatures,** the wallet has to be linked to your application**.  The easiest way to link a wallet to your application in to use **[getAccount](https://docs.venly.io/docs/widget-user-authentication#get-user-account)** flow.  The benefits of using the getAccount flow is that this flow bundles multiple actions into one call.
+
+### Function:
+
+```javascript
+//Asking the signer to sign a message.
+venlyConnect.signer.signEip712({
+    walletId: '<WALLET_ID>',
+    secretType: '<BLOCKCHAIN>',
+    data : <YOUR JSON STRUCTERED EIP712 DATA>
+})
+```
+
+### Example:
+
+```javascript
+venlyConnect.signer.signEip712({
+    walletId: 'c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1',
+    secretType: 'ETHEREUM',
+    data :  {
+              "types": {
+                "EIP712Domain": [
+                  {
+                    "name": "name",
+                    "type": "string"
+                  },
+                  {
+                    "name": "version",
+                    "type": "string"
+                  },
+                  {
+                    "name": "verifyingContract",
+                    "type": "address"
+                  },
+                  {
+                    "name": "salt",
+                    "type": "bytes32"
+                  }
+                ],
+                "MetaTransaction": [
+                  {
+                    "name": "nonce",
+                    "type": "uint256"
+                  },
+                  {
+                    "name": "from",
+                    "type": "address"
+                  },
+                  {
+                    "name": "functionSignature",
+                    "type": "bytes"
+                  }
+                ]
+              },
+              "domain": {
+                "name": "Digimon",
+                "version": "1",
+                "verifyingContract": "0x0096100f27d5ed9a3455b54af3934df07b58b506",
+                "salt": "0x0000000000000000000000000000000000000000000000000000000000013881"
+              },
+              "primaryType": "MetaTransaction",
+              "message": {
+                "nonce": 0,
+                "from": "0xeB947ED047020F3C2982d35Ac2a8EbE8A7330282",
+                "functionSignature": "0xf242432a000000000000000000000000eb947ed047020f3c2982d35ac2a8ebe8a73302820000000000000000000000008fe26c6ff544bee01f41e6f87e6d0ead0ad274050000000000000000000000000000000000000000000000000000000000000065000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000000"
+              }
+            }
+
+})
+```
+
+### Returns:
+
+```javascript
+{
+    result: {
+        r: "0xc5e7a538a353c53e839ed0a2cf7b726806114b637ad1c527046adfc92fecf0d8"
+        s: "0x551041e78e3b3d4432f653d708965d34aceaf067255d9cc5970283b00d5f95e0"
+        signature: "0xc5e7a538a353c53e839ed0a2cf7b726806114b637ad1c527046adfc92fecf0d8551041e78e3b3d4432f653d708965d34aceaf067255d9cc5970283b00d5f95e01b"
+        v: "0x1b"
+    }
+    status: "SUCCESS"
+}
+```
+
+## JS Fiddle Example
+
+<iframe width="100%" height="600" src="https://jsfiddle.net/abdullah066/9upjogkd/56/embedded/" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [createSigner](https://venly.readme.io/docs/createsigner)
+> - [signEip712](https://venly.readme.io/docs/signeip712)

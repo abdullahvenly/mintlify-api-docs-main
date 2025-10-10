@@ -1,0 +1,38 @@
+---
+title: "Initializing the widget"
+slug: "initializing-widget"
+excerpt: "Getting started with Venly Connect, our JavaScript Widget for easy integration."
+hidden: false
+createdAt: "Mon Oct 16 2023 12:39:24 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jul 24 2024 13:46:39 GMT+0000 (Coordinated Universal Time)"
+---
+## Step 1: Including the widget
+
+Venly Connect has been published to [npmjs.com](https://www.npmjs.com/package/@venly/connect). So by using npm, you can fetch it by executing the following:
+
+```
+npm i @venly/connect
+```
+
+You can also download it directly via [UNPKG CDN](https://unpkg.com/@venly/connect).
+
+> 📘 🧙 It is best to point Venly Connect to a specific version when including its URL in your code. See [https://unpkg.com/](https://unpkg.com/) for more info.
+
+## Step 2: Initializing the widget, with Venly Connect
+
+Create a VenlyConnect instance with your **Client ID **with the following script. Your Venly **Client ID** is required when calling this function, as it identifies your app to Venly.
+
+```javascript
+const venlyConnect = new VenlyConnect('Testaccount'); 
+```
+
+The `VenlyConnect` object is your entry point to the rest of the widget functionalities, below is its signature. You can connect to [several networks and environments](https://venly.readme.io/docs/environment-sandbox-production) by using the [`ConstructorOption`](https://venly.readme.io/docs/constructoroptions) '**Environment**'. 
+
+```javascript
+//Signature VenlyConnect
+VenlyConnect(clientID:string, options?: ConstructorOptions)
+```
+
+> 👍 Congratulations, your app is now blockchain-enabled! 🎉
+
+After putting the 2 code snippets above into the editor, your app is now blockchain-enabled!

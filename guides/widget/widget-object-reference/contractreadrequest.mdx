@@ -1,0 +1,63 @@
+---
+title: "ContractReadRequest"
+slug: "contractreadrequest"
+excerpt: "Data structure as input for performing a contract read on a blockchain."
+hidden: false
+createdAt: "Tue Oct 17 2023 09:59:56 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```typescript
+{
+    secretType!: string,
+    walletAddress!: string,
+    contractAddress!: string,
+    functionName!: string,
+    inputs!: [
+        {
+            type!: string,
+            value!: string
+        }
+    ],
+    outputs!: [
+        {
+            type!: string
+        }
+    ]
+}
+```
+
+### Parameters:
+
+<table><thead><tr><th>Parameter</th><th width="150">Required</th><th width="150">Type</th><th>Description</th></tr></thead><tbody><tr><td><code>secretType</code></td><td><code>True</code></td><td><a href="https://venly.readme.io/docs/secrettype"><code>SecretType</code></a></td><td>On which blockchain the tx will be executed</td></tr><tr><td><code>walletAddress</code></td><td><code>False</code></td><td><code>String</code></td><td>Wallet address, available if required</td></tr><tr><td><code>contractAddress</code></td><td><code>True</code></td><td><code>String</code></td><td>The address of the contract to read</td></tr><tr><td><code>functionName</code></td><td><code>True</code></td><td><code>String</code></td><td>Contract function to call</td></tr><tr><td><code>inputs</code></td><td><code>True</code></td><td><code>Array</code></td><td>Array of inputs needed to call the function</td></tr><tr><td><code>inputs.type</code></td><td><code>True</code></td><td><code>String</code></td><td>Type of the input</td></tr><tr><td><code>inputs.value</code></td><td><code>True</code></td><td><code>String</code></td><td>Value of the input</td></tr><tr><td><code>outputs</code></td><td><code>True</code></td><td><code>Array</code></td><td>Array of expected outputs</td></tr><tr><td><code>outputs.value</code></td><td><code>True</code></td><td><code>String</code></td><td>The type of the output</td></tr></tbody></table>
+
+### Example:
+
+```json
+{
+    "secretType": "MATIC",
+    "walletAddress": "0x0000000000000000000000000000000000000000",
+    "contractAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+    "functionName": "balanceOf",
+    "inputs": [
+        {
+            "type": "address",
+            "value": "0x427d0addaa77d8bb871dbea3458dea4b5198730c"
+        },
+        {
+            "type": "uint256",
+            "value": "202"
+        }
+    ],
+    "outputs": [
+        {
+            "type": "uint256"
+        }
+    ]
+}
+```
+
+## Function Types
+
+> 📘 - [readContract](https://venly.readme.io/docs/readcontract-1)

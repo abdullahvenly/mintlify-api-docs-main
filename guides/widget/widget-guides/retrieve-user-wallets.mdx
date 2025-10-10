@@ -1,0 +1,93 @@
+---
+title: "Retrieve user wallets"
+slug: "retrieve-user-wallets"
+excerpt: "How to retrieve a user's wallets."
+hidden: false
+createdAt: "Mon Oct 16 2023 12:59:24 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 01:58:40 GMT+0000 (Coordinated Universal Time)"
+---
+# Intro
+
+To fetch the wallet for a certain user you need to call the function [`getWallets`](https://venly.readme.io/docs/getwallets), which will return an array of [`wallets`](https://venly.readme.io/docs/wallet) with additional details for each wallet.
+
+> 📘 🧙 If you only want to retrieve a user's wallet then`getWallets` is the perfect function, but if you also need to authenticate the user and maybe get his email address or first name, then it is recommended to [retrieve the user account](https://venly.readme.io/docs/retrieve-a-user-account).
+
+### Function:
+
+```javascript
+venlyConnect.api.getWallets();
+```
+
+### Example:
+
+```javascript
+const venlyConnect = new VenlyConnect('YOUR_CLIENT_ID'); 
+venlyConnect.api.getWallets().then((wallets)=>{
+   console.log(`The address of the first wallet is: ${wallets[0].address}`);
+});
+```
+
+### Returns:
+
+```javascript
+[
+  {
+    id: "9100ca80-0d16-4aff-a13b-bce795d4a219",
+    address: "0xb811Fac088E8E80F56258a5f29D47d0FF1a37BD5",
+    walletType: "WIDGET_WALLET",
+    secretType: "MATIC",
+    createdAt: "2024-01-22T12:20:15.964641",
+    archived: false,
+    description: "Amiable Constrictor",
+    primary: false,
+    hasCustomPin: false,
+    custodial: false,
+    balance: {
+      available: true,
+      secretType: "MATIC",
+      balance: 0.06533725908157759,
+      gasBalance: 0.06533725908157759,
+      symbol: "POL",
+      gasSymbol: "POL",
+      rawBalance: "65337259081577592",
+      rawGasBalance: "65337259081577592",
+      decimals: 18,
+    },
+  },
+  {
+    id: "8d130ef7-5385-409a-b47e-2546af72d90f",
+    address: "0x6cCAf4aA614808022504eC01d68a722F27C70EB7",
+    walletType: "WIDGET_WALLET",
+    secretType: "MATIC",
+    createdAt: "2024-01-22T13:18:56.231657",
+    archived: false,
+    description: "Spooky Thrush",
+    primary: false,
+    hasCustomPin: false,
+    custodial: false,
+    balance: {
+      available: true,
+      secretType: "MATIC",
+      balance: 0,
+      gasBalance: 0,
+      symbol: "POL",
+      gasSymbol: "POL",
+      rawBalance: "0",
+      rawGasBalance: "0",
+      decimals: 18,
+    },
+  },
+]
+
+```
+
+## JS Fiddle Example
+
+<iframe src="https://jsfiddle.net/abdullah066/qhtkm02x/embedded/" width="100%" height="400" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [getwallets](https://venly.readme.io/docs/getwallets)

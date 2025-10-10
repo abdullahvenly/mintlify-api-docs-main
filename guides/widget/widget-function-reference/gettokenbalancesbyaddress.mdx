@@ -1,0 +1,44 @@
+---
+title: "getTokenBalancesByAddress"
+slug: "gettokenbalancesbyaddress"
+excerpt: "Fetch the token balances (ERC20 standard) for a specific wallet by address."
+hidden: false
+createdAt: "Mon Oct 16 2023 17:04:23 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns the balance of all tokens currently supported by Venly. The list of supported tokens can be found on [Github](https://github.com/ArkaneNetwork/content-management/tree/master/tokens). Tokens need to be based on the ERC20 standard, this included for example ERC20, VIP180, TRC20, ...
+
+```javascript
+venlyConnect.api.getTokenBalancesByAddress("MATIC", "0xA5dC4fb59eBCaf00100C00776b45c3E4b58c6B95");
+```
+
+> 📘 🧙 To add support in Venly for a certain token, simply submit a [pull request](https://github.com/ArkaneNetwork/content-management/tree/master/tokens).
+
+### Signature:
+
+```javascript
+venlyConnect.api.getTokenBalancesByAddress(secretType: SecretType, walletAddress: string): Promise<TokenBalance[]>
+```
+
+### Returns:
+
+```javascript
+Promise<TokenBalance[]>
+```
+
+### Parameters:
+
+| Parameter       | Required | Description                                                              |
+| --------------- | -------- | ------------------------------------------------------------------------ |
+| `secretType`    | `True`   | Parameter to indicate on which chain the token balance should be fetched |
+| `walletAddress` | `True`   | The address of the wallet to fetch token balance for                     |
+
+### Example:
+
+```javascript
+venlyConnect.api.getTokenBalancesByAddress("MATIC", "0xA5dC4fb59eBCaf00100C00776b45c3E4b58c6B95");
+```
+
+## Object Types
+
+> 📘 - [TokenBalance](https://venly.readme.io/docs/tokenbalance)

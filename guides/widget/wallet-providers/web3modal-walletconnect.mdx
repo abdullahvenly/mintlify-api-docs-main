@@ -1,0 +1,27 @@
+---
+title: "Web3Modal (WalletConnect)"
+slug: "web3modal-walletconnect"
+excerpt: "Overview and initialization setting for web3modal."
+hidden: false
+createdAt: "Mon May 15 2023 14:38:33 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 17 2024 15:43:28 GMT+0000 (Coordinated Universal Time)"
+---
+> 📘 Web3modal (WalletConnect) native [documentation](https://docs.walletconnect.com/2.0/web3modal/about)
+
+## Overview
+
+The **Web3Modal** SDK simplifies the process of connecting your Web3 decentralized application (dApp) with wallets. It offers a straightforward and user-friendly interface for dApps to request actions, including signing transactions and interacting with smart contracts on the blockchain.
+
+### Initialization:
+
+```javascript
+explorerRecommendedWalletIds = [
+  'a21d06c656c8b1de253686e06fc2f1b3d4aa39c46df2bfda8a6cc524ef32c20c'
+];
+
+const web3Modal = new Web3Modal({
+  explorerRecommendedWalletIds
+});
+```
+
+> 📘 When you plan to build our own wallet based on our **Wallet API**, we suggest to read: [How to integrate with WalletConnect](doc:how-to-integrate-with-walletconnect).

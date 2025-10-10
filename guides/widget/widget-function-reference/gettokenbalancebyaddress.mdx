@@ -1,0 +1,43 @@
+---
+title: "getTokenBalanceByAddress"
+slug: "gettokenbalancebyaddress"
+excerpt: "Fetch the balance of a specific token (ERC20 standard) on a specific wallet by address."
+hidden: false
+createdAt: "Mon Oct 16 2023 16:59:42 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+This function returns the token balance for a specified token. Token needs to be based on the ERC20 standard, this included for example ERC20, VIP180, TRC20, ...
+
+```javascript
+venlyConnect.api.getTokenBalanceByAddress("MATIC", "0x01b98a3f1766ff8248bf33b05213f411d3272261", "0xB8c77482e45F1F44dE1745F52C74426C631bDD52");
+```
+
+### Signature:
+
+```javascript
+venlyConnect.api.getTokenBalanceByAddress(secretType: SecretType, walletAddress:string, tokenAddress: string): Promise<TokenBalance>
+```
+
+### Returns:
+
+```javascript
+Promise<TokenBalance>
+```
+
+### Parameters:
+
+| Parameter       | Required | Description                                                              |
+| --------------- | -------- | ------------------------------------------------------------------------ |
+| `secretType`    | `True`   | Parameter to indicate on which chain the token balance should be fetched |
+| `walletAddress` | `True`   | The address of the wallet to fetch token balance for                     |
+| `tokenAddress`  | `True`   | Address of the token contract                                            |
+
+### Example:
+
+```javascript
+venlyConnect.api.getTokenBalanceByAddress("MATIC", "0x01b98a3f1766ff8248bf33b05213f411d3272261", "0xB8c77482e45F1F44dE1745F52C74426C631bDD52");
+```
+
+## Object Types
+
+> 📘 - [TokenBalance](https://venly.readme.io/docs/tokenbalance)

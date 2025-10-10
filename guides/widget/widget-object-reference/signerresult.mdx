@@ -1,0 +1,101 @@
+---
+title: "SignerResult (deprecated)"
+slug: "signerresult"
+excerpt: ""
+hidden: false
+createdAt: "Fri Oct 20 2023 09:23:19 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:49:29 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+    status: 'SUCCESS' | 'ABORTED' | 'FAILED',
+    result?: any,
+    errors?: []
+}
+```
+
+### Parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| `status` | The status of the transaction: `SUCCESS:` Request is successfully executed. `ABORTED:` User closed the popup or clicked the '_back to the application_' link. `FAILED:` Something went wrong while trying to process the request. |
+| `result` | An object containing the result of the sign action, this is different for different actions. It can contain the `transactionHash` of a transaction or the `signedTransaction` of the requested data. |
+| `errors` | Array containing the errors of the transaction that you tried to execute. |
+
+
+### Examples:
+
+```javascript
+//Launching a transaction
+const signer = venlyConnect.createSigner();
+
+signer.executeTransfer({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: '0xf147cA0b981C0CD0955D1323DB9980F4B43e9FED',
+    value: 3.14159265359,
+    secretType: 'ETHEREUM',
+}).then((signerResult) => {
+   if (signerResult.success) {
+       console.log(`Transaction ${signerResult.result.transactionHash} has been successfully executed!`);
+   } else {
+       console.warn(`Something went wrong while executing the transaction`);
+   }
+}).catch((reason) => {
+    console.log(error);
+});
+```
+
+```javascript
+//Signing data
+const signer = venlyConnect.createSigner();
+signer.sign({...signatureRequest...})
+      .then((signerResult) => {
+          if (signerResult.success) {
+              console.log(`Successfuly signed: ${signerResult.result.signedTransaction}`);
+          } else {
+              console.warn(`Something went wrong while signing the request`);
+          }
+      }).catch((reason) => {
+          console.log(error);
+      });
+```
+
+```javascript
+//Signing a message
+const signer = venlyConnect.createSigner();
+
+signer.signMessage({
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    secretType: 'ETHEREUM',
+    data : "I agree with terms and conditions"
+}).then((signerResult) => {
+    if (signerResult.success) {
+        console.log(`Successfuly signed: ${signerResult.result.signature}`);
+    } else {
+        console.warn(`Something went wrong while signing the message`);
+    }
+}).catch((reason) => {
+    console.log(error);
+});
+
+```
+
+```javascript
+{
+    result: {
+        transactionHash: "0xe18975940be795f178b2a0bc553a0d40e0ad6ceb72ee5f62ac53f0a816b4460f"
+    }
+    status: "SUCCESS"
+}
+```
+
+## Function Types
+
+> 📘 - [executeTransfer](https://venly.readme.io/docs/executetransfer)
+> - [executeTokenTransfer](https://venly.readme.io/docs/executetokentransfer)
+> - [executeNftTransfer](https://venly.readme.io/docs/executenfttransfer)
+> - [executeGasTransfer](https://venly.readme.io/docs/executegastransfer)
+> - [executeContract](https://venly.readme.io/docs/executecontract)
+> - [signMessage](https://venly.readme.io/docs/signmessage)

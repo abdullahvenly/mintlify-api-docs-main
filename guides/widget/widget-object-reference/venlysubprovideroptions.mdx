@@ -1,0 +1,31 @@
+---
+title: "VenlySubProviderOptions"
+slug: "venlysubprovideroptions"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 09:58:26 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```
+VenlySubProviderOptions {
+  clientId: string;
+  environment?: string;
+  secretType?: SecretType;
+  authenticationOptions?: AuthenticationOptions
+  skipAuthentication: boolean;
+  pollingInterval?: number;
+}
+```
+
+### Parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| `clientId` | The clientId to connect to Venly |
+| [`environment`](https://venly.readme.io/docs/environment-sandbox-production) | The environment to which you want to connect, possible values are 'staging' and 'prod'. Default set to 'prod'. |
+| [`secretType`](https://venly.readme.io/docs/secrettype) | The secret type to use, allowed for web3 provider: ETHEREUM, BSC, MATIC |
+| [`authenticationOptions`](https://venly.readme.io/docs/authenticationoptions) | The options to use for authentications |
+| `skipAuthentication` | Boolean flag that indicates if you want to authenticate immediately or revert to [checkAuthenticated](https://venly.readme.io/docs/checkauthenticated) |
+| `pollingInterval` | When using subscriptions, this is the interval used for polling for updates. ⚠️ when set too low, you will be throttled (Default: 15s) |

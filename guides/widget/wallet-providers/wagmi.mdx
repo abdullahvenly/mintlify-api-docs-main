@@ -1,0 +1,41 @@
+---
+title: "Wagmi"
+slug: "wagmi"
+excerpt: "Overview and initialization for Wagmi."
+hidden: false
+createdAt: "Mon May 15 2023 14:40:33 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Jan 17 2024 15:39:44 GMT+0000 (Coordinated Universal Time)"
+---
+## Overview
+
+**@wagmi/core** is a comprehensive VanillaJS library that provides all the essential tools for initiating Ethereum-related tasks. Simplifying processes such as "Connect Wallet," showcasing ENS and balance details, message signing, contract interaction, and more has never been easier with this library.
+
+> 📘 Wagmi native [documentation](https://wagmi.sh/core/getting-started)
+
+### Initialization:
+
+```javascript
+import { configureChains, createClient } from 'wagmi'
+import { goerli, mainnet } from 'wagmi/chains'
+import { publicProvider } from 'wagmi/providers/public'
+import { VenlyConnector } from '@venly/wagmi-connector'
+
+const { chains, provider } = configureChains(
+  [goerli, mainnet],
+  [publicProvider()],
+)
+
+export const client = createClient({
+  connectors: [
+    new VenlyConnector({
+      chains,
+      options: {
+        clientId: 'YOUR_CLIENT_ID', //https://docs.venly.io/widget/deep-dive/authentication#client-id
+        environment: 'staging', //optional, defaults to production
+      },
+    }),
+  ],
+  provider,
+  autoConnect: true,
+})
+```

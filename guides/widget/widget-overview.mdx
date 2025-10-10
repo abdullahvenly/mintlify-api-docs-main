@@ -1,0 +1,143 @@
+---
+title: "Overview"
+slug: "widget-overview"
+excerpt: "The widget explained."
+hidden: false
+createdAt: "Tue May 16 2023 12:19:05 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 19 2024 11:26:02 GMT+0000 (Coordinated Universal Time)"
+---
+![Venly Widget](https://files.readme.io/027aff2ca61143ba4a3e45508be53e840b52e12b879d349100de3c97959c8607-Product_banners-Wallet_Widget.png)
+
+
+# Widget
+
+Venly Widget is a powerful javascript SDK meticulously crafted to streamline common blockchain tasks. Its purpose is to enable functionalities that would otherwise be restricted due to security implications, such as creating signatures. By encapsulating Venly's extensive capabilities within a user-friendly JavaScript layer, Venly Widget effortlessly empowers developers and simplifies the development process.
+
+> 📘 If you are new to Web3 and don't have experience with blockchain technologies, we recommend you use the Venly Widget natively for a better developer experience.
+
+## Look and feel
+
+As the Widget is a product that incorporates a user interface (UI), let's take a closer look at how some of the more regular flows would appear for an end user.
+
+### Token Transfer
+
+In this flow, the application prompts the user to transfer a token from their wallet to a different destination.
+
+![Token Transfer](https://files.readme.io/3d5d7b4-image.png)
+
+
+### NFT Transfer
+
+In this flow, the application prompts the user to transfer an NFT from their wallet to a different destination.
+
+![NFT Transfer](https://files.readme.io/ef27548-image.png)
+
+
+<br />
+
+> 📘 Read about Venly's Widget integration as a [segregated model](https://docs.venly.io/docs/omnibus-vs-segregated-wallets-in-crypto).
+
+## Different integration options
+
+There are multiple integration options available to incorporate the Venly Widget into your application. Here is a brief overview of some of these options:
+
+1. **Native Integration with Venly SDK**: This approach involves utilizing the Venly SDK directly within your application's codebase. It allows you to access the full functionality of the Venly Widget and customize its behavior according to your requirements.
+2. **Ethers.js Integration**: You can integrate the Venly Widget with your application using the popular Ethers.js library. This involves utilizing the Ethers.js API to interact with the Venly Widget and manage user wallets, transactions, and other blockchain-related operations.
+3. **Web3Modal Integration** (WalletConnect): Web3Modal is a library that simplifies the process of connecting to different wallet providers using standard protocols like WalletConnect. By integrating Web3Modal and WalletConnect, you can enable users to interact with the Venly Widget and connect their wallets to your application seamlessly.
+
+These are just a few examples of integration options available to incorporate the Venly Widget into your application. The choice of integration method depends on your specific requirements, preferences, and the existing infrastructure of your application.
+
+![Integration Options](https://files.readme.io/c101ee2-image.png)
+
+
+<br />
+
+| Integration Type | Description                                                                                                                                                      | UI Flexibility                                                                                                                                                                                                  | Blockchains          | ClientID     |
+| :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------- | :----------- |
+| **Native**       | A JavaScript SDK that seamlessly integrates with various API functionalities, empowering users to effortlessly execute diverse blockchain operations.            | The Widget delivers pre-designed screens specifically tailored for end users, offering a ready-to-use solution. These screens are not customizable, ensuring consistency and simplicity in the user experience. | All supported chains | Required     |
+| **Ethers.js**    | A JavaScript library used for interacting with the EVM blockchains. It provides a wide range of functionality for developers to build decentralized applications | This integration ensures that the Widget is invoked when needed, allowing users to conveniently and securely perform the required actions within the context of your application.                               | Only EVM chains      | Required     |
+| **Wagmi**        | A collection of React Hooks containing everything to work with EVMs.                                                                                             | This integration ensures that the Widget is invoked when needed, allowing users to conveniently and securely perform the required actions within the context of your application.                               | Only EVM chains      | Required     |
+| **Web3-React**   | A JavaScript SDK, based on ethers.js.                                                                                                                            | This integration ensures that the Widget is invoked when needed, allowing users to conveniently and securely perform the required actions within the context of your application.                               | Only EVM chains      | Required     |
+| **Web3Modal**    | Web3Modal is a library that simplifies the process of connecting to different wallet providers using standard protocols like WalletConnect                       | When users opt to log in with Venly, the modal will initiate the Venly Widget upon various user actions, facilitating seamless integration between your application and the Venly platform.                     | Only EVM chains      | Not required |
+
+## Venly Authenticator App for End-Users
+
+Review transactions at your fingertips. Sign transactions or signature requests through your mobile device!
+
+Make use of the Venly authenticator app, available on both the **[Apple App Store](https://apps.apple.com/us/app/venly/id1670915956)** and **[Google Play Store](https://play.google.com/store/apps/details?id=io.venly.wallet)**, to enhance security for your end-users. This app provides an extra layer of protection for transactions and message signing, allowing users to securely sign transactions or messages directly through the Venly authenticator.
+
+Your end-users can easily review transaction details such as `to address`, `blockchain`, `gas fee`, and `request origin` all from the app.
+
+Additionally, they can opt to configure biometric authentication (_Face ID, Touch ID, Fingerprint Scanner_) for additional security.
+
+### How to set up the Venly authenticator app?
+
+Your end-users can effortlessly sign up for the Venly app using the same credentials they used for your wallet service.
+
+Once logged in, they can view their transaction and signature requests directly in the app, where they can choose to sign or approve them. Additionally, they have the option to decline any transaction or signature request.
+
+### Features
+
+- Multiple social login options
+- Receive notifications for new transactions/signatures
+- Sign and approve transactions/signature requests
+- View and review complete transaction/signature details
+- Enable biometrics
+- Restore the PIN code with your biometrics
+
+### Authenticator App Flow
+
+1. Tap on the transaction/signature request.
+2. Review the details of the transaction/signature.
+3. Tap Approve, and enter the PIN or authenticate with biometrics.
+
+![Signing a message from the Venly Authenticator App](https://files.readme.io/712d1fe931e8c295c07f840013cc803e5819c51b37664587d7c4fd2d7b3eaefc-image.png)
+
+
+## Dedicated App for your End-Users
+
+With the widget, your end-users can also access the **[Venly Wallet](https://wallet.venly.io/)** where they can manage their wallets and digital assets. 
+
+**Wallet Management**: Users can create and manage multiple wallets within the Venly Wallet, providing flexibility and organization for their digital assets.
+
+**Asset Overview**: The wallet provides a comprehensive overview of all digital assets held by the user, including cryptocurrencies, NFTs, and other tokenized assets.
+
+**Transaction History**: Users can view detailed transaction histories for each wallet, allowing them to track the movement of their assets over time.
+
+**Asset Management**: Users can easily send, receive, and manage their digital assets directly from the wallet, simplifying asset management tasks.
+
+**NFT Support**: The wallet fully supports Non-Fungible Tokens (NFTs), allowing users to store, manage, and trade their NFT collections with ease.
+
+![Venly Wallet Dashboard](https://files.readme.io/59e72a6484c9683e9c18e075caab519119a2ea5683085ab786622600a4dda037-image.png)
+
+
+Additionally, they can carry out **swaps**, **execute transactions**, **create new wallets**, **import wallets**, and **monitor their activity**.
+
+![Manage Wallets with wallet.venly.io](https://files.readme.io/61350f080844a998bba659150e45460fcdc8b316864c9d018c32a8019c4e0b34-image.png)
+
+
+## Which blockchains are supported
+
+Currently, these blockchains are supported in the Widget:
+
+| Supported Blockchains |
+| :-------------------- |
+| Polygon  (_MATIC_)    |
+| Ethereum              |
+| Binance Smart Chain   |
+| Avalanche             |
+| Arbitrum              |
+| Hedera                |
+| Aeternity             |
+| Bitcoin               |
+| LiteCoin              |
+| GoChain               |
+| VeChain               |
+| NEO                   |
+| Immutable             |
+| Optimism              |
+| XPLA                  |
+| BASE                  |
+| SOLANA                |
+
+> 👍 Ready to try out the Venly Widget? Read the [Getting Started](https://docs.venly.io/docs/widget-getting-started) guide.

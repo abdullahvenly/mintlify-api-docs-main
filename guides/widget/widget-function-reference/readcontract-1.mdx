@@ -1,0 +1,90 @@
+---
+title: "readContract"
+slug: "readcontract-1"
+excerpt: "Call a read function on a contract."
+hidden: false
+createdAt: "Mon Oct 16 2023 17:20:46 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:46:28 GMT+0000 (Coordinated Universal Time)"
+---
+This function will return the result from a contract read
+
+```javascript
+venlyConnect.api.readContract({
+    "secretType": "MATIC",
+    "walletAddress": "0x0000000000000000000000000000000000000000",
+    "contractAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+    "functionName": "balanceOf",
+    "inputs": [
+        {
+            "type": "address",
+            "value": "0x427d0addaa77d8bb871dbea3458dea4b5198730c"
+        },
+        {
+            "type": "uint256",
+            "value": "202"
+        }
+    ],
+    "outputs": [
+        {
+            "type": "uint256"
+        }
+    ]
+})
+```
+
+### Signature:
+
+```javascript
+venlyConnect.api.readContract(request: ContractReadRequest): Promise<ContractReadResult>)
+```
+
+### Returns:
+
+```
+Promise<ContractReadResult>
+```
+
+### Parameters:
+
+| Parameter             | Required | Description                                                             |
+| --------------------- | -------- | ----------------------------------------------------------------------- |
+| `contractReadRequest` | True     | The request containing the parameters necessary to do the contract read |
+
+### Example:
+
+```javascript
+venlyConnect.api.readContract({
+    "secretType": "MATIC",
+    "walletAddress": "0x0000000000000000000000000000000000000000",
+    "contractAddress": "0xE80F3baA739c18fd4eBf97716529a4b85BE464Dd",
+    "functionName": "balanceOf",
+    "inputs": [
+        {
+            "type": "address",
+            "value": "0x427d0addaa77d8bb871dbea3458dea4b5198730c"
+        },
+        {
+            "type": "uint256",
+            "value": "202"
+        }
+    ],
+    "outputs": [
+        {
+            "type": "uint256"
+        }
+    ]
+}).then((contractReadResult) => {
+   if (contractReadResult.success) {
+       console.log(`The balance for this contract and token is ${contractReadResult.result.value}`);
+   } else {
+       console.warn(`Something went wrong while reading the contract`);
+   }
+}).catch((reason) => {
+    console.log(error);
+});
+```
+
+## Object Types
+
+> 📘 - [ContractReadRequest](https://venly.readme.io/docs/contractreadrequest)
+> - [ContractReadResponse](https://venly.readme.io/docs/contractreadresponse)

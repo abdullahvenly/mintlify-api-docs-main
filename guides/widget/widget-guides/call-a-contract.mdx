@@ -1,0 +1,76 @@
+---
+title: "Call a Contract"
+slug: "call-a-contract"
+excerpt: "How to perform a contract call."
+hidden: false
+createdAt: "Mon Oct 16 2023 12:46:43 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:41:01 GMT+0000 (Coordinated Universal Time)"
+---
+# Call a contract
+
+A contract call is the equivalent to launching a blockchain transaction. We've already covered that we can't execute a transaction without the user's approval. Therefore to be able to call a contract we will need to do two things i) define the contract call and ii) ask the user for his approval.
+
+The object that can ask the user for his approval is called a [`Signer`](https://venly.readme.io/docs/signer), once we've created a `Signer` object we can use the `Signer` to perform the contract call.
+
+> 🚧 To perform actions on a wallet , such as transactions or signatures,** the wallet has to be linked to your application**.  The easiest way to link a wallet to your application in to use **[getAccount](https://docs.venly.io/docs/widget-user-authentication#get-user-account)** flow.  The benefits of using the getAccount flow is that this flow bundles multiple actions into one call.
+
+### Function:
+
+```javascript
+//Asking the signer to transfer a certain value to a certain destination.
+venlyConnect.signer.executeContract({
+    secretType: '<BLOCKCHAIN>',
+    walletId: '<WALLET_ID>',
+    to: '<BLOCKCHAIN ADDRESS>',
+    value: 0,
+    functionName: '<CONTRACT_FUNCTION_NAME>',
+    inputs: [
+      {type: "address", value: "0x80cbb6c4342948e5be81987dce8251dbedd69138"},
+      {type: "uint256", value: "73680000"}
+    ]
+})
+```
+
+### Example:
+
+```javascript
+venlyConnect.signer.executeContract({
+    secretType: 'ETHEREUM',
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: '0xf147cA0b981C0CD0955D1323DB9980F4B43e9FED',
+    value: 0,
+    functionName: 'transfer',
+    inputs: [
+      {type: "address", value: "0x80cbb6c4342948e5be81987dce8251dbedd69138"},
+      {type: "uint256", value: "73680000"}
+    ]
+})
+```
+
+### Returns:
+
+```javascript
+{
+  status: "SUCCESS",
+  result: {
+    id: "046b6c74-e681-4398-a932-546c8c25034d",
+    transactionHash: "0x7889109ae7a929a968f1d86a6efe396129d1f72a6df574a051516ef247e8a616"
+  }
+}
+```
+
+## JS Fiddle Example
+
+The following is an example of a **burn contract call** to **burn an NFT**.
+
+> 📘 [Read about the same implementation using the Wallet-API.](https://docs.venly.io/docs/how-to-burn-nft)
+
+<iframe width="100%" height="600" src="https://jsfiddle.net/abdullah066/4cwdk6Lm/embedded/" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, it's parameters, and possible options documented.
+
+> 📘 - [createSigner](https://venly.readme.io/docs/createsigner)
+> - [executeContract](https://venly.readme.io/docs/executecontract)

@@ -1,0 +1,30 @@
+---
+title: "WalletItems"
+slug: "walletitems"
+excerpt: "Object that contains all the items for a wallet"
+hidden: false
+createdAt: "Tue Oct 17 2023 10:31:45 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+    walletId: string;
+    walletAddress: string;
+    secretType: SecretType;
+    items: NFT[];
+}
+```
+
+### Parameters:
+
+| Parameter       | Required | Type   | Description                          |
+| :-------------- | :------- | :----- | :----------------------------------- |
+| `walletId`      | True     | String | ID of the wallet                     |
+| `walletAddress` | True     | String | The blockchain address of the wallet |
+| `items`         | True     | NFT\[] | A list of NFT's for this wallet      |
+
+## Function Types
+
+> 📘 - [getNonFungibles](https://venly.readme.io/docs/getnonfungibles)

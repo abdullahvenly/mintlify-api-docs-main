@@ -1,0 +1,120 @@
+---
+title: "Web3.js"
+slug: "web3js"
+excerpt: "Already have support for Web3? GREAT 🎉, this is the place to start."
+hidden: false
+createdAt: "Fri Oct 13 2023 05:51:13 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Apr 19 2024 04:38:16 GMT+0000 (Coordinated Universal Time)"
+---
+If you already support Web3-technology, you can improve the UX within your application by integrating the Venly Web3 provider, a smart wrapper around the existing Web3 Ethereum JavaScript API.
+
+By making use of our Web3 provider you are able to leverage the full potential of Venly with minimal effort and you will be able to onboard users that are less tech-savvy without making them leave your application or download third-party plugins. Integrating just takes 2 steps and 5 minutes.
+
+> 📘 **Don't support Web3 yet?**
+> 
+> Don't worry we've got you covered with our 📦 [Widget - Venly Connect](https://docs.venly.io/docs/widget-overview).
+
+## Step 1: Add the library to your project
+
+Install the library by downloading it to your project via NPM
+
+```javascript
+npm i @venly/web3-provider
+```
+
+Alternatively, you could also include the library directly from a CDN
+
+```javascript
+<script src="https://unpkg.com/@venly/web3-provider/umd/index.js"></script>
+```
+
+```javascript
+<script src="https://cdn.jsdelivr.net/npm/@venly/web3-provider/umd/index.js"></script>
+```
+
+## Step 2: Initialize the web3 provider
+
+Add the following lines of code to your project, it will load the Venly web3 provider.
+
+### Simple:
+
+```javascript
+import Web3 from 'web3';
+import { VenlyProvider } from '@venly/web3-provider';
+
+const Venly = new VenlyProvider();
+const options: VenlyProviderOptions = {
+  clientId: 'YOUR_CLIENT_ID'
+};
+
+const provider = await Venly.createProvider(options);
+const web3 = new Web3(provider);
+```
+
+### Advanced:
+
+```javascript
+import Web3 from 'web3';
+import { VenlyProvider } from '@venly/web3-provider';
+
+const Venly = new VenlyProvider();
+const options = {
+  clientId: 'YOUR_CLIENT_ID',
+  environment: 'staging', //optional, production by default
+  signMethod: 'POPUP', //optional, REDIRECT by default
+  bearerTokenProvider: () => 'obtained_bearer_token', //optional, default undefined
+  //optional: you can set an identity provider to be used when authenticating
+  authenticationOptions: {
+    idpHint: 'google'
+  },
+  secretType: 'ETHEREUM' //optional, ETHEREUM by default
+};
+
+const provider = await Venly.createProvider(options);
+const web3 = new Web3(provider);
+```
+
+The web3 instance now works as if it was . You can fetch wallets, sign transactions, and messages.
+
+> 👍 Congratulations, your dapp now supports Venly 🎉
+> 
+> Ready to try out the Wallet-Widget? [Click here to get started](https://docs.venly.io/docs/widget-getting-started).
+
+## Power of the Widget
+
+Although we use the widget under the hood, the functionality of the web3 wrapper isn’t limited to the web3 API. Linking or fetching profile information is not supported by Web3, but it is available in our wrapper. After creating a Venly Provider Engine, an instance of VenlyConnect is added to the global Venly object. As a result, it’s possible to call the widget natively, like so.
+
+```javascript
+venly.connect().api.getProfile();
+```
+
+The full documentation of the Widget can be found [here](https://docs.venly.io/docs/widget-user-authentication).
+
+## Switching Networks
+
+It is possible to provide a `secretType` when creating the web3 Venly provider. When you are connected to one network and want to switch to a different network:
+
+- call `changeSecretType(secretType)` on the provider, this returns a new instance of the provider
+- Re-initialize Web3: `web3 = new Web3(provider);`
+- If necessary, recreate subscriptions
+- Refresh wallets using  `web3.eth.getAccounts()` (_a user can have different wallets depending on the selected chain_)
+- 🎉 All done!
+
+### Example:
+
+```javascript
+venly.changeSecretType('BSC').then(provider => {
+    window.web3 = new Web3(provider);
+    window.web3.eth.getChainId().then(network => {
+        //returns the new chainId
+    });
+    window.web3.eth.getAccounts(function (err, wallets) {
+        //returns new wallets for given chain, update your UI accordingly 
+    });
+});
+```
+
+## Object Types
+
+> 📘 - [SecretType](https://venly.readme.io/docs/secrettype)
+> - [VenlySubProviderOptions](https://venly.readme.io/docs/venlysubprovideroptions)

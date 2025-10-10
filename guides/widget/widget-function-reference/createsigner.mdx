@@ -1,0 +1,65 @@
+---
+title: "createSigner (deprecated)"
+slug: "createsigner"
+excerpt: "Create a Signer object."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:22:34 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:32:16 GMT+0000 (Coordinated Universal Time)"
+---
+This function will create a [`Signer`](https://venly.readme.io/docs/signer) that allows the user to sign or execute a transaction. Consider a Signer as the approval of the user.
+
+```javascript
+venlyConnect.createSigner();
+```
+
+In order for the user the give his approval he requires to enter his PIN. A [`Signer`](https://venly.readme.io/docs/signer) will enable him to do so. The [`Signer`](https://venly.readme.io/docs/signer) object also has the [`WindowMode`](https://venly.readme.io/docs/windowmode) and [`PopupOptions`](https://venly.readme.io/docs/popupoptions) available.
+
+> 📘 If you are using the popup signer and you want to execute a transaction as a reaction to an event (e.g. a button click), then call `venlyConnect.createSigner(…​)` as very first in your event handler otherwise, the popup might get blocked by the popup blocker of the browser.
+
+#### closePopup
+
+When using the POPUP [`WindowMode`](https://venly.readme.io/docs/windowmode) you can close the [`Signer`](https://venly.readme.io/docs/signer) popup manually in case something went wrong. You can use the code snippet below to close it. The type guard, isn’t mandatory, but it makes the code more robust.
+
+```javascript
+if (venlyConnect.isPopupSigner(signer)) {
+    signer.closePopup();
+}
+```
+
+### Signature:
+
+```javascript
+venlyConnect.createSigner(signUsing?: WindowMode, popupOptions?: PopupOptions): Signer
+```
+
+### Returns:
+
+```javascript
+Signer
+```
+
+### Parameters:
+
+| Parameter      | Required | Description                                                                     |
+| -------------- | -------- | ------------------------------------------------------------------------------- |
+| `signUsing`    | `False`  | The [`WindowMode`](https://venly.readme.io/docs/windowmode) you want to use     |
+| `popupOptions` | `False`  | The [`PopupOptions`](https://venly.readme.io/docs/popupoptions) you want to use |
+
+### Example:
+
+```javascript
+const signer = venlyConnect.createSigner('REDIRECT');
+```
+
+Example closing a [`Signer`](https://venly.readme.io/docs/signer) with [`WindowMode`](https://venly.readme.io/docs/windowmode) = POPUP
+
+```javascript
+const signer = venlyConnect.createSigner('POPUP');
+if (venlyConnect.isPopupSigner(signer)) {
+    signer.closePopup();
+}
+```
+
+## Object Types
+
+> 📘 - [Signer](https://venly.readme.io/docs/signer)

@@ -1,0 +1,39 @@
+---
+title: "NFTContract"
+slug: "nftcontract"
+excerpt: "This object describes the properties of an NFT contract."
+hidden: false
+createdAt: "Tue Oct 17 2023 10:18:53 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+    name?: string;
+    description?: string;
+    address: string;
+    symbol?: string;
+    url?: string;
+    imageUrl?: string;
+    type?: string;
+    media?: string;
+}
+```
+
+### Parameters:
+
+| Parameter     | Required | Type     | Description                                              |
+| :------------ | :------- | :------- | :------------------------------------------------------- |
+| `name`        | `False`  | `String` | The name of the contract / application                   |
+| `description` | `False`  | `String` | The description of the contract / application            |
+| `address`     | `True`   | `String` | The contract address \(on the blockchain\)               |
+| `symbol`      | `False`  | `String` | Symbol of the contract                                   |
+| `url`         | `False`  | `String` | The \(external\) URL of the contract / application       |
+| `imageUrl`    | `False`  | `String` | The image of the contract / application                  |
+| `type`        | `False`  | `String` | The type of the contract, ex. ERC721/ERC1155             |
+| `media`       | `False`  | `String` | Media associated with this contract, ex. a youtube video |
+
+## Function Reference
+
+> 📘 - [getNonFungibles](https://venly.readme.io/docs/getnonfungibles)

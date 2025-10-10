@@ -1,0 +1,31 @@
+---
+title: "Signer (deprecated)"
+slug: "signer"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 10:22:07 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Tue Jan 02 2024 09:49:03 GMT+0000 (Coordinated Universal Time)"
+---
+The `Signer` allows the user to sign or execute a transaction. Consider a Signer as the approval of the user. In order for the user the give his approval he requires to enter his PIN. A `Signer` will enable him to do so. 
+
+> 📘 If you are using the popup signer and you want to execute a transaction as a reaction to an event (e.g. a button click), then call `venlyConnect.createSigner(…​)` as very first in your event handler otherwise, the popup might get blocked by the popup blocker of the browser.
+
+## closePopup
+
+When using the POPUP [`WindowMode`](https://venly.readme.io/docs/windowmode) you can close the `Signer`popup manually in case something went wrong. You can use the code snippet below to close it. The type guard, isn’t mandatory, but it makes the code more robust.
+
+```javascript
+if (venlyConnect.isPopupSigner(signer)) {
+    signer.closePopup();
+}
+```
+
+## Function Types
+
+> 📘 - [createSigner](https://venly.readme.io/docs/createsigner)
+> - [executeTransfer](https://venly.readme.io/docs/executetransfer)
+> - [executeTokenTransfer](https://venly.readme.io/docs/executetokentransfer)
+> - [executeNftTransfer](https://venly.readme.io/docs/executenfttransfer)
+> - [executeGasTransfer](https://venly.readme.io/docs/executegastransfer)
+> - [executeContract](https://venly.readme.io/docs/executecontract)
+> - [signMessage](https://venly.readme.io/docs/signmessage)

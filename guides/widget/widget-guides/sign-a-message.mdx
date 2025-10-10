@@ -1,0 +1,63 @@
+---
+title: "Sign a message"
+slug: "sign-a-message"
+excerpt: "How to ask users to sign a message."
+hidden: false
+createdAt: "Mon Oct 16 2023 13:02:48 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Fri Oct 25 2024 02:25:48 GMT+0000 (Coordinated Universal Time)"
+---
+# Intro
+
+Signing a message is the equivalent to asking the user to sign his signature. Therefore to sign a message, we need to define the message for the user to sign and request his approval.
+
+The object that can ask the user his approval is called a [`Signer`](https://venly.readme.io/docs/signer), once we've created a `Signer` object we can use the `Signer` to sign the message.
+
+> 🚧 To perform actions on a wallet , such as transactions or signatures,** the wallet has to be linked to your application**.  The easiest way to link a wallet to your application in to use **[getAccount](https://docs.venly.io/docs/widget-user-authentication#get-user-account)** flow.  The benefits of using the getAccount flow is that this flow bundles multiple actions into one call.
+
+### Function:
+
+```javascript
+//Asking the signer to sign a message.
+venlyConnect.signer.signMessage({
+    walletId: '<WALLET_ID>',
+    secretType: '<BLOCKCHAIN>',
+    data : "<YOUR_MESSAGE>"
+})
+```
+
+### Example:
+
+```javascript
+venlyConnect.signer.signMessage({
+    walletId: 'c8ec9954-fa1a-4682-9cf8-ef5c1015d1d1',
+    secretType: 'ETHEREUM',
+    data : "I agree with terms and conditions"
+})
+```
+
+### Returns:
+
+```javascript
+{
+  status: "SUCCESS",
+  result: {
+    type: "HEX_SIGNATURE",
+    r: "0xa4ba7f9658160ca97f1211d1d65e4eb4a2ddb3db15c9e992ec594f3f878c29f6",
+    s: "0x37a505499d8ed726a2d6714adfe54218ea55167cc451eac644cee67b9ab7d8a6",
+    v: "0x1b",
+    signature: "0xa4ba7f9658160ca97f1211d1d65e4eb4a2ddb3db15c9e992ec594f3f878c29f637a505499d8ed726a2d6714adfe54218ea55167cc451eac644cee67b9ab7d8a61b"
+  }
+}
+```
+
+## JS Fiddle Example
+
+<iframe width="100%" height="600" src="https://jsfiddle.net/abdullah066/s8tgjyd6/embedded/" frameborder="0"></iframe>
+
+
+## Function Reference
+
+The function reference describes the different functions that are available in the Widget. For each function you can find the signature, its parameters, and possible options documented.
+
+> 📘 - [createSigner](https://venly.readme.io/docs/createsigner)
+> - [signMessage](https://venly.readme.io/docs/signmessage)

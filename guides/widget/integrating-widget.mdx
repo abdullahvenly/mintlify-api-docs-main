@@ -1,0 +1,68 @@
+---
+title: "Integration"
+slug: "integrating-widget"
+excerpt: "Learn how to integrate the Venly Widget with your app."
+hidden: false
+createdAt: "Thu Jan 18 2024 08:31:20 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Wed Oct 16 2024 10:32:59 GMT+0000 (Coordinated Universal Time)"
+---
+# Integrating Venly Widget
+
+There are multiple ways to integrate the Venly Wallet service into your app, depending on your goal, preferred type of integration, and desired UI flexibility.
+
+In the table below you can find a comparison between the Wallet API, Venly Widget, and the different libraries you can use. 
+
+A detailed comparison between the Wallet API and the Venly Widget can be found [here](https://venly.readme.io/docs/wallet-api-vs-wallet-widget). 
+
+![Widget Integration Flow](https://files.readme.io/ca7b8e4df93dd613ddf7425ac056ad60565964537a24e6db4bcd40900d7e7587-image.png)
+
+
+## Different integration options
+
+There are multiple integration options available to incorporate the Venly Widget into your application. Here is a brief overview of some of these options:
+
+1. **Native Integration with Venly SDK**: This approach involves utilizing the Venly SDK directly within your application's codebase. It allows you to access the full functionality of the Venly Widget and customize its behavior according to your requirements.
+2. **Ethers.js Integration**: You can integrate the Venly Widget with your application using the popular Ethers.js library. This involves utilizing the Ethers.js API to interact with the Venly Widget and manage user wallets, transactions, and other blockchain-related operations.
+3. **Web3Modal Integration** (WalletConnect): Web3Modal is a library that simplifies the process of connecting to different wallet providers using standard protocols like WalletConnect. By integrating Web3Modal and WalletConnect, you can enable users to interact with the Venly Widget and connect their wallets to your application seamlessly.
+
+These are just a few examples of integration options available to incorporate the Venly Widget into your application. The choice of integration method depends on your specific requirements, preferences, and the existing infrastructure of your application.
+
+![Integration Options](https://files.readme.io/0ded509-image.png)
+
+
+<br />
+
+| Product                                                | Description                                                                                                                                             | UI Flexibility                                                                                                                                                                               | Networks                                     | Client ID Required? |
+| :----------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------- | :------------------ |
+| **Wallet API **(_RECOMMENDED for Backend integration_) | A REST API that simplifies the interactions with a blockchain.                                                                                          | You are in full control of the UI/UX. You can build a wallet solution similar to the Venly Widget to onboard users. You will be responsible for integrating it with the different libraries. | 13+ networks, including EVM and non-EVM ones | Yes                 |
+| **Venly Widget **(_RECOMMENDED Frontend integration_)  | A JavaScript SDK that wraps all the API functionalities and allows users to perform different blockchain operations.                                    | The Widget provides out-of-the-box screens for the end users. They are not customizable.                                                                                                     | 13+ networks, including EVM and non-EVM ones | Yes                 |
+| **ethers.js**                                          | A JavaScript SDK that allows you to interact with an EVM client. It’s a standardized wrapper that provides access to the same functionality as the API. | Some of the calls (that require user interaction) would trigger the Venly Widget.                                                                                                            | EVM-compatible networks                      | Yes                 |
+| **web3.js**                                            | A JavaScript SDK that allows you to interact with an EVM client. It’s a standardised wrapper that provides access to the same functionality as the API. | Some of the calls (that require user interaction) would trigger the Venly Widget.                                                                                                            | EVM-compatible networks                      | Yes                 |
+| **web3-react**                                         | A JavaScript SDK, based on ethers.js.                                                                                                                   | Some of the calls (that require user interaction) would trigger the Venly Widget.                                                                                                            | EVM-compatible networks                      | Yes                 |
+| **web3modal**                                          | A JavaScript SDK + UI components that allow you to connect user’s wallets to your application. Built on top of WalletConnect and wagmi.                 | The modal itself is customisable. If users choose to log in with Venly, the Venly Widget will be triggered on the different user actions.                                                    | EVM-compatible networks                      | No                  |
+| **wagmi**                                              | wagmi is a backend library that enables dApps to easily interact with Ethereum.                                                                         | Gives developers full control over UI/UX (much like Venly’s Wallet API)                                                                                                                      | EVM-compatible networks                      | Yes                 |
+
+## When to choose what?
+
+If you want to build your own wallet app for users to interact with, you should use the [Wallet API](https://venly.readme.io/docs/overview).
+
+If you want to integrate an existing, full-fletched wallet solution, you can use the **Venly Widget**.  
+There are multiple ways to integrate it - natively or by using another library (which also uses the Venly Widget in the background):
+
+![Decision Making Flowchart](https://files.readme.io/a47e0892e521900dcafc5e844a5649c6c1b45620c754eb1a0b3f0d97c61ea652-image.png)
+
+
+If you are new to Web3 and don't have experience with blockchain technologies, we recommend you use the **Venly Widget** natively for a better developer experience.  
+If you have Web3 knowledge and/or already have experience with some of the other libraries that we support, we recommend you use those.
+
+Another thing to take into account is the networks that you support and you want your users to be able to connect to. The Venly Widget supports 13+ networks, including EVM and non-EVM ones. The rest of the libraries only support EVM-compatible networks (with no specific implementations). Check [environments](https://venly.readme.io/docs/environment-sandbox-production) for more information.
+
+And last, but not least - all listed libraries use Venly Widget in the background and it will be triggered on user action. However, for most of them, you have to build the front-end logic that will make it possible for a user to connect. There are libraries like web3modal that provide UI components for the wallet connection - you can use those in case you don't want to build this logic yourself. 
+
+## Getting started with the integration
+
+If you decide to integrate the Wallet API, make sure to check the Wallet API [Documentation](https://venly.readme.io/docs/overview).
+
+If you decide to integrate the Venly Widget natively, proceed to the [guides](https://docs.venly.io/docs/initializing-widget).
+
+If you decide to use another Web3 library that supports the Venly Widget, check the [**Wallet Providers**](https://venly.readme.io/docs/ethersjs) section - it will help you get started and contains links to the relevant documentation.

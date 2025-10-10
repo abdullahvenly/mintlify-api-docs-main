@@ -1,0 +1,45 @@
+---
+title: "addOnTokenRefreshCallback"
+slug: "addontokenrefreshcallback"
+excerpt: "Receive a callback when the bearer token refreshes."
+hidden: false
+createdAt: "Mon Oct 16 2023 14:18:09 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+You can add a callback method that will be called each time the bearer token is refreshed. This can only be used while using the Venly Connect JS[ authentication client](https://venly.readme.io/docs/authenticating-with-venly). This function has one parameter: a callback function accepting one parameter (the new bearer token) and returning void.
+
+```javascript
+venlyConnect.addOnTokenRefreshCallback(token => {
+  console.log('Refreshed bearer token: ' + token);
+});
+```
+
+### Signature:
+
+```javascript
+venlyConnect.addOnTokenRefreshCallback(tokenRefreshCallback: (token: string) => void): void
+```
+
+### Returns:
+
+```javascript
+Promise<AuthenticationResult>
+```
+
+### Parameters:
+
+| Parameter              | Description                                                                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------- |
+| `tokenRefreshCallback` | a callback function accepting one parameter (the new bearer token) and returning void. (Required) |
+
+### Example:
+
+```javascript
+venlyConnect.addOnTokenRefreshCallback(token => {
+  console.log('Refreshed bearer token: ' + token);
+});
+```
+
+## Object Types
+
+> 📘 - [AuthenticationResult](https://venly.readme.io/docs/authenticationresult)

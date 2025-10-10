@@ -1,0 +1,71 @@
+---
+title: "TokenTransferRequestDto"
+slug: "tokentransferrequestdto"
+excerpt: "Data structure for performing a fungible token transfer."
+hidden: false
+createdAt: "Tue Oct 17 2023 10:41:53 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:01 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+  walletId! : string;
+  to! : string;
+  secretType! : SecretType;
+  tokenAddress!: string;
+  data? : string;
+  value! : BigDecimal;
+  chainSpecificFields? : object;
+}
+```
+
+### Parameters:
+
+| Parameter             | Required | Type                                                    | Description                                                                                                                                           |
+| --------------------- | -------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `walletId`            | `True`   | `String`                                                | ID of the wallet one wants to sign with.                                                                                                              |
+| `to`                  | `True`   | `String`                                                | Destination address of the transaction. Can be an address or an email address.                                                                        |
+| `secretType`          | `True`   | [`SecretType`](https://venly.readme.io/docs/secrettype) | Chain the transaction will be executed on.                                                                                                            |
+| `tokenAddress`        | `True`   | `String`                                                | Address of the token                                                                                                                                  |
+| `data`                | `False`  | `String`                                                | Data you want to send. This field will be ignored when building a token transaction request                                                           |
+| `value`               | `True`   | `Number`                                                | Token value that should be transferred.                                                                                                               |
+| `ChainSpecificFields` | `False`  | `Object`                                                | This field can be used to pass properties specific to a chain. More info: [Chain specific fields](https://venly.readme.io/docs/chain-specific-fields) |
+
+> 📘 🧙 You don’t have to take into account the number of decimals for different tokens, Venly handles that for you.
+> 
+> **Example:** If a token has 18 decimals and you want to transfer 1 token, provide the value 1. Venly will translate this to the correct non-decimal value (1 \* 10e18).
+
+### Example:
+
+#### Plain
+
+```javascript
+{
+    walletId: '71dec640-4eb8-4321-adb8-b79461573fc4',
+    to: '0xf147cA0b981C0CD0955D1323DB9980F4B43e9FED',
+    value: 1010,
+    tokenAddress: '0x02f96ef85cad6639500ca1cc8356f0b5ca5bf1d2'
+    secretType: 'ETHEREUM',
+}
+```
+
+#### With Hedera Memo
+
+```
+{
+    "secretType": "HEDERA",
+    "walletId": "d1e091d7-0fab-4f46-8afd-ad31f1e735d7",
+    "to": "0.0.2278508",
+    "tokenAddress": "0.0.2278508",
+    "value": "0.0314",
+    "chainSpecificFields": {
+        "transactionMemo": "0.0.2810009"
+    }
+}
+```
+
+## Function Types
+
+> 📘 - [executeTokenTransfer](https://venly.readme.io/docs/executetokentransfer)
+> - [chainSpecificFields](https://venly.readme.io/docs/chain-specific-fields)

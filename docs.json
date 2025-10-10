@@ -46,11 +46,21 @@
             "pages": [
               "getting-started/faucets"
             ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "guides/integrations/moonpay",
+              "guides/integrations/playfab",
+              "guides/integrations/ramp-network",
+              "guides/integrations/sitemanager",
+              "guides/integrations/transak"
+            ]
           }
         ]
       },
       {
-        "tab": "User Guides",
+        "tab": "API Guides",
         "groups": [
           {
             "group": "NFT-API Basic Guides",
@@ -151,6 +161,130 @@
               "guides/wallet-api/update-users-reference",
               "guides/wallet-api/update-users-signing-method",
               "guides/wallet-api/webhooks-wallet-api"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Widget Guides",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "guides/widget/widget-overview",
+              "guides/widget/widget-getting-started",
+              "guides/widget/integrating-widget",
+              "guides/widget/configuration"
+            ]
+          },
+          {
+            "group": "Basic Guides",
+            "pages": [
+              "guides/widget/widget-guides/initializing-widget",
+              "guides/widget/widget-guides/authenticating-widget-with-venly",
+              "guides/widget/widget-guides/widget-user-authentication",
+              "guides/widget/widget-guides/selecting-environments-and-networks",
+              "guides/widget/widget-guides/performing-basic-functions-using-widget",
+              "guides/widget/widget-guides/retrieve-a-user-account",
+              "guides/widget/widget-guides/retrieve-user-profile",
+              "guides/widget/widget-guides/retrieve-user-wallets",
+              "guides/widget/widget-guides/retrieve-wallet-balance",
+              "guides/widget/widget-guides/retrieve-token-balance",
+              "guides/widget/widget-guides/retrieve-non-fungible-tokens",
+              "guides/widget/widget-guides/chain-specific-fields",
+              "guides/widget/widget-guides/execute-transactions",
+              "guides/widget/widget-guides/transfer-a-native-token",
+              "guides/widget/widget-guides/transfer-a-fungible-token",
+              "guides/widget/widget-guides/transfer-a-non-fungible-token",
+              "guides/widget/widget-guides/call-a-contract",
+              "guides/widget/widget-guides/sign-a-message",
+              "guides/widget/widget-guides/sign-an-eip712-message"
+            ]
+          },
+          {
+            "group": "Wallet Providers",
+            "pages": [
+              "guides/widget/wallet-providers/ethersjs",
+              "guides/widget/wallet-providers/wagmi",
+              "guides/widget/wallet-providers/web3-react",
+              "guides/widget/wallet-providers/web3js",
+              "guides/widget/wallet-providers/web3modal-walletconnect",
+              "guides/widget/wallet-providers/web3onboard"
+            ]
+          },
+          {
+            "group": "Function Reference",
+            "pages": [
+              "guides/widget/widget-function-reference/authenticate",
+              "guides/widget/widget-function-reference/checkauthenticated",
+              "guides/widget/widget-function-reference/addontokenrefreshcallback",
+              "guides/widget/widget-function-reference/logout",
+              "guides/widget/widget-function-reference/getprofile",
+              "guides/widget/widget-function-reference/getaccount",
+              "guides/widget/widget-function-reference/getwallets",
+              "guides/widget/widget-function-reference/getwallet",
+              "guides/widget/widget-function-reference/managewallets",
+              "guides/widget/widget-function-reference/linkwallets",
+              "guides/widget/widget-function-reference/importwallet-1",
+              "guides/widget/widget-function-reference/unlink",
+              "guides/widget/widget-function-reference/getbalance",
+              "guides/widget/widget-function-reference/getbalancebyaddress",
+              "guides/widget/widget-function-reference/gettokenbalance",
+              "guides/widget/widget-function-reference/gettokenbalancebyaddress",
+              "guides/widget/widget-function-reference/gettokenbalances",
+              "guides/widget/widget-function-reference/gettokenbalancesbyaddress",
+              "guides/widget/widget-function-reference/getnonfungibles",
+              "guides/widget/widget-function-reference/getnonfungiblesbyaddress",
+              "guides/widget/widget-function-reference/getallnonfungibles",
+              "guides/widget/widget-function-reference/createsigner",
+              "guides/widget/widget-function-reference/executetransfer",
+              "guides/widget/widget-function-reference/executetokentransfer",
+              "guides/widget/widget-function-reference/executenfttransfer",
+              "guides/widget/widget-function-reference/executegastransfer",
+              "guides/widget/widget-function-reference/executetokenassociation",
+              "guides/widget/widget-function-reference/executecontract",
+              "guides/widget/widget-function-reference/readcontract-1",
+              "guides/widget/widget-function-reference/signmessage",
+              "guides/widget/widget-function-reference/signeip712",
+              "guides/widget/widget-function-reference/gettransactionstatus"
+            ]
+          },
+          {
+            "group": "Object Reference",
+            "pages": [
+              "guides/widget/widget-object-reference/account",
+              "guides/widget/widget-object-reference/profile",
+              "guides/widget/widget-object-reference/wallet",
+              "guides/widget/widget-object-reference/walletbalance",
+              "guides/widget/widget-object-reference/walletitems",
+              "guides/widget/widget-object-reference/tokenbalance",
+              "guides/widget/widget-object-reference/nft",
+              "guides/widget/widget-object-reference/nftcontract",
+              "guides/widget/widget-object-reference/trait",
+              "guides/widget/widget-object-reference/signer",
+              "guides/widget/widget-object-reference/signerresult",
+              "guides/widget/widget-object-reference/secrettype",
+              "guides/widget/widget-object-reference/constructoroptions",
+              "guides/widget/widget-object-reference/authenticationoptions",
+              "guides/widget/widget-object-reference/authenticationresult",
+              "guides/widget/widget-object-reference/keycloakinstance",
+              "guides/widget/widget-object-reference/popupoptions",
+              "guides/widget/widget-object-reference/popupresult",
+              "guides/widget/widget-object-reference/redirectoptions",
+              "guides/widget/widget-object-reference/windowmode",
+              "guides/widget/widget-object-reference/venlysubprovideroptions",
+              "guides/widget/widget-object-reference/transferrequestdto",
+              "guides/widget/widget-object-reference/tokentransferrequestdto",
+              "guides/widget/widget-object-reference/nfttransferrequestdto",
+              "guides/widget/widget-object-reference/gastransferrequestdto",
+              "guides/widget/widget-object-reference/hederatokenassociationrequest",
+              "guides/widget/widget-object-reference/contractexecutiondto",
+              "guides/widget/widget-object-reference/contractreadrequest",
+              "guides/widget/widget-object-reference/contractreadresponse",
+              "guides/widget/widget-object-reference/messagesignrequestdto",
+              "guides/widget/widget-object-reference/eip712signrequestdto",
+              "guides/widget/widget-object-reference/importwalletrequest",
+              "guides/widget/widget-object-reference/txstatusresult"
             ]
           }
         ]
@@ -471,10 +605,18 @@
           {
             "group": "2025",
             "pages": [
+              "changelog/updated-ethereum-deployment-funding",
+              "changelog/nft-api-improved-token-id-sequencing",
               "changelog/developer-portal-update-actions-for-nft-api",
               "changelog/developer-portal-write-actions-for-nft-api",
+              "changelog/reversal-of-ethereum-minting-deprecation",
+              "changelog/nft-testnet-assets",
+              "changelog/developer-portal-improved-nft-insights",
               "changelog/nft-api-token-api-updates-february-2025",
               "changelog/nft-api-token-api-updates-feb-2025",
+              "changelog/developer-portal-nft-insights",
+              "changelog/deprecation-of-ethereum-nft-creation-and-minting",
+              "changelog/fiat-onramps-offramps",
               "changelog/developer-portal-update-wallet-insights",
               "changelog/developer-portal-updates-january-2025",
               "changelog/password-signing-method-native-token-usd-price"
@@ -485,11 +627,28 @@
             "pages": [
               "changelog/update-for-nft-api-webhooks",
               "changelog/developer-portal-updates",
+              "changelog/solana-chain-added",
+              "changelog/sitemanager-integration-added",
+              "changelog/optimism-chain-added-to-widget",
+              "changelog/get-supported-chains-for-nft-token-api",
+              "changelog/token-api",
+              "changelog/nft-api-v3",
+              "changelog/optimism-chain-added",
+              "changelog/pay-fee-update",
               "changelog/retrieve-additional-metadata-of-erc20-tokens",
               "changelog/updated-developer-portal",
               "changelog/retrieve-erc20-tokens-metadata-usd-price",
               "changelog/signing-method-update-importing-litecoin-wallet",
+              "changelog/new-pricing-plan-scale-plan",
+              "changelog/rebroadcast-transactions",
+              "changelog/base-faucet",
+              "changelog/encrypted-pin-transfer",
+              "changelog/new-pricing-plan-developer-plan",
+              "changelog/base-xpla-support-for-widget",
+              "changelog/deprecating-market-market-api",
               "changelog/new-pricing-structure",
+              "changelog/polygon-mainnet-upgrade",
+              "changelog/polygon-avalanche-faucet",
               "changelog/12-april-2024-migration-from-mumbai-to-amoy-for-polygon-testnet",
               "changelog/15-march-2024-nft-api",
               "changelog/13-march-2024-webhooks",
@@ -533,34 +692,6 @@
             "group": "2021",
             "pages": [
               "changelog/01-november-2021"
-            ]
-          },
-          {
-            "group": "Other Updates",
-            "pages": [
-              "changelog/developer-portal-improved-nft-insights",
-              "changelog/developer-portal-nft-insights",
-              "changelog/new-pricing-plan-scale-plan",
-              "changelog/new-pricing-plan-developer-plan",
-              "changelog/token-api",
-              "changelog/nft-api-v3",
-              "changelog/solana-chain-added",
-              "changelog/optimism-chain-added",
-              "changelog/optimism-chain-added-to-widget",
-              "changelog/base-xpla-support-for-widget",
-              "changelog/base-faucet",
-              "changelog/fiat-onramps-offramps",
-              "changelog/get-supported-chains-for-nft-token-api",
-              "changelog/polygon-avalanche-faucet",
-              "changelog/nft-testnet-assets",
-              "changelog/pay-fee-update",
-              "changelog/polygon-mainnet-upgrade",
-              "changelog/rebroadcast-transactions",
-              "changelog/encrypted-pin-transfer",
-              "changelog/sitemanager-integration-added",
-              "changelog/deprecating-market-market-api",
-              "changelog/deprecation-of-ethereum-nft-creation-and-minting",
-              "changelog/reversal-of-ethereum-minting-deprecation"
             ]
           }
         ]

@@ -1,0 +1,34 @@
+---
+title: "TxStatusResult"
+slug: "txstatusresult"
+excerpt: ""
+hidden: false
+createdAt: "Tue Oct 17 2023 10:42:44 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```javascript
+{
+    status: 'UNKNOWN' | 'PENDING' | 'FAILED' | 'SUCCEEDED'
+}
+```
+
+### Parameters:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | `String` | `UNKNOWN` Not yet visible on the chain. `PENDING` Not yet completed (or failed). `SUCCEEDED` Completed successfully. `FAILED` Transaction is failed. |
+
+
+### Example:
+
+```javascript
+{
+  "status" : "PENDING"
+}
+```
+
+## Function Types
+
+> 📘 - [getTransactionStatus](https://venly.readme.io/docs/gettransactionstatus)

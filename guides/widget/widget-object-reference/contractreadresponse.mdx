@@ -1,0 +1,33 @@
+---
+title: "ContractReadResponse"
+slug: "contractreadresponse"
+excerpt: "Data structure returned when performing a contract read on a blockchain."
+hidden: false
+createdAt: "Tue Oct 17 2023 10:11:35 GMT+0000 (Coordinated Universal Time)"
+updatedAt: "Thu Dec 07 2023 10:25:02 GMT+0000 (Coordinated Universal Time)"
+---
+### Signature:
+
+```typescript
+{
+    type!: string,
+    value!: any
+}
+```
+
+### Parameters:
+
+<table><thead><tr><th>Parameter</th><th width="150">Required</th><th width="150">Type</th><th>Description</th></tr></thead><tbody><tr><td><code>type</code></td><td><code>True</code></td><td><code>String</code></td><td>The type of the requested output</td></tr><tr><td><code>value</code></td><td><code>True</code></td><td><code>Any</code></td><td>The value of the requested output</td></tr></tbody></table>
+
+### Example:
+
+```json
+{
+    "type": "uint256",
+    "value": 4
+}
+```
+
+## Function Types
+
+> 📘 - [readContract](https://venly.readme.io/docs/readcontract-1)
