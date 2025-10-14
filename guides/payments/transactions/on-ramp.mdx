@@ -1,0 +1,296 @@
+---
+title: Creating On-Ramp Transactions
+description: Purchase cryptocurrency with fiat currency
+---
+
+## What is an On-Ramp?
+
+An on-ramp converts fiat currency (EUR, USD, GBP) from your bank account into cryptocurrency in your wallet.
+
+```
+Your Bank Account → Venly → Your Crypto Wallet
+```
+
+<Info>
+  Processing time: 1-2 hours after your bank transfer is confirmed
+</Info>
+
+## Prerequisites
+
+Before creating an on-ramp:
+
+✅ Business approved (green badge)
+✅ Verified bank account
+✅ Active crypto wallet
+✅ Sufficient funds in bank account
+
+## Step-by-Step Guide
+
+<Steps>
+  <Step title="Navigate to On-Ramp Creation">
+    **Option 1**: From Dashboard
+    - Click **Create On-Ramp** button
+    
+    **Option 2**: From Transactions
+    - Go to **Transactions** page
+    - Click **New On-Ramp** button
+  </Step>
+  
+  <Step title="Step 1: Enter Amount & Select Currencies">
+    **Amount**
+    - Enter the amount you want to deposit
+    - Minimum: €50 (or equivalent)
+    - Maximum: Based on your account limits
+    
+    **From Currency (Fiat)**
+    - EUR - Euro
+    - USD - US Dollar
+    - GBP - British Pound
+    
+    **To Cryptocurrency**
+    - USDC - USD Coin (recommended)
+    - ETH - Ethereum
+    - MATIC - Polygon
+    
+    **Review Estimate**
+    
+    The platform shows:
+    - Estimated crypto amount you'll receive
+    - Current exchange rate
+    - Processing fee (0.5%)
+    - Total cost breakdown
+    
+    Click **Continue**
+  </Step>
+  
+  <Step title="Step 2: Select Accounts">
+    **Source Bank Account**
+    - Choose which bank account to transfer from
+    - Must be verified
+    - Shows account name and masked IBAN
+    
+    **Receiving Wallet**
+    - Choose which wallet receives the crypto
+    - Must be active/verified
+    - Shows wallet name and network
+    
+    Click **Continue**
+  </Step>
+  
+  <Step title="Step 3: Review & Confirm">
+    Review all details carefully:
+    
+    - Amount: €5,000.00 EUR
+    - You will receive: 5,100.00 USDC
+    - From: Business Checking
+    - To: Primary USDC Wallet
+    - Fee: 0.5%
+    
+    **Important Notes**:
+    - Next screen shows bank transfer instructions
+    - Crypto arrives after bank confirmation
+    - Transaction monitored for compliance
+    
+    Click **Confirm & Create**
+  </Step>
+  
+  <Step title="Step 4: Complete Bank Transfer">
+    **Critical Information Displayed:**
+    
+    **Beneficiary Name**: PayRamp Solutions B.V.
+    
+    **Bank Name**: ING Bank N.V.
+    
+    **IBAN**: NL91 INGB 0123 4567 89
+    
+    **BIC/SWIFT**: INGBNL2A
+    
+    **Amount**: Exact amount shown (e.g., €5,000.00)
+    
+    **Reference Code**: `ON-ABC12345` ⚠️ **MUST INCLUDE**
+    
+    <Warning>
+      The reference code is CRITICAL. Your payment cannot be matched without it!
+    </Warning>
+    
+    **How to Complete:**
+    1. Open your bank's online banking or app
+    2. Create a new transfer
+    3. Enter all details exactly as shown
+    4. **Include the reference code** in the payment description/reference field
+    5. Verify all details before submitting
+    6. Complete the transfer
+    7. Save your bank receipt
+    
+    Click **Go to Transactions** when done
+  </Step>
+</Steps>
+
+## After Creating the Transaction
+
+### Transaction Status Updates
+
+Your transaction will progress through these stages:
+
+**1. Transaction Created** (Blue)
+- Initial status after creation
+- Waiting for your bank transfer
+- **Your action**: Complete the bank transfer
+
+**2. Waiting for Funds** (Amber)
+- Transfer initiated from your side
+- Platform monitoring for receipt
+- **Your action**: Wait for bank confirmation (can take up to 1 hour)
+
+**3. Processing** (Purple)
+- Payment received and confirmed
+- Converting fiat to crypto
+- Sending crypto to your wallet
+- **Your action**: None - wait for completion
+
+**4. Completed** (Green)
+- Crypto successfully sent to your wallet
+- Transaction finished
+- **Your action**: Verify crypto in your wallet
+
+### Email Notifications
+
+You'll receive emails at each stage:
+- Transaction created (with bank instructions)
+- Payment received
+- Processing started
+- Crypto sent to wallet
+
+## Processing Timeline
+
+```
+Minute 0    - Create transaction
+Minute 0-60 - Complete your bank transfer
+Minute 5-90 - Bank confirms transfer
+Minute 60-120 - Crypto sent to wallet
+```
+
+<Tip>
+  Bank transfers during business hours (Mon-Fri, 9 AM - 5 PM) process faster than those made outside these hours.
+</Tip>
+
+## Fees Breakdown
+
+Example for €5,000 EUR → USDC:
+
+| Item | Amount |
+|------|--------|
+| Base Amount | €5,000.00 |
+| Processing Fee (0.5%) | €25.00 |
+| Exchange Rate | 1 EUR = 1.02 USDC |
+| **You Receive** | **5,100 USDC** |
+
+<Info>
+  All fees are included in the final amount shown. No hidden charges.
+</Info>
+
+## Tips for Successful On-Ramps
+
+<AccordionGroup>
+  <Accordion title="Always include the reference code">
+    The reference code (ON-XXXXXXXX) is essential. Without it, we cannot automatically match your payment and processing will be delayed.
+  </Accordion>
+  
+  <Accordion title="Transfer exact amount">
+    Transfer the exact amount shown. If you send a different amount, it may cause processing delays or rejection.
+  </Accordion>
+  
+  <Accordion title="Use the correct bank account">
+    Transfer from the bank account you selected during transaction creation. Transfers from different accounts may be rejected.
+  </Accordion>
+  
+  <Accordion title="Save your bank receipt">
+    Keep proof of your bank transfer. This helps resolve any issues quickly.
+  </Accordion>
+  
+  <Accordion title="Check transaction status">
+    Monitor your transaction status in the platform. You'll see updates as processing progresses.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Bank transfer not detected">
+    **Wait Time**: Up to 2 hours for detection
+    
+    **Check**:
+    - Did you include the reference code?
+    - Did you send the exact amount?
+    - Is the transfer from the correct bank account?
+    
+    **Solution**: Contact support with:
+    - Transaction ID
+    - Bank transfer receipt
+    - Transfer reference/confirmation number
+  </Accordion>
+  
+  <Accordion title="Wrong amount transferred">
+    **If you sent less**: Contact support to:
+    - Cancel transaction and refund
+    - OR process with adjusted amount
+    
+    **If you sent more**: Contact support
+    - Excess will be refunded or credited
+    - Processing may be delayed
+  </Accordion>
+  
+  <Accordion title="Forgot reference code">
+    **Critical**: Without the reference code, automatic matching fails
+    
+    **Solution**:
+    1. Contact support immediately
+    2. Provide transaction ID
+    3. Provide bank transfer proof
+    4. Manual matching will be attempted
+    5. Processing will be delayed by 1-2 business days
+  </Accordion>
+  
+  <Accordion title="Transaction stuck in 'Waiting for Funds'">
+    **Reasons**:
+    - Bank transfer not yet sent
+    - Bank transfer still pending confirmation
+    - Reference code missing or incorrect
+    - Amount mismatch
+    
+    **Solution**:
+    1. Verify you completed the bank transfer
+    2. Check bank transfer status with your bank
+    3. Wait full 2 hours before contacting support
+    4. Contact support@venly.io if still stuck
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Test First**: Start with a small amount (€100-500) for your first on-ramp to familiarize yourself with the process.
+</Tip>
+
+<Tip>
+  **Business Hours**: Initiate transactions during banking hours (Mon-Fri, 9 AM - 5 PM) for faster processing.
+</Tip>
+
+<Tip>
+  **Double Check**: Review all details twice before confirming, especially the reference code inclusion in your bank transfer.
+</Tip>
+
+<Warning>
+  Once you transfer funds from your bank, the transaction cannot be cancelled. Ensure all details are correct before transferring.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Monitor Transaction" icon="eye" href="/guides/transactions/monitoring">
+    Track your transaction progress
+  </Card>
+  <Card title="Create Off-Ramp" icon="arrow-down" href="/guides/transactions/off-ramp">
+    Convert crypto back to fiat
+  </Card>
+</CardGroup>

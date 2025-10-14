@@ -1,0 +1,263 @@
+---
+title: Transaction Management
+description: Overview of on-ramp and off-ramp transactions
+---
+
+## What Are Transactions?
+
+Transactions enable you to convert between fiat currency and cryptocurrency.
+
+<CardGroup cols={2}>
+  <Card title="On-Ramp" icon="arrow-up-circle">
+    **Buy Crypto with Fiat**
+    
+    Transfer money from your bank account to purchase cryptocurrency
+  </Card>
+  <Card title="Off-Ramp" icon="arrow-down-circle">
+    **Sell Crypto for Fiat**
+    
+    Convert cryptocurrency back to fiat currency in your bank account
+  </Card>
+</CardGroup>
+
+## Transaction Flow
+
+### On-Ramp Process
+
+```
+Bank Account → Platform → Crypto Wallet
+```
+
+1. Create transaction request
+2. Receive bank transfer instructions
+3. Complete bank transfer
+4. System processes payment (1-2 hours)
+5. Crypto arrives in your wallet
+
+**Total Time**: 1-2 hours after bank transfer
+
+### Off-Ramp Process
+
+```
+Crypto Wallet → Platform → Bank Account
+```
+
+1. Create transaction request
+2. Wallet debited immediately
+3. Crypto converted to fiat
+4. Bank transfer initiated
+5. Fiat arrives in bank account
+
+**Total Time**: 1-2 business days
+
+## Transaction Statuses
+
+| Status | Color | Meaning | Your Action |
+|--------|-------|---------|-------------|
+| **Transaction Created** | Blue | Request initiated | Complete bank transfer (on-ramp) |
+| **Waiting for Funds** | Amber | Awaiting your bank transfer | Transfer funds from your bank |
+| **Processing** | Purple | Being processed | None - wait for completion |
+| **Completed** | Green | Successfully finished | None - funds available |
+| **Failed** | Red | Error occurred | Contact support |
+
+<Info>
+  You'll receive email notifications for each status change.
+</Info>
+
+## Before Creating Transactions
+
+Ensure you have:
+
+<Steps>
+  <Step title="Business Approval">
+    Your business must be approved (green badge in dashboard)
+  </Step>
+  
+  <Step title="Verified Bank Account">
+    At least one bank account verified via email
+  </Step>
+  
+  <Step title="Active Crypto Wallet">
+    At least one wallet created or verified
+  </Step>
+  
+  <Step title="Sufficient Funds">
+    **On-Ramp**: Funds available in bank account
+    
+    **Off-Ramp**: Crypto available in wallet
+  </Step>
+</Steps>
+
+## Fee Structure
+
+### On-Ramp Fees
+
+- **Processing Fee**: 0.5%
+- **Currency Tier**: 0.30% - 0.70% (based on currency and volume)
+- **Total**: All-in pricing shown upfront
+
+### Off-Ramp Fees
+
+- **Processing Fee**: 1.0%
+- **Currency Tier**: 0.30% - 0.70% (based on currency and volume)
+- **Total**: All-in pricing shown upfront
+
+<Tip>
+  Higher monthly transaction volumes automatically qualify for lower fee tiers!
+</Tip>
+
+[View detailed fee structure →](/guides/fees)
+
+## Exchange Rates
+
+- Real-time market rates
+- Updated every few seconds
+- Locked when you confirm transaction
+- No hidden markups
+
+<Info>
+  The final amount is guaranteed at the rate shown during transaction creation.
+</Info>
+
+## Transaction Limits
+
+### Minimum Amounts
+
+- **On-Ramp**: Typically €50 or equivalent
+- **Off-Ramp**: Typically €50 or equivalent
+
+### Maximum Amounts
+
+- Based on your verification level
+- Business account tier
+- Monthly volume limits
+- Contact support for limit increases
+
+## Transaction Reference Codes
+
+Every transaction gets a unique reference code:
+
+- **On-Ramp**: Format `ON-XXXXXXXX`
+- **Off-Ramp**: Format `OFF-XXXXXXXX`
+
+<Warning>
+  For on-ramps, you MUST include this reference code in your bank transfer. Without it, we cannot match your payment.
+</Warning>
+
+## Viewing Transactions
+
+### Dashboard Access
+
+From the main navigation:
+1. Click **Transactions**
+2. Choose **Pending** or **Processed** tab
+3. Click any transaction for details
+
+### Transaction Details
+
+Each transaction shows:
+- Transaction ID
+- Type (on-ramp/off-ramp)
+- Status
+- Amounts (fiat and crypto)
+- Accounts involved
+- Timestamp
+- Reference code
+
+## Supported Currency Pairs
+
+### Popular Pairs
+
+| From | To | Type | Processing |
+|------|-------|------|------------|
+| EUR | USDC | On-Ramp | 1-2 hours |
+| USD | USDC | On-Ramp | 1-2 hours |
+| GBP | ETH | On-Ramp | 1-2 hours |
+| USDC | EUR | Off-Ramp | 1-2 days |
+| ETH | USD | Off-Ramp | 1-2 days |
+| MATIC | GBP | Off-Ramp | 1-2 days |
+
+<Note>
+  More pairs available. Check the platform for complete list.
+</Note>
+
+## Processing Times
+
+### On-Ramp Timeline
+
+```
+0 min    - Transaction created
+0-60 min - Complete bank transfer
+5-120 min - Bank confirms transfer
+60-120 min - Crypto sent to wallet
+```
+
+### Off-Ramp Timeline
+
+```
+0 min    - Transaction created, wallet debited
+0-24 hrs - Crypto converted to fiat
+24-48 hrs - Bank transfer initiated
+24-48 hrs - Fiat arrives in bank account
+```
+
+<Tip>
+  Bank transfers may be slower on weekends and holidays.
+</Tip>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Start with small test transactions">
+    Before processing large amounts, test with a small transaction (€100-500) to familiarize yourself with the process.
+  </Accordion>
+  
+  <Accordion title="Double-check all details">
+    Verify amounts, accounts, and reference codes before confirming. Blockchain transactions cannot be reversed.
+  </Accordion>
+  
+  <Accordion title="Keep transaction receipts">
+    Save all bank transfer receipts and transaction confirmation emails for your records.
+  </Accordion>
+  
+  <Accordion title="Monitor email notifications">
+    Enable email notifications to stay updated on transaction status changes.
+  </Accordion>
+  
+  <Accordion title="Plan for processing times">
+    Factor in processing times when planning payments or settlements.
+  </Accordion>
+</AccordionGroup>
+
+## Security & Compliance
+
+All transactions are:
+
+- **Monitored**: Automated compliance checks
+- **Secure**: Encrypted end-to-end
+- **Compliant**: AML/KYC verified
+- **Auditable**: Complete transaction history
+
+<Warning>
+  Suspicious or non-compliant transactions may be flagged for review or rejected.
+</Warning>
+
+## Getting Help
+
+If you encounter issues:
+
+1. Check the [Troubleshooting Guide](/guides/troubleshooting)
+2. View transaction details for specific errors
+3. Contact support@venly.io with transaction ID
+4. Include screenshots if helpful
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create On-Ramp" icon="arrow-up" href="/guides/transactions/on-ramp">
+    Purchase cryptocurrency with fiat
+  </Card>
+  <Card title="Create Off-Ramp" icon="arrow-down" href="/guides/transactions/off-ramp">
+    Convert cryptocurrency to fiat
+  </Card>
+</CardGroup>

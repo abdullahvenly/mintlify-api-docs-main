@@ -1,0 +1,395 @@
+---
+title: Troubleshooting Guide
+description: Solutions to common issues and problems
+---
+
+## Quick Solutions
+
+Find fast answers to common problems.
+
+<AccordionGroup>
+  <Accordion title="Cannot log in to my account">
+    **Solutions**:
+    1. Verify email and password are correct
+    2. Check if 2FA code is current (refreshes every 30 seconds)
+    3. Clear browser cache and cookies
+    4. Try incognito/private browsing mode
+    5. Reset password if needed
+    6. Contact support if 2FA device is lost
+  </Accordion>
+  
+  <Accordion title="Verification email not received">
+    **Solutions**:
+    1. Check spam/junk folder
+    2. Wait 10-15 minutes
+    3. Add no-reply@venly.io to contacts
+    4. Check email address is correct
+    5. Request new verification email
+    6. Contact support@venly.io if still not received
+  </Accordion>
+  
+  <Accordion title="Bank account verification failed">
+    **Possible causes**:
+    - IBAN format incorrect
+    - Account not in your business name
+    - Bank in unsupported country
+    - Email link expired (24 hours)
+    
+    **Solutions**:
+    1. Verify IBAN is correct
+    2. Ensure account matches business registration
+    3. Request new verification email
+    4. Contact support for country verification
+  </Accordion>
+  
+  <Accordion title="Wallet verification not completing">
+    **Check**:
+    - Did you send exactly 1 USDC?
+    - From the wallet you're registering?
+    - On the correct blockchain network?
+    - Has 15 minutes passed?
+    
+    **Solutions**:
+    1. Wait full 15 minutes for blockchain confirmation
+    2. Check transaction on blockchain explorer
+    3. Verify you sent from correct wallet
+    4. Contact support with transaction hash
+  </Accordion>
+  
+  <Accordion title="Transaction stuck at 'Waiting for Funds'">
+    **For On-Ramps**:
+    1. Verify you completed the bank transfer
+    2. Check you included the reference code
+    3. Confirm exact amount was sent
+    4. Wait full 2 hours
+    5. Contact support with bank receipt if still stuck
+  </Accordion>
+  
+  <Accordion title="Transaction failed">
+    **Check transaction details for reason**:
+    - Insufficient funds
+    - Compliance issue
+    - Account problem
+    - Technical error
+    
+    **Solutions**:
+    1. Read failure message
+    2. Resolve the specific issue
+    3. Funds will be returned/refunded
+    4. Try again or contact support
+  </Accordion>
+  
+  <Accordion title="Crypto not arrived in wallet">
+    **On-Ramp issues**:
+    1. Check transaction status (should show "Completed")
+    2. Verify wallet address is correct
+    3. Check blockchain explorer
+    4. Refresh wallet balance
+    5. Wait 30 minutes after "Completed" status
+    6. Contact support with transaction ID
+  </Accordion>
+  
+  <Accordion title="Fiat not arrived in bank">
+    **Off-Ramp issues**:
+    1. Verify transaction shows "Completed"
+    2. Check it's been 2 full business days (excluding weekends)
+    3. Verify with your bank
+    4. Check bank account is active
+    5. Contact support if delayed beyond 3 business days
+  </Accordion>
+</AccordionGroup>
+
+## Account Issues
+
+### Cannot Access Account
+
+<Steps>
+  <Step title="Reset Password">
+    Click "Forgot Password" on login page
+  </Step>
+  
+  <Step title="2FA Issues">
+    If you lost 2FA device:
+    - Contact support@venly.io immediately
+    - Provide account verification details
+    - Recovery process takes 24-48 hours
+  </Step>
+  
+  <Step title="Account Locked">
+    Multiple failed login attempts lock account for 30 minutes
+    - Wait 30 minutes
+    - Or contact support for immediate unlock
+  </Step>
+</Steps>
+
+### Business Not Approved
+
+**Timeline**: 1-3 business days typical
+
+**If delayed beyond 5 days**:
+1. Check email for requests for additional information
+2. Ensure all documents submitted
+3. Contact support for status update
+4. Provide any requested information promptly
+
+### Cannot Add Accounts
+
+<Warning>
+  Some actions require business approval first. Check your dashboard for approval status.
+</Warning>
+
+**For Bank Accounts**:
+- Verify IBAN format
+- Ensure bank is in supported country
+- Check account is in business name
+- Try different browser
+
+**For Wallets**:
+- Business must be approved to create wallets
+- Can whitelist wallets during verification period
+- Check network compatibility
+
+## Transaction Issues
+
+### On-Ramp Problems
+
+<AccordionGroup>
+  <Accordion title="Bank transfer not detected">
+    **Wait Time**: Up to 2 hours
+    
+    **Checklist**:
+    - Reference code included? ⚠️ CRITICAL
+    - Exact amount sent?
+    - From correct bank account?
+    - Bank transfer confirmed?
+    
+    **Solution**: Contact support with:
+    - Transaction ID
+    - Bank transfer receipt
+    - Transfer confirmation number
+  </Accordion>
+  
+  <Accordion title="Wrong amount sent">
+    **If less than required**:
+    - Transaction may be rejected
+    - Refund minus bank fees
+    - Contact support
+    
+    **If more than required**:
+    - Contact support immediately
+    - Excess will be refunded or credited
+  </Accordion>
+  
+  <Accordion title="Forgot reference code">
+    **Critical Issue**: Auto-matching will fail
+    
+    **Action**:
+    1. Contact support immediately
+    2. Provide transaction ID
+    3. Provide bank receipt
+    4. Manual matching attempted
+    5. Expect 1-2 day delay
+  </Accordion>
+</AccordionGroup>
+
+### Off-Ramp Problems
+
+<AccordionGroup>
+  <Accordion title="Wallet debited but transaction failed">
+    **Don't panic**: Funds will be returned
+    
+    **Process**:
+    1. Check failure reason in transaction details
+    2. Crypto returns to wallet within 24 hours
+    3. Resolve issue before trying again
+    4. Contact support if not returned
+  </Accordion>
+  
+  <Accordion title="Received less than expected">
+    **Check**:
+    - Exchange rate used (shown in details)
+    - Bank fees on your end
+    - Currency conversion by bank
+    
+    **Solution**:
+    - Review transaction details
+    - Check with your bank
+    - Contact support if significant discrepancy
+  </Accordion>
+</AccordionGroup>
+
+## Wallet Issues
+
+### Balance Not Updating
+
+**Solutions**:
+1. Refresh page (F5 or Cmd+R)
+2. Wait 5 minutes for sync
+3. Check blockchain explorer for actual balance
+4. Clear browser cache
+5. Try different browser
+6. Contact support if persists
+
+### Cannot Send From Wallet
+
+**Managed Wallets**:
+- Must use platform for transactions
+- Cannot send directly from wallet
+- Use off-ramp feature to withdraw
+
+**External Wallets**:
+- Check gas balance for fees
+- Verify network is correct
+- Ensure wallet is unlocked
+- Check transaction limits
+
+## Payment Issues
+
+### Bank Transfer Rejected
+
+**Common reasons**:
+- Daily transfer limit exceeded
+- Account frozen or restricted
+- International transfer not enabled
+- Incorrect beneficiary details
+
+**Solutions**:
+1. Contact your bank
+2. Verify account is active
+3. Check transfer limits
+4. Enable international transfers
+5. Use different account if needed
+
+### Credit Card Declined
+
+<Note>
+  We currently don't accept credit cards. Only bank transfers are supported.
+</Note>
+
+## Technical Issues
+
+### Page Not Loading
+
+**Solutions**:
+1. Check internet connection
+2. Clear browser cache and cookies
+3. Try incognito/private mode
+4. Disable browser extensions
+5. Try different browser
+6. Check if platform is undergoing maintenance
+
+### Features Not Working
+
+**Basic troubleshooting**:
+1. Hard refresh (Ctrl+F5 or Cmd+Shift+R)
+2. Clear cache
+3. Update browser to latest version
+4. Disable ad blockers
+5. Check JavaScript is enabled
+6. Try different device
+
+### Mobile App Issues
+
+**The platform is web-based**:
+- Use mobile browser
+- Bookmark for easy access
+- Request desktop site if needed
+- Fully responsive design
+
+## Security Concerns
+
+### Suspicious Email or Message
+
+<Warning>
+  Venly will never ask for:
+  - Your password
+  - 2FA codes
+  - Private keys
+  - Seed phrases
+</Warning>
+
+**If you receive suspicious communication**:
+1. Don't click any links
+2. Don't provide any information
+3. Forward to security@venly.io
+4. Delete the message
+5. Change password if you responded
+
+### Unauthorized Access Suspected
+
+<Steps>
+  <Step title="Immediate Actions">
+    1. Change password immediately
+    2. Review recent activity
+    3. Contact support@venly.io
+    4. Check for unauthorized transactions
+  </Step>
+  
+  <Step title="Secure Account">
+    1. Enable all security features
+    2. Review connected devices
+    3. Check email for alerts
+    4. Update recovery information
+  </Step>
+  
+  <Step title="Monitor">
+    1. Watch for suspicious activity
+    2. Enable all notifications
+    3. Regular security checks
+    4. Report any issues immediately
+  </Step>
+</Steps>
+
+## Still Need Help?
+
+<CardGroup cols={2}>
+  <Card title="Email Support" icon="envelope">
+    support@venly.io
+    
+    Response within 24 hours
+  </Card>
+  <Card title="Security Issues" icon="shield">
+    security@venly.io
+    
+    Response within 2 hours
+  </Card>
+</CardGroup>
+
+### When Contacting Support
+
+Please provide:
+- Your account email
+- Transaction ID (if applicable)
+- Description of issue
+- Steps you've already tried
+- Screenshots (if helpful)
+- Error messages (exact text)
+
+<Tip>
+  The more details you provide, the faster we can resolve your issue.
+</Tip>
+
+## Common Error Messages
+
+| Error | Meaning | Solution |
+|-------|---------|----------|
+| "Invalid credentials" | Wrong email or password | Reset password or verify email |
+| "2FA code expired" | Code too old | Use current code from app |
+| "Insufficient balance" | Not enough funds | Add funds or reduce amount |
+| "Account not verified" | Business approval pending | Wait for approval or contact support |
+| "Transaction limit exceeded" | Over daily/monthly limit | Contact support for limit increase |
+| "Network error" | Connection issue | Check internet, try again |
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Check Status" icon="circle-info" href="/guides/dashboard">
+    View your account status
+  </Card>
+  <Card title="Security Guide" icon="shield" href="/guides/security">
+    Protect your account
+  </Card>
+  <Card title="Contact Support" icon="headset">
+    Get personalized help
+  </Card>
+</CardGroup>

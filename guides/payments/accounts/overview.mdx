@@ -1,0 +1,243 @@
+---
+title: Account Management Overview
+description: Managing your bank accounts and crypto wallets
+---
+
+## Account Types
+
+Venly FundFlow Prime supports two types of accounts for transactions:
+
+<CardGroup cols={2}>
+  <Card title="Bank Accounts" icon="building">
+    Link your business bank accounts for fiat transactions (EUR, USD, GBP, etc.)
+  </Card>
+  <Card title="Crypto Wallets" icon="wallet">
+    Create or connect crypto wallets for digital asset transactions
+  </Card>
+</CardGroup>
+
+## Why Add Accounts?
+
+You need both bank accounts and crypto wallets to use the platform:
+
+- **On-Ramp**: Transfer from bank account → crypto wallet
+- **Off-Ramp**: Transfer from crypto wallet → bank account
+
+<Info>
+  Add and verify your accounts before creating transactions. Both types must be verified to process payments.
+</Info>
+
+## Account Status Types
+
+| Status | Meaning | Action Required |
+|--------|---------|-----------------|
+| **Verified** / **Active** | Ready to use | None |
+| **Verification in Process** | Awaiting confirmation | Check email or complete verification |
+| **Pending** | Awaiting review | Wait for approval |
+| **Failed** | Verification failed | Retry or contact support |
+
+## Adding Accounts
+
+### Quick Start
+
+<Steps>
+  <Step title="Navigate to Accounts">
+    Click **Accounts** in the main navigation menu
+  </Step>
+  
+  <Step title="Choose Account Type">
+    Select the **Bank Accounts** or **Wallets** tab
+  </Step>
+  
+  <Step title="Add Account">
+    Click the appropriate button:
+    - **Whitelist Bank Account**: For bank accounts
+    - **Whitelist Wallet**: For existing wallets
+    - **Create New Wallet**: For managed wallets
+  </Step>
+  
+  <Step title="Complete Verification">
+    Follow the verification process for your account type
+  </Step>
+</Steps>
+
+## Account Limits
+
+### Number of Accounts
+
+- **Bank Accounts**: No limit (add as many as needed)
+- **Crypto Wallets**: No limit (add as many as needed)
+
+### Supported Networks
+
+Crypto wallets support:
+- Polygon
+- Ethereum
+- Avalanche
+- Binance Smart Chain (BSC)
+- Arbitrum
+- Optimism
+
+<Tip>
+  Add accounts for multiple blockchains to have more flexibility in transaction options.
+</Tip>
+
+## Account Security
+
+All accounts require verification:
+
+### Bank Accounts
+- Email verification sent to registered email
+- Click link to activate account
+- Usually takes a few minutes
+
+### Crypto Wallets
+
+**Venly-Managed:**
+- Instantly verified
+- No additional steps needed
+- Venly handles security
+
+**External Wallets:**
+- Send 1 USDC to verification address
+- Blockchain confirmation required
+- Usually takes 5-15 minutes
+
+<Warning>
+  Never share your private keys or seed phrases. Venly will never ask for them.
+</Warning>
+
+## Managing Multiple Accounts
+
+### Organization Tips
+
+<Tip>
+  **Name Your Accounts Clearly**: Use descriptive names like "Business Checking" or "Treasury USDC Wallet" to easily identify them.
+</Tip>
+
+### Account Selection
+
+When creating transactions, you'll choose:
+- **Source account**: Where funds come from
+- **Destination account**: Where funds go to
+
+Clear naming makes selection easier.
+
+## Viewing Account Details
+
+Each account card shows:
+
+### Bank Accounts
+- Account name
+- IBAN (masked for security)
+- Verification status
+- Available balance (for verified accounts)
+
+### Crypto Wallets
+- Wallet name
+- Blockchain network
+- Wallet address (truncated)
+- Verification status
+- Current balance
+
+Click any account card to view full details.
+
+## Supported Currencies
+
+### Fiat Currencies
+
+| Tier | Currencies | Fee Range |
+|------|-----------|-----------|
+| **Tier 1** | USD, EUR, GBP | 0.30% - 0.45% |
+| **Tier 2** | AED, SGD, HKD, MXN, BRL, PKR, ZAR | 0.45% - 0.55% |
+| **Tier 3** | Frontier currencies | 0.60% - 0.70% |
+
+### Cryptocurrencies
+
+Supported digital assets:
+- **USDC** (USD Coin)
+- **USDT** (Tether)
+- **DAI** (DAI Stablecoin)
+- **ETH** (Ethereum)
+- **MATIC** (Polygon)
+- **FRAX** (Frax)
+
+<Note>
+  More currencies and tokens may be added. Check the platform for the latest supported assets.
+</Note>
+
+## Account Verification Times
+
+| Account Type | Method | Time |
+|--------------|--------|------|
+| Bank Account | Email verification | 2-10 minutes |
+| Managed Wallet | Instant | Immediate |
+| External Wallet | Blockchain confirmation | 5-15 minutes |
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Verification email not received">
+    1. Check your spam folder
+    2. Wait 10 minutes for email to arrive
+    3. Request a new verification email
+    4. Contact support if still not received
+  </Accordion>
+  
+  <Accordion title="Wallet verification not confirming">
+    1. Verify you sent exactly 1 USDC
+    2. Check you sent from the registered wallet
+    3. Wait for blockchain confirmation (can take up to 15 minutes)
+    4. View transaction on blockchain explorer
+    5. Contact support with transaction hash if issue persists
+  </Accordion>
+  
+  <Accordion title="Cannot add bank account">
+    1. Verify IBAN format is correct
+    2. Ensure bank is in a supported country
+    3. Check account is in your business name
+    4. Contact support for assistance
+  </Accordion>
+  
+  <Accordion title="Account shows wrong balance">
+    1. Refresh the page
+    2. Check blockchain explorer for actual wallet balance
+    3. Wait a few minutes for updates
+    4. Contact support if discrepancy continues
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Start Small**: Add one bank account and one wallet first. Test with a small transaction before adding more.
+</Tip>
+
+<Tip>
+  **Use Descriptive Names**: Name accounts by purpose (e.g., "Payroll USDC" or "Operating Expenses Bank")
+</Tip>
+
+<Tip>
+  **Verify Immediately**: Complete verification as soon as you add an account to avoid delays later
+</Tip>
+
+<Warning>
+  Only add accounts you own and control. Adding unauthorized accounts may result in account suspension.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Bank Accounts Guide" icon="building" href="/guides/accounts/bank-accounts">
+    Learn how to add and manage bank accounts
+  </Card>
+  <Card title="Crypto Wallets Guide" icon="wallet" href="/guides/accounts/crypto-wallets">
+    Learn how to create and manage wallets
+  </Card>
+</CardGroup>
+
+## Need Help?
+
+<Card title="Contact Support" icon="envelope">
+  Questions about account management? Email support@venly.io
+</Card>

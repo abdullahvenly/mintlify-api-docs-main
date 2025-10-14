@@ -1,0 +1,282 @@
+---
+title: Monitoring Transactions
+description: Track and manage your transaction requests
+---
+
+## Transaction Dashboard
+
+View and monitor all your transactions from the Transactions page.
+
+<Info>
+  Access: Click **Transactions** in the main navigation menu
+</Info>
+
+## Transaction Views
+
+### Pending Transactions
+
+Shows active transactions requiring action or in progress:
+
+- **Transaction Created**: Awaiting your bank transfer
+- **Waiting for Funds**: Bank transfer pending confirmation
+- **Processing**: Being processed by the platform
+
+### Processed Transactions
+
+Shows completed transaction history:
+
+- **Completed**: Successfully finished
+- **Failed**: Encountered an error
+
+## Transaction Card Information
+
+Each transaction displays:
+
+| Field | Description |
+|-------|-------------|
+| **Transaction ID** | Unique identifier (e.g., TXN-001) |
+| **Type** | ON-RAMP or OFF-RAMP badge |
+| **Status** | Current status with color coding |
+| **Amount** | Fiat and crypto amounts |
+| **Accounts** | From → To account flow |
+| **Timestamp** | Date and time created |
+
+Click any transaction to view complete details.
+
+## Status Indicators
+
+### Color Coding
+
+| Color | Status | Meaning |
+|-------|--------|---------|
+| 🔵 **Blue** | Transaction Created | Just initiated |
+| 🟡 **Amber** | Waiting for Funds | Pending bank transfer |
+| 🟣 **Purple** | Processing | Being processed |
+| 🟢 **Green** | Completed | Successfully finished |
+| 🔴 **Red** | Failed | Error occurred |
+
+## Transaction Details Page
+
+Click any transaction to see:
+
+### Basic Information
+- Transaction reference code
+- Creation date and time
+- Current status
+- Estimated completion time
+
+### Financial Details
+- Source amount and currency
+- Destination amount and currency
+- Exchange rate used
+- Fees applied
+- Total amounts
+
+### Account Information
+- Source account (bank or wallet)
+- Destination account (wallet or bank)
+- Account details
+
+### Processing Steps
+
+For **On-Ramp**:
+1. ✅ Transaction created
+2. ⏳ Awaiting bank transfer
+3. ⏳ Processing payment
+4. ⏳ Sending crypto
+
+For **Off-Ramp**:
+1. ✅ Transaction created
+2. ✅ Wallet debited
+3. ⏳ Converting to fiat
+4. ⏳ Bank transfer
+
+### Action Buttons
+
+Depending on status:
+- **View Bank Instructions**: For pending on-ramps
+- **Cancel Transaction**: For certain statuses
+- **Contact Support**: For failed transactions
+- **View Receipt**: For completed transactions
+
+## Email Notifications
+
+Stay updated with automatic emails:
+
+### On-Ramp Notifications
+1. Transaction created + bank instructions
+2. Payment received
+3. Processing started
+4. Crypto sent to wallet
+
+### Off-Ramp Notifications
+1. Transaction created
+2. Wallet debited
+3. Processing started
+4. Bank transfer initiated
+
+<Tip>
+  Enable browser notifications for real-time updates without checking email.
+</Tip>
+
+## Filtering & Searching
+
+### By Status
+- View all pending transactions
+- View all processed transactions
+- Filter by specific status
+
+### By Type
+- Show only on-ramps
+- Show only off-ramps
+- View all transactions
+
+### By Date
+- Last 7 days
+- Last 30 days
+- Last 90 days
+- Custom date range
+
+### Search
+- Search by transaction ID
+- Search by amount
+- Search by reference code
+
+## Transaction History
+
+### Export Options
+
+Download your transaction history:
+- **CSV**: For spreadsheet analysis
+- **PDF**: For record keeping
+- **Date Range**: Choose specific period
+
+<Note>
+  Keep transaction records for tax and accounting purposes.
+</Note>
+
+## Common Scenarios
+
+<AccordionGroup>
+  <Accordion title="On-Ramp stuck at 'Waiting for Funds'">
+    **Likely cause**: Bank transfer not completed or not yet confirmed
+    
+    **Actions**:
+    1. Verify you completed the bank transfer
+    2. Check you included the reference code
+    3. Wait full 2 hours for detection
+    4. Contact support if still stuck
+  </Accordion>
+  
+  <Accordion title="Transaction shows 'Failed'">
+    **Check transaction details** for failure reason:
+    - Compliance issue
+    - Insufficient funds
+    - Account problem
+    - Technical error
+    
+    **Actions**:
+    1. Read failure message
+    2. Resolve the issue
+    3. Try again or contact support
+    4. Funds will be returned/refunded
+  </Accordion>
+  
+  <Accordion title="Cannot find my transaction">
+    **Solutions**:
+    1. Check both Pending and Processed tabs
+    2. Use search with transaction ID
+    3. Verify you're logged into correct account
+    4. Check All Transactions page
+    5. Contact support with details
+  </Accordion>
+  
+  <Accordion title="Transaction taking longer than expected">
+    **On-Ramp** (Expected: 1-2 hours):
+    - Wait 3 hours before contacting support
+    - Check bank transfer was completed
+    - Verify reference code was included
+    
+    **Off-Ramp** (Expected: 1-2 business days):
+    - Wait 3 business days before contacting support
+    - Weekends/holidays don't count
+    - Check with your bank
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Check Regularly**: Monitor pending transactions daily to catch issues early.
+</Tip>
+
+<Tip>
+  **Save Transaction IDs**: Keep a record of transaction IDs for important transfers.
+</Tip>
+
+<Tip>
+  **Screenshot Instructions**: Take screenshots of bank transfer instructions for your records.
+</Tip>
+
+<Tip>
+  **Reconcile Regularly**: Match transactions with your bank and wallet records monthly.
+</Tip>
+
+## Transaction Lifecycle
+
+### On-Ramp Timeline
+
+```
+[0 min] Transaction Created → Click "Create On-Ramp"
+[0-60 min] Waiting for Funds → Complete bank transfer
+[5-120 min] Processing → Platform processes payment
+[60-180 min] Completed → Crypto in your wallet
+```
+
+### Off-Ramp Timeline
+
+```
+[0 min] Transaction Created → Click "Create Off-Ramp"
+[0 min] Processing → Wallet debited, conversion starts
+[24-48 hrs] Completed → Fiat in your bank account
+```
+
+## Support for Issues
+
+If you encounter problems:
+
+<Steps>
+  <Step title="Check Transaction Details">
+    Click the transaction and review all information
+  </Step>
+  
+  <Step title="Review Error Messages">
+    Read any error messages or failure reasons
+  </Step>
+  
+  <Step title="Try Common Solutions">
+    Check the troubleshooting accordion above
+  </Step>
+  
+  <Step title="Contact Support">
+    Email support@venly.io with:
+    - Transaction ID
+    - Description of issue
+    - Screenshots if helpful
+    - Bank receipts (for on-ramps)
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Create On-Ramp" icon="arrow-up" href="/guides/transactions/on-ramp">
+    Purchase more cryptocurrency
+  </Card>
+  <Card title="Create Off-Ramp" icon="arrow-down" href="/guides/transactions/off-ramp">
+    Convert crypto to fiat
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/guides/troubleshooting">
+    Solve common issues
+  </Card>
+</CardGroup>
