@@ -9,7 +9,7 @@ Before you begin, make sure you have:
 
 <CardGroup cols={2}>
   <Card title="Invitation Code" icon="ticket">
-    You'll need an invitation code sent to your email
+    You'll need an invitation code from Venly
   </Card>
   <Card title="Business Information" icon="building">
     Company details for KYB verification
@@ -17,7 +17,7 @@ Before you begin, make sure you have:
   <Card title="Mobile Device" icon="mobile">
     For Google Authenticator 2FA setup
   </Card>
-  <Card title="Banking Details" icon="bank">
+  <Card title="Banking Details" icon="building">
     IBAN and bank account information
   </Card>
 </CardGroup>
@@ -26,11 +26,8 @@ Before you begin, make sure you have:
 
 <Steps>
   <Step title="Enter Invitation Code">
-    Visit the registration page and enter your invitation code. This code was sent to your business email.
+    Visit the [registration page](https://preview--venly-fundflow-prime.lovable.app/) and enter your invitation code. This code was sent to your business email.
     
-    <Tip>
-      Make sure to enter the code exactly as shown (uppercase). The code format is: `VNLYRCKS25`
-    </Tip>
   </Step>
   
   <Step title="Set Account Credentials">
@@ -63,7 +60,7 @@ After creating your account, your business will go through a verification proces
 
 ### What Happens During Verification?
 
-Your account status will show **"Application in Process"** for 1-3 business days while we verify:
+Your account status will show **"Application in Process"** while we verify:
 
 - Business registration details
 - Compliance requirements
@@ -92,6 +89,8 @@ Once your business is approved, set up your payment accounts:
 
 ### Add Bank Accounts
 
+Next you need to add and whitelist your bank accounts which you will use to send and receive fiat to and from Venly. Only whitelisted bank accounts are allowed to send and receive fiat.
+
 <Steps>
   <Step title="Navigate to Accounts">
     Go to **Accounts** → **Bank Accounts** tab
@@ -100,7 +99,7 @@ Once your business is approved, set up your payment accounts:
   <Step title="Click 'Whitelist Bank Account'">
     Enter your bank details:
     - Account Name (e.g., "Business Checking")
-    - IBAN
+    - IBAN (International Bank Account Number)
     - Bank Name
   </Step>
   
@@ -111,7 +110,7 @@ Once your business is approved, set up your payment accounts:
 
 ### Add Crypto Wallets
 
-You have two options:
+Next step is adding and whitelisting crypto wallets that will be used to send and receive cryptocurrency. Only whitelisted wallets are allowed to send and receive cryptocurrency. You have two options:
 
 <Tabs>
   <Tab title="Create New Wallet">
@@ -128,7 +127,7 @@ You have two options:
   </Tab>
   
   <Tab title="Whitelist Existing Wallet">
-    **Add your own wallet (e.g., MetaMask):**
+    **Add your own wallet:**
     
     1. Click **"Whitelist Wallet"**
     2. Enter wallet name and address
