@@ -1,0 +1,240 @@
+---
+title: Managing Bank Accounts
+description: Add and verify your business bank accounts
+---
+
+## Adding a Bank Account
+
+Whitelist your business bank account to enable fiat transactions.
+
+<Steps>
+  <Step title="Open Whitelist Dialog">
+    1. Go to **Accounts** → **Bank Accounts** tab
+    2. Click **Whitelist Bank Account** button
+  </Step>
+  
+  <Step title="Enter Account Details">
+    Fill in the required information:
+    
+    **Account Name**
+    - Choose a descriptive name (e.g., "Business Checking")
+    - Helps identify the account during transactions
+    
+    **IBAN**
+    - Your bank account's International Bank Account Number
+    - Format: 2-letter country code + check digits + account number
+    - Example: `DE89370400440532013000`
+    
+    **Bank Name**
+    - Full name of your financial institution
+    - Example: "Deutsche Bank AG"
+  </Step>
+  
+  <Step title="Submit for Verification">
+    Click **Continue** to submit your details
+  </Step>
+  
+  <Step title="Verify via Email">
+    1. Check your registered email inbox
+    2. Look for verification email from Venly
+    3. Click the verification link
+    4. Account activates immediately after verification
+  </Step>
+</Steps>
+
+## Verification Process
+
+### What to Expect
+
+After submitting your bank account details:
+
+**Immediate**: Confirmation screen appears with "Verification Email Sent" message
+
+**Within 2-10 minutes**: Verification email arrives
+
+**After clicking link**: Account status changes to "Verified"
+
+<Info>
+  Check your spam folder if you don't receive the email within 10 minutes.
+</Info>
+
+### Verification Email
+
+The email contains:
+- Verification link (valid for 24 hours)
+- Account details for your review
+- Next steps after verification
+
+<Warning>
+  Only click verification links from `@venly.io` email addresses. Never click suspicious links.
+</Warning>
+
+## Account Requirements
+
+### Ownership
+
+Bank accounts must:
+- Be in your business name
+- Match your registered business details
+- Be from a supported country
+- Be an active account
+
+### Supported Countries
+
+We support bank accounts from:
+- European Union countries
+- United Kingdom
+- United States
+- United Arab Emirates
+- Singapore
+- And more...
+
+<Note>
+  Contact support@venly.io to verify if your country is supported.
+</Note>
+
+## Managing Bank Accounts
+
+### View Account Details
+
+Each bank account card displays:
+- Account nickname
+- Masked IBAN (last 4 digits visible)
+- Verification status badge
+- Bank name
+
+### Account Actions
+
+Click the menu (⋮) on any account to:
+- View full details
+- Edit account name
+- Remove account
+- View transaction history
+
+### Removing an Account
+
+<Steps>
+  <Step title="Select Account">
+    Click the menu (⋮) on the account you want to remove
+  </Step>
+  
+  <Step title="Confirm Removal">
+    Click **Remove Account** and confirm the action
+  </Step>
+  
+  <Step title="Complete Removal">
+    Account is immediately removed from your list
+  </Step>
+</Steps>
+
+<Warning>
+  You cannot remove an account with pending transactions. Complete or cancel pending transactions first.
+</Warning>
+
+## Using Bank Accounts
+
+### For On-Ramp Transactions
+
+Your bank account is the **source** of funds:
+
+1. Create an on-ramp transaction
+2. Select your verified bank account
+3. Receive bank transfer instructions
+4. Complete the transfer from your bank
+5. Wait for processing (1-2 hours)
+
+[Learn more about on-ramp →](/guides/transactions/on-ramp)
+
+### For Off-Ramp Transactions
+
+Your bank account is the **destination** for funds:
+
+1. Create an off-ramp transaction
+2. Select your verified bank account
+3. Crypto is converted to fiat
+4. Fiat arrives in 1-2 business days
+
+[Learn more about off-ramp →](/guides/transactions/off-ramp)
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Invalid IBAN error">
+    **Solution**:
+    - Verify IBAN format is correct
+    - Check for extra spaces or characters
+    - Try entering without spaces
+    - Verify IBAN belongs to your business
+  </Accordion>
+  
+  <Accordion title="Verification email not received">
+    **Solution**:
+    1. Check spam/junk folder
+    2. Wait 10 minutes
+    3. Add no-reply@venly.io to your contacts
+    4. Request new verification email
+    5. Contact support if still not received
+  </Accordion>
+  
+  <Accordion title="Cannot add second bank account">
+    **Solution**:
+    - Verify first account before adding more
+    - Ensure new account meets requirements
+    - Check account is in your business name
+    - Contact support for assistance
+  </Accordion>
+  
+  <Accordion title="Account shows 'Failed' status">
+    **Solution**:
+    - Review error message provided
+    - Verify account details are correct
+    - Ensure account is active with your bank
+    - Try removing and re-adding the account
+    - Contact support with error details
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+  **Add Multiple Accounts**: Have backup accounts ready in case of bank maintenance or issues.
+</Tip>
+
+<Tip>
+  **Descriptive Names**: Use clear names like "EUR Operations" or "USD Treasury" to identify accounts easily.
+</Tip>
+
+<Tip>
+  **Verify Immediately**: Don't wait to verify accounts. Complete verification right after adding.
+</Tip>
+
+## Security Notes
+
+### Bank Account Safety
+
+- Only add accounts you own and control
+- Never share banking credentials with anyone
+- Use secure internet connections when adding accounts
+- Enable 2FA on your email for added security
+
+### Verification Links
+
+- Links expire after 24 hours
+- Only valid for one use
+- Must be clicked from registered email
+- Never share verification links
+
+<Warning>
+  Venly will never ask for your banking credentials, PIN, or online banking password.
+</Warning>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Add Crypto Wallet" icon="wallet" href="/guides/accounts/crypto-wallets">
+    Complete your setup by adding a crypto wallet
+  </Card>
+  <Card title="Create Transaction" icon="exchange" href="/guides/transactions/on-ramp">
+    Start your first transaction
+  </Card>
+</CardGroup>
