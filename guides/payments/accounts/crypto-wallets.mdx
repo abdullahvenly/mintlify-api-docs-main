@@ -1,354 +1,117 @@
 ---
-title: Managing Crypto Wallets
+title: Crypto Wallets
 description: Create and manage your cryptocurrency wallets
 ---
 
 ## Wallet Options
 
-You can add crypto wallets in two ways:
-
 <CardGroup cols={2}>
-  <Card title="Create New Wallet" icon="plus">
-    Let Venly create and manage a secure wallet for you (Recommended)
+  <Card title="Create New (Recommended)" icon="plus">
+    Venly creates and manages wallet - instant, no verification needed
   </Card>
-  <Card title="Whitelist Existing Wallet" icon="link">
-    Connect your own wallet (MetaMask, Ledger, etc.)
+  <Card title="Whitelist Existing" icon="link">
+    Connect your own wallet (MetaMask, etc.) - requires 1 USDC verification
   </Card>
 </CardGroup>
 
-## Creating a New Wallet
-
-Venly can create and manage a wallet for you.
+## Creating a Managed Wallet
 
 <Steps>
-  <Step title="Open Creation Dialog">
-    1. Go to **Accounts** → **Wallets** tab
-    2. Click **Create New Wallet**
-    
-    <Note>
-      Business must be approved to create wallets
-    </Note>
+  <Step title="Navigate">
+    **Accounts** → **Wallets** → **Create New Wallet**
   </Step>
   
-  <Step title="Configure Wallet">
-    Choose your wallet settings:
-    
-    **Wallet Name**
-    - Descriptive name (e.g., "Customer Payouts", "Treasury USDC")
-    
-    **Wallet Type**
-    - Business Wallet: For general operations
-    - Treasury Wallet: For treasury management
-    - Customer Payout Wallet: For paying customers
-    
-    **Blockchain Network**
-    - Polygon (recommended for low fees)
-    - Ethereum
-    - Avalanche
-    - Binance Smart Chain
-    - Arbitrum
-    - Optimism
+  <Step title="Configure">
+    - **Name**: e.g., "Treasury USDC"
+    - **Type**: Business/Treasury/Payout
+    - **Network**: Polygon (recommended for low fees), Ethereum, Avalanche, BSC, Arbitrum, Optimism
   </Step>
   
-  <Step title="Create Wallet">
-    Click **Create Wallet**
-    
-    Wallet is created instantly and ready to use immediately!
+  <Step title="Create">
+    Wallet created instantly and ready to use!
   </Step>
 </Steps>
 
-### Managed Wallet Benefits
+**Benefits:** Instant activation, Venly manages security, no private key management
 
-✅ **Advantages:**
-- Instant activation (no verification needed)
-- Venly manages security
-- No private key management required
-- Professional-grade custody
-- Protected by your account 2FA
-
-❌ **Considerations:**
-- Venly controls the private keys
-- Less control than self-custody
-
-<Tip>
-  Managed wallets are perfect for businesses needing convenience and security without technical complexity.
-</Tip>
-
-## Whitelisting an Existing Wallet
-
-Connect your own external wallet.
+## Whitelisting Your Wallet
 
 <Steps>
-  <Step title="Open Whitelist Dialog">
-    1. Go to **Accounts** → **Wallets** tab
-    2. Click **Whitelist Wallet**
+  <Step title="Navigate">
+    **Accounts** → **Wallets** → **Whitelist Wallet**
   </Step>
   
-  <Step title="Enter Wallet Details">
-    Fill in the information:
-    
-    **Wallet Name**
-    - Choose a descriptive name
-    
-    **Wallet Address**
-    - Your wallet's public address
-    - Format: 0x followed by 40 characters
-    - Example: `0x742d35Cc6634C0532925a3b844Bc9e7595f8a3f`
-    
-    **Blockchain Network**
-    - Select the network your wallet is on
-    - Must match the wallet's actual network
+  <Step title="Enter Details">
+    - **Name**: Descriptive name
+    - **Address**: 0x... (40 characters)
+    - **Network**: Must match wallet's network
   </Step>
   
-  <Step title="Initiate Verification">
-    Click **Continue**
+  <Step title="Verify Ownership">
+    Send exactly 1 USDC to the verification address shown - **from the wallet you're registering**
     
-    You'll see the verification instructions
-  </Step>
-  
-  <Step title="Complete Ownership Verification">
-    **Verification Requirements:**
-    - **Amount**: Exactly 1 USDC
-    - **To Address**: Provided verification address
-    - **From**: The wallet you're registering
-    
-    **Steps:**
-    1. Open your wallet (MetaMask, etc.)
-    2. Send exactly 1 USDC to the verification address
-    3. Wait for blockchain confirmation (5-15 minutes)
-    4. Wallet automatically activates once confirmed
-    
-    <Warning>
-      Must send from the exact wallet address you're registering. Sending from a different address will fail.
-    </Warning>
+    Wait 5-15 minutes for confirmation
   </Step>
 </Steps>
 
-### External Wallet Benefits
+**Benefits:** You control private keys, can use hardware wallets
 
-✅ **Advantages:**
-- You control the private keys
-- Full self-custody
-- Can use hardware wallets
-- Already have funds in it
+<Warning>
+  Must send from the exact wallet address you're registering. Wrong address = failed verification
+</Warning>
 
-❌ **Considerations:**
-- Requires verification (1 USDC transaction)
-- You manage security
-- Takes 5-15 minutes to verify
+## Supported Networks
 
-## Verification Address
-
-The verification address is:
-```
-0x1234567890abcdef1234567890abcdef12345678
-```
-
-<Info>
-  This address is shown in the platform when you whitelist a wallet. Always use the address shown in your account, not this example.
-</Info>
-
-### Checking Verification Status
-
-While verifying:
-
-1. Click the info icon (ⓘ) on the wallet card
-2. View verification details
-3. Copy verification address again if needed
-4. Monitor status: "Verification in Process"
-
-Once complete:
-- Status changes to "Active"
-- Green badge appears
-- Wallet ready for transactions
-
-## Supported Blockchains
-
-<CardGroup cols={2}>
-  <Card title="Polygon" icon="triangle">
-    **Recommended**
-    - Lowest transaction fees
-    - Fast confirmations (2-5 seconds)
-    - Best for frequent transactions
-  </Card>
-  
-  <Card title="Ethereum" icon="diamond">
-    **Most Secure**
-    - Highest security
-    - Higher fees
-    - Slower confirmations (12-30 seconds)
-  </Card>
-  
-  <Card title="Avalanche" icon="mountain">
-    **Fast & Efficient**
-    - Very low fees
-    - Sub-second finality
-    - Growing ecosystem
-  </Card>
-  
-  <Card title="BSC" icon="chain">
-    **Cost-Effective**
-    - Low fees
-    - Fast confirmations
-    - Wide token support
-  </Card>
-</CardGroup>
-
-Also supported:
-- **Arbitrum**: Ethereum Layer 2, low fees
-- **Optimism**: Ethereum Layer 2, fast transactions
-
-## Managing Wallets
-
-### View Wallet Details
-
-Each wallet card shows:
-- Wallet name
-- Blockchain network badge
-- Truncated address (e.g., `0x742d...8a3f`)
-- Current balance
-- Status badge
-
-### Wallet Actions
-
-Click the menu (⋮) to:
-- View full address
-- Copy address to clipboard
-- View transaction history
-- Export details
-- Remove wallet (if no pending transactions)
-
-### Checking Balance
-
-Balances update automatically but you can:
-- Refresh the page for latest data
-- Click wallet card for detailed view
-- Check blockchain explorer for exact balance
-
-<Tip>
-  Bookmark blockchain explorers for your wallets:
-  - Polygon: polygonscan.com
-  - Ethereum: etherscan.io
-  - Avalanche: snowtrace.io
-</Tip>
-
-## Using Wallets for Transactions
-
-### On-Ramp (Receiving Crypto)
-
-Your wallet is the **destination**:
-1. Create on-ramp transaction
-2. Select receiving wallet
-3. Complete bank transfer
-4. Crypto arrives in wallet (1-2 hours)
-
-### Off-Ramp (Sending Crypto)
-
-Your wallet is the **source**:
-1. Create off-ramp transaction
-2. Select source wallet
-3. Wallet is debited immediately
-4. Fiat arrives in bank (1-2 days)
+| Network | Fee Range | Speed | Best For |
+|---------|-----------|-------|----------|
+| **Polygon** | $0.01-$0.10 | Fast | Frequent transactions |
+| **Ethereum** | $5-$50 | Slower | Large amounts |
+| **Avalanche** | $0.50-$2 | Very fast | Efficiency |
+| **BSC** | $0.20-$1 | Fast | Cost-effective |
 
 ## Supported Assets
 
-### Stablecoins
-- **USDC**: USD Coin (most popular)
-- **USDT**: Tether
-- **DAI**: MakerDAO stablecoin
-- **FRAX**: Fractional-algorithmic stablecoin
+**Stablecoins:** USDC, USDT, DAI, FRAX  
+**Crypto:** ETH, MATIC, AVAX, BNB
 
-### Cryptocurrencies
-- **ETH**: Ethereum
-- **MATIC**: Polygon
-- **AVAX**: Avalanche (on Avalanche network)
-- **BNB**: Binance Coin (on BSC)
+## Managing Wallets
 
-<Note>
-  Asset availability depends on the blockchain network you select.
-</Note>
+- View balances in Accounts page
+- Copy addresses
+- View transaction history
+- Remove wallets (if no pending transactions)
+
+<Tip>
+  Have wallets on multiple networks for flexibility
+</Tip>
 
 ## Troubleshooting
 
-<AccordionGroup>
-  <Accordion title="Verification not completing">
-    **Check:**
-    1. Did you send exactly 1 USDC? (not more, not less)
-    2. Did you send from the wallet you're registering?
-    3. Is it the correct network? (Polygon USDC vs Ethereum USDC)
-    4. Has blockchain confirmation happened? (wait 15 minutes)
-    5. Check transaction on blockchain explorer
-    
-    **Solution**: Contact support with your transaction hash
-  </Accordion>
-  
-  <Accordion title="Wrong blockchain selected">
-    **Solution**:
-    - Remove the wallet
-    - Re-add with correct blockchain
-    - Complete verification again
-    - Contact support if you already sent verification transaction
-  </Accordion>
-  
-  <Accordion title="Cannot create new wallet">
-    **Check**:
-    - Is your business approved?
-    - Are you logged in?
-    - Try refreshing the page
-    
-    **Solution**: Contact support if issue persists
-  </Accordion>
-  
-  <Accordion title="Balance not updating">
-    **Solutions**:
-    1. Refresh the page
-    2. Wait 5 minutes for sync
-    3. Check blockchain explorer for actual balance
-    4. Clear browser cache
-    5. Contact support if discrepancy continues
-  </Accordion>
-</AccordionGroup>
+**Verification not completing?**
+- Sent exactly 1 USDC? (not more, not less)
+- From the wallet you're registering?
+- Correct network? (e.g., Polygon USDC vs Ethereum USDC)
+- Waited 15 minutes?
 
-## Best Practices
+**Wrong network selected?** Remove and re-add with correct network
 
-<Tip>
-  **Start with Managed Wallets**: Use Venly-managed wallets first to test the platform before adding external wallets.
-</Tip>
-
-<Tip>
-  **Multiple Networks**: Have wallets on different networks for flexibility. Polygon for high-volume, Ethereum for large amounts.
-</Tip>
-
-<Tip>
-  **Clear Naming**: Name wallets by purpose: "USDC Operations", "ETH Treasury", "Customer Payments"
-</Tip>
+## Security
 
 <Warning>
-  **Never Share Private Keys**: If using external wallets, never share private keys, seed phrases, or recovery phrases with anyone.
+  **Never share** private keys or seed phrases. Venly will never ask for them.
 </Warning>
 
-## Security Best Practices
+**For Managed Wallets:** Protected by your account 2FA
 
-### For Managed Wallets
-- Keep account 2FA enabled
-- Use strong account password
-- Monitor transaction notifications
-- Review activity regularly
-
-### For External Wallets
-- Use hardware wallets for large amounts
-- Store private keys offline
-- Never enter keys on untrusted sites
-- Enable all available security features
-- Keep wallet software updated
+**For External Wallets:** Use hardware wallets for large amounts, never enter keys on untrusted sites
 
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Create On-Ramp" icon="arrow-up" href="/guides/payments/transactions/on-ramp">
-    Purchase crypto with your bank account
+    Buy crypto with fiat
   </Card>
   <Card title="Create Off-Ramp" icon="arrow-down" href="/guides/payments/transactions/off-ramp">
-    Convert crypto to fiat currency
+    Sell crypto for fiat
   </Card>
 </CardGroup>

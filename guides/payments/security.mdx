@@ -5,352 +5,140 @@ description: Keep your account and funds secure
 
 ## Security Features
 
-Venly FundFlow Prime employs multiple layers of security to protect your account and transactions.
-
 <CardGroup cols={2}>
-  <Card title="Two-Factor Authentication" icon="shield-check">
-    Google Authenticator adds an extra layer of login protection
+  <Card title="2FA" icon="shield-check">
+    Google Authenticator protection
   </Card>
-  <Card title="Account Verification" icon="user-check">
-    KYB process ensures business legitimacy
+  <Card title="KYB Verification" icon="user-check">
+    Business legitimacy confirmation
   </Card>
   <Card title="Wallet Ownership" icon="key">
-    Verify wallet ownership before transactions
+    Verify wallet ownership before use
   </Card>
-  <Card title="Compliance Monitoring" icon="eye">
-    All transactions monitored for suspicious activity
+  <Card title="Compliance" icon="eye">
+    All transactions monitored
   </Card>
 </CardGroup>
 
 ## Two-Factor Authentication (2FA)
 
-### Why 2FA Matters
+Protects your account even if someone obtains your password.
 
-2FA protects your account even if someone obtains your password. They would also need access to your physical device.
-
-### Setting Up 2FA
-
-<Steps>
-  <Step title="Download Authenticator App">
-    Install Google Authenticator from:
-    - [iOS App Store](https://apps.apple.com/app/google-authenticator/id388497605)
-    - [Google Play Store](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2)
-  </Step>
-  
-  <Step title="Scan QR Code">
-    During registration, scan the QR code with your authenticator app
-  </Step>
-  
-  <Step title="Save Backup Code">
-    Store your 2FA secret key securely (not on the same device)
-  </Step>
-  
-  <Step title="Verify Setup">
-    Enter the 6-digit code to confirm setup
-  </Step>
-</Steps>
-
-### 2FA Best Practices
-
-<Tip>
-  **Backup Your 2FA**: Save the secret key in a password manager or secure location. Without it, you'll lose account access if your device is lost.
-</Tip>
+**Setup:**
+1. Download Google Authenticator ([iOS](https://apps.apple.com/app/google-authenticator/id388497605) | [Android](https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2))
+2. Scan QR code during registration
+3. Save backup code securely
+4. Enter 6-digit code to verify
 
 <Warning>
-  **Never Share Your 2FA Code**: Support will never ask for your 2FA code. Sharing it compromises your account security.
+  Save your 2FA secret key. Without it, you'll lose account access if device is lost.
 </Warning>
 
-## Account Security
+## Password Security
 
-### Password Best Practices
+✅ **Do:**
+- 12+ characters
+- Mix letters, numbers, symbols
+- Use password manager
+- Unique for this platform
 
-Create a strong password that:
+❌ **Don't:**
+- Common words
+- Personal information
+- Reuse from other sites
+- Share with anyone
 
-✅ **Good Practices:**
-- Is at least 8 characters long (12+ recommended)
-- Combines uppercase and lowercase letters
-- Includes numbers and special characters
-- Is unique (not used elsewhere)
-- Is stored in a password manager
+## Recognizing Phishing
 
-❌ **Avoid:**
-- Common words or phrases
-- Personal information (birthdays, names)
-- Sequential numbers (123456)
-- Reusing passwords from other sites
-- Sharing with anyone
+✅ **Official:**
+- Email: `@venly.io`
+- Website: `app.venly.io`
+- Support: `support@venly.io`
 
-### Email Security
+🚩 **Suspicious:**
+- Unknown domains
+- Urgent requests for credentials
+- Requests for 2FA codes
+- Unsolicited calls
 
-Your email is the primary recovery method:
+<Warning>
+  **Never Share:** Password, 2FA codes, private keys, seed phrases. Venly will never ask for these.
+</Warning>
 
-<Steps>
-  <Step title="Use a Secure Email">
-    Use a business email with 2FA enabled
-  </Step>
-  
-  <Step title="Monitor for Suspicious Activity">
-    Watch for unexpected verification emails
-  </Step>
-  
-  <Step title="Verify Email Links">
-    Always check sender address before clicking links
-  </Step>
-</Steps>
+## Account Verification
+
+**Bank Accounts:** Email verification (click link within 24 hours)
+
+**Crypto Wallets:**
+- Managed: Instant, Venly-secured
+- External: Send 1 USDC from registered wallet
 
 ## Transaction Security
 
-### Bank Account Verification
+**On-Ramp:** Include reference code in bank transfer
 
-We verify bank accounts through email to ensure:
+**Off-Ramp:** Wallet debited immediately (cannot cancel)
 
-- You own the account you're adding
-- Account details are correct
-- Unauthorized accounts aren't added
+**Both:** All transactions compliance-monitored
 
-<Info>
-  Email verification typically takes a few minutes. Check your inbox and spam folder.
-</Info>
-
-### Wallet Verification
-
-For external wallets (MetaMask, etc.), we require ownership proof:
-
-**Verification Process:**
-1. Enter your wallet address
-2. Send exactly 1 USDC to our verification address
-3. Transaction confirms on blockchain
-4. Wallet is activated
-
-<Warning>
-  Only send the verification transaction from the wallet you're registering. Sending from a different wallet will fail verification.
-</Warning>
-
-## Recognizing Phishing Attempts
-
-Protect yourself from scams:
-
-### Legitimate Communication
-
-✅ **Official Channels:**
-- Email domain: `@venly.io`
-- Official website: `https://app.venly.io`
-- Support: `support@venly.io`
-
-### Red Flags
-
-🚩 **Suspicious Signs:**
-- Emails from unknown domains
-- Urgent requests for account details
-- Links to unfamiliar websites
-- Requests for 2FA codes
-- Unsolicited phone calls
-
-<Warning>
-  **Never Share:**
-  - Your password
-  - 2FA codes
-  - Wallet private keys
-  - Verification codes
-  
-  Venly will never ask for these.
-</Warning>
-
-## Secure Banking Practices
-
-### Bank Transfer Safety
-
-When making bank transfers for on-ramp transactions:
-
-<Steps>
-  <Step title="Verify Transfer Details">
-    Double-check:
-    - Beneficiary name: PayRamp Solutions B.V.
-    - IBAN matches the one provided
-    - Amount is correct
-    - Reference code is included
-  </Step>
-  
-  <Step title="Use Your Bank's Official App">
-    Never use third-party apps for transfers
-  </Step>
-  
-  <Step title="Save Confirmation">
-    Keep bank transfer receipts for your records
-  </Step>
-</Steps>
-
-### Transaction Reference Codes
-
-<Tip>
-  Always include the unique reference code in your bank transfer. This ensures your payment is matched to your transaction correctly.
-</Tip>
-
-## Wallet Security
-
-### Private Keys
-
-<Warning>
-  **Critical**: Never share your wallet private keys or seed phrases. Venly will never ask for them.
-</Warning>
-
-If using external wallets:
-
-- Store private keys offline (hardware wallet recommended)
-- Never enter them on untrusted websites
-- Keep backups in secure, separate locations
-- Don't save them in cloud storage or email
-
-### Managed Wallets
-
-For Venly-created wallets:
-
-- Venly manages security infrastructure
-- You don't handle private keys directly
-- Enhanced security through professional custody
-- Still protected by your account 2FA
-
-## Monitoring Your Account
-
-### Regular Security Checks
-
-Perform these checks regularly:
-
-<AccordionGroup>
-  <Accordion title="Review Transaction History">
-    Check for any unauthorized transactions. Report immediately if you find suspicious activity.
-  </Accordion>
-  
-  <Accordion title="Verify Account Access">
-    Ensure only authorized personnel have access to your account credentials.
-  </Accordion>
-  
-  <Accordion title="Check Email Notifications">
-    Review all transaction and security emails. They help you spot unauthorized activity early.
-  </Accordion>
-  
-  <Accordion title="Update Security Settings">
-    Keep your email and 2FA information current.
-  </Accordion>
-</AccordionGroup>
-
-### Activity Notifications
-
-Enable notifications for:
-
-- Login attempts from new devices
-- Transaction creation
-- Account changes
-- Large transactions
-- Verification status updates
-
-## If Your Account Is Compromised
+## If Account Compromised
 
 <Steps>
   <Step title="Immediate Action">
-    If you suspect unauthorized access:
-    1. Contact support@venly.io immediately
-    2. Change your password if possible
+    1. Contact support@venly.io
+    2. Change password if possible
     3. Check for unauthorized transactions
-    4. Review account settings
   </Step>
   
-  <Step title="Document Everything">
-    Note:
-    - When you noticed the issue
-    - What suspicious activity occurred
-    - Any unauthorized transactions
-    - Recent account changes
+  <Step title="Document">
+    Note when issue discovered, suspicious activity, unauthorized transactions
   </Step>
   
-  <Step title="Cooperate with Investigation">
-    Work with our support team to:
-    - Secure your account
-    - Investigate the breach
-    - Prevent future incidents
-    - Recover funds if applicable
+  <Step title="Cooperate">
+    Work with support to secure account and investigate
   </Step>
 </Steps>
 
+## Best Practices
+
+<Tip>
+  **Review Regularly**: Check transaction history and account settings weekly
+</Tip>
+
+<Tip>
+  **Enable Notifications**: Get alerts for all account activity
+</Tip>
+
+<Tip>
+  **Secure Email**: Use 2FA on your email account
+</Tip>
+
 <Warning>
-  Time is critical. Contact us immediately if you suspect any security issue.
+  Never enter credentials on untrusted sites. Always verify you're on the official platform.
 </Warning>
-
-## Data Privacy
-
-### What We Collect
-
-We collect only necessary information:
-
-- Business registration details
-- Contact information
-- Transaction history
-- Account verification data
-
-### How We Protect It
-
-- Encrypted storage and transmission
-- Limited access to authorized personnel
-- Regular security audits
-- Compliance with data protection regulations
-
-### Your Rights
-
-You have the right to:
-- Access your data
-- Request corrections
-- Export your information
-- Request account deletion
-
-Contact privacy@venly.io for data-related requests.
-
-## Compliance & Regulations
-
-We comply with:
-
-- **AML/KYC**: Anti-Money Laundering and Know Your Customer regulations
-- **GDPR**: General Data Protection Regulation
-- **Financial Regulations**: Licensed financial service provider
-
-All transactions are monitored for compliance with local and international regulations.
 
 ## Security Checklist
 
-<Tip>
-  Use this checklist to maintain account security:
-  
-  ✅ Strong, unique password set
-  
-  ✅ 2FA enabled and backup code saved
-  
-  ✅ Email account secured with 2FA
-  
-  ✅ Regular transaction history reviews
-  
-  ✅ Notifications enabled
-  
-  ✅ Verified only your own accounts
-  
-  ✅ Never shared login credentials
-  
-  ✅ Used official Venly channels only
-</Tip>
+✅ Strong, unique password  
+✅ 2FA enabled with backup saved  
+✅ Email secured with 2FA  
+✅ Regular transaction reviews  
+✅ Notifications enabled  
+✅ Only own accounts verified  
+✅ Never shared credentials  
 
 ## Contact Security Team
 
-Report security concerns:
+**Email:** security@venly.io  
+**Response:** Within 2 hours for security issues
 
-- **Email**: security@venly.io
-- **Urgent Issues**: support@venly.io (mark as urgent)
-- **Response Time**: Within 2 hours for security issues
-
-## Additional Resources
+## Next Steps
 
 <CardGroup cols={2}>
   <Card title="Troubleshooting" icon="wrench" href="/guides/payments/troubleshooting">
-    Solutions to common security issues
+    Security issue solutions
   </Card>
   <Card title="Account Management" icon="user" href="/guides/payments/accounts/overview">
-    Learn about account features
+    Manage your accounts
   </Card>
 </CardGroup>

@@ -1,301 +1,155 @@
 ---
 title: Fee Structure
-description: Transparent pricing for all transactions
+description: Transparent, competitive pricing for all transactions
 ---
 
 ## Overview
 
-Venly FundFlow Prime uses a transparent, volume-based pricing model with no hidden fees.
-
-<Info>
-  All fees are shown upfront before you confirm any transaction. What you see is what you pay.
-</Info>
+Industry-leading low fees - all costs shown upfront with no hidden charges.
 
 ## Stablecoin Transfers
 
-For transfers without currency conversion (e.g., USDC to USDC):
+**Flat Rate: 10 bps (0.10%)** for transfers without currency conversion (e.g., USDC to USDC)
 
-<Card title="Flat Rate" icon="percent">
-  **0.10%** for both on-ramp and off-ramp
-  
-  This applies when there's no foreign exchange conversion needed.
-</Card>
+## Transaction Fees
 
-**Example**: Converting €10,000 to €10,000 worth of USDC
-- Fee: €10 (0.10%)
-- You receive: €9,990 worth of USDC
-
-## Tiered Fee Structure
-
-For transactions with currency conversion, fees depend on:
-1. **Currency tier** (based on liquidity and market)
-2. **Monthly transaction volume**
+Fees based on:
+1. **Currency tier** (determined by liquidity)
+2. **Monthly volume** (higher volume = lower fees)
 
 ### Currency Tiers
 
-| Tier | Currencies | Volume: $0-10M | Volume: $10M-50M | Volume: $50M+ |
-|------|-----------|----------------|------------------|---------------|
-| **Tier 1** | USD, EUR, GBP | 0.45% | 0.40% | 0.30% |
-| **Tier 2** | AED, SGD, HKD, MXN, BRL, PKR, ZAR | 0.55% | 0.50% | 0.45% |
-| **Tier 3** | Frontier Currencies | 0.70% | 0.65% | 0.60% |
-
-<Tip>
-  Your fee tier is automatically calculated based on your monthly transaction volume. Higher volumes = lower fees!
-</Tip>
+| Tier | Currencies | $0-10M | $10M-50M | $50M+ |
+|------|-----------|--------|----------|-------|
+| **Tier 1** | USD, EUR, GBP | 20 bps (0.20%) | 15 bps (0.15%) | 10 bps (0.10%) |
+| **Tier 2** | AED, SGD, HKD, MXN, BRL, PKR, ZAR | 30 bps (0.30%) | 25 bps (0.25%) | 20 bps (0.20%) |
+| **Tier 3** | Frontier currencies | 40 bps (0.40%) | 35 bps (0.35%) | 30 bps (0.30%) |
 
 ## On-Ramp Fees
 
-### Fee Components
+**Processing:** 25 bps (0.25%) + **Currency Tier:** 10-40 bps (0.10-0.40%)
 
-**Processing Fee**: 0.5%
+**Total Range:** 35-65 bps (0.35-0.65%)
 
-**Currency Tier Fee**: Based on table above
+### Example: €5,000 EUR → USDC (Tier 1, $0-10M volume)
+- Processing (25 bps): €12.50
+- Tier 1 (20 bps): €10.00
+- **Total: €22.50 (45 bps / 0.45%)**
+- You receive: ~5,078 USDC
 
-**Total**: All-in pricing (no additional charges)
-
-### Example Calculation
-
-**Scenario**: €5,000 EUR → USDC (Tier 1, $0-10M volume)
-
-| Item | Amount |
-|------|--------|
-| Base Amount | €5,000.00 |
-| Processing Fee (0.5%) | €25.00 |
-| Tier 1 Fee (0.45%) | €22.50 |
-| **Total Fees** | **€47.50** |
-| Exchange Rate | 1 EUR = 1.02 USDC |
-| **You Receive** | **5,053.35 USDC** |
+<Info>
+  Industry average: 100-150 bps (1.0-1.5%) - **Save 50%+ with Venly**
+</Info>
 
 ## Off-Ramp Fees
 
-### Fee Components
+**Processing:** 50 bps (0.50%) + **Currency Tier:** 10-40 bps (0.10-0.40%)
 
-**Processing Fee**: 1.0%
+**Total Range:** 60-90 bps (0.60-0.90%)
 
-**Currency Tier Fee**: Based on table above
-
-**Total**: All-in pricing (no additional charges)
-
-### Example Calculation
-
-**Scenario**: 12,800 USDC → EUR (Tier 1, $0-10M volume)
-
-| Item | Amount |
-|------|--------|
-| Crypto Amount | 12,800 USDC |
-| Exchange Rate | 1 USDC = 0.98 EUR |
-| Gross Amount | €12,544.00 |
-| Processing Fee (1.0%) | €125.44 |
-| Tier 1 Fee (0.45%) | €56.45 |
-| **Total Fees** | **€181.89** |
-| **You Receive** | **€12,362.11** |
-
-## Volume Tiers Explained
-
-### How Volume is Calculated
-
-- Based on **monthly** transaction volume
-- Includes both on-ramp and off-ramp transactions
-- Calculated in USD equivalent
-- Resets on the 1st of each month
-
-### Tier Benefits
-
-**$0 - $10M** (Standard)
-- Standard rates apply
-- No additional benefits
-- Ideal for getting started
-
-**$10M - $50M** (Volume Discount)
-- 0.05% discount on tier fees
-- Priority support
-- Dedicated account manager
-
-**$50M+** (Enterprise)
-- 0.15% discount on tier fees
-- Premium support
-- Custom solutions available
-- API access
+### Example: 12,800 USDC → EUR (Tier 1, $0-10M volume)
+- Processing (50 bps): €62.72
+- Tier 1 (20 bps): €25.09
+- **Total: €87.81 (70 bps / 0.70%)**
+- You receive: €12,456.19
 
 <Info>
-  Tier upgrades happen automatically. No need to apply or request.
+  Industry average: 150-250 bps (1.5-2.5%) - **Save 60%+ with Venly**
 </Info>
 
-## Additional Fees
+## Volume Discounts
 
-### Blockchain Gas Fees
+Monthly volume calculated in USD equivalent, resets on 1st of each month.
 
-For crypto transactions, blockchain gas fees apply:
+**$0-10M:** Standard rates (most competitive base rates)
 
-- **Polygon**: ~$0.01 - $0.10 per transaction
-- **Ethereum**: ~$5 - $50 per transaction (varies)
-- **Avalanche**: ~$0.50 - $2 per transaction
-- **BSC**: ~$0.20 - $1 per transaction
+**$10M-50M:** 5 bps discount + priority support
 
-<Note>
-  Gas fees are paid separately and go to blockchain validators, not Venly.
-</Note>
+**$50M+:** 10 bps discount + premium support + dedicated account manager
 
-### No Hidden Fees
-
-We **DO NOT** charge for:
-- Account registration
-- Bank account verification
-- Wallet creation
-- Viewing transactions
-- Customer support
-- Account maintenance
+<Tip>
+  Tier upgrades happen automatically based on your monthly volume
+</Tip>
 
 ## Fee Comparison
 
-### On-Ramp vs Off-Ramp
+| Feature | On-Ramp | Off-Ramp | Industry Avg |
+|---------|---------|----------|--------------|
+| Processing | 25 bps | 50 bps | 100+ bps |
+| Currency Tier | 10-40 bps | 10-40 bps | 50+ bps |
+| **Total Range** | **35-65 bps** | **60-90 bps** | **150-250 bps** |
+| **Savings vs Industry** | **~60%** | **~65%** | - |
 
-| Feature | On-Ramp | Off-Ramp |
-|---------|---------|----------|
-| Processing Fee | 0.5% | 1.0% |
-| Currency Tier Fee | 0.30% - 0.70% | 0.30% - 0.70% |
-| Total Range | 0.80% - 1.20% | 1.30% - 1.70% |
-| Processing Time | 1-2 hours | 1-2 business days |
+## Gas Fees
+
+Blockchain transaction fees (paid to validators, not Venly):
+
+- **Polygon**: $0.01-$0.10 (1-10 bps on $100)
+- **Ethereum**: $5-$50 (500-5000 bps on $100)
+- **Avalanche**: $0.50-$2 (50-200 bps on $100)
+- **BSC**: $0.20-$1 (20-100 bps on $100)
 
 <Tip>
-  On-ramps have lower fees than off-ramps due to lower processing complexity.
+  **Use Polygon** for lowest gas fees - up to 500x cheaper than Ethereum
 </Tip>
 
-## Fee Transparency
+## No Charges For
 
-### What's Included
+✅ Account registration  
+✅ Bank account/wallet verification  
+✅ Viewing transactions  
+✅ Customer support  
+✅ Account maintenance  
+✅ API access
 
-Our all-in pricing includes:
-- Exchange rate
-- Processing fees
-- Compliance monitoring
-- Customer support
-- Platform maintenance
-- Security infrastructure
+## Transparent All-In Pricing
 
-### What's Not Included
+What you see is what you pay:
+- **On-Ramp:** 35-65 bps total
+- **Off-Ramp:** 60-90 bps total
+- No monthly fees
+- No setup fees
+- No hidden charges
 
-- Blockchain gas fees (paid to validators)
-- Your bank's fees (if any)
-- Currency conversion fees from your bank
-
-## Real-World Examples
-
-### Example 1: Small On-Ramp (Tier 1)
-
-**Transaction**: €1,000 EUR → USDC
-
-```
-Amount: €1,000.00
-Processing (0.5%): €5.00
-Tier Fee (0.45%): €4.50
-Total Fees: €9.50
-You Receive: 1,009.59 USDC
-Effective Fee Rate: 0.95%
-```
-
-### Example 2: Large Off-Ramp (Tier 1, High Volume)
-
-**Transaction**: 50,000 USDC → EUR (Volume: $50M+)
-
-```
-Amount: 50,000 USDC
-Gross: €49,000.00
-Processing (1.0%): €490.00
-Tier Fee (0.30%): €147.00
-Total Fees: €637.00
-You Receive: €48,363.00
-Effective Fee Rate: 1.30%
-```
-
-### Example 3: Tier 2 Currency
-
-**Transaction**: €5,000 EUR → SGD
-
-```
-Amount: €5,000.00
-Processing (0.5%): €25.00
-Tier 2 Fee (0.55%): €27.50
-Total Fees: €52.50
-You Receive: 7,335.88 SGD
-Effective Fee Rate: 1.05%
-```
-
-## Fee Best Practices
+## Best Practices
 
 <Tip>
-  **Batch Transactions**: Combine smaller transactions into larger ones to reduce the percentage impact of fees.
+  **Batch Transactions**: Combine smaller amounts to maximize efficiency
 </Tip>
 
 <Tip>
-  **Volume Discounts**: Plan higher volumes to automatically qualify for better rates.
+  **Use Polygon**: Minimal gas fees (1-10 bps vs 500+ bps on Ethereum)
 </Tip>
 
 <Tip>
-  **Choose Networks Wisely**: Use Polygon for lower gas fees vs Ethereum.
+  **Increase Volume**: Automatic discounts at $10M+ monthly volume
 </Tip>
 
 <Tip>
-  **Stablecoin Transfers**: Use stablecoin transfers when possible for the lowest 0.10% fee.
+  **Plan Ahead**: Higher volumes = lower fees = better margins
 </Tip>
 
-## Fee FAQs
+## Why Our Pricing Is Competitive
 
-<AccordionGroup>
-  <Accordion title="Why are off-ramp fees higher?">
-    Off-ramps involve more steps: crypto conversion, compliance checks, and bank transfer coordination. The additional 0.5% processing fee covers these extra services.
-  </Accordion>
-  
-  <Accordion title="Can I negotiate custom rates?">
-    Yes! Businesses with $50M+ monthly volume can contact us for custom enterprise pricing at sales@venly.io
-  </Accordion>
-  
-  <Accordion title="How do I track my monthly volume?">
-    Your dashboard shows current month volume. It updates in real-time with each transaction.
-  </Accordion>
-  
-  <Accordion title="When do volume discounts apply?">
-    Immediately when you cross the threshold. If your 10th transaction pushes you over $10M, that transaction gets the discounted rate.
-  </Accordion>
-  
-  <Accordion title="Are there withdrawal fees?">
-    No fees for withdrawing from yield vaults. However, blockchain gas fees apply when moving crypto.
-  </Accordion>
-</AccordionGroup>
+✅ **No Markup**: Direct market rates with transparent fee structure  
+✅ **Volume Discounts**: Automatic savings as you grow  
+✅ **Low Minimums**: $0-10M tier accessible to all businesses  
+✅ **Fast Processing**: Lower fees without compromising speed  
+✅ **Multi-Chain**: Choose optimal network for your fee profile  
 
-## Tax Reporting
+## Enterprise Solutions
 
-<Note>
-  Fees are tax-deductible business expenses in most jurisdictions. Consult your tax advisor for specific guidance.
-</Note>
+For $50M+ monthly volume:
+- Custom fee structures (sub-50 bps possible)
+- Dedicated support team
+- Priority processing
+- API integration
+- White-label options
 
-We provide:
-- Detailed transaction history
-- Fee breakdowns for each transaction
-- Monthly statements
-- CSV exports for accounting software
-
-## Contact for Enterprise Pricing
-
-<Card title="Enterprise Solutions" icon="building">
-  For businesses with $50M+ monthly volume:
-  
-  - Custom fee structures
-  - Dedicated account management
-  - API access
-  - White-label solutions
-  - Priority support
-  
-  Contact: sales@venly.io
-</Card>
+Contact: sales@venly.io
 
 ## Next Steps
 
-<CardGroup cols={2}>
-  <Card title="Create Transaction" icon="arrow-right" href="/guides/payments/transactions/overview">
-    Start transacting with transparent fees
-  </Card>
-  <Card title="Calculate Fees" icon="calculator">
-    Use our fee calculator to estimate costs (coming soon)
-  </Card>
-</CardGroup>
+<Card title="Start Transacting" icon="rocket" href="/guides/payments/transactions/overview">
+  Experience industry-leading low fees on your first transaction
+</Card>
