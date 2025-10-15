@@ -5,189 +5,111 @@ description: Quick start guide to set up your Venly FundFlow Prime account
 
 ## Prerequisites
 
-Before you begin, make sure you have:
-
 <CardGroup cols={2}>
   <Card title="Invitation Code" icon="ticket">
-    You'll need an invitation code from Venly
+    Unique code sent to your business email
   </Card>
-  <Card title="Business Information" icon="building">
-    Company details for KYB verification
+  <Card title="Business Info" icon="building">
+    Company details for verification
   </Card>
-  <Card title="Mobile Device" icon="mobile">
-    For Google Authenticator 2FA setup
+  <Card title="2FA Device" icon="mobile">
+    Mobile phone for Google Authenticator
   </Card>
-  <Card title="Banking Details" icon="building">
-    IBAN and bank account information
+  <Card title="Bank Details" icon="landmark">
+    IBAN and account information
   </Card>
 </CardGroup>
 
-## Step 1: Create Your Account
+## Step 1: Create Account
 
 <Steps>
   <Step title="Enter Invitation Code">
-    Visit the [registration page](https://preview--venly-fundflow-prime.lovable.app/) and enter your invitation code. This code was sent to your business email.
-    
+    Visit the registration page and enter your invitation code from the email.
   </Step>
   
-  <Step title="Set Account Credentials">
-    Create your login credentials:
-    - **Email**: Your business email address
-    - **Password**: Minimum 8 characters (use a strong password)
-    - **Confirm Password**: Re-enter your password
-    
-    <Warning>
-      Use a strong password combining letters, numbers, and special characters for better security.
-    </Warning>
+  <Step title="Set Credentials">
+    - Email: Your business email
+    - Password: Minimum 8 characters (strong password recommended)
+    - Confirm password
   </Step>
   
   <Step title="Set Up 2FA">
-    Secure your account with two-factor authentication:
+    1. Download Google Authenticator
+    2. Scan the QR code
+    3. Enter the 6-digit code
     
-    1. Download Google Authenticator on your mobile device
-    2. Scan the QR code displayed on screen
-    3. Enter the 6-digit code from your authenticator app
-    
-    <Note>
-      If you can't scan the QR code, use the manual entry code provided below the QR code.
-    </Note>
+    <Tip>
+      Save your 2FA backup code securely
+    </Tip>
   </Step>
 </Steps>
 
 ## Step 2: Business Verification
 
-After creating your account, your business will go through a verification process.
+Your account enters verification (1-3 business days). During this time, you can explore the dashboard and add accounts, but cannot create transactions.
 
-### What Happens During Verification?
+[Learn more about verification →](/guides/payments/onboarding)
 
-Your account status will show **"Application in Process"** while we verify:
-
-- Business registration details
-- Compliance requirements
-- Identity verification
-
-### During the Verification Period
-
-✅ **You CAN:**
-- Access the dashboard
-- Add bank accounts and wallets
-- Review fee structures
-- Explore available features
-
-❌ **You CANNOT:**
-- Create transactions (on-ramp/off-ramp)
-- Deposit in yield vaults
-- Process payments
-
-<Info>
-  You'll receive an email notification once your business is approved. The dashboard will display an "Approved Business" badge when ready.
-</Info>
-
-## Step 3: Add Your Accounts
-
-Once your business is approved, set up your payment accounts:
-
-### Add Bank Accounts
-
-Next you need to add and whitelist your bank accounts which you will use to send and receive fiat to and from Venly. Only whitelisted bank accounts are allowed to send and receive fiat.
+## Step 3: Add Bank Accounts
 
 <Steps>
   <Step title="Navigate to Accounts">
-    Go to **Accounts** → **Bank Accounts** tab
+    Go to **Accounts** → **Bank Accounts**
   </Step>
   
-  <Step title="Click 'Whitelist Bank Account'">
-    Enter your bank details:
-    - Account Name (e.g., "Business Checking")
-    - IBAN (International Bank Account Number)
-    - Bank Name
+  <Step title="Whitelist Account">
+    Enter: Account name, IBAN, Bank name
   </Step>
   
-  <Step title="Verify via Email">
-    Check your email and click the verification link. Your account will be active once verified.
+  <Step title="Verify Email">
+    Click the verification link sent to your email
   </Step>
 </Steps>
 
-### Add Crypto Wallets
-
-Next step is adding and whitelisting crypto wallets that will be used to send and receive cryptocurrency. Only whitelisted wallets are allowed to send and receive cryptocurrency. You have two options:
+## Step 4: Add Crypto Wallets
 
 <Tabs>
-  <Tab title="Create New Wallet">
-    **Let Venly create a managed wallet for you:**
-    
-    1. Click **"Create New Wallet"**
-    2. Choose wallet type (Business/Treasury/Payout)
-    3. Select blockchain network
-    4. Wallet is instantly created and active
-    
-    <Tip>
-      Managed wallets are immediately active and ready to use.
-    </Tip>
+  <Tab title="Create New (Recommended)">
+    1. Click **Create New Wallet**
+    2. Choose wallet type and blockchain
+    3. Wallet created instantly
   </Tab>
   
-  <Tab title="Whitelist Existing Wallet">
-    **Add your own wallet:**
-    
-    1. Click **"Whitelist Wallet"**
-    2. Enter wallet name and address
-    3. Select blockchain network
-    4. Send exactly 1 USDC to the verification address
-    5. Wait for blockchain confirmation
-    
-    <Warning>
-      You must send exactly 1 USDC from the wallet you're registering to verify ownership.
-    </Warning>
+  <Tab title="Whitelist Existing">
+    1. Click **Whitelist Wallet**
+    2. Enter wallet address and network
+    3. Send exactly 1 USDC to verify ownership
+    4. Wait for confirmation (5-15 minutes)
   </Tab>
 </Tabs>
 
-## Step 4: Create Your First Transaction
-
-Now you're ready to start transacting!
+## Step 5: Create First Transaction
 
 <CardGroup cols={2}>
-  <Card title="Create On-Ramp" icon="arrow-up" href="/guides/payments/transactions/on-ramp">
-    Purchase cryptocurrency with fiat currency
+  <Card title="On-Ramp" icon="arrow-up" href="/guides/payments/transactions/on-ramp">
+    Buy crypto with fiat
   </Card>
-  <Card title="Create Off-Ramp" icon="arrow-down" href="/guides/payments/transactions/off-ramp">
-    Convert cryptocurrency to fiat currency
+  <Card title="Off-Ramp" icon="arrow-down" href="/guides/payments/transactions/off-ramp">
+    Sell crypto for fiat
   </Card>
 </CardGroup>
 
 ## Quick Tips
 
-<AccordionGroup>
-  <Accordion title="How long does verification take?">
-    Business verification typically takes 1-3 business days. You'll receive an email once approved.
-  </Accordion>
-  
-  <Accordion title="Can I add multiple bank accounts?">
-    Yes! You can add multiple bank accounts and crypto wallets. Each must be verified separately.
-  </Accordion>
-  
-  <Accordion title="What if I lose access to my 2FA device?">
-    Contact our support team immediately at support@venly.io for account recovery assistance.
-  </Accordion>
-  
-  <Accordion title="Are there transaction limits?">
-    Transaction limits depend on your verification level and account history. Contact support for specific limits.
-  </Accordion>
-</AccordionGroup>
+<Tip>
+  Start with a small test transaction (€100-500) to familiarize yourself with the process.
+</Tip>
 
-## Next Steps
+## Need Help?
 
 <CardGroup cols={3}>
-  <Card title="Explore Dashboard" icon="gauge" href="/guides/payments/dashboard">
-    Learn about your dashboard features
+  <Card title="Dashboard Guide" icon="gauge" href="/guides/payments/dashboard">
+    Navigate your dashboard
   </Card>
-  <Card title="Understand Fees" icon="dollar-sign" href="/guides/payments/fees">
-    Review our transparent pricing
+  <Card title="Fee Structure" icon="dollar-sign" href="/guides/payments/fees">
+    Understand pricing
   </Card>
-  <Card title="Security Best Practices" icon="shield" href="/guides/payments/security">
-    Keep your account secure
+  <Card title="Security" icon="shield" href="/guides/payments/security">
+    Secure your account
   </Card>
 </CardGroup>
-
-<Note>
-  Need help? Contact our support team at support@venly.io or check our [Troubleshooting Guide](/guides/payments/troubleshooting).
-</Note>

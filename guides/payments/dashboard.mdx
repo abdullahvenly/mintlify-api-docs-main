@@ -1,231 +1,85 @@
 ---
 title: Dashboard Overview
-description: Navigate and understand your Venly FundFlow Prime dashboard
+description: Navigate and understand your dashboard
 ---
 
 ## Dashboard Layout
 
-Your dashboard is the central hub for managing all platform activities.
-
-<CardGroup cols={3}>
-  <Card title="Overview Metrics" icon="chart-bar">
-    View total volume, accounts, and transactions at a glance
-  </Card>
-  <Card title="Quick Actions" icon="bolt">
-    Create transactions and manage accounts with one click
-  </Card>
-  <Card title="Status Indicators" icon="circle-check">
-    Monitor business approval and account verification status
-  </Card>
-</CardGroup>
+Your dashboard provides an overview of your account status, metrics, and quick actions.
 
 ## Key Metrics
 
-### Business Status Badge
-
-Located at the top right of your dashboard:
-
-<Tabs>
-  <Tab title="Application in Process">
-    **Yellow Badge** indicates your business is under verification (1-3 days).
-    
-    Limited functionality until approval is complete.
-  </Tab>
-  
-  <Tab title="Approved Business">
-    **Green Badge** means you're fully approved and have access to all features.
-    
-    Ready to create transactions and use all platform capabilities.
-  </Tab>
-</Tabs>
-
-### Statistics Overview
-
 <CardGroup cols={2}>
   <Card title="Total Volume" icon="trending-up">
-    **What it shows**: Your total transaction volume over the last 30 days
-    
-    **Why it matters**: Determines your fee tier (higher volume = lower fees)
-    
-    **Example**: €248,391.00 with +12.5% growth trend
+    Your 30-day transaction volume (determines fee tier)
   </Card>
-  
   <Card title="Active Accounts" icon="wallet">
-    **What it shows**: Number of verified bank accounts and crypto wallets
-    
-    **Breakdown**: Total count with split (e.g., "3 bank accounts, 5 wallets")
-    
-    **Action**: Click to manage your accounts
+    Number of verified bank accounts and wallets
   </Card>
-  
   <Card title="Pending Requests" icon="clock">
-    **What it shows**: Transactions awaiting processing
-    
-    **Statuses included**:
-    - Transaction created
-    - Waiting for funds
-    - Processing
-    
-    **Action**: Click to view pending transactions
+    Transactions awaiting processing
   </Card>
-  
-  <Card title="Completed Transactions" icon="check-circle">
-    **What it shows**: Successfully processed transactions
-    
-    **Breakdown**: Total with on-ramp/off-ramp split
-    
-    **Action**: Click to view transaction history
+  <Card title="Completed" icon="check-circle">
+    Successfully processed transactions
   </Card>
 </CardGroup>
 
-## Quick Actions Section
+## Business Status Badge
 
-### Create Transactions
+Located at the top right:
+
+- **Yellow Badge** (Application in Process): Verification pending
+- **Green Badge** (Approved Business): Full access granted
+
+## Quick Actions
 
 <Steps>
   <Step title="Create On-Ramp">
-    **Button**: Green with up arrow icon
-    
-    **Action**: Purchase crypto with fiat currency
-    
-    **Requirement**: Business must be approved
+    Green button - Purchase crypto with fiat (requires approval)
     
     [Learn more →](/guides/payments/transactions/on-ramp)
   </Step>
   
   <Step title="Create Off-Ramp">
-    **Button**: White outline with down arrow icon
-    
-    **Action**: Convert crypto to fiat currency
-    
-    **Requirement**: Business must be approved
+    Outline button - Convert crypto to fiat (requires approval)
     
     [Learn more →](/guides/payments/transactions/off-ramp)
   </Step>
 </Steps>
 
-### Account Management
-
-Quick access buttons for account operations:
-
-| Action | Description | Requirements |
-|--------|-------------|--------------|
-| **Manage Accounts** | View and edit all bank accounts and wallets | Always available |
-| **Add New Account** | Whitelist bank account or create wallet | Always available |
-| **View Transactions** | See complete transaction history | Always available |
-
 ## Navigation Menu
 
-Access all platform features from the sidebar:
+Access features from the sidebar:
 
-### Main Navigation
+| Menu Item | Purpose |
+|-----------|---------|
+| **Dashboard** | Main overview |
+| **Accounts** | Manage bank accounts and wallets |
+| **Transactions** | Create and monitor transactions |
+| **Yield** | Earn returns on stablecoins |
+| **Fees** | View pricing structure |
+| **Settings** | Account configuration |
 
-<AccordionGroup>
-  <Accordion title="Dashboard">
-    **Icon**: Home
-    
-    Your main overview page with key metrics and quick actions
-  </Accordion>
-  
-  <Accordion title="Accounts">
-    **Icon**: Wallet
-    
-    Manage bank accounts and crypto wallets:
-    - View all accounts
-    - Add/whitelist accounts
-    - Check verification status
-    - View balances
-  </Accordion>
-  
-  <Accordion title="Transactions">
-    **Icon**: Exchange
-    
-    Transaction management:
-    - Create new transactions
-    - View pending requests
-    - Check completed history
-    - Monitor transaction status
-  </Accordion>
-  
-  <Accordion title="Yield">
-    **Icon**: Chart Line
-    
-    Investment opportunities:
-    - Browse available vaults
-    - View APY rates
-    - Deposit stablecoins
-    - Track earnings
-  </Accordion>
-  
-  <Accordion title="Fees">
-    **Icon**: Dollar Sign
-    
-    Transparent pricing information:
-    - View fee tiers
-    - Understand volume discounts
-    - Compare on-ramp vs off-ramp fees
-  </Accordion>
-  
-  <Accordion title="Settings">
-    **Icon**: Gear
-    
-    Account configuration:
-    - Profile information
-    - Security settings
-    - Notification preferences
-  </Accordion>
-</AccordionGroup>
+## Transaction Statuses
 
-## Understanding Status Indicators
-
-### Transaction Statuses
-
-| Status | Color | Meaning | Next Steps |
-|--------|-------|---------|------------|
-| **Transaction Created** | Blue | Request initiated | Complete bank transfer |
-| **Waiting for Funds** | Amber | Transfer pending | Wait for bank confirmation |
-| **Processing** | Purple | Being processed | No action needed |
-| **Completed** | Green | Successfully finished | Funds available |
-| **Failed** | Red | Error occurred | Contact support |
-
-### Account Statuses
-
-| Status | Badge | Meaning | Action Required |
-|--------|-------|---------|-----------------|
-| **Verified** | Green | Active and ready | None |
-| **Active** | Green | Wallet operational | None |
-| **Verification in Process** | Amber | Awaiting confirmation | Check email or blockchain |
-| **Pending** | Gray | Awaiting review | Wait for approval |
-
-## Dashboard Tips
-
-<Tip>
-  **Bookmark Important Pages**: Use your browser to bookmark frequently used sections like transaction creation or account management.
-</Tip>
-
-<Tip>
-  **Monitor Pending Requests**: Check the pending requests count regularly to stay updated on transaction progress.
-</Tip>
-
-<Tip>
-  **Track Your Volume**: Higher transaction volumes automatically qualify you for better fee tiers.
-</Tip>
-
-<Warning>
-  If your dashboard shows unexpected data or missing information, try refreshing the page. Contact support if issues persist.
-</Warning>
-
+| Status | Color | Meaning |
+|--------|-------|---------|
+| Transaction Created | Blue | Just initiated |
+| Waiting for Funds | Amber | Awaiting bank transfer |
+| Processing | Purple | Being processed |
+| Completed | Green | Successfully finished |
+| Failed | Red | Error occurred |
 
 ## Next Steps
 
 <CardGroup cols={3}>
   <Card title="Manage Accounts" icon="wallet" href="/guides/payments/accounts/overview">
-    Set up your bank accounts and wallets
+    Set up accounts
   </Card>
   <Card title="Create Transaction" icon="exchange" href="/guides/payments/transactions/overview">
-    Start your first on-ramp or off-ramp
+    Start transacting
   </Card>
   <Card title="Explore Yield" icon="chart-line" href="/guides/payments/yield/overview">
-    Earn returns on your stablecoins
+    Earn returns
   </Card>
 </CardGroup>
