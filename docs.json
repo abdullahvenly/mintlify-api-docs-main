@@ -605,6 +605,7 @@
           {
             "group": "Getting Started",
             "pages": [
+              "guides/payments/quick-reference",
               "guides/payments/introduction",
               "guides/payments/getting-started",
               "guides/payments/onboarding",
