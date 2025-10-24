@@ -1,0 +1,214 @@
+---
+title: Transactions Guide
+description: Complete guide to on-ramp and off-ramp transactions
+---
+
+## Transaction Types
+
+<CardGroup cols={2}>
+  <Card title="On-Ramp" icon="arrow-up">
+    **Buy Crypto:** Convert fiat to cryptocurrency
+  </Card>
+  <Card title="Off-Ramp" icon="arrow-down">
+    **Sell Crypto:** Convert cryptocurrency to fiat
+  </Card>
+</CardGroup>
+
+## Prerequisites
+
+Before creating transactions:
+
+✅ Account verified  
+✅ Bank account verified  
+✅ Crypto wallet verified  
+✅ Sufficient funds
+
+---
+
+## On-Ramp Transactions
+
+### Creating an On-Ramp
+
+<Steps>
+  <Step title="Navigate">
+    Dashboard → **Create On-Ramp**
+  </Step>
+  
+  <Step title="Enter Amount">
+    Enter the fiat currency amount
+  </Step>
+  
+  <Step title="Select Currencies">
+    - **From**: Fiat currency (EUR, USD, GBP)
+    - **To**: Cryptocurrency (USDC, EURC, USDS, ETH, POL)
+  </Step>
+  
+  <Step title="Select Accounts">
+    - **Source**: Bank account
+    - **Destination**: Crypto wallet
+  </Step>
+  
+  <Step title="Review & Create">
+    Review exchange rate and fees, then confirm
+  </Step>
+  
+  <Step title="Complete Bank Transfer">
+    You'll see bank details with a **unique reference code**
+    
+    Complete the bank transfer including the reference code
+  </Step>
+</Steps>
+
+<Warning>
+  **Include the reference code** in your bank transfer to ensure proper matching
+</Warning>
+
+### On-Ramp Process
+
+1. **Transaction Created** → Complete bank transfer
+2. **Waiting for Funds** → System monitoring
+3. **Processing** → Converting fiat to crypto
+4. **Completed** → Crypto in your wallet
+
+---
+
+## Off-Ramp Transactions
+
+### Creating an Off-Ramp
+
+<Steps>
+  <Step title="Navigate">
+    Dashboard → **Create Off-Ramp**
+  </Step>
+  
+  <Step title="Enter Amount">
+    Enter the cryptocurrency amount
+  </Step>
+  
+  <Step title="Select Currencies">
+    - **From**: Cryptocurrency (USDC, EURC, USDS, ETH, POL)
+    - **To**: Fiat currency (EUR, USD, GBP)
+  </Step>
+  
+  <Step title="Select Accounts">
+    - **Source**: Crypto wallet
+    - **Destination**: Bank account
+  </Step>
+  
+  <Step title="Review & Create">
+    Review exchange rate and fees, then confirm
+  </Step>
+  
+  <Step title="Transfer Crypto">
+    You'll see the Venly wallet address and network
+    
+    Transfer the crypto from your wallet to the provided address
+  </Step>
+  
+  <Step title="Add Transaction Hash">
+    Add your transaction hash (can be done immediately or later)
+  </Step>
+</Steps>
+
+### Off-Ramp Process
+
+1. **Transaction Created** → Transfer crypto to Venly
+2. **Waiting for Crypto** → Blockchain confirmation
+3. **Processing** → Converting crypto to fiat
+4. **Completed** → Fiat in your bank account
+
+---
+
+## Viewing Transactions
+
+### Transactions Tab
+
+Access your transaction history through the **Transactions** tab in the main navigation.
+
+**Features:**
+- View all transactions
+- Filter by type or status
+- Click any transaction to view details
+
+### Transaction Details
+
+Click on any transaction to see:
+- Transaction ID
+- Status and progress
+- Exchange rate
+- Fee breakdown
+- Reference codes
+- Transaction hash (off-ramps)
+
+---
+
+## Transaction Statuses
+
+| Status | Meaning |
+|--------|---------|
+| **Transaction Created** | Just initiated |
+| **Waiting for Funds** | Awaiting payment |
+| **Processing** | Being processed |
+| **Completed** | Successfully finished |
+| **Failed** | Error occurred |
+
+---
+
+## Supported Currency Pairs
+
+### Fiat Currencies
+EUR, USD, GBP
+
+### Cryptocurrencies
+- USDC (Ethereum)
+- EURC (Ethereum)
+- USDS (Ethereum)
+- ETH (Ethereum)
+- POL (Polygon)
+
+---
+
+## Common Issues
+
+**On-Ramp not processing?**
+- Completed bank transfer with reference code?
+- Transferred correct amount?
+- Contact support if needed
+
+**Off-Ramp taking long?**
+- Added transaction hash?
+- Sent to correct address?
+- Used correct network?
+- Contact support if needed
+
+---
+
+## Best Practices
+
+<Tip>
+  **Double-Check Details**: Verify all amounts, addresses, and reference codes before confirming
+</Tip>
+
+<Tip>
+  **Save Transaction IDs**: Keep records for your accounting
+</Tip>
+
+<Warning>
+  **Cannot Cancel**: Transactions cannot be cancelled once created
+</Warning>
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Fees" icon="dollar-sign" href="/guides/payments/fees">
+    View fee structure
+  </Card>
+  <Card title="Security" icon="shield" href="/guides/payments/security">
+    Secure transactions
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/guides/payments/troubleshooting">
+    Get help
+  </Card>
+</CardGroup>

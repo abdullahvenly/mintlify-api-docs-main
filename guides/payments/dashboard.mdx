@@ -1,85 +1,64 @@
 ---
 title: Dashboard Overview
-description: Navigate and understand your dashboard
+description: Navigate your dashboard
 ---
 
 ## Dashboard Layout
 
-Your dashboard provides an overview of your account status, metrics, and quick actions.
+Your dashboard provides an overview of your account status and quick access to key features.
 
-## Key Metrics
+## Account Status
 
-<CardGroup cols={2}>
-  <Card title="Total Volume" icon="trending-up">
-    Your 30-day transaction volume (determines fee tier)
-  </Card>
-  <Card title="Active Accounts" icon="wallet">
-    Number of verified bank accounts and wallets
-  </Card>
-  <Card title="Pending Requests" icon="clock">
-    Transactions awaiting processing
-  </Card>
-  <Card title="Completed" icon="check-circle">
-    Successfully processed transactions
-  </Card>
-</CardGroup>
+Your account status is displayed at the top:
 
-## Business Status Badge
+- **Processing**: Under verification - can whitelist accounts, cannot create transactions
+- **Verified**: Full access - can create all transactions
 
-Located at the top right:
-
-- **Yellow Badge** (Application in Process): Verification pending
-- **Green Badge** (Approved Business): Full access granted
-
-## Quick Actions
-
-<Steps>
-  <Step title="Create On-Ramp">
-    Green button - Purchase crypto with fiat (requires approval)
-    
-    [Learn more →](/guides/payments/transactions/on-ramp)
-  </Step>
-  
-  <Step title="Create Off-Ramp">
-    Outline button - Convert crypto to fiat (requires approval)
-    
-    [Learn more →](/guides/payments/transactions/off-ramp)
-  </Step>
-</Steps>
-
-## Navigation Menu
-
-Access features from the sidebar:
+## Main Navigation
 
 | Menu Item | Purpose |
 |-----------|---------|
-| **Dashboard** | Main overview |
+| **Dashboard** | Overview and quick actions |
 | **Accounts** | Manage bank accounts and wallets |
-| **Transactions** | Create and monitor transactions |
-| **Yield** | Earn returns on stablecoins |
-| **Fees** | View pricing structure |
-| **Settings** | Account configuration |
+| **Transactions** | View and create transactions |
+| **Fees** | View fee structure |
 
-## Transaction Statuses
+## Quick Actions
 
-| Status | Color | Meaning |
-|--------|-------|---------|
-| Transaction Created | Blue | Just initiated |
-| Waiting for Funds | Amber | Awaiting bank transfer |
-| Processing | Purple | Being processed |
-| Completed | Green | Successfully finished |
-| Failed | Red | Error occurred |
+Once verified, use action buttons to:
+- Create on-ramp transactions
+- Create off-ramp transactions
+
+<Note>
+  Quick actions are only available after account verification
+</Note>
+
+## Overview Sections
+
+### Accounts
+View your whitelisted:
+- Bank accounts with status
+- Crypto wallets with status
+
+### Recent Transactions
+See recent transaction activity with:
+- Transaction type
+- Status
+- Amounts
+
+### Fee Information
+Quick view of current fee structure
 
 ## Next Steps
 
 <CardGroup cols={3}>
-  <Card title="Manage Accounts" icon="wallet" href="/guides/payments/accounts/overview">
-    Set up accounts
+  <Card title="Manage Accounts" icon="wallet" href="/guides/payments/accounts">
+    Add accounts
   </Card>
-  <Card title="Create Transaction" icon="exchange" href="/guides/payments/transactions/overview">
+  <Card title="Create Transaction" icon="exchange" href="/guides/payments/transactions">
     Start transacting
   </Card>
-  <Card title="Explore Yield" icon="chart-line" href="/guides/payments/yield/overview">
-    Earn returns
+  <Card title="View Fees" icon="dollar-sign" href="/guides/payments/fees">
+    Understand pricing
   </Card>
 </CardGroup>

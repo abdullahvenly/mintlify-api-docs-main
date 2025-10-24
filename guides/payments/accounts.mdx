@@ -1,0 +1,169 @@
+---
+title: Account Management
+description: Managing bank accounts and crypto wallets
+---
+
+## Account Types
+
+<CardGroup cols={2}>
+  <Card title="Bank Accounts" icon="building">
+    For fiat transactions
+  </Card>
+  <Card title="Crypto Wallets" icon="wallet">
+    For digital asset transactions
+  </Card>
+</CardGroup>
+
+**You need both types** to use the platform:
+- **On-Ramp**: Bank account → Crypto wallet
+- **Off-Ramp**: Crypto wallet → Bank account
+
+---
+
+## Bank Accounts
+
+### Adding a Bank Account
+
+<Steps>
+  <Step title="Navigate">
+    **Accounts** → **Bank Accounts** tab → **Whitelist Bank Account**
+  </Step>
+  
+  <Step title="Enter Details">
+    - Account name
+    - IBAN
+    - Bank name
+  </Step>
+  
+  <Step title="Submit for Review">
+    Your bank account will be reviewed manually by the Venly team
+  </Step>
+</Steps>
+
+### Bank Account Requirements
+
+- Account must be in your business name
+- Valid IBAN format
+- Bank must be in a supported country
+
+### Bank Account Verification
+
+**Process:** Manual review by Venly team
+
+**Status:** "Verification in Process" → "Verified"
+
+<Note>
+  Bank account verification is done manually to ensure security and compliance
+</Note>
+
+---
+
+## Crypto Wallets
+
+### Whitelisting Your Wallet
+
+<Steps>
+  <Step title="Navigate">
+    **Accounts** → **Wallets** tab → **Whitelist Wallet**
+  </Step>
+  
+  <Step title="Enter Details">
+    - Wallet address (0x...)
+    - Network (Ethereum or Polygon)
+  </Step>
+  
+  <Step title="Verify Ownership">
+    You'll see a verification screen showing:
+    - Amount: 1 USDC
+    - Verification address
+    
+    Send exactly 1 USDC to the verification address **from the wallet you're registering**
+  </Step>
+  
+  <Step title="Wait for Confirmation">
+    Verification completes automatically once the blockchain confirms your transaction
+  </Step>
+</Steps>
+
+<Warning>
+  Must send 1 USDC from the exact wallet address you're registering
+</Warning>
+
+### Supported Networks & Assets
+
+| Network | Assets |
+|---------|--------|
+| **Ethereum** | USDC, EURC, USDS, ETH |
+| **Polygon** | POL |
+
+---
+
+## Account Statuses
+
+| Status | Meaning |
+|--------|---------|
+| **Verified** | Ready to use for transactions |
+| **Verification in Process** | Awaiting confirmation |
+| **Rejected** | Verification failed - retry with correct information |
+
+---
+
+## Managing Accounts
+
+- View all accounts in the Accounts page
+- See verification status for each account
+- View account details
+- Remove accounts (if no pending transactions)
+- Add multiple accounts
+
+---
+
+## Troubleshooting
+
+### Bank Account Issues
+
+**Account rejected?**
+- Check IBAN is correct
+- Ensure account is in business name
+- Verify bank is in supported country
+
+### Wallet Verification Issues
+
+**Verification not completing?**
+- Sent exactly 1 USDC?
+- From the wallet you're registering?
+- Correct network selected?
+- Wait for blockchain confirmation
+
+**Wrong network selected?**
+- Cannot change after submission
+- Must remove and re-add with correct network
+
+---
+
+## Best Practices
+
+<Tip>
+  **Name Clearly**: Use descriptive names like "Business Checking EUR" or "Treasury Wallet"
+</Tip>
+
+<Tip>
+  **Prepare During Processing**: Add accounts while your business verification is pending
+</Tip>
+
+<Warning>
+  **Never share** private keys or seed phrases
+</Warning>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create Transaction" icon="exchange" href="/guides/payments/transactions">
+    Start transacting
+  </Card>
+  <Card title="Security Guide" icon="shield" href="/guides/payments/security">
+    Secure your accounts
+  </Card>
+</CardGroup>
