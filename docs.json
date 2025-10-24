@@ -600,40 +600,21 @@
         ]
       },
       {
-        "tab": "Fund Flow",
+        "tab": "Fundflow",
         "groups": [
           {
             "group": "Getting Started",
             "pages": [
               "guides/payments/quick-reference",
-              "guides/payments/introduction",
               "guides/payments/getting-started",
-              "guides/payments/onboarding",
               "guides/payments/dashboard"
             ]
           },
           {
-            "group": "Accounts",
+            "group": "Core Guides",
             "pages": [
-              "guides/payments/accounts/overview",
-              "guides/payments/accounts/bank-accounts",
-              "guides/payments/accounts/crypto-wallets"
-            ]
-          },
-          {
-            "group": "Transactions",
-            "pages": [
-              "guides/payments/transactions/overview",
-              "guides/payments/transactions/on-ramp",
-              "guides/payments/transactions/off-ramp",
-              "guides/payments/transactions/monitoring"
-            ]
-          },
-          {
-            "group": "Yield",
-            "pages": [
-              "guides/payments/yield/overview",
-              "guides/payments/yield/vaults"
+              "guides/payments/accounts",
+              "guides/payments/transactions"
             ]
           },
           {
