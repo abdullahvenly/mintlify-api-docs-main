@@ -600,7 +600,7 @@
         ]
       },
       {
-        "tab": "Fundflow",
+        "tab": "Fundflow Guides",
         "groups": [
           {
             "group": "Getting Started",
@@ -611,75 +611,11 @@
             ]
           },
           {
-            "group": "Authentication",
+            "group": "Core Guides",
             "pages": [
-              "guides/payments/authentication"
-            ]
-          },
-          {
-            "group": "Company",
-            "pages": [
-              "guides/payments/company"
-            ]
-          },
-          {
-            "group": "Users",
-            "pages": [
-              "guides/payments/users"
-            ]
-          },
-          {
-            "group": "Company Bank Accounts",
-            "pages": [
-              "guides/payments/company-bank-accounts"
-            ]
-          },
-          {
-            "group": "Company Wallets",
-            "pages": [
-              "guides/payments/company-wallets"
-            ]
-          },
-          {
-            "group": "Deposit Wallets",
-            "pages": [
-              "guides/payments/deposit-wallets"
-            ]
-          },
-          {
-            "group": "Ramp Requests",
-            "pages": [
-              "guides/payments/ramp-requests"
-            ]
-          },
-          {
-            "group": "Fees",
-            "pages": [
+              "guides/payments/accounts",
+              "guides/payments/transactions",
               "guides/payments/fees"
-            ]
-          },
-          {
-            "group": "Fiat Currencies",
-            "pages": [
-              "guides/payments/fiat-currencies"
-            ]
-          },
-          {
-            "group": "Crypto Currencies",
-            "pages": [
-              "guides/payments/crypto-currencies"
-            ]
-          },
-          {
-            "group": "Blockchain Networks",
-            "pages": [
-              "guides/payments/blockchain-networks"
-            ]
-          },
-          {
-            "group": "Bank Account Configuration",
-            "pages": [
-              "guides/payments/bank-account-configuration"
             ]
           },
           {
