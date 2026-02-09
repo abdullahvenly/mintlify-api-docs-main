@@ -1,152 +1,336 @@
 ---
 title: Quick Reference Guide
-description: Platform overview in one page
+description: Fundflow API platform overview in one page
 ---
 
 ## Platform Overview
 
-Venly FundFlow Prime enables businesses to convert between fiat and crypto with enterprise-grade security.
+Venly Fundflow enables businesses to convert between fiat and crypto through a comprehensive API with enterprise-grade security and compliance.
 
-## Onboarding Flow
+## Key Concepts
 
-<Steps>
-  <Step title="1. Receive Email">
-    Get onboarding link via email from Venly
-  </Step>
-  
-  <Step title="2. Set Password & 2FA">
-    Click link → Set password → Configure 2FA
-  </Step>
-  
-  <Step title="3. Account in Processing">
-    **Can do**: Whitelist accounts
-    
-    **Cannot do**: Create transactions
-  </Step>
-  
-  <Step title="4. Whitelist Accounts">
-    - Bank accounts (manual review)
-    - Crypto wallets (send 1 USDC to verify)
-  </Step>
-  
-  <Step title="5. Account Verified">
-    Full access to create transactions
-  </Step>
-</Steps>
+<CardGroup cols={2}>
+  <Card title="On-Ramp" icon="arrow-up">
+    Fiat → Crypto conversion
+  </Card>
+  <Card title="Off-Ramp" icon="arrow-down">
+    Crypto → Fiat conversion
+  </Card>
+</CardGroup>
 
 ## Supported Currencies
 
-**Fiat:** EUR, USD, GBP
+### Fiat Currencies
+**EUR, USD, GBP** - via multiple payment networks (SEPA, ACH, SWIFT, FPS, CHAPS)
 
-**Crypto:**
-- USDC (Ethereum)
-- EURC (Ethereum)
-- USDS (Ethereum)
-- ETH (Ethereum)
-- POL (Polygon)
+### Cryptocurrencies
+- **USDC** (Ethereum)
+- **EURC** (Ethereum)
+- **USDS** (Ethereum)
+- **ETH** (Ethereum)
+- **POL** (Polygon)
 
-## On-Ramp Flow
+### Blockchain Networks
+Ethereum, Polygon, Base, Arbitrum, Sui
 
-**Bank → Venly → Crypto Wallet**
+## Quick Start Flow
 
-1. Click **Create On-Ramp**
-2. Enter fiat amount, select currencies
-3. Choose bank account and wallet
-4. Review and confirm
-5. **Complete bank transfer with reference code**
-6. Wait for crypto to arrive
+<Steps>
+  <Step title="1. Authentication">
+    Obtain OAuth2 access token via Venly Identity Platform
+  </Step>
+  
+  <Step title="2. Company Setup">
+    Verify company KYB status: `GET /v1/company`
+  </Step>
+  
+  <Step title="3. Add Bank Accounts">
+    Create company bank accounts: `POST /v1/company-bank-accounts`
+    
+    Status: PENDING → VERIFIED (manual review)
+  </Step>
+  
+  <Step title="4. Add Crypto Wallets">
+    Register company wallets: `POST /v1/company-wallets`
+    
+    Status: PENDING → VERIFIED
+  </Step>
+  
+  <Step title="5. Create Ramp Requests">
+    Create on-ramp or off-ramp: `POST /v1/ramp-requests`
+  </Step>
+</Steps>
 
-## Off-Ramp Flow
+## Ramp Request Lifecycle
 
-**Crypto Wallet → Venly → Bank**
+```
+AWAITING_APPROVAL → AWAITING_FUNDS → PROCESSING → SUCCEEDED
+       ↓                  ↓
+   CANCELLED          REJECTED
+   REJECTED           DENIED
+   DENIED             BLOCKED
+   BLOCKED
+```
 
-1. Click **Create Off-Ramp**
-2. Enter crypto amount, select currencies
-3. Choose wallet and bank account
-4. Review and confirm
-5. **Transfer crypto to Venly wallet**
-6. **Add transaction hash**
-7. Wait for fiat to arrive
+## Bank Account Types
 
-## Transaction Statuses
+| Type | Region | Required Fields |
+|------|--------|-----------------|
+| **EUR_SEPA** | Europe | IBAN, BIC |
+| **USD_WIRE** | US | Account #, Routing # |
+| **USD_ACH** | US | Account #, Routing # |
+| **USD_SWIFT** | US | BIC, Account #, Bank address |
+| **GBP_FPS** | UK | Account #, Sort code |
+| **GBP_CHAPS** | UK | Account #, Sort code |
+| **OTHER_SWIFT** | International | Currency, BIC, IBAN/Account # |
 
-| Status | Action |
-|--------|--------|
-| **Created** | Complete transfer |
-| **Waiting** | System monitoring |
-| **Processing** | Wait |
-| **Completed** | Funds available ✅ |
+## Common API Endpoints
 
-## Key Requirements
+### Authentication
+```bash
+GET /v1/auth/user
+```
 
-**For Setup:**
-- Onboarding email link
-- 2FA authenticator app
-- Bank account (IBAN)
-- Crypto wallet address
+### Company & Users
+```bash
+GET /v1/company
+GET /v1/company/users
+POST /v1/company/users/invite
+```
 
-**For Transactions:**
-- Account verified
-- Bank account verified
-- Crypto wallet verified
-- Sufficient funds
+### Bank Accounts
+```bash
+GET /v1/company-bank-accounts
+POST /v1/company-bank-accounts
+GET /v1/company-bank-accounts/{id}
+PATCH /v1/company-bank-accounts/{id}
+```
 
-## Whitelisting
+### Crypto Wallets
+```bash
+GET /v1/company-wallets
+POST /v1/company-wallets
+GET /v1/company-wallets/{id}
+PATCH /v1/company-wallets/{id}
+```
 
-### Bank Account
-1. Accounts → Bank Accounts
-2. Enter IBAN, bank name, account name
-3. Submit for manual review
+### Ramp Requests
+```bash
+GET /v1/ramp-requests
+POST /v1/ramp-requests
+GET /v1/ramp-requests/{id}
+POST /v1/ramp-requests/{id}/approve
+POST /v1/ramp-requests/{id}/reject
+POST /v1/ramp-requests/{id}/cancel
+PUT /v1/ramp-requests/{id}/amount
+PATCH /v1/ramp-requests/{id}/tx-hash
+```
 
-### Crypto Wallet
-1. Accounts → Wallets
-2. Enter wallet address and network
-3. Send 1 USDC from your wallet
-4. Wait for confirmation
+### Currency Pairs
+```bash
+GET /v1/ramp-requests/on-ramp/pairs
+GET /v1/ramp-requests/off-ramp/pairs
+```
+
+### Fees
+```bash
+GET /v1/fees
+POST /v1/fees/calculate
+```
+
+### Reference Data
+```bash
+GET /v1/fiat-currencies
+GET /v1/crypto-currencies
+GET /v1/chains
+GET /v1/bank-accounts/config
+```
+
+## On-Ramp Example
+
+```bash
+# 1. Get available pairs
+GET /v1/ramp-requests/on-ramp/pairs
+
+# 2. Create request
+POST /v1/ramp-requests
+{
+  "rampType": "ON_RAMP",
+  "amount": 1000.00,
+  "fiatCurrencyId": "eur-id",
+  "cryptoCurrencyId": "usdc-id",
+  "companyWalletId": "wallet-id"
+}
+
+# 3. Approve request
+POST /v1/ramp-requests/{id}/approve
+{
+  "version": 1
+}
+
+# 4. Customer sends fiat with payment reference
+# 5. System processes and sends crypto to wallet
+```
+
+## Off-Ramp Example
+
+```bash
+# 1. Get available pairs
+GET /v1/ramp-requests/off-ramp/pairs
+
+# 2. Create request
+POST /v1/ramp-requests
+{
+  "rampType": "OFF_RAMP",
+  "amount": 0.5,
+  "cryptoCurrencyId": "usdc-id",
+  "fiatCurrencyId": "eur-id",
+  "companyBankAccountId": "bank-id"
+}
+
+# 3. Approve request
+POST /v1/ramp-requests/{id}/approve
+{
+  "version": 1
+}
+
+# 4. Customer sends crypto to deposit wallet
+# 5. Add transaction hash
+PATCH /v1/ramp-requests/{id}/tx-hash
+{
+  "blockchainTransactionHash": "0x...",
+  "version": 2
+}
+
+# 6. System processes and sends fiat to bank
+```
+
+## User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **COMPANY_ADMIN** | Full access + user management |
+| **COMPANY_MANAGER** | Create/manage ramp requests |
+| **COMPANY_VIEWER** | Read-only access |
+
+## Optimistic Locking
+
+All update operations require a `version` field:
+
+```json
+{
+  "version": 1,
+  // ... other fields
+}
+```
+
+**Version conflict (HTTP 409)?** → Fetch latest version and retry
+
+## Status Codes
+
+| Code | Meaning |
+|------|---------|
+| **200** | Success |
+| **201** | Created |
+| **400** | Bad Request |
+| **401** | Unauthorized |
+| **403** | Forbidden |
+| **404** | Not Found |
+| **409** | Version Conflict |
+| **500** | Server Error |
+
+## Pagination
+
+```bash
+GET /v1/ramp-requests?page=1&size=50&sortOn=createdAt&sortOrder=DESC
+```
+
+**Response includes:**
+- `pagination`: Page info
+- `sort`: Sort configuration
+- `result`: Array of items
+
+## Filtering
+
+```bash
+# Filter ramp requests
+GET /v1/ramp-requests?rampType=ON_RAMP&status=AWAITING_APPROVAL&fromDate=2024-01-01&toDate=2024-12-31
+
+# Filter wallets
+GET /v1/company-wallets?chain=ETHEREUM&verificationStatus=VERIFIED
+
+# Filter bank accounts
+GET /v1/company-bank-accounts?verificationStatus=VERIFIED
+```
+
+## Security Best Practices
 
 <Warning>
-  Send 1 USDC from the exact wallet address you're registering
+  **Never expose:**
+  - OAuth2 access tokens
+  - Client secrets
+  - Private keys
+  - Seed phrases
 </Warning>
 
-## Navigation
-
-- **Dashboard**: Overview and quick actions
-- **Accounts**: Manage accounts
-- **Transactions**: View and create transactions
-- **Fees**: View fee structure
-
-## Security
-
-🔐 **Must Do:**
-- Enable 2FA
-- Use strong password
-- Save 2FA backup code
-- Never share credentials or private keys
-
-⚠️ **Official Contacts:**
-- Platform: `app.venly.io`
-- Support: `support@venly.io`
+✅ **Do:**
+- Use OAuth2 with appropriate scopes
+- Implement token refresh
+- Store credentials securely
+- Use HTTPS only
+- Validate webhook signatures
 
 ## Common Issues
 
-**On-ramp not processing?** → Included reference code?
+**Version conflict (409)?**
+→ Fetch latest resource and retry with new version
 
-**Wallet verification failed?** → Sent 1 USDC from correct address?
+**Request stuck in AWAITING_FUNDS?**
+→ Verify payment was sent with correct reference
 
-**Cannot create transactions?** → Account still in processing?
+**Wallet verification failed?**
+→ Check verification process requirements
 
-**Need help?** → support@venly.io
+**Cannot create ramp request?**
+→ Ensure company KYB is VERIFIED and accounts are VERIFIED
 
-## Quick Actions
+## Rate Limits
+
+Follow standard API rate limiting practices:
+- Implement exponential backoff
+- Cache reference data
+- Use pagination efficiently
+
+## Webhooks
+
+Configure webhooks for real-time updates on:
+- Ramp request status changes
+- Payment received notifications
+- Transaction completions
+
+## Quick Links
 
 <CardGroup cols={3}>
-  <Card title="Full Guide" icon="book" href="/guides/payments/getting-started">
-    Detailed setup
+  <Card title="Getting Started" icon="rocket" href="/guides/payments/getting-started">
+    Complete setup guide
   </Card>
-  <Card title="Accounts" icon="wallet" href="/guides/payments/accounts">
-    Manage accounts
+  <Card title="API Reference" icon="code" href="/api-reference/Fundflow-API/company/get-company-details">
+    Full API documentation
   </Card>
-  <Card title="Transactions" icon="exchange" href="/guides/payments/transactions">
-    Create transactions
+  <Card title="Accounts Guide" icon="building-columns" href="/guides/payments/accounts">
+    Bank accounts & wallets
+  </Card>
+  <Card title="Transactions" icon="arrow-right-arrow-left" href="/guides/payments/transactions">
+    Ramp requests guide
+  </Card>
+  <Card title="Fees" icon="percent" href="/guides/payments/fees">
+    Fee structure
+  </Card>
+  <Card title="Security" icon="shield" href="/guides/payments/security">
+    Security best practices
   </Card>
 </CardGroup>
+
+## Support
+
+**Need help?** Contact Venly support at support@venly.io

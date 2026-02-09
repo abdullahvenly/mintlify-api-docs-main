@@ -1,64 +1,463 @@
 ---
-title: Dashboard Overview
-description: Navigate your dashboard
+title: API Overview & Resources
+description: Understanding Fundflow API structure and available resources
 ---
 
-## Dashboard Layout
+## API Architecture
 
-Your dashboard provides an overview of your account status and quick access to key features.
+Fundflow API follows RESTful principles with a clear resource-based structure. All endpoints are accessible via the base URL:
 
-## Account Status
+```
+https://api-fundflow.venly.io
+```
 
-Your account status is displayed at the top:
+## Authentication
 
-- **Processing**: Under verification - can whitelist accounts, cannot create transactions
-- **Verified**: Full access - can create all transactions
+All API requests require OAuth2 authentication:
 
-## Main Navigation
-
-| Menu Item | Purpose |
-|-----------|---------|
-| **Dashboard** | Overview and quick actions |
-| **Accounts** | Manage bank accounts and wallets |
-| **Transactions** | View and create transactions |
-| **Fees** | View fee structure |
-
-## Quick Actions
-
-Once verified, use action buttons to:
-- Create on-ramp transactions
-- Create off-ramp transactions
+```bash
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
 
 <Note>
-  Quick actions are only available after account verification
+  Access tokens are obtained from the Venly Identity Platform using your client credentials.
 </Note>
 
-## Overview Sections
+## Response Format
 
-### Accounts
-View your whitelisted:
-- Bank accounts with status
-- Crypto wallets with status
+All API responses follow a consistent structure:
 
-### Recent Transactions
-See recent transaction activity with:
-- Transaction type
-- Status
-- Amounts
+### Success Response
 
-### Fee Information
-Quick view of current fee structure
+```json
+{
+  "success": true,
+  "result": {
+    // Response data
+  }
+}
+```
 
-## Next Steps
+### Error Response
+
+```json
+{
+  "success": false,
+  "errors": [
+    {
+      "code": "ERROR_CODE",
+      "message": "Human-readable error message"
+    }
+  ]
+}
+```
+
+### Paginated Response
+
+```json
+{
+  "success": true,
+  "pagination": {
+    "pageNumber": 1,
+    "pageSize": 50,
+    "numberOfElements": 150,
+    "numberOfPages": 3,
+    "hasNextPage": true,
+    "hasPreviousPage": false
+  },
+  "sort": {
+    "orders": ["DESC"]
+  },
+  "result": [
+    // Array of items
+  ]
+}
+```
+
+---
+
+## Core Resources
+
+### Company
+
+Manage your company information and KYB status.
+
+**Endpoints:**
+- `GET /v1/company` - Get company details
+- `GET /v1/company/users` - List company users
+- `POST /v1/company/users/invite` - Invite new user
+- `PUT /v1/company/users/{userId}/role` - Update user role
+- `PATCH /v1/company/users/{userId}/status` - Enable/disable user
+- `DELETE /v1/company/users/{userId}` - Remove user
+
+**Key Fields:**
+- `kybStatus`: PENDING, VERIFIED, DENIED
+- `invoicesUrl`: Link to billing portal
+
+---
+
+### Bank Accounts
+
+Manage company bank accounts for fiat transactions.
+
+**Endpoints:**
+- `GET /v1/company-bank-accounts` - List all bank accounts
+- `POST /v1/company-bank-accounts` - Create new bank account
+- `GET /v1/company-bank-accounts/{id}` - Get specific account
+- `PATCH /v1/company-bank-accounts/{id}` - Update account name
+
+**Supported Types:**
+- EUR_SEPA
+- USD_WIRE, USD_ACH, USD_SWIFT
+- GBP_FPS, GBP_CHAPS
+- OTHER_SWIFT
+
+**Status Flow:**
+```
+PENDING → VERIFIED (manual review)
+        ↓
+      DENIED
+```
+
+**Filters:**
+- `verificationStatus`: PENDING, VERIFIED, DENIED
+- `supportedRampTypes`: ON_RAMP, OFF_RAMP, ON_AND_OFF_RAMP
+
+---
+
+### Crypto Wallets
+
+Manage company cryptocurrency wallets.
+
+**Endpoints:**
+- `GET /v1/company-wallets` - List all wallets
+- `POST /v1/company-wallets` - Register new wallet
+- `GET /v1/company-wallets/{id}` - Get specific wallet
+- `PATCH /v1/company-wallets/{id}` - Update wallet description
+
+**Supported Chains:**
+- ETHEREUM
+- POLYGON
+- BASE
+- ARBITRUM
+- SUI
+
+**Status Flow:**
+```
+PENDING → VERIFIED (ownership verification)
+        ↓
+      DENIED
+```
+
+**Filters:**
+- `verificationStatus`: PENDING, VERIFIED, DENIED
+- `chain`: Blockchain network
+- `address`: Wallet address
+
+---
+
+### Ramp Requests
+
+Create and manage on-ramp and off-ramp transactions.
+
+**Endpoints:**
+- `GET /v1/ramp-requests` - List all ramp requests
+- `POST /v1/ramp-requests` - Create new ramp request
+- `GET /v1/ramp-requests/{id}` - Get specific request
+- `POST /v1/ramp-requests/{id}/approve` - Approve request
+- `POST /v1/ramp-requests/{id}/reject` - Reject request
+- `POST /v1/ramp-requests/{id}/cancel` - Cancel request
+- `PUT /v1/ramp-requests/{id}/amount` - Edit amount
+- `PATCH /v1/ramp-requests/{id}/tx-hash` - Add transaction hash
+- `GET /v1/ramp-requests/export` - Export all requests
+
+**Currency Pairs:**
+- `GET /v1/ramp-requests/on-ramp/pairs` - Available on-ramp pairs
+- `GET /v1/ramp-requests/off-ramp/pairs` - Available off-ramp pairs
+
+**Status Flow:**
+```
+AWAITING_APPROVAL → AWAITING_FUNDS → PROCESSING → SUCCEEDED
+       ↓                  ↓                ↓
+   CANCELLED          REJECTED         FAILED
+   REJECTED           DENIED
+   DENIED             BLOCKED
+   BLOCKED
+```
+
+**Filters:**
+- `rampType`: ON_RAMP, OFF_RAMP
+- `status`: Request status
+- `fromDate`, `toDate`: Date range
+- `paymentReference`: Unique payment reference
+
+---
+
+### Fees
+
+Calculate and view fee configuration.
+
+**Endpoints:**
+- `GET /v1/fees` - Get company fee configuration
+- `POST /v1/fees/calculate` - Calculate fee for amount
+
+**Fee Structure:**
+- Company-specific tiers
+- Volume-based pricing
+- Separate rates for ON_RAMP and OFF_RAMP
+
+---
+
+### Currencies
+
+Retrieve supported currencies and blockchain networks.
+
+**Fiat Currencies:**
+- `GET /v1/fiat-currencies` - List all fiat currencies
+- `GET /v1/fiat-currencies/{id}` - Get specific currency
+
+**Crypto Currencies:**
+- `GET /v1/crypto-currencies` - List all cryptocurrencies
+- `GET /v1/crypto-currencies/{id}` - Get specific cryptocurrency
+
+**Blockchain Networks:**
+- `GET /v1/chains` - Get supported blockchain networks
+
+---
+
+### Deposit Accounts
+
+View Venly-managed deposit accounts for transactions.
+
+**Endpoints:**
+- `GET /v1/deposit-wallets` - List deposit wallets (for off-ramp)
+
+**Filters:**
+- `chain`: Filter by blockchain network
+
+---
+
+### Configuration
+
+Retrieve system configuration and metadata.
+
+**Endpoints:**
+- `GET /v1/bank-accounts/config` - Get bank account configuration
+- `GET /v1/auth/user` - Get authenticated user details
+
+---
+
+## Common Patterns
+
+### Pagination
+
+All list endpoints support pagination:
+
+```bash
+GET /v1/ramp-requests?page=1&size=50&sortOn=createdAt&sortOrder=DESC
+```
+
+**Parameters:**
+- `page`: Page number (1-based, default: 1)
+- `size`: Items per page (default: 100, max varies)
+- `sortOn`: Field to sort by
+- `sortOrder`: ASC or DESC
+
+### Filtering
+
+Most list endpoints support filtering:
+
+```bash
+# Filter ramp requests
+GET /v1/ramp-requests?rampType=ON_RAMP&status=AWAITING_APPROVAL
+
+# Filter wallets
+GET /v1/company-wallets?chain=ETHEREUM&verificationStatus=VERIFIED
+
+# Filter by date range
+GET /v1/ramp-requests?fromDate=2024-01-01&toDate=2024-12-31
+```
+
+### Optimistic Locking
+
+Update operations use optimistic locking via `version` field:
+
+```json
+{
+  "version": 1,
+  // ... other fields
+}
+```
+
+**On version conflict (HTTP 409):**
+1. Fetch the latest version: `GET /resource/{id}`
+2. Update your data with the new version
+3. Retry the operation
+
+---
+
+## Status Codes
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| **200** | Success | Request completed successfully |
+| **201** | Created | Resource created successfully |
+| **400** | Bad Request | Check request parameters |
+| **401** | Unauthorized | Check authentication token |
+| **403** | Forbidden | Insufficient permissions |
+| **404** | Not Found | Resource doesn't exist |
+| **405** | Method Not Allowed | Check HTTP method |
+| **409** | Conflict | Version conflict - fetch latest and retry |
+| **415** | Unsupported Media Type | Check Content-Type header |
+| **500** | Internal Server Error | Contact support |
+
+---
+
+## Rate Limiting
+
+Implement best practices for API usage:
+
+<Tip>
+  **Exponential Backoff**: Implement exponential backoff for retries on failures.
+</Tip>
+
+<Tip>
+  **Caching**: Cache reference data (currencies, chains, config) to reduce API calls.
+</Tip>
+
+<Tip>
+  **Webhooks**: Use webhooks instead of polling for status updates.
+</Tip>
+
+---
+
+## Data Types
+
+### Common Fields
+
+**Identifiers:**
+- `id`: UUID format (e.g., `123e4567-e89b-12d3-a456-426614174000`)
+
+**Timestamps:**
+- `createdAt`, `updatedAt`, `verifiedAt`: ISO 8601 format (e.g., `2024-01-15T10:30:00Z`)
+
+**Amounts:**
+- Decimal numbers with up to 8 decimal places
+- Minimum: 0.00000001
+
+**Versions:**
+- Integer for optimistic locking
+- Increments with each update
+
+---
+
+## Webhooks
+
+Configure webhooks to receive real-time notifications:
+
+**Event Types:**
+- Ramp request status changes
+- Payment received confirmations
+- Transaction completions
+- Account verification updates
+
+**Webhook Payload:**
+```json
+{
+  "eventType": "RAMP_REQUEST_STATUS_CHANGED",
+  "timestamp": "2024-01-15T10:30:00Z",
+  "data": {
+    "rampRequestId": "uuid",
+    "previousStatus": "AWAITING_FUNDS",
+    "newStatus": "PROCESSING"
+  }
+}
+```
+
+<Warning>
+  Always verify webhook signatures to ensure authenticity.
+</Warning>
+
+---
+
+## Best Practices
+
+### Security
+
+✅ **Do:**
+- Store credentials securely (environment variables, vaults)
+- Use HTTPS for all requests
+- Implement token refresh logic
+- Validate all input data
+- Log API interactions for audit
+
+❌ **Don't:**
+- Expose credentials in client-side code
+- Store tokens in version control
+- Share access tokens between environments
+- Ignore error responses
+
+### Performance
+
+✅ **Do:**
+- Use pagination for large datasets
+- Cache reference data
+- Implement connection pooling
+- Use webhooks for real-time updates
+- Batch operations when possible
+
+❌ **Don't:**
+- Poll frequently for status updates
+- Fetch all data without pagination
+- Make unnecessary API calls
+- Ignore rate limits
+
+### Error Handling
+
+✅ **Do:**
+- Handle all HTTP status codes
+- Implement retry logic with backoff
+- Log errors for debugging
+- Provide meaningful error messages to users
+- Handle version conflicts gracefully
+
+❌ **Don't:**
+- Ignore error responses
+- Retry indefinitely
+- Expose technical errors to end users
+- Skip validation
+
+---
+
+## Quick Reference
 
 <CardGroup cols={3}>
-  <Card title="Manage Accounts" icon="wallet" href="/guides/payments/accounts">
-    Add accounts
+  <Card title="Getting Started" icon="rocket" href="/guides/payments/getting-started">
+    Integration guide
   </Card>
-  <Card title="Create Transaction" icon="exchange" href="/guides/payments/transactions">
-    Start transacting
+  <Card title="API Reference" icon="code" href="/api-reference/Fundflow-API/company/get-company-details">
+    Full API docs
   </Card>
-  <Card title="View Fees" icon="dollar-sign" href="/guides/payments/fees">
-    Understand pricing
+  <Card title="Accounts" icon="building-columns" href="/guides/payments/accounts">
+    Bank accounts & wallets
+  </Card>
+  <Card title="Transactions" icon="arrow-right-arrow-left" href="/guides/payments/transactions">
+    Ramp requests
+  </Card>
+  <Card title="Fees" icon="percent" href="/guides/payments/fees">
+    Fee structure
+  </Card>
+  <Card title="Security" icon="shield" href="/guides/payments/security">
+    Security practices
   </Card>
 </CardGroup>
+
+---
+
+## Support
+
+Need help with the API?
+
+- **Email**: support@venly.io
+- **Documentation**: [docs.venly.io](https://docs.venly.io)
+- **API Status**: Monitor system status for any issues
