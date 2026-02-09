@@ -53,8 +53,8 @@ paths:
       description: |
         Updates the incoming amount for a ramp request. Uses optimistic locking to prevent concurrent updates.
         
-        - For **ON_RAMP**: Updates the fiat amount (amount customer will send)
-        - For **OFF_RAMP**: Updates the crypto amount (amount customer will send)
+        - For **ON_RAMP**: Updates the fiat amount (amount to be sent)
+        - For **OFF_RAMP**: Updates the crypto amount (amount to be sent)
         
         The corresponding outgoing amount is recalculated based on current exchange rates and fees.
       operationId: editRampRequestAmount
@@ -120,7 +120,7 @@ paths:
         - Users
       summary: Update user role
       description: |
-        Updates the role of a company user. Only accessible by users with `manage:company-users` authority.
+        Updates the role of a company user.
         
         **Available Roles:**
         - **COMPANY_ADMIN**: Full access to all company resources and user management
@@ -178,7 +178,6 @@ paths:
       summary: List all ramp requests
       description: |
         Retrieves a paginated list of ramp requests with optional filtering and sorting.
-        Only returns requests for the authenticated user's company.
       operationId: getAll
       security:
         - OAuth2:
@@ -278,15 +277,15 @@ paths:
         
         **For ON_RAMP:**
         - Specify fiat amount, fiat currency, crypto currency, and company wallet
-        - Customer will send fiat to the deposit bank account
-        - Customer will receive crypto to their company wallet
+        - Fiat should be sent from the company bank account to the deposit bank account in the response object `depositBankAccount`
+        - Crypto will be received to the company wallet
         
         **For OFF_RAMP:**
         - Specify crypto amount, crypto currency, fiat currency, and company bank account
-        - Customer will send crypto from their company wallet
-        - Customer will receive fiat to their company bank account
+        - Crypto should be sent from the company wallet to the Venly deposit wallet address provided in the response object `depositWallet`
+        - Fiat will be received to the company bank account
         
-        A unique payment reference is auto-generated for tracking purposes.
+        A unique payment reference is auto-generated for tracking purposes which should be included in your bank transfer so we can match your payment.
       operationId: create
       security:
         - OAuth2:
@@ -331,10 +330,9 @@ paths:
         - Ramp Requests
       summary: Reject a ramp request
       description: |
-        Rejects a ramp request. This action is performed by a company admin (COMPANY_ADMIN role) 
-        to reject a request created by a company manager. The status will change to REJECTED.
+        This endpoint allows a Company Admin to reject a ramp request that is created by a Manager. The status will change to REJECTED.
         
-        Uses optimistic locking to ensure the request hasn't been modified concurrently.
+  
       operationId: rejectRampRequest
       security:
         - OAuth2:
@@ -389,10 +387,9 @@ paths:
         - Ramp Requests
       summary: Cancel a ramp request
       description: |
-        Cancels a ramp request. This can be done by the requester while the request is in 
+        Cancels a ramp request. This can be done by the Company Manager/Admin that created the request while the request is in 
         AWAITING_APPROVAL status. The status will change to CANCELLED.
         
-        Uses optimistic locking to ensure the request hasn't been modified concurrently.
       operationId: cancelRampRequest
       security:
         - OAuth2:
@@ -447,12 +444,7 @@ paths:
         - Ramp Requests
       summary: Approve a ramp request
       description: |
-        Approves a ramp request. After approval, the status changes to AWAITING_FUNDS.
-        
-        - For ON_RAMP: Customer should send fiat to the provided deposit bank account
-        - For OFF_RAMP: Customer should send crypto to the provided deposit wallet
-        
-        Uses optimistic locking to ensure the request hasn't been modified concurrently.
+        This endpoint allows a Company Admin to approve a ramp request that is created by a Manager. After approval, the status changes to AWAITING_FUNDS.
       operationId: approveRampRequest
       security:
         - OAuth2:
@@ -508,7 +500,7 @@ paths:
       summary: Calculate fee for a ramp request
       description: |
         Calculates the fee amount and percentage for a given ramp request amount.
-        Fees are customer-specific and based on configured fee tiers.
+        Fees are company-specific and based on configured fee tiers.
         
         The calculation considers:
         - Request type (ON_RAMP or OFF_RAMP)
@@ -608,7 +600,7 @@ paths:
         - Company Wallets
       summary: List company wallets
       description: |
-        Retrieves a paginated list of company cryptocurrency wallets with optional filtering.
+        Retrieves a list of company cryptocurrency wallets with optional filtering by verification status, blockchain network, and wallet address.
       operationId: getAll_1
       security:
         - OAuth2:
@@ -683,10 +675,10 @@ paths:
     post:
       tags:
         - Company Wallets
-      summary: Create a company wallet
+      summary: Whitelist a company wallet
       description: |
-        Registers a new company cryptocurrency wallet. The wallet will be created with PENDING 
-        verification status and requires verification before it can be used in ramp requests.
+        Registers a new company cryptocurrency wallet with PENDING 
+        verification status and requires verification before it can be used in ramp requests. After creating the wallet, you must verify ownership by sending 1 USDC from the wallet to the deposit address that can be retrieved from the Get Deposit Wallets endpoint.
         
         
       operationId: create_1
@@ -733,10 +725,7 @@ paths:
         - Company Bank Accounts
       summary: List company bank accounts
       description: |
-        Retrieves a paginated list of company bank accounts with optional filtering.
-        Supports multiple payment networks including SEPA, ACH, SWIFT, FPS, and CHAPS.
-        
-        
+        Retrieves a list of your company bank accounts with optional filtering.
       operationId: getAll_2
       security:
         - OAuth2:
@@ -805,10 +794,10 @@ paths:
     post:
       tags:
         - Company Bank Accounts
-      summary: Create a company bank account
+      summary: Whitelist a company bank account
       description: |
-        Registers a new company bank account. The type of bank account (SEPA, ACH, SWIFT, etc.) 
-        determines the required fields. The account will be created with PENDING verification status.
+        Whitelist a new company bank account. The bank account will be created with PENDING verification status and requires verification before it can be used in ramp requests.
+         
         
         **Supported Bank Account Types:**
         - **EUR_SEPA**: European SEPA transfers (IBAN, BIC)
@@ -878,9 +867,9 @@ paths:
     patch:
       tags:
         - Ramp Requests
-      summary: Initiate a ramp request with transaction hash
+      summary: Initiate an off-ramp request with transaction hash
       description: |
-        Updates the blockchain transaction hash for a ramp request, marking it as initiated.
+        Updates the blockchain transaction hash for an off-ramp request, marking it as initiated. 
         
         
       operationId: updateTxHash
@@ -1092,7 +1081,7 @@ paths:
         - Company Wallets
       summary: Update company wallet
       description: |
-        Updates the description of a company wallet. Uses optimistic locking to prevent concurrent updates.
+        Updates the description of a company wallet.
       operationId: update
       security:
         - OAuth2:
@@ -1522,7 +1511,7 @@ paths:
       summary: Get company fee configuration
       description: |
         Retrieves the fee configuration for the authenticated company.
-        Fees are customer-specific and may include volume tiers.
+        Fees are company-specific and may include volume tiers.
       operationId: getCompanyFees
       security:
         - OAuth2: []
@@ -1560,9 +1549,9 @@ paths:
     get:
       tags:
         - Deposit Wallets
-      summary: List deposit wallets
+      summary: Get deposit wallets
       description: |
-        Retrieves deposit wallets where customers should send cryptocurrency for on-ramp operations.
+        Retrieves deposit wallets for specific chains where you should send 1 USDC from your company wallet to verify ownership.
         
         
       operationId: getAll_4
@@ -2095,8 +2084,8 @@ components:
           type: number
           description: |
             The new incoming amount to set.
-            - For **ON_RAMP**: This is the fiat amount (amount customer will send)
-            - For **OFF_RAMP**: This is the crypto amount (amount customer will send)
+            - For **ON_RAMP**: This is the fiat amount (amount to be sent)
+            - For **OFF_RAMP**: This is the crypto amount (amount to be sent)
           minimum: 0.00000001
           example: 1000.50
 
@@ -2121,8 +2110,8 @@ components:
           type: number
           description: |
             The amount for the ramp request.
-            - For **ON_RAMP**: Fiat amount the customer will send
-            - For **OFF_RAMP**: Crypto amount the customer will send
+            - For **ON_RAMP**: Fiat amount to be sent
+            - For **OFF_RAMP**: Crypto amount to be sent
           minimum: 0.00000001
           example: 1000.00
         companyBankAccountId:
@@ -2178,7 +2167,7 @@ components:
           type: string
           minLength: 1
           description: |
-            The blockchain transaction hash for the ramp request.
+            The transaction hash of the transfer of crypto funds to the Venly deposit wallet.
             
           example: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
 
@@ -2208,6 +2197,8 @@ components:
       required:
         - email
         - role
+        - firstName
+        - lastName
       properties:
         email:
           type: string
@@ -2836,7 +2827,7 @@ components:
           example: PAY-2024-001234
         paymentReceived:
           type: boolean
-          description: Whether payment has been received from customer
+          description: Whether payment has been received
         blockchainTransactionHash:
           type: string
           description: Blockchain transaction hash (when available)
@@ -2860,7 +2851,7 @@ components:
           description: Company wallet (for ON_RAMP)
         depositBankAccount:
           description: |
-            Venly deposit bank account where customer should send fiat (for ON_RAMP).
+            Venly deposit bank account where fiat should be sent (for ON_RAMP).
             
           oneOf:
             - $ref: '#/components/schemas/EurSepaDepositBankAccountDto'
@@ -2873,7 +2864,7 @@ components:
         depositWallet:
           $ref: '#/components/schemas/DepositWalletDto'
           description: |
-            Venly deposit wallet where customer should send crypto (for OFF_RAMP).
+            Venly deposit wallet where crypto should be sent (for OFF_RAMP).
             
         fiatCurrency:
           $ref: '#/components/schemas/FiatCurrencyDto'
@@ -2890,7 +2881,7 @@ components:
           description: Version number for optimistic locking
         amountReceived:
           type: number
-          description: Actual amount received from customer
+          description: Actual amount received
 
     RampRequestListItem:
       type: object

@@ -168,8 +168,9 @@ POST /v1/ramp-requests/{id}/approve
   "version": 1
 }
 
-# 4. Customer sends fiat with payment reference
-# 5. System processes and sends crypto to wallet
+# 4. Send fiat from company bank account to Venly deposit account
+#    (use depositBankAccount details from response + paymentReference)
+# 5. System processes and sends crypto to company wallet
 ```
 
 ## Off-Ramp Example
@@ -182,7 +183,7 @@ GET /v1/ramp-requests/off-ramp/pairs
 POST /v1/ramp-requests
 {
   "rampType": "OFF_RAMP",
-  "amount": 0.5,
+  "amount": 1000,
   "cryptoCurrencyId": "usdc-id",
   "fiatCurrencyId": "eur-id",
   "companyBankAccountId": "bank-id"
@@ -194,15 +195,16 @@ POST /v1/ramp-requests/{id}/approve
   "version": 1
 }
 
-# 4. Customer sends crypto to deposit wallet
+# 4. Send crypto from company wallet to Venly deposit wallet
+#    (use depositWallet address from response)
 # 5. Add transaction hash
-PATCH /v1/ramp-requests/{id}/tx-hash
+PATCH /v1/ramp-requests/{id}/initiate
 {
   "blockchainTransactionHash": "0x...",
   "version": 2
 }
 
-# 6. System processes and sends fiat to bank
+# 6. System processes and sends fiat to company bank account
 ```
 
 ## User Roles

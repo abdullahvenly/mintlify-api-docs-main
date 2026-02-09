@@ -74,7 +74,7 @@ Content-Type: application/json
 #### On-Ramp Example (1% fee)
 
 ```
-Fiat Amount (sent by customer):     €1,000.00
+Fiat Amount (sent):                  €1,000.00
 Fee (1%):                            €10.00
 Net Amount (converted to crypto):    €990.00
 Exchange Rate:                       1 USDC = €1.00
@@ -84,7 +84,7 @@ Crypto Received:                     990 USDC
 #### Off-Ramp Example (1% fee)
 
 ```
-Crypto Amount (sent by customer):    1,000 USDC
+Crypto Amount (sent):                1,000 USDC
 Fee (1%):                            10 USDC
 Net Amount (converted to fiat):      990 USDC
 Exchange Rate:                       1 USDC = €1.00
@@ -155,13 +155,13 @@ GET /v1/fees
 Fees are applied at different stages depending on the ramp type:
 
 **On-Ramp:**
-1. Customer sends fiat to Venly deposit account
+1. Fiat is sent to Venly deposit account
 2. Fee is deducted from the fiat amount
 3. Net amount is converted to crypto at current exchange rate
 4. Crypto is sent to company wallet
 
 **Off-Ramp:**
-1. Customer sends crypto to Venly deposit wallet
+1. Crypto is sent to Venly deposit wallet
 2. Fee is deducted from the crypto amount
 3. Net amount is converted to fiat at current exchange rate
 4. Fiat is sent to company bank account
