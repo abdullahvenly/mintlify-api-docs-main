@@ -1,158 +1,215 @@
 ---
 title: Account Management
-description: Managing bank accounts and crypto wallets
+description: Managing bank accounts and crypto wallets for Fundflow operations
 ---
 
-## Account Types
+## Overview
+
+Fundflow requires you to set up both **bank accounts** and **crypto wallets** to facilitate on-ramp and off-ramp transactions:
 
 <CardGroup cols={2}>
-  <Card title="Bank Accounts" icon="building">
-    For fiat transactions
+  <Card title="Bank Accounts" icon="building-columns">
+    For fiat currency transactions (EUR, USD, GBP)
   </Card>
   <Card title="Crypto Wallets" icon="wallet">
-    For digital asset transactions
+    For cryptocurrency transactions across multiple blockchains
   </Card>
 </CardGroup>
 
-**You need both types** to use the platform:
-- **On-Ramp**: Bank account → Crypto wallet
-- **Off-Ramp**: Crypto wallet → Bank account
+**Both account types are required:**
+- **On-Ramp** (Fiat → Crypto): Bank account → Crypto wallet
+- **Off-Ramp** (Crypto → Fiat): Crypto wallet → Bank account
 
 ---
 
 ## Bank Accounts
 
+### Supported Bank Account Types
+
+Fundflow supports multiple payment networks across different regions:
+
+| Type | Region | Description | Required Fields |
+|------|--------|-------------|-----------------|
+| **EUR_SEPA** | Europe | SEPA transfers | IBAN, BIC |
+| **USD_WIRE** | United States | Wire transfers | Account number, Routing number |
+| **USD_ACH** | United States | ACH transfers | Account number, Routing number |
+| **USD_SWIFT** | United States | SWIFT transfers | BIC, Account number, Bank address |
+| **GBP_FPS** | United Kingdom | Faster Payments | Account number, Sort code |
+| **GBP_CHAPS** | United Kingdom | CHAPS transfers | Account number, Sort code |
+| **OTHER_SWIFT** | International | Other currencies via SWIFT | Currency code, BIC, IBAN or Account number |
+
 ### Adding a Bank Account
 
 <Steps>
-  <Step title="Navigate">
-    **Accounts** → **Bank Accounts** tab → **Whitelist Bank Account**
+  <Step title="Create Bank Account">
+    Use the [Create Company Bank Account](/api-reference/Fundflow-API/company-bank-accounts/create-a-company-bank-account) endpoint
+    
+    Provide required information based on account type:
+    - Account holder details (company name, address)
+    - Bank details (name, country, account numbers)
+    - Contact information (email, phone)
+    - Supported ramp type (ON_RAMP, OFF_RAMP, or both)
   </Step>
   
-  <Step title="Enter Details">
-    - Account name
-    - IBAN
-    - Bank name
+  <Step title="Verification Process">
+    Your bank account will be created with **PENDING** verification status
+    
+    The Venly team will manually review and verify the account details
   </Step>
   
-  <Step title="Submit for Review">
-    Your bank account will be reviewed manually by the Venly team
+  <Step title="Account Verified">
+    Once verified, the status changes to **VERIFIED** and the account can be used for transactions
   </Step>
 </Steps>
 
+<Note>
+  Bank account verification is done manually to ensure security and compliance with financial regulations.
+</Note>
+
 ### Bank Account Requirements
 
-- Account must be in your business name
-- Valid IBAN format
+- Account must be in your company's legal name
+- Valid account numbers in the correct format for the account type
 - Bank must be in a supported country
+- Complete and accurate beneficiary address information
 
-### Bank Account Verification
+### Managing Bank Accounts
 
-**Process:** Manual review by Venly team
+**List all bank accounts:**
+```bash
+GET /v1/company-bank-accounts
+```
 
-**Status:** "Verification in Process" → "Verified"
+**Get specific account:**
+```bash
+GET /v1/company-bank-accounts/{id}
+```
 
-<Note>
-  Bank account verification is done manually to ensure security and compliance
-</Note>
+**Update account name:**
+```bash
+PATCH /v1/company-bank-accounts/{id}
+```
+
+<Warning>
+  Updates use optimistic locking. Include the current `version` number to prevent concurrent modification conflicts.
+</Warning>
 
 ---
 
 ## Crypto Wallets
 
-### Whitelisting Your Wallet
+### Supported Blockchain Networks
+
+Fundflow supports wallets on the following blockchain networks:
+
+- **Ethereum** (ETH, USDC, EURC, USDS)
+- **Polygon** (POL)
+- **Base**
+- **Arbitrum**
+- **Sui**
+
+### Adding a Crypto Wallet
 
 <Steps>
-  <Step title="Navigate">
-    **Accounts** → **Wallets** tab → **Whitelist Wallet**
-  </Step>
-  
-  <Step title="Enter Details">
-    - Wallet address (0x...)
-    - Network (Ethereum or Polygon)
-  </Step>
-  
-  <Step title="Verify Ownership">
-    You'll see a verification screen showing:
-    - Amount: 1 USDC
-    - Verification address
+  <Step title="Create Wallet">
+    Use the [Create Company Wallet](/api-reference/Fundflow-API/company-wallets/create-a-company-wallet) endpoint
     
-    Send exactly 1 USDC to the verification address **from the wallet you're registering**
+    Provide:
+    - Wallet address (e.g., 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb)
+    - Blockchain network (ETHEREUM, POLYGON, BASE, ARBITRUM, or SUI)
+    - Optional description for identification
   </Step>
   
-  <Step title="Wait for Confirmation">
-    Verification completes automatically once the blockchain confirms your transaction
+  <Step title="Verification Process">
+    Your wallet will be created with **PENDING** verification status
+    
+    Complete the verification process to prove wallet ownership
+  </Step>
+  
+  <Step title="Wallet Verified">
+    Once verified, the status changes to **VERIFIED** and the wallet can be used for on-ramp transactions
   </Step>
 </Steps>
 
-<Warning>
-  Must send 1 USDC from the exact wallet address you're registering
-</Warning>
+### Managing Crypto Wallets
 
-### Supported Networks & Assets
+**List all wallets:**
+```bash
+GET /v1/company-wallets
+```
 
-| Network | Assets |
-|---------|--------|
-| **Ethereum** | USDC, EURC, USDS, ETH |
-| **Polygon** | POL |
+Filter by:
+- Verification status (PENDING, VERIFIED, DENIED)
+- Blockchain network
+- Wallet address
+
+**Get specific wallet:**
+```bash
+GET /v1/company-wallets/{id}
+```
+
+**Update wallet description:**
+```bash
+PATCH /v1/company-wallets/{id}
+```
 
 ---
 
 ## Account Statuses
 
-| Status | Meaning |
-|--------|---------|
-| **Verified** | Ready to use for transactions |
-| **Verification in Process** | Awaiting confirmation |
-| **Rejected** | Verification failed - retry with correct information |
+| Status | Meaning | Actions Available |
+|--------|---------|-------------------|
+| **PENDING** | Awaiting verification | Wait for review |
+| **VERIFIED** | Ready to use | Can be used in ramp requests |
+| **DENIED** | Verification failed | Review details and resubmit |
 
 ---
 
-## Managing Accounts
+## Supported Ramp Types
 
-- View all accounts in the Accounts page
-- See verification status for each account
-- View account details
-- Remove accounts (if no pending transactions)
-- Add multiple accounts
+When creating a bank account, specify which operations it supports:
+
+- **ON_RAMP**: Can receive fiat deposits (for buying crypto)
+- **OFF_RAMP**: Can send fiat withdrawals (for selling crypto)
+- **ON_AND_OFF_RAMP**: Supports both operations
+
+<Tip>
+  Use descriptive names for your accounts like "EUR SEPA - Operations" or "Main Treasury Wallet" to easily identify them when creating ramp requests.
+</Tip>
 
 ---
 
-## Troubleshooting
+## API Reference
 
-### Bank Account Issues
-
-**Account rejected?**
-- Check IBAN is correct
-- Ensure account is in business name
-- Verify bank is in supported country
-
-### Wallet Verification Issues
-
-**Verification not completing?**
-- Sent exactly 1 USDC?
-- From the wallet you're registering?
-- Correct network selected?
-- Wait for blockchain confirmation
-
-**Wrong network selected?**
-- Cannot change after submission
-- Must remove and re-add with correct network
+<CardGroup cols={2}>
+  <Card title="Bank Accounts API" icon="building-columns" href="/api-reference/Fundflow-API/company-bank-accounts/list-company-bank-accounts">
+    Manage company bank accounts
+  </Card>
+  <Card title="Wallets API" icon="wallet" href="/api-reference/Fundflow-API/company-wallets/list-company-wallets">
+    Manage company crypto wallets
+  </Card>
+  <Card title="Supported Currencies" icon="coins" href="/api-reference/Fundflow-API/fiat-currencies/list-all-fiat-currencies">
+    View supported fiat currencies
+  </Card>
+  <Card title="Supported Crypto" icon="bitcoin-sign" href="/api-reference/Fundflow-API/crypto-currencies/list-all-crypto-currencies">
+    View supported cryptocurrencies
+  </Card>
+</CardGroup>
 
 ---
 
 ## Best Practices
 
 <Tip>
-  **Name Clearly**: Use descriptive names like "Business Checking EUR" or "Treasury Wallet"
+  **Prepare Accounts Early**: Add and verify your bank accounts and wallets during your company onboarding process, before you need to create ramp requests.
 </Tip>
 
 <Tip>
-  **Prepare During Processing**: Add accounts while your business verification is pending
+  **Multiple Accounts**: You can add multiple bank accounts and wallets to support different currencies and use cases.
 </Tip>
 
 <Warning>
-  **Never share** private keys or seed phrases
+  **Security**: Never share private keys or seed phrases. Fundflow only needs your wallet address for verification.
 </Warning>
 
 ---
@@ -160,10 +217,10 @@ description: Managing bank accounts and crypto wallets
 ## Next Steps
 
 <CardGroup cols={2}>
-  <Card title="Create Transaction" icon="exchange" href="/guides/payments/transactions">
-    Start transacting
+  <Card title="Create Ramp Requests" icon="arrow-right-arrow-left" href="/guides/payments/transactions">
+    Start creating on-ramp and off-ramp transactions
   </Card>
-  <Card title="Security Guide" icon="shield" href="/guides/payments/security">
-    Secure your accounts
+  <Card title="Fee Structure" icon="percent" href="/guides/payments/fees">
+    Understand fee calculations
   </Card>
 </CardGroup>

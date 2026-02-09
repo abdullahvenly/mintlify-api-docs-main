@@ -609,8 +609,6 @@ paths:
       summary: List company wallets
       description: |
         Retrieves a paginated list of company cryptocurrency wallets with optional filtering.
-        
-        TODO: Add verification process details
       operationId: getAll_1
       security:
         - OAuth2:
@@ -690,7 +688,7 @@ paths:
         Registers a new company cryptocurrency wallet. The wallet will be created with PENDING 
         verification status and requires verification before it can be used in ramp requests.
         
-        TODO: Add verification process details
+        
       operationId: create_1
       security:
         - OAuth2:
@@ -738,7 +736,7 @@ paths:
         Retrieves a paginated list of company bank accounts with optional filtering.
         Supports multiple payment networks including SEPA, ACH, SWIFT, FPS, and CHAPS.
         
-        TODO: Add verification process details
+        
       operationId: getAll_2
       security:
         - OAuth2:
@@ -821,7 +819,7 @@ paths:
         - **GBP_CHAPS**: UK CHAPS transfers (Account number, Sort code)
         - **OTHER_SWIFT**: Other currency SWIFT transfers (specify currency)
         
-        TODO: Add verification process details
+        
       operationId: create_2
       security:
         - OAuth2:
@@ -884,7 +882,7 @@ paths:
       description: |
         Updates the blockchain transaction hash for a ramp request, marking it as initiated.
         
-        TODO: Clarify if this is required for both ON_RAMP and OFF_RAMP or specific flows only
+        
       operationId: updateTxHash
       security:
         - OAuth2:
@@ -941,8 +939,8 @@ paths:
       description: |
         Updates the blockchain transaction hash for a ramp request.
         
-        TODO: Clarify the difference between this endpoint and /initiate
-        TODO: Clarify if this is required for both ON_RAMP and OFF_RAMP or specific flows only
+        
+        
       operationId: updateTxHash_1
       security:
         - OAuth2:
@@ -1318,7 +1316,7 @@ paths:
         Retrieves all available currency pairs for on-ramp (fiat to crypto) operations.
         Returns combinations of supported fiat currencies and their corresponding crypto currencies.
         
-        TODO: Add details about exchange rate retrieval
+        
       operationId: getOnRampPairs
       security:
         - OAuth2:
@@ -1362,7 +1360,7 @@ paths:
         Retrieves all available currency pairs for off-ramp (crypto to fiat) operations.
         Returns combinations of supported crypto currencies and their corresponding fiat currencies.
         
-        TODO: Add details about exchange rate retrieval
+        
       operationId: getOffRampPairs
       security:
         - OAuth2:
@@ -1566,7 +1564,7 @@ paths:
       description: |
         Retrieves deposit wallets where customers should send cryptocurrency for on-ramp operations.
         
-        TODO: Clarify if these are Venly-managed wallets
+        
       operationId: getAll_4
       security:
         - OAuth2: []
@@ -1707,7 +1705,7 @@ paths:
       description: |
         Retrieves details about the authenticated user's company, including KYB status.
         
-        TODO: Add KYB verification process details
+        
       operationId: getCompanyDetails
       security:
         - OAuth2: []
@@ -2181,7 +2179,7 @@ components:
           minLength: 1
           description: |
             The blockchain transaction hash for the ramp request.
-            TODO: Clarify if required for both ON_RAMP and OFF_RAMP
+            
           example: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef'
 
     CalculateFeeRequest:
@@ -2826,7 +2824,7 @@ components:
           type: number
           description: |
             Exchange rate used for the conversion.
-            TODO: Clarify how rates are determined and update frequency
+            
           example: 2000.00
         feePercentage:
           type: number
@@ -2863,7 +2861,7 @@ components:
         depositBankAccount:
           description: |
             Venly deposit bank account where customer should send fiat (for ON_RAMP).
-            TODO: Clarify if these are Venly-managed accounts
+            
           oneOf:
             - $ref: '#/components/schemas/EurSepaDepositBankAccountDto'
             - $ref: '#/components/schemas/GbpChapsDepositBankAccountDto'
@@ -2876,7 +2874,7 @@ components:
           $ref: '#/components/schemas/DepositWalletDto'
           description: |
             Venly deposit wallet where customer should send crypto (for OFF_RAMP).
-            TODO: Clarify if these are Venly-managed wallets
+            
         fiatCurrency:
           $ref: '#/components/schemas/FiatCurrencyDto'
         cryptoCurrency:
@@ -3019,7 +3017,7 @@ components:
           type: string
           description: |
             Verification status of the wallet.
-            TODO: Add verification process details
+            
           enum:
             - PENDING
             - VERIFIED
@@ -3130,7 +3128,7 @@ components:
           type: string
           description: |
             Verification status of the bank account.
-            TODO: Add verification process details
+            
           enum:
             - PENDING
             - VERIFIED
@@ -3299,7 +3297,7 @@ components:
       type: object
       description: |
         Venly-managed deposit bank account where customers send fiat for on-ramp.
-        TODO: Clarify deposit account management
+        
       discriminator:
         propertyName: bankAccountType
       properties:
@@ -3511,7 +3509,7 @@ components:
       type: object
       description: |
         Venly-managed deposit wallet where customers send crypto for off-ramp.
-        TODO: Clarify deposit wallet management
+        
       properties:
         id:
           type: string
@@ -3685,7 +3683,7 @@ components:
           type: string
           description: |
             Know Your Business verification status.
-            TODO: Add KYB process details
+            
           enum:
             - PENDING
             - VERIFIED
@@ -3940,3 +3938,4 @@ components:
             view:company-bank-account: View company bank accounts
             manage:company-bank-account: Create and manage company bank accounts
             manage:company-users: Manage company users
+

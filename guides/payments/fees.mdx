@@ -1,155 +1,365 @@
 ---
 title: Fee Structure
-description: Transparent, competitive pricing for all transactions
+description: Understanding fees and pricing for Fundflow ramp operations
 ---
 
 ## Overview
 
-Industry-leading low fees - all costs shown upfront with no hidden charges.
+Fundflow applies fees to both on-ramp and off-ramp transactions. Fees are **company-specific** and may include volume-based tiers to provide better rates for higher transaction volumes.
 
-## Stablecoin Transfers
+<CardGroup cols={2}>
+  <Card title="On-Ramp Fees" icon="arrow-up">
+    Applied when converting fiat to crypto
+  </Card>
+  <Card title="Off-Ramp Fees" icon="arrow-down">
+    Applied when converting crypto to fiat
+  </Card>
+</CardGroup>
 
-**Flat Rate: 10 bps (0.10%)** for transfers without currency conversion (e.g., USDC to USDC)
+---
 
-## Transaction Fees
+## Fee Structure
 
-Fees based on:
-1. **Currency tier** (determined by liquidity)
-2. **Monthly volume** (higher volume = lower fees)
+### How Fees Work
 
-### Currency Tiers
+Fees are calculated as a **percentage** of the transaction amount and are deducted from the total:
 
-| Tier | Currencies | $0-10M | $10M-50M | $50M+ |
-|------|-----------|--------|----------|-------|
-| **Tier 1** | USD, EUR, GBP | 20 bps (0.20%) | 15 bps (0.15%) | 10 bps (0.10%) |
-| **Tier 2** | AED, SGD, HKD, MXN, BRL, PKR, ZAR | 30 bps (0.30%) | 25 bps (0.25%) | 20 bps (0.20%) |
-| **Tier 3** | Frontier currencies | 40 bps (0.40%) | 35 bps (0.35%) | 30 bps (0.30%) |
+- **On-Ramp**: Fee is deducted from the fiat amount before conversion
+- **Off-Ramp**: Fee is deducted from the crypto amount before conversion
 
-## On-Ramp Fees
+### Fee Components
 
-**Processing:** 25 bps (0.25%) + **Currency Tier:** 10-40 bps (0.10-0.40%)
+Each ramp request includes detailed fee information:
 
-**Total Range:** 35-65 bps (0.35-0.65%)
+| Field | Description |
+|-------|-------------|
+| **Fiat Amount** | Total fiat amount (including fees) |
+| **Fiat Net Amount** | Net fiat after deducting fees |
+| **Crypto Amount** | Cryptocurrency amount |
+| **Fiat Fee Amount** | Fee amount in fiat currency |
+| **Fee Percentage** | Percentage rate applied |
+| **Exchange Rate** | Conversion rate used |
 
-### Example: €5,000 EUR → USDC (Tier 1, $0-10M volume)
-- Processing (25 bps): €12.50
-- Tier 1 (20 bps): €10.00
-- **Total: €22.50 (45 bps / 0.45%)**
-- You receive: ~5,078 USDC
+---
 
-<Info>
-  Industry average: 100-150 bps (1.0-1.5%) - **Save 50%+ with Venly**
-</Info>
+## Calculating Fees
 
-## Off-Ramp Fees
+### Using the API
 
-**Processing:** 50 bps (0.50%) + **Currency Tier:** 10-40 bps (0.10-0.40%)
+Use the [Calculate Fee](/api-reference/Fundflow-API/fees/calculate-fee-for-a-ramp-request) endpoint to determine fees before creating a ramp request:
 
-**Total Range:** 60-90 bps (0.60-0.90%)
+```bash
+POST /v1/fees/calculate
+Content-Type: application/json
 
-### Example: 12,800 USDC → EUR (Tier 1, $0-10M volume)
-- Processing (50 bps): €62.72
-- Tier 1 (20 bps): €25.09
-- **Total: €87.81 (70 bps / 0.70%)**
-- You receive: €12,456.19
+{
+  "amount": 1000.00,
+  "type": "ON_RAMP"
+}
+```
 
-<Info>
-  Industry average: 150-250 bps (1.5-2.5%) - **Save 60%+ with Venly**
-</Info>
+**Response:**
+```json
+{
+  "success": true,
+  "result": {
+    "amount": 10.00,
+    "percentage": 1.0
+  }
+}
+```
 
-## Volume Discounts
+### Calculation Examples
 
-Monthly volume calculated in USD equivalent, resets on 1st of each month.
+#### On-Ramp Example (1% fee)
 
-**$0-10M:** Standard rates (most competitive base rates)
+```
+Fiat Amount (sent by customer):     €1,000.00
+Fee (1%):                            €10.00
+Net Amount (converted to crypto):    €990.00
+Exchange Rate:                       1 USDC = €1.00
+Crypto Received:                     990 USDC
+```
 
-**$10M-50M:** 5 bps discount + priority support
+#### Off-Ramp Example (1% fee)
 
-**$50M+:** 10 bps discount + premium support + dedicated account manager
+```
+Crypto Amount (sent by customer):    1,000 USDC
+Fee (1%):                            10 USDC
+Net Amount (converted to fiat):      990 USDC
+Exchange Rate:                       1 USDC = €1.00
+Fiat Received:                       €990.00
+```
 
-<Tip>
-  Tier upgrades happen automatically based on your monthly volume
-</Tip>
+---
 
-## Fee Comparison
+## Volume Tiers
 
-| Feature | On-Ramp | Off-Ramp | Industry Avg |
-|---------|---------|----------|--------------|
-| Processing | 25 bps | 50 bps | 100+ bps |
-| Currency Tier | 10-40 bps | 10-40 bps | 50+ bps |
-| **Total Range** | **35-65 bps** | **60-90 bps** | **150-250 bps** |
-| **Savings vs Industry** | **~60%** | **~65%** | - |
+### Tiered Pricing
 
-## Gas Fees
+Companies may have volume-based fee tiers that provide lower rates for higher transaction volumes:
 
-Blockchain transaction fees (paid to validators, not Venly):
+| Tier | Volume Range | Fee Percentage |
+|------|--------------|----------------|
+| **Tier 1** | €0 - €10,000 | 1.5% |
+| **Tier 2** | €10,001 - €50,000 | 1.0% |
+| **Tier 3** | €50,001+ | 0.75% |
 
-- **Polygon**: $0.01-$0.10 (1-10 bps on $100)
-- **Ethereum**: $5-$50 (500-5000 bps on $100)
-- **Avalanche**: $0.50-$2 (50-200 bps on $100)
-- **BSC**: $0.20-$1 (20-100 bps on $100)
+<Note>
+  Fee tiers are configured per company. Contact Venly to discuss custom pricing for your business needs.
+</Note>
 
-<Tip>
-  **Use Polygon** for lowest gas fees - up to 500x cheaper than Ethereum
-</Tip>
+### Viewing Your Fee Configuration
 
-## No Charges For
+Use the [Get Company Fee Configuration](/api-reference/Fundflow-API/fees/get-company-fee-configuration) endpoint:
 
-✅ Account registration  
-✅ Bank account/wallet verification  
-✅ Viewing transactions  
-✅ Customer support  
-✅ Account maintenance  
-✅ API access
+```bash
+GET /v1/fees
+```
 
-## Transparent All-In Pricing
+**Response:**
+```json
+{
+  "success": true,
+  "result": [
+    {
+      "id": "fee-tier-1-id",
+      "companyId": "your-company-id",
+      "name": "Standard Tier",
+      "type": "ON_RAMP",
+      "minVolume": 0,
+      "maxVolume": 10000,
+      "percentage": 1.5,
+      "version": 1
+    },
+    {
+      "id": "fee-tier-2-id",
+      "companyId": "your-company-id",
+      "name": "Volume Tier",
+      "type": "ON_RAMP",
+      "minVolume": 10001,
+      "maxVolume": 50000,
+      "percentage": 1.0,
+      "version": 1
+    }
+  ]
+}
+```
 
-What you see is what you pay:
-- **On-Ramp:** 35-65 bps total
-- **Off-Ramp:** 60-90 bps total
-- No monthly fees
-- No setup fees
-- No hidden charges
+---
+
+## Fee Application
+
+### When Fees Are Applied
+
+Fees are applied at different stages depending on the ramp type:
+
+**On-Ramp:**
+1. Customer sends fiat to Venly deposit account
+2. Fee is deducted from the fiat amount
+3. Net amount is converted to crypto at current exchange rate
+4. Crypto is sent to company wallet
+
+**Off-Ramp:**
+1. Customer sends crypto to Venly deposit wallet
+2. Fee is deducted from the crypto amount
+3. Net amount is converted to fiat at current exchange rate
+4. Fiat is sent to company bank account
+
+### Fee Transparency
+
+All fee information is clearly displayed in the ramp request:
+
+```json
+{
+  "id": "ramp-request-id",
+  "rampType": "ON_RAMP",
+  "fiatAmount": 1000.00,
+  "fiatNetAmount": 990.00,
+  "fiatFeeAmount": 10.00,
+  "feePercentage": 1.0,
+  "cryptoAmount": 990.00,
+  "exchangeRate": 1.0,
+  ...
+}
+```
+
+---
+
+## Exchange Rates
+
+### How Rates Are Determined
+
+Exchange rates are determined at the time of conversion and reflect current market conditions:
+
+- Rates are sourced from reliable market data providers
+- Rates include a small spread to account for market volatility
+- Rates are locked when the transaction enters PROCESSING status
+
+### Rate Visibility
+
+The exchange rate used for each transaction is included in the ramp request details:
+
+```bash
+GET /v1/ramp-requests/{id}
+```
+
+```json
+{
+  "exchangeRate": 1.0012,
+  "fiatAmount": 1000.00,
+  "cryptoAmount": 998.80,
+  ...
+}
+```
+
+<Note>
+  Exchange rates may fluctuate between request creation and processing. The final rate is determined when the payment is received and conversion begins.
+</Note>
+
+---
 
 ## Best Practices
 
+### Before Creating Requests
+
 <Tip>
-  **Batch Transactions**: Combine smaller amounts to maximize efficiency
+  **Calculate Fees First**: Always use the fee calculation endpoint before creating large ramp requests to understand the total cost.
 </Tip>
 
 <Tip>
-  **Use Polygon**: Minimal gas fees (1-10 bps vs 500+ bps on Ethereum)
+  **Check Volume Tiers**: If you're close to a tier threshold, consider batching transactions to benefit from lower fees.
+</Tip>
+
+### Optimizing Costs
+
+<Tip>
+  **Batch Transactions**: Combine multiple smaller transactions into larger ones to potentially benefit from volume tier pricing.
 </Tip>
 
 <Tip>
-  **Increase Volume**: Automatic discounts at $10M+ monthly volume
+  **Plan Ahead**: Schedule large transactions during periods of lower market volatility to minimize exchange rate risk.
+</Tip>
+
+### Transparency
+
+<Tip>
+  **Review Breakdowns**: Always review the complete fee and amount breakdown before approving ramp requests.
 </Tip>
 
 <Tip>
-  **Plan Ahead**: Higher volumes = lower fees = better margins
+  **Export Records**: Use the export functionality to maintain detailed records for accounting and tax purposes.
 </Tip>
 
-## Why Our Pricing Is Competitive
+---
 
-✅ **No Markup**: Direct market rates with transparent fee structure  
-✅ **Volume Discounts**: Automatic savings as you grow  
-✅ **Low Minimums**: $0-10M tier accessible to all businesses  
-✅ **Fast Processing**: Lower fees without compromising speed  
-✅ **Multi-Chain**: Choose optimal network for your fee profile  
+## Fee-Related API Endpoints
 
-## Enterprise Solutions
+<CardGroup cols={2}>
+  <Card title="Calculate Fee" icon="calculator" href="/api-reference/Fundflow-API/fees/calculate-fee-for-a-ramp-request">
+    Calculate fees for a specific amount
+  </Card>
+  <Card title="Get Fee Configuration" icon="gear" href="/api-reference/Fundflow-API/fees/get-company-fee-configuration">
+    View your company's fee tiers
+  </Card>
+  <Card title="Create Ramp Request" icon="plus" href="/api-reference/Fundflow-API/ramp-requests/create-a-new-ramp-request">
+    Create a new transaction
+  </Card>
+  <Card title="Export Requests" icon="download" href="/api-reference/Fundflow-API/ramp-requests/export-ramp-requests">
+    Export transaction records
+  </Card>
+</CardGroup>
 
-For $50M+ monthly volume:
-- Custom fee structures (sub-50 bps possible)
-- Dedicated support team
-- Priority processing
-- API integration
-- White-label options
+---
 
-Contact: sales@venly.io
+## Understanding Your Invoice
+
+### What's Included
+
+Your Fundflow invoice includes:
+- Total transaction volume for the billing period
+- Number of transactions processed
+- Total fees collected
+- Breakdown by transaction type (on-ramp vs off-ramp)
+
+### Accessing Invoices
+
+View your invoices through the company details:
+
+```bash
+GET /v1/company
+```
+
+```json
+{
+  "success": true,
+  "result": {
+    "id": "company-id",
+    "name": "Your Company",
+    "invoicesUrl": "https://portal.venly.io/invoices",
+    ...
+  }
+}
+```
+
+---
+
+## Custom Pricing
+
+### Enterprise Pricing
+
+For high-volume businesses, Venly offers custom pricing arrangements:
+
+- **Volume Discounts**: Lower fees for consistent high-volume usage
+- **Custom Tiers**: Tailored tier structures for your business model
+- **Fixed Pricing**: Predictable costs for budgeting purposes
+
+<Note>
+  Contact Venly sales to discuss enterprise pricing options for your business.
+</Note>
+
+---
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="Are fees the same for on-ramp and off-ramp?">
+    Fees can be configured differently for on-ramp and off-ramp operations. Check your fee configuration to see the specific rates for each type.
+  </Accordion>
+
+  <Accordion title="Can I negotiate lower fees?">
+    Yes, companies with high transaction volumes can contact Venly to discuss custom pricing arrangements.
+  </Accordion>
+
+  <Accordion title="Are there any hidden fees?">
+    No. All fees are transparently displayed in the fee calculation and ramp request details. The only costs are the percentage-based fees shown.
+  </Accordion>
+
+  <Accordion title="How often do exchange rates update?">
+    Exchange rates are updated in real-time based on market conditions. The rate used for your transaction is locked when processing begins.
+  </Accordion>
+
+  <Accordion title="What happens if the exchange rate changes after I create a request?">
+    The exchange rate is locked when your transaction enters PROCESSING status (after payment is received). Any rate changes before that point will be reflected in the final conversion.
+  </Accordion>
+
+  <Accordion title="Can I get a refund on fees if a transaction fails?">
+    If a transaction fails before processing begins, no fees are charged. If it fails during processing, contact Venly support to review the specific case.
+  </Accordion>
+</AccordionGroup>
+
+---
 
 ## Next Steps
 
-<Card title="Start Transacting" icon="rocket" href="/guides/payments/transactions/overview">
-  Experience industry-leading low fees on your first transaction
-</Card>
+<CardGroup cols={3}>
+  <Card title="Create Ramp Request" icon="arrow-right-arrow-left" href="/guides/payments/transactions">
+    Start creating transactions
+  </Card>
+  <Card title="Account Management" icon="building-columns" href="/guides/payments/accounts">
+    Set up bank accounts and wallets
+  </Card>
+  <Card title="Glossary" icon="book" href="/guides/payments/glossary">
+    Understand key terms
+  </Card>
+</CardGroup>
