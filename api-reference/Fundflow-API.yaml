@@ -41,7 +41,7 @@ info:
   version: 1.7.0
 
 servers:
-  - url: https://api-fundflow.venly.io
+  - url: https://api-fundflow-qa.venly.io
     description: Production Server
 
 paths:
