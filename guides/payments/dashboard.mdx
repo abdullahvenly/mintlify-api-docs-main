@@ -351,35 +351,6 @@ Implement best practices for API usage:
 
 ---
 
-## Webhooks
-
-Configure webhooks to receive real-time notifications:
-
-**Event Types:**
-- Ramp request status changes
-- Payment received confirmations
-- Transaction completions
-- Account verification updates
-
-**Webhook Payload:**
-```json
-{
-  "eventType": "RAMP_REQUEST_STATUS_CHANGED",
-  "timestamp": "2024-01-15T10:30:00Z",
-  "data": {
-    "rampRequestId": "uuid",
-    "previousStatus": "AWAITING_FUNDS",
-    "newStatus": "PROCESSING"
-  }
-}
-```
-
-<Warning>
-  Always verify webhook signatures to ensure authenticity.
-</Warning>
-
----
-
 ## Best Practices
 
 ### Security
