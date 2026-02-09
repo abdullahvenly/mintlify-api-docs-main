@@ -611,19 +611,178 @@
             ]
           },
           {
-            "group": "Core Guides",
+            "group": "Authentication",
             "pages": [
-              "guides/payments/accounts",
-              "guides/payments/transactions"
+              "guides/payments/authentication"
+            ]
+          },
+          {
+            "group": "Company",
+            "pages": [
+              "guides/payments/company"
+            ]
+          },
+          {
+            "group": "Users",
+            "pages": [
+              "guides/payments/users"
+            ]
+          },
+          {
+            "group": "Company Bank Accounts",
+            "pages": [
+              "guides/payments/company-bank-accounts"
+            ]
+          },
+          {
+            "group": "Company Wallets",
+            "pages": [
+              "guides/payments/company-wallets"
+            ]
+          },
+          {
+            "group": "Deposit Wallets",
+            "pages": [
+              "guides/payments/deposit-wallets"
+            ]
+          },
+          {
+            "group": "Ramp Requests",
+            "pages": [
+              "guides/payments/ramp-requests"
+            ]
+          },
+          {
+            "group": "Fees",
+            "pages": [
+              "guides/payments/fees"
+            ]
+          },
+          {
+            "group": "Fiat Currencies",
+            "pages": [
+              "guides/payments/fiat-currencies"
+            ]
+          },
+          {
+            "group": "Crypto Currencies",
+            "pages": [
+              "guides/payments/crypto-currencies"
+            ]
+          },
+          {
+            "group": "Blockchain Networks",
+            "pages": [
+              "guides/payments/blockchain-networks"
+            ]
+          },
+          {
+            "group": "Bank Account Configuration",
+            "pages": [
+              "guides/payments/bank-account-configuration"
             ]
           },
           {
             "group": "Additional Resources",
             "pages": [
-              "guides/payments/fees",
               "guides/payments/security",
               "guides/payments/glossary",
               "guides/payments/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Fundflow-API Reference",
+        "groups": [
+          {
+            "group": "Company",
+            "pages": [
+              "api-reference/Fundflow-API/company/get-company-details"
+            ]
+          },
+          {
+            "group": "Users",
+            "pages": [
+              "api-reference/Fundflow-API/users/list-company-users",
+              "api-reference/Fundflow-API/users/invite-a-user-to-the-company",
+              "api-reference/Fundflow-API/users/update-user-role",
+              "api-reference/Fundflow-API/users/update-user-status",
+              "api-reference/Fundflow-API/users/delete-a-company-user"
+            ]
+          },
+          {
+            "group": "Company Bank Accounts",
+            "pages": [
+              "api-reference/Fundflow-API/company-bank-accounts/list-company-bank-accounts",
+              "api-reference/Fundflow-API/company-bank-accounts/create-a-company-bank-account",
+              "api-reference/Fundflow-API/company-bank-accounts/get-company-bank-account-by-id",
+              "api-reference/Fundflow-API/company-bank-accounts/update-company-bank-account"
+            ]
+          },
+          {
+            "group": "Company Wallets",
+            "pages": [
+              "api-reference/Fundflow-API/company-wallets/list-company-wallets",
+              "api-reference/Fundflow-API/company-wallets/create-a-company-wallet",
+              "api-reference/Fundflow-API/company-wallets/get-company-wallet-by-id",
+              "api-reference/Fundflow-API/company-wallets/update-company-wallet"
+            ]
+          },
+          {
+            "group": "Deposit Wallets",
+            "pages": [
+              "api-reference/Fundflow-API/deposit-wallets/list-deposit-wallets"
+            ]
+          },
+          {
+            "group": "Ramp Requests",
+            "pages": [
+              "api-reference/Fundflow-API/ramp-requests/list-all-ramp-requests",
+              "api-reference/Fundflow-API/ramp-requests/create-a-new-ramp-request",
+              "api-reference/Fundflow-API/ramp-requests/get-ramp-request-by-id",
+              "api-reference/Fundflow-API/ramp-requests/approve-a-ramp-request",
+              "api-reference/Fundflow-API/ramp-requests/reject-a-ramp-request",
+              "api-reference/Fundflow-API/ramp-requests/cancel-a-ramp-request",
+              "api-reference/Fundflow-API/ramp-requests/edit-the-amount-of-a-ramp-request",
+              "api-reference/Fundflow-API/ramp-requests/initiate-a-ramp-request-with-transaction-hash",
+              "api-reference/Fundflow-API/ramp-requests/update-transaction-hash",
+              "api-reference/Fundflow-API/ramp-requests/get-available-on-ramp-currency-pairs",
+              "api-reference/Fundflow-API/ramp-requests/get-available-off-ramp-currency-pairs",
+              "api-reference/Fundflow-API/ramp-requests/export-ramp-requests"
+            ]
+          },
+          {
+            "group": "Fees",
+            "pages": [
+              "api-reference/Fundflow-API/fees/get-company-fee-configuration",
+              "api-reference/Fundflow-API/fees/calculate-fee-for-a-ramp-request"
+            ]
+          },
+          {
+            "group": "Fiat Currencies",
+            "pages": [
+              "api-reference/Fundflow-API/fiat-currencies/list-all-fiat-currencies",
+              "api-reference/Fundflow-API/fiat-currencies/get-fiat-currency-by-id"
+            ]
+          },
+          {
+            "group": "Crypto Currencies",
+            "pages": [
+              "api-reference/Fundflow-API/crypto-currencies/list-all-crypto-currencies",
+              "api-reference/Fundflow-API/crypto-currencies/get-crypto-currency-by-id"
+            ]
+          },
+          {
+            "group": "Blockchain Networks",
+            "pages": [
+              "api-reference/Fundflow-API/blockchain-networks/get-supported-blockchain-networks"
+            ]
+          },
+          {
+            "group": "Bank Account Configuration",
+            "pages": [
+              "api-reference/Fundflow-API/bank-account-configuration/get-bank-account-configuration"
             ]
           }
         ]
