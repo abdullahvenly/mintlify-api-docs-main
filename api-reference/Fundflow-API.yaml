@@ -14,11 +14,11 @@ info:
     - Calculate fees and retrieve exchange rate information
     
     ## Authentication
-    All endpoints require OAuth2 authentication with specific scopes based on the operation.
+    All endpoints require OAuth2 authentication using a bearer token that is retrieved from authentication endpoint using your client_id and client_secret.
     
     ## Optimistic Locking
     Many write operations use optimistic locking via a `version` field to prevent concurrent updates.
-    When a version conflict occurs (HTTP 409), the client must:
+    When a version conflict occurs (HTTP 409), you must:
     1. Fetch the latest version of the resource
     2. Reapply their changes to the updated resource
     3. Retry the operation with the new version number
