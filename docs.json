@@ -11,55 +11,6 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Home",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "getting-started/introduction",
-              "getting-started/quickstart",
-              "getting-started/testnet-assets",
-              "getting-started/pricing",
-              "getting-started/developer-portal",
-              "getting-started/environments"
-            ]
-          },
-          {
-            "group": "Authenticating",
-            "pages": [
-              "getting-started/authentication",
-              "getting-started/api-authentication",
-              "getting-started/widget-authentication",
-              "getting-started/api-security-best-practices"
-            ]
-          },
-          {
-            "group": "Infrastructure",
-            "pages": [
-              "getting-started/infrastructure",
-              "getting-started/pincode-management",
-              "getting-started/private-key-management"
-            ]
-          },
-          {
-            "group": "Faucets",
-            "pages": [
-              "getting-started/faucets"
-            ]
-          },
-          {
-            "group": "Integrations",
-            "pages": [
-              "guides/integrations/moonpay",
-              "guides/integrations/playfab",
-              "guides/integrations/ramp-network",
-              "guides/integrations/sitemanager",
-              "guides/integrations/transak"
-            ]
-          }
-        ]
-      },
-      {
         "tab": "Fundflow Guides",
         "groups": [
           {
