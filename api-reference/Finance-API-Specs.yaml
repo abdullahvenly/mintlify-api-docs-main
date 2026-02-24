@@ -65,6 +65,18 @@ paths:
     get:
       tags: [Parties]
       summary: List all parties
+      description: |
+        Retrieves a paginated list of all parties (Individuals and Organisations) in your system.
+        
+        **Use Cases:**
+        - View all customers and organizations
+        - Filter by party type (INDIVIDUAL or ORGANISATION)
+        - Filter by status (ACTIVE, SUSPENDED, BLOCKED)
+        - Search by external ID for integration lookups
+        
+        **Pagination:** Results are paginated. Use `page` and `size` parameters to navigate through results.
+        
+        **Sorting:** Sort by any field using `sortOn` and `sortOrder` parameters (default: createdAt ASC).
       operationId: listParties
       parameters:
         - $ref: '#/components/parameters/Page'
@@ -152,6 +164,14 @@ paths:
     get:
       tags: [Parties]
       summary: Get party details
+      description: |
+        Retrieves detailed information about a specific party by ID.
+        
+        **Returns:**
+        - Complete party information including personal/organization details
+        - Current KYC/KYB status
+        - Address information
+        - Party status (ACTIVE, SUSPENDED, BLOCKED)
       operationId: getParty
       parameters:
         - $ref: '#/components/parameters/PartyId'
@@ -178,6 +198,13 @@ paths:
     patch:
       tags: [Parties]
       summary: Update party details
+      description: |
+        Updates an existing party's information. Only provided fields will be updated.
+        
+        **For Individuals:** Can update firstName, lastName, and address
+        **For Organisations:** Can update name, vatNumber, and address
+        
+        **Note:** Cannot change partyType after creation. KYC/KYB status is managed separately.
       operationId: updateParty
       parameters:
         - $ref: '#/components/parameters/PartyId'
