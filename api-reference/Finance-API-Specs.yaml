@@ -66,17 +66,16 @@ paths:
       tags: [Parties]
       summary: List all parties
       description: |
-        Retrieves a paginated list of all parties (Individuals and Organisations) in your system.
+        **Step 1 of the Finance API Flow**
         
-        **Use Cases:**
-        - View all customers and organizations
-        - Filter by party type (INDIVIDUAL or ORGANISATION)
-        - Filter by status (ACTIVE, SUSPENDED, BLOCKED)
-        - Search by external ID for integration lookups
+        Retrieves all parties (Individuals and Organisations) in your system. Parties are the foundation of the Finance API - they represent the people or organizations that will hold accounts.
         
-        **Pagination:** Results are paginated. Use `page` and `size` parameters to navigate through results.
+        **Use this endpoint to:**
+        - View all registered customers and organizations
+        - Search for existing parties before creating accounts
+        - Audit party records and their KYC/KYB status
         
-        **Sorting:** Sort by any field using `sortOn` and `sortOrder` parameters (default: createdAt ASC).
+        **Next Step:** Use the party ID to create an account.
       operationId: listParties
       parameters:
         - $ref: '#/components/parameters/Page'
@@ -123,10 +122,15 @@ paths:
       tags: [Parties]
       summary: Create a new party
       description: |
-        Creates a new party (Individual or Organisation).
-
-        Use `partyType: INDIVIDUAL` for natural persons with firstName, lastName.
-        Use `partyType: ORGANISATION` for companies with name, vatNumber.
+        **Step 1 of the Finance API Flow**
+        
+        Creates a new party (Individual or Organisation). This is the first step in onboarding a customer or organization to the Finance platform.
+        
+        **Party Types:**
+        - **INDIVIDUAL**: Natural persons. Requires firstName, lastName.
+        - **ORGANISATION**: Companies or businesses. Requires name, optionally vatNumber.
+        
+        **Next Step:** Use the returned party ID to create an account.
       operationId: createParty
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'
