@@ -40,66 +40,6 @@
         ]
       },
       {
-        "tab": "Finance API Reference",
-        "groups": [
-          {
-            "group": "Parties",
-            "pages": [
-              "api-reference/Finance-API/parties/list-all-parties",
-              "api-reference/Finance-API/parties/create-a-new-party",
-              "api-reference/Finance-API/parties/get-party-details",
-              "api-reference/Finance-API/parties/update-party-details",
-              "api-reference/Finance-API/parties/delete-party",
-              "api-reference/Finance-API/parties/list-accounts-for-a-party"
-            ]
-          },
-          {
-            "group": "Accounts",
-            "pages": [
-              "api-reference/Finance-API/accounts/list-all-accounts",
-              "api-reference/Finance-API/accounts/create-a-new-account",
-              "api-reference/Finance-API/accounts/get-account-details",
-              "api-reference/Finance-API/accounts/update-account-details",
-              "api-reference/Finance-API/accounts/delete-account",
-              "api-reference/Finance-API/accounts/suspend-account",
-              "api-reference/Finance-API/accounts/reactivate-suspended-account",
-              "api-reference/Finance-API/accounts/list-party-roles-for-an-account",
-              "api-reference/Finance-API/accounts/add-a-party-to-an-account",
-              "api-reference/Finance-API/accounts/remove-a-party-from-an-account"
-            ]
-          },
-          {
-            "group": "Virtual Bank Accounts",
-            "pages": [
-              "api-reference/Finance-API/virtual-bank-accounts/list-virtual-bank-accounts",
-              "api-reference/Finance-API/virtual-bank-accounts/create-a-virtual-bank-account",
-              "api-reference/Finance-API/virtual-bank-accounts/get-virtual-bank-account-details"
-            ]
-          },
-          {
-            "group": "Wallets",
-            "pages": [
-              "api-reference/Finance-API/wallets/list-wallets-for-an-account",
-              "api-reference/Finance-API/wallets/create-a-wallet",
-              "api-reference/Finance-API/wallets/get-wallet-details"
-            ]
-          },
-          {
-            "group": "Account to Account Transfers",
-            "pages": [
-              "api-reference/Finance-API/account-to-account-transfers/list-account-to-account-transfers",
-              "api-reference/Finance-API/account-to-account-transfers/create-an-account-to-account-transfer"
-            ]
-          },
-          {
-            "group": "Fiat to Crypto Payment Links",
-            "pages": [
-              "api-reference/Finance-API/fiat-to-crypto-payment-links/create-a-fiat-to-crypto-payment-link"
-            ]
-          }
-        ]
-      },
-      {
         "tab": "Fundflow-API Reference",
         "groups": [
           {
@@ -190,6 +130,69 @@
             "group": "Bank Account Configuration",
             "pages": [
               "api-reference/Fundflow-API/bank-account-configuration/get-bank-account-configuration"
+            ]
+          }
+        ]
+      },
+            {
+        "tab": "Finance API (Under Development)",
+        "groups": [
+          {
+            "group": "API UNDER DEVELOPMENT"
+          },
+          {
+            "group": "Parties",
+            "pages": [
+              "api-reference/Finance-API/parties/list-all-parties",
+              "api-reference/Finance-API/parties/create-a-new-party",
+              "api-reference/Finance-API/parties/get-party-details",
+              "api-reference/Finance-API/parties/update-party-details",
+              "api-reference/Finance-API/parties/delete-party",
+              "api-reference/Finance-API/parties/list-accounts-for-a-party"
+            ]
+          },
+          {
+            "group": "Accounts",
+            "pages": [
+              "api-reference/Finance-API/accounts/list-all-accounts",
+              "api-reference/Finance-API/accounts/create-a-new-account",
+              "api-reference/Finance-API/accounts/get-account-details",
+              "api-reference/Finance-API/accounts/update-account-details",
+              "api-reference/Finance-API/accounts/delete-account",
+              "api-reference/Finance-API/accounts/suspend-account",
+              "api-reference/Finance-API/accounts/reactivate-suspended-account",
+              "api-reference/Finance-API/accounts/list-party-roles-for-an-account",
+              "api-reference/Finance-API/accounts/add-a-party-to-an-account",
+              "api-reference/Finance-API/accounts/remove-a-party-from-an-account"
+            ]
+          },
+          {
+            "group": "Virtual Bank Accounts",
+            "pages": [
+              "api-reference/Finance-API/virtual-bank-accounts/list-virtual-bank-accounts",
+              "api-reference/Finance-API/virtual-bank-accounts/create-a-virtual-bank-account",
+              "api-reference/Finance-API/virtual-bank-accounts/get-virtual-bank-account-details"
+            ]
+          },
+          {
+            "group": "Wallets",
+            "pages": [
+              "api-reference/Finance-API/wallets/list-wallets-for-an-account",
+              "api-reference/Finance-API/wallets/create-a-wallet",
+              "api-reference/Finance-API/wallets/get-wallet-details"
+            ]
+          },
+          {
+            "group": "Account to Account Transfers",
+            "pages": [
+              "api-reference/Finance-API/account-to-account-transfers/list-account-to-account-transfers",
+              "api-reference/Finance-API/account-to-account-transfers/create-an-account-to-account-transfer"
+            ]
+          },
+          {
+            "group": "Fiat to Crypto Payment Links",
+            "pages": [
+              "api-reference/Finance-API/fiat-to-crypto-payment-links/create-a-fiat-to-crypto-payment-link"
             ]
           }
         ]
