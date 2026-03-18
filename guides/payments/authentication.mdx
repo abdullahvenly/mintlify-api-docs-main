@@ -18,7 +18,7 @@ Send a `POST` request to the token endpoint for your environment:
 | Sandbox | `POST https://login-sandbox.venly.io/auth/realms/VenlyFinance/protocol/openid-connect/token` |
 | Production | `POST https://login.venly.io/auth/realms/VenlyFinance/protocol/openid-connect/token` |
 
-> **⚠️ Note:** Sandbox and Production credentials are separate. Switch between them in the [Developer Portal](https://portal.venly.io/authentication).
+
 
 ### Request Body
 
@@ -30,9 +30,19 @@ Send a `POST` request to the token endpoint for your environment:
 
 ### Response
 
-The response includes an `access_token` valid for **6 minutes** (360 seconds). Once expired, repeat the call above to get a new one.
+```json
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsIn......",
+    "expires_in": 300,
+    "refresh_expires_in": 0,
+    "token_type": "Bearer",
+    "not-before-policy": 0,
+    "scope": "email profile"
+}
+```
 
-> **⚠️ Note:** A `refresh_token` is also returned but is **deprecated** — do not use it.
+The response includes an `access_token` valid for **5 minutes** (300 seconds). Once expired, repeat the call above to get a new one.
+
 
 ---
 
