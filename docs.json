@@ -17,7 +17,6 @@
             "group": "Getting Started",
             "pages": [
               "guides/payments/quick-reference",
-              "guides/payments/authentication",
               "guides/payments/getting-started",
               "guides/payments/dashboard"
             ]
