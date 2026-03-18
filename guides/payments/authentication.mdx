@@ -1,0 +1,245 @@
+---
+title: API Authentication
+description: Authenticate with Venly Fundflow API using OAuth2 client credentials
+---
+
+## Overview
+
+Venly Fundflow API uses **OAuth2 client credentials flow** for authentication. This guide will walk you through obtaining and using access tokens to authenticate your API requests.
+
+<HTMLBlock>{`
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/8c621db1c0004f00b924d322161eee2c?sid=61fd9746-40b9-427d-9e40-3f95105c68dc" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+`}</HTMLBlock>
+
+---
+
+## Getting Your Access Token
+
+Call the following endpoint with the required body parameters to get your `access_token` (_bearer token_).
+
+### Request Endpoint
+
+#### Sandbox Environment (_Runs on testnet chains and used for trying out or testing purposes_)
+
+```http HTTP
+POST https://login-sandbox.venly.io/auth/realms/VenlyFinance/protocol/openid-connect/token
+```
+
+#### Production Environment (_Runs on mainnet chains and used for real API calls_)
+
+```http HTTP
+POST https://login.venly.io/auth/realms/VenlyFinance/protocol/openid-connect/token
+```
+
+<Callout icon="🚧" theme="warn">
+  There are two types of access credentials:
+
+  * **Sandbox Credentials** (_For the sandbox environment_)
+  * **Production Credentials** (_For the production environment_)
+
+  You can switch between the access credentials from the [Portal](https://portal.venly.io/authentication) by hitting the **toggle button**.
+</Callout>
+
+### Request Body
+
+| Name            | Type   | Description                                                                                  |
+| :-------------- | :----- | :------------------------------------------------------------------------------------------- |
+| `grant_type`    | string | This will be `client_credentials`                                                            |
+| `client_id`     | string | Client ID provided to you by [Developer Portal](https://portal.venly.io/authentication).     |
+| `client_secret` | string | Client Secret provided to you by [Developer Portal](https://portal.venly.io/authentication). |
+
+---
+
+## Requesting Bearer Token via Postman
+
+### Request
+
+<Image align="center" alt="Example of requesting Bearer Token via Postman" border={true} caption="Example of requesting Bearer Token via Postman" src="https://files.readme.io/11124fe-image.png" />
+
+### Response Body
+
+```json JSON
+{
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJmQi1UenBOb0hBVGhwT2J4aW9qTDBrdm83MldmRzRXRXh1eFpiaXlGQUhzIn0.eyJleHAiOjE2OTU5ODg0OTksImlhdCI6MTY5NTk4ODEzOSwianRpIjoiMWZlMDk0YjUtZWZkYy00Yjk1LWEzMWYtMzQxM2E4MjcwMzFlIiwiaXNzIjoiaHR0cHM6Ly9sb2dpbi1zdGFnaW5nLmFya2FuZS5uZXR3b3JrL2F1dGgvcmVhbG1zL0Fya2FuZSIsImF1ZCI6WyJyZWFsbS1tYW5hZ2VtZW50IiwiTkZULUFQSSIsIkFya2FuZUNvbm5lY3QiXSwic3ViIjoiMDQ0Y2VhNDEtY2IyNy00OGUzLTliZDAtM2E3OWRmMGZhMTNiIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiZHJpbGEtY2Fwc3VsZSIsInNlc3Npb25fc3RhdGUiOiJmYjhhYzgxMi0yODVjLTQ3NDctYTIzNi1jYzAxODM1MjY4ZjIiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHBzOi8vYXBpLXN0YWdpbmcudmVubHkubWFya2V0IiwiaHR0cHM6Ly9hcGktd2FsbGV0LXN0YWdpbmcudmVubHkuaW8iLCJodHRwczovL2FwaS1idXNpbmVzcy1zdGFnaW5nLnZlbmx5LmlvIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJDb25uZWN0IGFkbWluIiwiTkZULUFQSSJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InJlYWxtLW1hbmFnZW1lbnQiOnsicm9sZXMiOlsicXVlcnktY2xpZW50cyIsInF1ZXJ5LWdyb3VwcyJdfSwiTkZULUFQSSI6eyJyb2xlcyI6WyJtYW5hZ2U6dG9rZW5zIiwidmlldzppdGVtcyIsIm1hbmFnZTp0b2tlbi10eXBlcyIsIm1hbmFnZTpjb250cmFjdHMiLCJtaW50OnRva2VucyIsInVwbG9hZDptZWRpYSIsInZpZXc6ZW52aXJvbm1lbnRzIiwiY3JlYXRlOm1pbnRlci13YWxsZXQiLCJjcmVhdGU6Y29tcGFueS1taW50ZXItd2FsbGV0IiwibWFuYWdlOm1pbnRlci13YWxsZXQiLCJtYW5hZ2U6YXBwcyJdfSwiQXJrYW5lQ29ubmVjdCI6eyJyb2xlcyI6WyJldmljdDpjb25uZWN0LWNhY2hlIl19fSwic2NvcGUiOiJ2aWV3OndhbGxldHMgd2hpdGVsYWJlbCBleHBvcnQ6d2FsbGV0cyBlbWFpbCB2aWV3OndhbGxldC1hbmFseXRpY3Mgc2F2ZTpzaWduYXR1cmUgdXNlOmFsbC13YWxsZXRzIHNpZ246d2FsbGV0cyB2aWV3OnByb2ZpbGUgdmlldzphcmNoaXZlZC13YWxsZXRzIHNhdmU6dHJhbnNhY3Rpb24gcHJvZmlsZSIsImNvbXBhbmllcyI6W3siaWQiOiIxNzhkYzM4Zi1mM2VjLTQyMWQtYWY3Mi0wZDE3MjRjNTZkOWUiLCJuYW1lIjoiRHJpbG9uIn1dLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImNsaWVudElkIjoiZHJpbGEtY2Fwc3VsZSIsImNsaWVudEhvc3QiOiIzOS41OS4xMy44MiIsIm5pY2tuYW1lIjoiQ29uanVyaW5nUXVldHphbCIsInByZWZlcnJlZF91c2VybmFtZSI6InNlcnZpY2UtYWNjb3VudC1kcmlsYS1jYXBzdWxlIiwiY2xpZW50QWRkcmVzcyI6IjM5LjU5LjEzLjgyIn0.Yy7m4wbK7OdUgNuS55OFMj-0dVBN57gw1n7yQ9fYxXYfOJy80fnuFzCD8gMoLWUEdpGGb9WmhVj8tpYGkn18MoA5RUT5AgbcLYF7CCCJKupJu9blfCGsusAcvqd8z295ps8ZT6DWfrdJcYrMmrrZqYrRMngMJJdHc6uGCEAXfaWuC3dO1ykT-QSvtMqi7VNXV_UJ63EfrLfnvHEUKQWu1s-HyU_JYDPEtF4qRN2_RxfqjcJfm1sQUvrBZJFLdTu4CXJSpsRL6N04cCeoA4RM3kM6GlxNQIcYV9laIx5Ct6HANHUf-XXUU_-AAMEKT4B2f9l1e8LtFkva9BevaXXB5A",
+    "expires_in": 360,
+    "refresh_expires_in": 3456000,
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJlOTVlMDc2NC1lZmVkLTQyMmEtYmU0Mi1iZTcwYmY1Nzg2NDYifQ.eyJleHAiOjE2OTk0NDQxMzksImlhdCI6MTY5NTk4ODEzOSwianRpIjoiMjk3YTFmYmYtODVjZS00ZmZjLWJiNWQtNTJlNWYwZDk2YmRmIiwiaXNzIjoiaHR0cHM6Ly9sb2dpbi1zdGFnaW5nLmFya2FuZS5uZXR3b3JrL2F1dGgvcmVhbG1zL0Fya2FuZSIsImF1ZCI6Imh0dHBzOi8vbG9naW4tc3RhZ2luZy5hcmthbmUubmV0d29yay9hdXRoL3JlYWxtcy9BcmthbmUiLCJzdWIiOiIwNDRjZWE0MS1jYjI3LTQ4ZTMtOWJkMC0zYTc5ZGYwZmExM2IiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoiZHJpbGEtY2Fwc3VsZSIsInNlc3Npb25fc3RhdGUiOiJmYjhhYzgxMi0yODVjLTQ3NDctYTIzNi1jYzAxODM1MjY4ZjIiLCJzY29wZSI6InZpZXc6d2FsbGV0cyB3aGl0ZWxhYmVsIGV4cG9ydDp3YWxsZXRzIGVtYWlsIHZpZXc6d2FsbGV0LWFuYWx5dGljcyBzYXZlOnNpZ25hdHVyZSB1c2U6YWxsLXdhbGxldHMgc2lnbjp3YWxsZXRzIHZpZXc6cHJvZmlsZSB2aWV3OmFyY2hpdmVkLXdhbGxldHMgc2F2ZTp0cmFuc2FjdGlvbiBwcm9maWxlIn0.D1ceJfK3eSVoanPAIYBEhqGPgCOEhmVltKAu4kz4Q_o",
+    "token_type": "bearer",
+    "not-before-policy": 1572970662,
+    "session_state": "fb8ac812-285c-4747-a236-cc01835268f2",
+    "scope": "view:wallets whitelabel export:wallets email view:wallet-analytics save:signature use:all-wallets sign:wallets view:profile view:archived-wallets save:transaction profile"
+}
+```
+
+### Response Parameters
+
+| Parameter            | Type     | Description                                  | Example                                  |
+| -------------------- | -------- | -------------------------------------------- | ---------------------------------------- |
+| `access_token`       | `string` | Access token that allows access to the resource  | `'eyJhbGciOiJSUzI1NiIsInR5cCI....'`      |
+| `expires_in`         | `number` | How long the `access_token` is valid in seconds. | `360`                                    |
+| `refresh_expires_in` | `number` | How long the `refresh_token` is valid            | `3456000`                                |
+| `token_type`         | `string` | The type for the token, will be "bearer"         | `'bearer'`                               |
+| `scope`              | `string` | The scopes for this token                        | `view:wallets whitelabel export:wallets` |
+
+<Callout icon="🚧" theme="warn">
+  In the response a `refresh_token` is also provided. This is however **deprecated**, and will be removed in future releases. Do not use the refresh token to receive a new `access_token`.
+</Callout>
+
+---
+
+## Refreshing Your Bearer Token
+
+The access token is valid for **6 minutes** (360 seconds). After 6 minutes, you will need to request a new access token. This can be done by performing the same call as above.
+
+<Tip>
+  **Token Management**: Implement token refresh logic in your application to automatically request a new token before the current one expires.
+</Tip>
+
+```javascript
+// Example: Token refresh logic
+let accessToken = null;
+let tokenExpiry = null;
+
+async function getAccessToken() {
+  // Check if token exists and is still valid
+  if (accessToken && tokenExpiry && Date.now() < tokenExpiry) {
+    return accessToken;
+  }
+  
+  // Request new token
+  const response = await fetch('https://login.venly.io/auth/realms/VenlyFinance/protocol/openid-connect/token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials',
+      client_id: 'YOUR_CLIENT_ID',
+      client_secret: 'YOUR_CLIENT_SECRET',
+    }),
+  });
+  
+  const data = await response.json();
+  accessToken = data.access_token;
+  // Set expiry with 30 second buffer
+  tokenExpiry = Date.now() + (data.expires_in - 30) * 1000;
+  
+  return accessToken;
+}
+```
+
+---
+
+## Using the Bearer Token in API Calls
+
+In the result of the previous call, an `access_token` is returned. This `access_token` needs to be passed with every **API call** that you do (_as a Bearer token in the authorization header_).
+
+### Example API Request
+
+```bash
+curl -X GET https://api-fundflow.venly.io/v1/company \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json"
+```
+
+### Authenticating in Documentation
+
+To run API calls on our documentation tool, you can enter the `access_token` as shown below to authenticate calls:
+
+<Image align="center" alt="Entering Bearer Token to Authenticate API Calls" border={true} caption="Entering Bearer Token to Authenticate API Calls" src="https://files.readme.io/992ee8f-image.png" />
+
+---
+
+## Best Practices
+
+### Security
+
+<Warning>
+  **Never expose:**
+  - OAuth2 client secrets in client-side code
+  - Access tokens in public repositories
+  - Credentials in version control systems
+  - API credentials in browser console or logs
+</Warning>
+
+### Secure Storage
+
+- Store credentials in environment variables or secure vaults (e.g., AWS Secrets Manager, Azure Key Vault)
+- Use HTTPS for all API communications
+- Implement proper access controls for credential storage
+- Rotate credentials regularly
+
+### Error Handling
+
+Handle authentication errors gracefully:
+
+```javascript
+async function makeAuthenticatedRequest(url, options = {}) {
+  try {
+    const token = await getAccessToken();
+    
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (response.status === 401) {
+      // Token expired, refresh and retry
+      accessToken = null;
+      const newToken = await getAccessToken();
+      return fetch(url, {
+        ...options,
+        headers: {
+          ...options.headers,
+          'Authorization': `Bearer ${newToken}`,
+          'Content-Type': 'application/json',
+        },
+      });
+    }
+    
+    return response;
+  } catch (error) {
+    console.error('Authentication error:', error);
+    throw error;
+  }
+}
+```
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Getting Started" icon="rocket" href="/guides/payments/getting-started">
+    Complete integration guide for Fundflow
+  </Card>
+  <Card title="Accounts Setup" icon="building-columns" href="/guides/payments/accounts">
+    Add bank accounts and crypto wallets
+  </Card>
+  <Card title="Create Transactions" icon="arrow-right-arrow-left" href="/guides/payments/transactions">
+    Start creating ramp requests
+  </Card>
+  <Card title="API Reference" icon="code" href="/api-reference/Fundflow-API/company/get-company-details">
+    Explore full API documentation
+  </Card>
+  <Card title="Dashboard" icon="chart-line" href="/guides/payments/dashboard">
+    Monitor your operations
+  </Card>
+  <Card title="Fee Structure" icon="percent" href="/guides/payments/fees">
+    Understand pricing
+  </Card>
+</CardGroup>
+
+---
+
+## Support
+
+Need help with authentication?
+
+- **Email**: support@venly.io
+- **Documentation**: [docs.venly.io](https://docs.venly.io)
+- **Developer Portal**: [portal.venly.io](https://portal.venly.io)
