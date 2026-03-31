@@ -3,9 +3,13 @@
   "theme": "mint",
   "name": "Venly Docs",
   "colors": {
-    "primary": "#8B5CF6",
-    "light": "#A78BFA",
-    "dark": "#6D28D9"
+    "primary": "#e07826",
+    "light": "#f0a060",
+    "dark": "#c56820",
+    "background": {
+      "light": "#faf8f5",
+      "dark": "#1a1a1a"
+    }
   },
   "favicon": "/favicon.png",
   "navigation": {
@@ -210,14 +214,31 @@
     }
   },
   "logo": {
-    "light": "/logo/light.png",
-    "dark": "/logo/dark.png"
+    "light": "/favicon.png",
+    "dark": "/favicon.png",
+    "href": "https://venlyfinance.com"
+  },
+  "font": {
+    "headings": {
+      "family": "Inter",
+      "weight": 600
+    },
+    "body": {
+      "family": "Inter",
+      "weight": 400
+    }
+  },
+  "modeToggle": {
+    "default": "light"
+  },
+  "feedback": {
+    "thumbsRating": true
   },
   "navbar": {
     "primary": {
       "type": "button",
       "label": "Venly",
-      "href": "https://venly.io/"
+      "href": "https://venlyfinance.com"
     }
   },
   "footer": {
