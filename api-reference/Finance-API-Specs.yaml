@@ -38,8 +38,6 @@ servers:
     description: Production
   - url: https://api.staging.venlyfinance.com/api/v1
     description: Staging
-  - url: https://amlerlvohpsgbowdfeiz.supabase.co/functions/v1
-    description: Sandbox (test data)
 
 security:
   - BearerAuth: []
@@ -57,6 +55,14 @@ tags:
     description: Fiat-to-crypto Payment Links
   - name: Account-to-Account Transfers
     description: Transfer funds between accounts
+  - name: Payment Requests
+    description: Payment request management for card provider integrations
+  - name: Transfers
+    description: Fiat and crypto transfer operations between accounts
+  - name: Permits
+    description: EIP-712 permit signature management for token approvals
+  - name: Allowances
+    description: Token allowance management for wallets
 
 paths:
   # ==================== PARTY ENDPOINTS ====================
@@ -913,6 +919,413 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  # ==================== PAYMENT REQUEST ENDPOINTS ====================
+
+  /v1/payment-requests:
+    post:
+      tags: [Payment Requests]
+      summary: Create payment request by card provider
+      description: |
+        Creates a payment request initiated by a card provider. This endpoint is used for card provider integrations
+        to create payment requests with card provider references.
+        
+        **Requires Authority:** manage:all-payment-requests
+      operationId: createPaymentRequestByCardProvider
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardProviderPaymentRequestInput'
+      responses:
+        '201':
+          description: Payment request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePaymentRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:all-payment-requests]
+
+  /v1/accounts/{accountId}/payment-requests:
+    post:
+      tags: [Payment Requests]
+      summary: Create payment request for account
+      description: |
+        Creates a payment request for a specific account. Payment requests represent a request to settle
+        a payment using the account's crypto assets.
+        
+        **Requires Authority:** manage:payment-requests
+      operationId: createPaymentRequest
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentRequestInput'
+      responses:
+        '201':
+          description: Payment request created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePaymentRequestResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:payment-requests]
+
+  # ==================== TRANSFER ENDPOINTS ====================
+
+  /v1/accounts/{senderAccountId}/transfers/fiat:
+    post:
+      tags: [Transfers]
+      summary: Create fiat transfer
+      description: |
+        Creates a fiat-to-crypto transfer from the sender account to a receiver account.
+        The fiat amount is converted to cryptocurrency and transferred.
+        
+        **Requires Authority:** manage:transfers
+      operationId: createFiatTransfer
+      parameters:
+        - name: senderAccountId
+          in: path
+          required: true
+          description: The account ID initiating the transfer
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFiatTransferInput'
+      responses:
+        '201':
+          description: Fiat transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTransferResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:transfers]
+
+  /v1/accounts/{senderAccountId}/transfers/crypto:
+    post:
+      tags: [Transfers]
+      summary: Create crypto transfer
+      description: |
+        Creates a cryptocurrency transfer from the sender account to a receiver account.
+        Transfers crypto assets directly between accounts on the specified blockchain.
+        
+        **Requires Authority:** manage:transfers
+      operationId: createCryptoTransfer
+      parameters:
+        - name: senderAccountId
+          in: path
+          required: true
+          description: The account ID initiating the transfer
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCryptoTransferInput'
+      responses:
+        '201':
+          description: Crypto transfer created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTransferResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:transfers]
+
+  /v1/accounts/{accountId}/transfers:
+    get:
+      tags: [Transfers]
+      summary: List transfers for account
+      description: |
+        Retrieves all transfers associated with an account. Can filter by account role (sender/receiver)
+        and transfer status.
+        
+        **Requires Authority:** manage:transfers
+      operationId: listTransfers
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - name: accountRole
+          in: query
+          description: Filter by account role in the transfer
+          schema:
+            type: string
+            enum: [SENDER, RECEIVER]
+        - name: status
+          in: query
+          description: Filter by transfer status
+          schema:
+            $ref: '#/components/schemas/TransferStatus'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Size'
+        - $ref: '#/components/parameters/SortOn'
+        - $ref: '#/components/parameters/SortOrder'
+      responses:
+        '200':
+          description: List of transfers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:transfers]
+
+  /v1/accounts/{accountId}/transfers/{transferId}:
+    get:
+      tags: [Transfers]
+      summary: Get transfer details
+      description: |
+        Retrieves detailed information about a specific transfer.
+        
+        **Requires Authority:** manage:transfers
+      operationId: getTransfer
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - name: transferId
+          in: path
+          required: true
+          description: The transfer ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Transfer details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SingleTransferResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:transfers]
+
+  # ==================== PERMIT ENDPOINTS ====================
+
+  /v1/accounts/{accountId}/wallets/{walletId}/permits:
+    get:
+      tags: [Permits]
+      summary: Get permit messages for wallet
+      description: |
+        Retrieves EIP-712 typed permit messages for a wallet. These messages can be signed by the wallet owner
+        to grant token spending permissions without requiring an on-chain transaction.
+        
+        **Requires Authority:** manage:accounts
+      operationId: getPermitMessages
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/WalletId'
+      responses:
+        '200':
+          description: List of permit messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermitMessageListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:accounts]
+
+    post:
+      tags: [Permits]
+      summary: Submit signed permit
+      description: |
+        Submits a signed EIP-712 permit message to grant token spending permissions.
+        The permit allows the platform to spend tokens on behalf of the wallet without requiring
+        a separate approval transaction.
+        
+        **Requires Authority:** manage:accounts
+      operationId: submitPermit
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/WalletId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPermitRequest'
+      responses:
+        '200':
+          description: Permit submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SinglePermitResultResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:accounts]
+
+  # ==================== ALLOWANCE ENDPOINTS ====================
+
+  /v1/accounts/{accountId}/wallets/{walletId}/allowances:
+    get:
+      tags: [Allowances]
+      summary: Get wallet token allowances
+      description: |
+        Retrieves the current token allowances for a wallet. Shows which tokens have been approved
+        for spending by the orchestration wallet and the approved amounts.
+        
+        **Requires Authority:** manage:accounts
+      operationId: getWalletAllowances
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/WalletId'
+        - name: asset
+          in: query
+          description: Filter by specific asset
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of token allowances
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllowanceListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '415':
+          $ref: '#/components/responses/UnsupportedMediaType'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [manage:accounts]
 
   # ==================== ACCOUNT-TO-ACCOUNT TRANSFER ENDPOINTS ====================
 

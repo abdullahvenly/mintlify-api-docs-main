@@ -1,0 +1,656 @@
+---
+title: Treasury Yield (Coming Soon)
+description: Earn yield on idle stablecoin reserves through curated DeFi and tokenized vaults
+---
+
+<Warning>
+  **Coming Soon** - Treasury Yield is currently in development and will be available in Q3 2026. This documentation provides an overview of the upcoming features.
+</Warning>
+
+## What is Treasury Yield?
+
+Treasury Yield enables you to earn passive income on idle stablecoin reserves without leaving the Venly Finance platform. Access curated DeFi protocols and tokenized real-world asset vaults to generate yield on your USDC, EURC, and USDT holdings while maintaining liquidity and security.
+
+<CardGroup cols={2}>
+  <Card title="DeFi Vaults" icon="vault">
+    Access to vetted DeFi yield protocols
+  </Card>
+  <Card title="Tokenized Assets" icon="building-columns">
+    Real-world asset-backed yield products
+  </Card>
+  <Card title="Automated Management" icon="robot">
+    Set-and-forget yield optimization
+  </Card>
+  <Card title="Full Liquidity" icon="droplet">
+    Withdraw funds anytime without penalties
+  </Card>
+</CardGroup>
+
+---
+
+## Key Features
+
+### 💰 Multiple Yield Strategies
+
+Access diverse yield-generating opportunities:
+- **Lending Protocols**: Aave, Compound, and other blue-chip DeFi platforms
+- **Liquidity Pools**: Provide liquidity to DEX pools with optimized risk/reward
+- **Tokenized T-Bills**: US Treasury-backed stablecoin yields
+- **Money Market Funds**: Institutional-grade tokenized money markets
+- **Stablecoin Farming**: Optimized stablecoin-to-stablecoin strategies
+
+### 🔒 Institutional-Grade Security
+
+Built with enterprise security standards:
+- **Curated Protocols**: Only vetted, audited protocols
+- **Risk Assessment**: Continuous monitoring and risk scoring
+- **Insurance Options**: Optional coverage for select strategies
+- **Multi-Sig Controls**: Secure fund management
+- **Audit Trail**: Complete transaction history
+
+### 📊 Transparent Reporting
+
+Real-time visibility into your yield performance:
+- **Live APY Tracking**: Current and historical yields
+- **Performance Analytics**: Compare strategies and optimize
+- **Tax Reporting**: Automated yield reporting for compliance
+- **Risk Metrics**: Understand exposure and diversification
+- **Withdrawal Forecasting**: Predict liquidity needs
+
+### ⚡ Seamless Integration
+
+Works with your existing Venly Finance setup:
+- **One-Click Allocation**: Deploy funds to vaults instantly
+- **Automatic Compounding**: Reinvest yields automatically
+- **Unified Dashboard**: Manage all assets in one place
+- **API Access**: Programmatic yield management
+- **Webhook Notifications**: Real-time yield updates
+
+---
+
+## How It Works
+
+<Steps>
+  <Step title="1. Connect Treasury Accounts">
+    Link your Venly Finance accounts to Treasury Yield
+    
+    - Select accounts with idle stablecoin balances
+    - Set minimum operating balance thresholds
+    - Configure automatic allocation rules
+    - Define risk tolerance preferences
+  </Step>
+  
+  <Step title="2. Choose Yield Strategies">
+    Select from curated yield opportunities
+    
+    **Available Strategies:**
+    - Conservative: 3-5% APY (T-Bills, Money Markets)
+    - Moderate: 5-8% APY (Lending Protocols)
+    - Aggressive: 8-15% APY (Liquidity Pools, Farming)
+    
+    **Risk Ratings:**
+    - Low Risk: Tokenized RWAs, established protocols
+    - Medium Risk: Blue-chip DeFi with track record
+    - Higher Risk: Newer protocols with higher yields
+  </Step>
+  
+  <Step title="3. Allocate Funds">
+    Deploy stablecoins to selected vaults
+    
+    ```bash
+    POST /v1/treasury-yield/allocations
+    {
+      "accountId": "account-id",
+      "vaultId": "aave-usdc-lending",
+      "amount": 100000,
+      "currency": "USDC",
+      "autoCompound": true
+    }
+    ```
+    
+    - Funds transferred to yield vault
+    - Position tracked in real-time
+    - Yield accrual begins immediately
+  </Step>
+  
+  <Step title="4. Monitor Performance">
+    Track yields and optimize allocation
+    
+    - View real-time APY and earnings
+    - Compare strategy performance
+    - Receive alerts for significant changes
+    - Rebalance based on performance
+  </Step>
+  
+  <Step title="5. Withdraw Anytime">
+    Access your funds when needed
+    
+    ```bash
+    POST /v1/treasury-yield/withdrawals
+    {
+      "allocationId": "allocation-id",
+      "amount": 50000,
+      "destinationAccountId": "account-id"
+    }
+    ```
+    
+    - Withdraw partial or full amounts
+    - Funds returned to account within minutes
+    - Accrued yield included in withdrawal
+    - No penalties or lock-up periods
+  </Step>
+</Steps>
+
+---
+
+## Yield Strategies
+
+### Conservative Strategies (3-5% APY)
+
+**Tokenized US Treasury Bills**
+- **Risk Level**: Very Low
+- **Typical APY**: 4-5%
+- **Liquidity**: T+1 settlement
+- **Minimum**: $10,000
+- **Best For**: Capital preservation with yield
+
+**Money Market Funds**
+- **Risk Level**: Very Low
+- **Typical APY**: 3-4%
+- **Liquidity**: Same-day
+- **Minimum**: $5,000
+- **Best For**: Operating reserves, short-term holdings
+
+**Stablecoin Savings**
+- **Risk Level**: Low
+- **Typical APY**: 3-5%
+- **Liquidity**: Instant
+- **Minimum**: $1,000
+- **Best For**: Emergency funds, flexible liquidity
+
+---
+
+### Moderate Strategies (5-8% APY)
+
+**Aave Lending**
+- **Risk Level**: Low-Medium
+- **Typical APY**: 5-7%
+- **Liquidity**: Instant
+- **Minimum**: $1,000
+- **Best For**: Balanced risk/reward
+
+**Compound Finance**
+- **Risk Level**: Low-Medium
+- **Typical APY**: 5-6%
+- **Liquidity**: Instant
+- **Minimum**: $1,000
+- **Best For**: Established DeFi exposure
+
+**Curve Stablecoin Pools**
+- **Risk Level**: Medium
+- **Typical APY**: 6-8%
+- **Liquidity**: Instant
+- **Minimum**: $5,000
+- **Best For**: Stablecoin-only exposure
+
+---
+
+### Aggressive Strategies (8-15% APY)
+
+**Liquidity Provision**
+- **Risk Level**: Medium-High
+- **Typical APY**: 10-15%
+- **Liquidity**: Instant
+- **Minimum**: $10,000
+- **Best For**: Higher risk tolerance
+
+**Yield Farming**
+- **Risk Level**: High
+- **Typical APY**: 12-20%
+- **Liquidity**: Variable
+- **Minimum**: $5,000
+- **Best For**: Experienced DeFi users
+
+**Leveraged Strategies**
+- **Risk Level**: High
+- **Typical APY**: 15-25%
+- **Liquidity**: Variable
+- **Minimum**: $25,000
+- **Best For**: Sophisticated treasury management
+
+<Warning>
+  **Risk Disclosure**: Higher yields come with increased risk. Aggressive strategies may experience volatility and potential loss of principal. Only allocate funds you can afford to have at risk.
+</Warning>
+
+---
+
+## Supported Assets
+
+### Stablecoins
+
+| Asset | Supported Chains | Yield Strategies Available |
+|-------|------------------|----------------------------|
+| **USDC** | Ethereum, Base, Polygon, Arbitrum | All strategies |
+| **EURC** | Ethereum, Base | Conservative, Moderate |
+| **USDT** | Ethereum, Tron, Polygon | Moderate, Aggressive |
+| **DAI** | Ethereum | All strategies |
+| **USDS** | Ethereum | Conservative, Moderate |
+
+### Coming Soon
+
+- **PYUSD** (PayPal USD)
+- **FDUSD** (First Digital USD)
+- **GBP Stablecoins**
+- **Tokenized Commodities**
+
+---
+
+## Risk Management
+
+### Protocol Vetting Process
+
+Every yield strategy undergoes rigorous evaluation:
+
+✅ **Security Audits**: Multiple independent audits required  
+✅ **Track Record**: Minimum 12 months operational history  
+✅ **TVL Requirements**: Minimum $100M total value locked  
+✅ **Smart Contract Review**: Internal security team assessment  
+✅ **Insurance Coverage**: Optional insurance for select protocols  
+
+### Risk Scoring System
+
+Each strategy receives a comprehensive risk score:
+
+```
+Risk Score Components:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Smart Contract Risk: 20%
+Protocol Maturity: 20%
+Liquidity Risk: 15%
+Market Risk: 15%
+Counterparty Risk: 15%
+Regulatory Risk: 15%
+
+Overall Score: 1-100
+< 30: Low Risk
+30-60: Medium Risk
+> 60: High Risk
+```
+
+### Diversification Recommendations
+
+**Conservative Portfolio (3-5% APY)**
+- 60% Tokenized T-Bills
+- 30% Money Market Funds
+- 10% Stablecoin Savings
+
+**Balanced Portfolio (5-8% APY)**
+- 40% Lending Protocols (Aave, Compound)
+- 30% Tokenized RWAs
+- 20% Curve Stablecoin Pools
+- 10% Cash Reserve
+
+**Growth Portfolio (8-12% APY)**
+- 40% Liquidity Provision
+- 30% Lending Protocols
+- 20% Yield Farming
+- 10% Cash Reserve
+
+---
+
+## Use Cases
+
+### 🏦 Corporate Treasury Management
+
+**Challenge**: Idle cash earning 0% in bank accounts
+
+**Solution**: Treasury Yield allocation
+- Move operating reserves to money market funds (3-4% APY)
+- Allocate excess cash to lending protocols (5-7% APY)
+- Maintain liquidity for operational needs
+- Automated rebalancing based on cash flow
+
+**Results:**
+- €1M treasury → €50K annual yield (5% APY)
+- Full liquidity maintained
+- Better than traditional bank rates
+- Transparent reporting for CFO
+
+### 🎮 Gaming Platform Float Management
+
+**Challenge**: Player deposits sitting idle between deposits and withdrawals
+
+**Solution**: Automated yield on float
+- Conservative strategy for player funds
+- Instant liquidity for withdrawals
+- Yield shared with players or retained
+- Compliance-friendly approach
+
+**Results:**
+- €5M average float → €200K annual yield (4% APY)
+- No impact on withdrawal times
+- Additional revenue stream
+- Enhanced player value proposition
+
+### 💱 Exchange Reserve Optimization
+
+**Challenge**: Large stablecoin reserves earning nothing
+
+**Solution**: Multi-strategy allocation
+- Hot wallet: 10% (instant liquidity)
+- Warm wallet: 40% in lending protocols (instant withdrawal)
+- Cold storage: 50% in higher-yield strategies
+
+**Results:**
+- €50M reserves → €3M annual yield (6% APY)
+- Liquidity maintained for trading operations
+- Risk-adjusted returns
+- Competitive advantage
+
+### 💼 Payment Platform Working Capital
+
+**Challenge**: Settlement float between payment receipt and payout
+
+**Solution**: Short-term yield optimization
+- Allocate float to overnight strategies
+- Automatic withdrawal for scheduled payouts
+- Predictive allocation based on payout schedule
+- Zero operational impact
+
+**Results:**
+- €10M daily float → €400K annual yield (4% APY)
+- Seamless integration with payout operations
+- Improved unit economics
+- Scalable revenue stream
+
+---
+
+## Integration Overview
+
+### API Endpoints (Coming Soon)
+
+```bash
+# List available yield vaults
+GET /v1/treasury-yield/vaults
+
+# Get vault details and current APY
+GET /v1/treasury-yield/vaults/{vaultId}
+
+# Allocate funds to vault
+POST /v1/treasury-yield/allocations
+{
+  "accountId": "account-id",
+  "vaultId": "vault-id",
+  "amount": 100000,
+  "currency": "USDC",
+  "autoCompound": true,
+  "minAPY": 5.0  // Optional: minimum acceptable APY
+}
+
+# List active allocations
+GET /v1/treasury-yield/allocations
+
+# Get allocation performance
+GET /v1/treasury-yield/allocations/{allocationId}
+
+# Withdraw from vault
+POST /v1/treasury-yield/withdrawals
+{
+  "allocationId": "allocation-id",
+  "amount": 50000,
+  "destinationAccountId": "account-id"
+}
+
+# Get yield earnings history
+GET /v1/treasury-yield/earnings
+```
+
+### Webhook Events
+
+Real-time notifications for yield events:
+- `yield.allocated` - Funds deployed to vault
+- `yield.earned` - Yield accrued (daily)
+- `yield.compounded` - Yield reinvested
+- `yield.withdrawn` - Funds withdrawn from vault
+- `yield.apy_changed` - Significant APY change
+- `yield.risk_alert` - Risk score change detected
+
+---
+
+## Automated Yield Optimization
+
+### Auto-Allocation Rules
+
+Set rules for automatic yield deployment:
+
+```json
+{
+  "rules": [
+    {
+      "condition": "balance > 100000",
+      "action": "allocate",
+      "strategy": "conservative",
+      "percentage": 80,
+      "minAPY": 3.0
+    },
+    {
+      "condition": "balance < 50000",
+      "action": "withdraw",
+      "amount": "to_minimum",
+      "priority": "high"
+    }
+  ]
+}
+```
+
+### Smart Rebalancing
+
+Automatic portfolio optimization:
+- **Performance-Based**: Move funds from underperforming to better vaults
+- **Risk-Adjusted**: Rebalance based on risk score changes
+- **APY Threshold**: Automatically switch if APY drops below threshold
+- **Liquidity Management**: Maintain minimum liquid reserves
+
+### Yield Compounding
+
+Maximize returns through automatic reinvestment:
+- **Daily Compounding**: Reinvest yields daily
+- **Threshold-Based**: Compound when yield reaches minimum amount
+- **Gas-Optimized**: Batch compounding to minimize fees
+- **Tax-Efficient**: Optional strategies for tax optimization
+
+---
+
+## Pricing
+
+### Management Fees
+
+| Strategy Type | Annual Management Fee | Performance Fee |
+|---------------|----------------------|-----------------|
+| **Conservative** | 0.25% | 0% |
+| **Moderate** | 0.50% | 5% of yield |
+| **Aggressive** | 0.75% | 10% of yield |
+
+### Volume Discounts
+
+| Total Assets Under Management | Fee Discount |
+|-------------------------------|--------------|
+| €0 - €1M | Standard rates |
+| €1M - €10M | 20% discount |
+| €10M - €50M | 35% discount |
+| €50M+ | Custom pricing |
+
+<Tip>
+  **No Hidden Fees**: All fees are transparent and deducted automatically. No withdrawal fees, no lock-up penalties.
+</Tip>
+
+---
+
+## Security & Compliance
+
+### Smart Contract Security
+
+- **Multi-Sig Wallets**: All vault contracts use multi-signature controls
+- **Time-Locks**: Withdrawal delays for large amounts
+- **Emergency Pause**: Ability to pause operations if risks detected
+- **Upgrade Controls**: Secure upgrade mechanisms for contracts
+- **Bug Bounty**: Active bug bounty program for security researchers
+
+### Insurance Options
+
+**Optional Coverage Available:**
+- **Protocol Risk Insurance**: Coverage for smart contract exploits
+- **Custody Insurance**: Protection for assets in custody
+- **Slashing Insurance**: Coverage for validator slashing (staking strategies)
+
+**Coverage Limits:**
+- Up to $5M per vault
+- Annual premium: 0.5-2% of insured amount
+- Claims processed within 30 days
+
+### Regulatory Compliance
+
+✅ **MiFID II Aligned**: Suitable for regulated entities  
+✅ **GDPR Compliant**: Data protection and privacy  
+✅ **AML/KYC**: Integrated compliance checks  
+✅ **Tax Reporting**: Automated yield reporting  
+✅ **Audit Trail**: Complete transaction history  
+
+---
+
+## Roadmap
+
+### Q3 2026 - Initial Launch
+
+- Conservative strategies (T-Bills, Money Markets)
+- Moderate strategies (Aave, Compound)
+- USDC and EURC support
+- Basic API and dashboard
+- Manual allocation and withdrawal
+
+### Q4 2026 - Enhanced Features
+
+- Aggressive strategies (Liquidity pools, Farming)
+- USDT and DAI support
+- Auto-allocation rules
+- Smart rebalancing
+- Mobile app integration
+
+### Q1 2027 - Advanced Features
+
+- Leveraged strategies
+- Custom vault creation
+- Advanced analytics and forecasting
+- Tax optimization tools
+- Institutional-grade reporting
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+To access Treasury Yield, you'll need:
+
+✅ **Active Venly Finance Account**: Verified company account  
+✅ **Minimum Balance**: $10,000 in stablecoins  
+✅ **Risk Assessment**: Complete risk tolerance questionnaire  
+✅ **Compliance Approval**: KYC/AML verification complete  
+✅ **API Access**: For programmatic management (optional)  
+
+### Early Access Program
+
+<Card title="Join the Waitlist" icon="bell">
+  Register your interest for early access to Treasury Yield
+  
+  **Benefits:**
+  - Priority onboarding when available
+  - Waived management fees for first 3 months
+  - Dedicated yield strategist consultation
+  - Beta testing opportunity
+  
+  **Contact**: treasuryyield@venly.io
+</Card>
+
+---
+
+## Comparison: Treasury Yield vs Traditional Options
+
+| Feature | Bank Savings | Traditional DeFi | Venly Treasury Yield |
+|---------|--------------|------------------|----------------------|
+| **APY Range** | 0.1-1% | 3-20% | 3-15% (curated) |
+| **Risk Assessment** | None | Self-managed | Professional vetting |
+| **Liquidity** | Instant | Variable | Instant to T+1 |
+| **Insurance** | FDIC (limited) | Rare | Optional coverage |
+| **Minimum** | $0 | Variable | $1,000-$10,000 |
+| **Management** | None | Manual | Automated |
+| **Tax Reporting** | Manual | Manual | Automated |
+| **Integration** | Limited | None | Full API |
+
+---
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="What yields can I expect?">
+    Yields vary by strategy: Conservative (3-5% APY), Moderate (5-8% APY), Aggressive (8-15% APY). Actual yields fluctuate based on market conditions and protocol performance.
+  </Accordion>
+  
+  <Accordion title="How quickly can I withdraw funds?">
+    Most strategies offer instant withdrawal. Some conservative strategies (T-Bills) may require T+1 settlement. There are no lock-up periods or withdrawal penalties.
+  </Accordion>
+  
+  <Accordion title="What are the risks?">
+    Risks include smart contract vulnerabilities, protocol failures, market volatility, and impermanent loss (for liquidity strategies). All protocols are vetted, but risk cannot be eliminated entirely.
+  </Accordion>
+  
+  <Accordion title="Is my yield guaranteed?">
+    No. Yields are variable and depend on market conditions, protocol performance, and utilization rates. Historical yields are not indicative of future performance.
+  </Accordion>
+  
+  <Accordion title="How are yields calculated and paid?">
+    Yields accrue continuously and are calculated daily. You can choose to compound yields automatically or withdraw them to your account. Yields are paid in the same currency as your deposit.
+  </Accordion>
+  
+  <Accordion title="What happens if a protocol is hacked?">
+    We monitor all protocols 24/7. If a security incident occurs, we can pause operations and withdraw funds if possible. Optional insurance coverage is available for additional protection.
+  </Accordion>
+  
+  <Accordion title="Can I customize my yield strategy?">
+    Yes, you can allocate funds across multiple vaults, set auto-allocation rules, and configure rebalancing preferences. Advanced users can create custom strategies.
+  </Accordion>
+  
+  <Accordion title="How are taxes handled?">
+    Yield earnings are automatically tracked and reported. We provide detailed transaction history and yield statements for tax filing. Consult your tax advisor for specific guidance.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Join Waitlist" icon="bell" href="mailto:treasuryyield@venly.io">
+    Register for early access
+  </Card>
+  <Card title="Finance API" icon="code" href="/api-reference/Finance-API/accounts/list-all-accounts">
+    Explore account integration
+  </Card>
+  <Card title="Risk Assessment" icon="shield" href="mailto:treasuryyield@venly.io">
+    Schedule consultation
+  </Card>
+  <Card title="Yield Calculator" icon="calculator" href="https://venlyfinance.com/#calculator">
+    Estimate your earnings
+  </Card>
+</CardGroup>
+
+---
+
+## Support
+
+Questions about Treasury Yield?
+
+- **Email**: treasuryyield@venly.io
+- **Sales**: sales@venly.io
+- **Documentation**: [docs.venly.io](https://docs.venly.io)
+- **Risk Disclosure**: [venlyfinance.com/risk-disclosure](https://venlyfinance.com/risk-disclosure)

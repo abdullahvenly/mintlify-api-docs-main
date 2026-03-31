@@ -1,0 +1,719 @@
+---
+title: Multi-Rail Routing
+description: Intelligent payment routing across SEPA, SWIFT, stablecoins, and local rails for optimal speed and cost
+---
+
+## What is Multi-Rail Routing?
+
+Multi-Rail Routing is Venly's intelligent payment orchestration system that automatically selects the optimal payment rail for each transaction. Instead of being locked into a single payment method, the system dynamically routes payments through SEPA, SWIFT, stablecoin networks, or local rails based on speed, cost, and destination requirements.
+
+<CardGroup cols={2}>
+  <Card title="Bank Rails" icon="building-columns">
+    SEPA, SWIFT, Faster Payments, and more
+  </Card>
+  <Card title="Stablecoin Rails" icon="coins">
+    USDC, USDT, EURC on multiple blockchains
+  </Card>
+  <Card title="Local Rails" icon="globe">
+    PIX, FPS, CHAPS, ACH, and regional networks
+  </Card>
+  <Card title="Automatic Optimization" icon="wand-magic-sparkles">
+    AI-powered routing for best speed and cost
+  </Card>
+</CardGroup>
+
+---
+
+## The Problem with Single-Rail Systems
+
+Traditional payment systems force you to choose one rail and live with its limitations:
+
+### Traditional Wire Transfers (SWIFT)
+
+❌ **3-5 days settlement time**  
+❌ **High correspondent banking fees**  
+❌ **Limited transparency**  
+❌ **Frequent holds and blocks**  
+❌ **Business hours only**  
+
+### Single Payment Processors
+
+❌ **Locked into one provider's network**  
+❌ **No flexibility for optimization**  
+❌ **Higher costs due to lack of competition**  
+❌ **Limited corridor coverage**  
+
+### The Cost of Inefficiency
+
+| Issue | Impact |
+|-------|--------|
+| **3+ days average settlement** | Support tickets pile up |
+| **€2.4K lost per corridor block** | Direct operational cost |
+| **72% false positive holds** | Legitimate volume flagged |
+
+---
+
+## How Multi-Rail Routing Works
+
+<Steps>
+  <Step title="1. Payment Request">
+    You submit a payment request via API
+    
+    ```bash
+    POST /v1/payout
+    {
+      "amount": 50000,
+      "currency": "USD",
+      "destination": "MX",
+      "recipient": {
+        "accountNumber": "123456789",
+        "bankCode": "BANAMEX"
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="2. Intelligent Analysis">
+    Venly's routing engine analyzes multiple factors
+    
+    **Factors Considered:**
+    - Destination country and currency
+    - Payment amount and urgency
+    - Current rail availability and costs
+    - Recipient bank capabilities
+    - Regulatory requirements
+    - Historical performance data
+    - Real-time network status
+  </Step>
+  
+  <Step title="3. Optimal Rail Selection">
+    System selects the best available rail
+    
+    ```
+    Analysis Results:
+    ✓ SWIFT: 3 days, €25 fee
+    ✓ Stablecoin: 15 minutes, €2 fee
+    ✓ Local Rail (SPEI): 2 hours, €5 fee
+    
+    Selected: Stablecoin Rail
+    Reason: Fastest + Lowest Cost
+    ```
+  </Step>
+  
+  <Step title="4. Automatic Execution">
+    Payment is routed and executed
+    
+    - Funds converted to optimal stablecoin if needed
+    - Transaction submitted to selected network
+    - Real-time status updates via webhooks
+    - Automatic fallback if primary rail fails
+  </Step>
+  
+  <Step title="5. Settlement & Confirmation">
+    Recipient receives funds
+    
+    - Settlement time: Seconds to minutes (stablecoin) or hours (local rails)
+    - Confirmation sent to both parties
+    - Transaction recorded for compliance
+    - Detailed reporting available
+  </Step>
+</Steps>
+
+---
+
+## Supported Payment Rails
+
+### 🏦 Bank Rails
+
+**SEPA (Single Euro Payments Area)**
+- **Coverage**: 36 European countries
+- **Settlement**: T+1 (1 business day)
+- **Cost**: €0.50 - €2.00 per transaction
+- **Best For**: EUR payments within Europe
+
+**SWIFT (International Wire)**
+- **Coverage**: 200+ countries
+- **Settlement**: T+2 to T+5 (2-5 business days)
+- **Cost**: €15 - €50 per transaction
+- **Best For**: Large international transfers, exotic corridors
+
+**Faster Payments (UK)**
+- **Coverage**: United Kingdom
+- **Settlement**: Minutes to hours
+- **Cost**: €1 - €3 per transaction
+- **Best For**: GBP payments within UK
+
+**ACH (Automated Clearing House)**
+- **Coverage**: United States
+- **Settlement**: T+1 to T+2
+- **Cost**: €0.50 - €2.00 per transaction
+- **Best For**: USD payments within US
+
+### 💎 Stablecoin Rails
+
+**USDC (USD Coin)**
+- **Blockchains**: Ethereum, Base, Polygon, Arbitrum
+- **Settlement**: 15 seconds to 5 minutes
+- **Cost**: €0.10 - €2.00 per transaction
+- **Best For**: Fast USD transfers, crypto-native recipients
+
+**EURC (Euro Coin)**
+- **Blockchains**: Ethereum, Base
+- **Settlement**: 15 seconds to 5 minutes
+- **Cost**: €0.10 - €2.00 per transaction
+- **Best For**: Fast EUR transfers, European crypto users
+
+**USDT (Tether)**
+- **Blockchains**: Ethereum, Tron, Polygon
+- **Settlement**: 1 minute to 10 minutes
+- **Cost**: €0.10 - €3.00 per transaction
+- **Best For**: High liquidity corridors, Asian markets
+
+### 🌍 Local Rails
+
+**PIX (Brazil)**
+- **Coverage**: Brazil
+- **Settlement**: Instant (24/7)
+- **Cost**: €0.50 - €1.50 per transaction
+- **Best For**: BRL payments in Brazil
+
+**SPEI (Mexico)**
+- **Coverage**: Mexico
+- **Settlement**: Minutes to hours
+- **Cost**: €1 - €3 per transaction
+- **Best For**: MXN payments in Mexico
+
+**UPI (India)**
+- **Coverage**: India
+- **Settlement**: Instant
+- **Cost**: €0.20 - €1.00 per transaction
+- **Best For**: INR payments in India
+
+**FPS (Hong Kong)**
+- **Coverage**: Hong Kong
+- **Settlement**: Instant
+- **Cost**: €0.50 - €2.00 per transaction
+- **Best For**: HKD payments in Hong Kong
+
+---
+
+## Routing Optimization Strategies
+
+### Speed-Optimized Routing
+
+**Priority: Fastest Settlement**
+
+```
+Use Case: Urgent vendor payment
+Amount: €10,000
+Destination: Brazil
+
+Selected Rail: PIX (Instant)
+Alternative: SWIFT (3-5 days)
+Time Saved: 3-5 days
+Cost Difference: +€2
+```
+
+**Best For:**
+- Urgent payments
+- Time-sensitive transactions
+- Customer satisfaction priorities
+- Competitive advantage scenarios
+
+### Cost-Optimized Routing
+
+**Priority: Lowest Transaction Cost**
+
+```
+Use Case: Bulk payroll processing
+Amount: €500,000 (1000 payments)
+Destination: Europe
+
+Selected Rail: SEPA (€1 per txn)
+Alternative: SWIFT (€25 per txn)
+Cost Saved: €24,000
+Settlement: T+1 (acceptable)
+```
+
+**Best For:**
+- High-volume operations
+- Non-urgent payments
+- Margin optimization
+- Predictable cash flow
+
+### Balanced Routing
+
+**Priority: Best Speed/Cost Ratio**
+
+```
+Use Case: Standard cross-border payment
+Amount: €5,000
+Destination: United States
+
+Selected Rail: Stablecoin (USDC)
+Settlement: 15 minutes
+Cost: €2
+Alternative 1: SWIFT (3 days, €30)
+Alternative 2: ACH (2 days, €1)
+```
+
+**Best For:**
+- Standard operations
+- Mixed payment types
+- General use cases
+- Default routing strategy
+
+---
+
+## 40+ Supported Corridors
+
+### Major Corridors
+
+| From | To | Primary Rail | Settlement Time | Typical Cost |
+|------|----|--------------|-----------------| -------------|
+| EUR | USD | Stablecoin | 15 minutes | €2 |
+| EUR | GBP | SEPA/FPS | 2-4 hours | €3 |
+| USD | EUR | Stablecoin | 15 minutes | €2 |
+| USD | MXN | SPEI | 1-2 hours | €5 |
+| EUR | BRL | PIX | Instant | €3 |
+| USD | INR | UPI | Instant | €2 |
+| GBP | EUR | SEPA | T+1 | €2 |
+| USD | PHP | Local Bank | 2-4 hours | €4 |
+
+### Regional Coverage
+
+**Europe (SEPA Zone)**
+- 36 countries
+- EUR payments
+- T+1 settlement
+- €0.50 - €2 per transaction
+
+**Americas**
+- US (ACH, Wire)
+- Mexico (SPEI)
+- Brazil (PIX)
+- Canada (EFT)
+- Argentina, Chile, Colombia
+
+**Asia-Pacific**
+- India (UPI, IMPS)
+- Philippines (InstaPay)
+- Hong Kong (FPS)
+- Singapore (FAST)
+- Thailand, Vietnam, Indonesia
+
+**Middle East & Africa**
+- UAE (UAEFTS)
+- South Africa (EFT)
+- Nigeria (NIBSS)
+- Kenya (RTGS)
+
+---
+
+## Automatic Failover & Redundancy
+
+### Multi-Rail Redundancy
+
+If the primary rail fails, the system automatically falls back:
+
+```
+Payment Request: €10,000 EUR → USD
+
+Primary Rail: Stablecoin (USDC)
+Status: Network congestion detected
+
+Automatic Failover:
+→ Secondary Rail: SWIFT Wire
+→ Notification sent to sender
+→ Payment completes via backup rail
+→ No manual intervention required
+```
+
+### Intelligent Retry Logic
+
+```javascript
+// Automatic retry with exponential backoff
+Attempt 1: Stablecoin (failed - network issue)
+Wait: 30 seconds
+Attempt 2: Stablecoin (failed - still congested)
+Wait: 2 minutes
+Attempt 3: Switch to SWIFT (success)
+
+Total Time: 3 minutes to fallback
+User Experience: Seamless
+```
+
+---
+
+## Real-Time Monitoring & Analytics
+
+### Live Dashboard
+
+Track all payments in real-time:
+- **Active Payments**: See payments in progress
+- **Rail Performance**: Monitor each rail's success rate
+- **Cost Analytics**: Track savings vs traditional methods
+- **Settlement Times**: Average time per corridor
+- **Failure Rates**: Identify problematic routes
+
+### Performance Metrics
+
+```
+Today's Statistics:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Total Payments: 1,247
+Stablecoin Rail: 856 (68.6%)
+Bank Rails: 312 (25.0%)
+Local Rails: 79 (6.3%)
+
+Average Settlement: 24 minutes
+Cost Savings vs SWIFT: €18,450
+Success Rate: 99.2%
+```
+
+---
+
+## Use Cases
+
+### 🎮 Gaming & iGaming Payouts
+
+**Challenge**: Pay winners globally, instantly
+
+**Solution**: Multi-rail routing
+- Small payouts (<€1K): Stablecoin rails (instant)
+- Large payouts (>€10K): Local rails or SWIFT
+- Regional optimization: PIX for Brazil, UPI for India
+- 24/7 availability: No banking hours restrictions
+
+**Results:**
+- 95% faster payouts
+- 70% cost reduction
+- Higher player satisfaction
+- Competitive advantage
+
+### 💼 Cross-Border B2B Payments
+
+**Challenge**: Pay international vendors efficiently
+
+**Solution**: Intelligent routing
+- Urgent payments: Stablecoin rails
+- Standard payments: Local rails
+- Large transfers: SWIFT with best rates
+- Automatic currency conversion
+
+**Results:**
+- 3-5 days → 15 minutes average
+- €25 → €2 average cost
+- Improved vendor relationships
+- Better cash flow management
+
+### 💰 Remittances & Money Transfer
+
+**Challenge**: Send money home affordably
+
+**Solution**: Cost-optimized routing
+- High-volume corridors: Stablecoin rails
+- Emerging markets: Local rail partnerships
+- Competitive FX rates
+- Transparent pricing
+
+**Results:**
+- 80% lower fees than traditional remittance
+- Instant to same-day delivery
+- Better exchange rates
+- Increased customer loyalty
+
+### 🏦 Treasury Management
+
+**Challenge**: Optimize corporate treasury operations
+
+**Solution**: Balanced routing strategy
+- Liquidity management: Fast stablecoin rails
+- Vendor payments: Cost-optimized routing
+- Payroll: Reliable local rails
+- Multi-currency support
+
+**Results:**
+- Improved working capital
+- Reduced treasury costs
+- Better forecasting
+- Centralized control
+
+---
+
+## Integration
+
+### Simple API
+
+One API call, automatic routing:
+
+```bash
+POST /v1/payout
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "amount": 50000,
+  "currency": "USD",
+  "destination": {
+    "country": "MX",
+    "currency": "MXN",
+    "accountNumber": "123456789",
+    "bankCode": "BANAMEX"
+  },
+  "routing": {
+    "strategy": "BALANCED",  // SPEED, COST, or BALANCED
+    "maxCost": 10,           // Optional: Maximum acceptable cost
+    "maxTime": 3600          // Optional: Maximum time in seconds
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "result": {
+    "payoutId": "payout_abc123",
+    "status": "PROCESSING",
+    "selectedRail": "STABLECOIN_USDC",
+    "estimatedSettlement": "2026-03-31T16:15:00Z",
+    "estimatedCost": {
+      "amount": 2.50,
+      "currency": "EUR"
+    },
+    "alternativeRails": [
+      {
+        "rail": "SWIFT",
+        "estimatedTime": "3-5 days",
+        "cost": 25.00
+      },
+      {
+        "rail": "SPEI",
+        "estimatedTime": "2 hours",
+        "cost": 5.00
+      }
+    ]
+  }
+}
+```
+
+### Webhook Notifications
+
+```json
+{
+  "event": "payout.completed",
+  "payoutId": "payout_abc123",
+  "rail": "STABLECOIN_USDC",
+  "status": "COMPLETED",
+  "settlementTime": "14 minutes",
+  "actualCost": 2.50,
+  "timestamp": "2026-03-31T16:14:23Z"
+}
+```
+
+---
+
+## Pricing
+
+### Transaction Fees by Rail
+
+| Rail Type | Cost Range | Settlement Time |
+|-----------|------------|-----------------|
+| **Stablecoin** | €0.10 - €3.00 | 15 sec - 5 min |
+| **SEPA** | €0.50 - €2.00 | T+1 |
+| **Local Rails** | €0.50 - €5.00 | Instant - 4 hours |
+| **SWIFT** | €15 - €50 | T+2 to T+5 |
+
+### Volume Discounts
+
+| Monthly Volume | Discount |
+|----------------|----------|
+| €0 - €500K | Standard rates |
+| €500K - €2M | 10% discount |
+| €2M - €10M | 20% discount |
+| €10M+ | Custom pricing |
+
+<Tip>
+  **Cost Savings**: Customers typically save 60-80% compared to traditional SWIFT-only operations.
+</Tip>
+
+---
+
+## Comparison: Multi-Rail vs Single-Rail
+
+| Feature | Traditional PSPs | Single Stablecoin | Venly Multi-Rail |
+|---------|-----------------|-------------------|------------------|
+| **Available Rails** | 1-2 | 1 | 40+ corridors |
+| **Settlement Time** | T+2 to T+5 | 5-15 minutes | Optimized per payment |
+| **Cost per Transaction** | €15-€50 | €1-€3 | €0.50-€5 (optimized) |
+| **Corridor Coverage** | Limited | Global but limited adoption | Global + local optimization |
+| **Automatic Optimization** | No | No | Yes |
+| **Failover/Redundancy** | Manual | No | Automatic |
+| **Business Hours** | Yes | No | No |
+| **Compliance** | Provider-dependent | Self-managed | Built-in |
+
+---
+
+## Best Practices
+
+### 1. Choose the Right Strategy
+
+```javascript
+// Speed-critical payments
+{
+  "routing": {
+    "strategy": "SPEED",
+    "maxTime": 600  // 10 minutes max
+  }
+}
+
+// Cost-sensitive bulk payments
+{
+  "routing": {
+    "strategy": "COST",
+    "maxCost": 2  // €2 max per transaction
+  }
+}
+
+// Balanced approach (recommended)
+{
+  "routing": {
+    "strategy": "BALANCED"
+  }
+}
+```
+
+### 2. Set Appropriate Limits
+
+- **Max Cost**: Prevent expensive routing for small payments
+- **Max Time**: Ensure SLA compliance
+- **Preferred Rails**: Specify preferred rails when needed
+- **Fallback Rules**: Define acceptable alternatives
+
+### 3. Monitor Performance
+
+- Track rail performance metrics
+- Analyze cost savings
+- Review settlement times
+- Identify optimization opportunities
+
+### 4. Handle Webhooks
+
+```javascript
+// Webhook handler example
+app.post('/webhooks/venly', (req, res) => {
+  const event = req.body;
+  
+  switch(event.type) {
+    case 'payout.processing':
+      // Update internal status
+      break;
+    case 'payout.completed':
+      // Notify recipient
+      break;
+    case 'payout.failed':
+      // Handle failure, retry if needed
+      break;
+  }
+  
+  res.status(200).send('OK');
+});
+```
+
+---
+
+## Security & Compliance
+
+### Regulatory Compliance
+
+✅ **EU VASP Registration**: Licensed virtual asset service provider  
+✅ **SOC 2 Type II**: Independently audited security controls  
+✅ **ISO 27001**: Information security management  
+✅ **GDPR Compliant**: Data protection and privacy  
+✅ **MiCA-Aligned**: Preparing for EU crypto regulations  
+
+### Transaction Monitoring
+
+- Real-time AML screening
+- Sanctions list checking
+- Fraud detection algorithms
+- Suspicious activity reporting
+- Audit trail for all transactions
+
+### Data Security
+
+- End-to-end encryption
+- Secure API authentication (OAuth2)
+- PCI DSS compliance for card data
+- Regular security audits
+- Incident response procedures
+
+---
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="How does the routing engine decide which rail to use?">
+    The engine analyzes multiple factors including destination, amount, urgency, cost, rail availability, and historical performance. It then selects the optimal rail based on your chosen strategy (SPEED, COST, or BALANCED).
+  </Accordion>
+  
+  <Accordion title="What happens if the selected rail fails?">
+    The system automatically falls back to the next best available rail without manual intervention. You'll receive a webhook notification about the rail change, but the payment continues seamlessly.
+  </Accordion>
+  
+  <Accordion title="Can I force a specific rail for certain payments?">
+    Yes, you can specify a preferred rail in your API request. The system will use that rail if available, or notify you if it's not possible for that corridor.
+  </Accordion>
+  
+  <Accordion title="How are stablecoin payments settled to fiat?">
+    Stablecoins are automatically converted to the recipient's local currency at competitive exchange rates. The recipient receives fiat in their bank account or can opt to receive stablecoins directly.
+  </Accordion>
+  
+  <Accordion title="What are the settlement times for each rail?">
+    Stablecoin rails: 15 seconds to 5 minutes. Local rails: Instant to 4 hours. SEPA: T+1. SWIFT: T+2 to T+5. Exact times depend on the specific corridor and rail.
+  </Accordion>
+  
+  <Accordion title="Are there any volume requirements?">
+    For standard multi-rail routing, there's no minimum volume. However, access to certain premium corridors and custom routing strategies may require €500K+ monthly volume.
+  </Accordion>
+  
+  <Accordion title="How do I track cost savings?">
+    The Fundflow Dashboard provides detailed analytics showing cost savings compared to traditional SWIFT-only operations, broken down by corridor and rail type.
+  </Accordion>
+  
+  <Accordion title="Can I use multi-rail routing for both payouts and collections?">
+    Currently, multi-rail routing is optimized for payouts. Collection (pay-in) support with intelligent routing is planned for Q3 2026.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Fundflow API" icon="code" href="/api-reference/Fundflow-API/ramp-requests/create-a-new-ramp-request">
+    Start integrating multi-rail routing
+  </Card>
+  <Card title="Getting Started" icon="rocket" href="/guides/payments/getting-started">
+    Complete integration guide
+  </Card>
+  <Card title="Dashboard" icon="chart-line" href="/guides/payments/dashboard">
+    Monitor rail performance
+  </Card>
+  <Card title="Contact Sales" icon="comments" href="mailto:sales@venly.io">
+    Discuss your use case
+  </Card>
+</CardGroup>
+
+---
+
+## Support
+
+Questions about Multi-Rail Routing?
+
+- **Email**: support@venly.io
+- **Sales**: sales@venly.io
+- **Documentation**: [docs.venly.io](https://docs.venly.io)
+- **API Status**: Check real-time rail availability

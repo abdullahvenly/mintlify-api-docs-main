@@ -135,7 +135,39 @@
           }
         ]
       },
-            {
+      {
+        "tab": "Products (Coming Soon)",
+        "groups": [
+          {
+            "group": "COMING SOON"
+          },
+          {
+            "group": "Card Issuance",
+            "pages": [
+              "guides/card-issuance/introduction"
+            ]
+          },
+          {
+            "group": "Multi-Rail Routing",
+            "pages": [
+              "guides/multi-rail-routing/introduction"
+            ]
+          },
+          {
+            "group": "Treasury Yield",
+            "pages": [
+              "guides/treasury-yield/introduction"
+            ]
+          },
+          {
+            "group": "Compliance Engine",
+            "pages": [
+              "guides/compliance/introduction"
+            ]
+          }
+        ]
+      },
+      {
         "tab": "Finance API (Under Development)",
         "groups": [
           {
@@ -194,6 +226,35 @@
             "group": "Fiat to Crypto Payment Links",
             "pages": [
               "api-reference/Finance-API/fiat-to-crypto-payment-links/create-a-fiat-to-crypto-payment-link"
+            ]
+          },
+          {
+            "group": "Payment Requests",
+            "pages": [
+              "api-reference/Finance-API/payment-requests/create-payment-request-by-card-provider",
+              "api-reference/Finance-API/payment-requests/create-payment-request-for-account"
+            ]
+          },
+          {
+            "group": "Transfers",
+            "pages": [
+              "api-reference/Finance-API/transfers/create-fiat-transfer",
+              "api-reference/Finance-API/transfers/create-crypto-transfer",
+              "api-reference/Finance-API/transfers/list-transfers-for-account",
+              "api-reference/Finance-API/transfers/get-transfer-details"
+            ]
+          },
+          {
+            "group": "Permits",
+            "pages": [
+              "api-reference/Finance-API/permits/get-permit-messages",
+              "api-reference/Finance-API/permits/submit-signed-permit"
+            ]
+          },
+          {
+            "group": "Allowances",
+            "pages": [
+              "api-reference/Finance-API/allowances/get-wallet-token-allowances"
             ]
           }
         ]

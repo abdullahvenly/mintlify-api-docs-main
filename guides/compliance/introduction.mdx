@@ -1,0 +1,775 @@
+---
+title: Compliance Engine (Coming Soon)
+description: Automated screening, transaction monitoring, and regulatory reporting across all payment rails
+---
+
+<Warning>
+  **Coming Soon** - Compliance Engine is currently in development and will be available in Q4 2026. This documentation provides an overview of the upcoming features.
+</Warning>
+
+## What is Compliance Engine?
+
+Compliance Engine is Venly's automated compliance and risk management system that provides real-time transaction monitoring, sanctions screening, and regulatory reporting across all payment rails. Stay compliant without the operational overhead of manual compliance processes.
+
+<CardGroup cols={2}>
+  <Card title="Automated Screening" icon="shield-check">
+    Real-time AML and sanctions screening
+  </Card>
+  <Card title="Transaction Monitoring" icon="chart-line">
+    AI-powered suspicious activity detection
+  </Card>
+  <Card title="Regulatory Reporting" icon="file-contract">
+    Automated compliance report generation
+  </Card>
+  <Card title="Audit Trails" icon="clock-rotate-left">
+    Complete transaction history and evidence
+  </Card>
+</CardGroup>
+
+---
+
+## Key Features
+
+### 🔍 Real-Time Screening
+
+Automated screening for every transaction:
+- **Sanctions Lists**: OFAC, UN, EU, and 200+ global lists
+- **PEP Screening**: Politically Exposed Persons identification
+- **Adverse Media**: Negative news and reputational risk
+- **Watchlists**: Custom internal watchlists
+- **Fuzzy Matching**: Advanced name matching algorithms
+
+### 📊 Transaction Monitoring
+
+AI-powered pattern detection:
+- **Behavioral Analysis**: Detect unusual transaction patterns
+- **Velocity Checks**: Monitor transaction frequency and volume
+- **Geographic Risk**: Flag high-risk jurisdictions
+- **Structuring Detection**: Identify potential smurfing
+- **Peer Group Analysis**: Compare against similar entities
+
+### 📝 Regulatory Reporting
+
+Automated compliance documentation:
+- **SAR/STR Generation**: Suspicious Activity Reports
+- **CTR Filing**: Currency Transaction Reports
+- **Travel Rule Compliance**: FATF Travel Rule adherence
+- **Audit Reports**: Comprehensive compliance audits
+- **Regulator Submissions**: Direct filing capabilities
+
+### ⚙️ Configurable Rules
+
+Customize compliance to your needs:
+- **Risk-Based Rules**: Tailor screening based on risk levels
+- **Threshold Configuration**: Set custom alert thresholds
+- **Workflow Automation**: Define approval processes
+- **Escalation Paths**: Automatic escalation for high-risk cases
+- **False Positive Tuning**: Machine learning optimization
+
+---
+
+## How It Works
+
+<Steps>
+  <Step title="1. Automatic Screening">
+    Every transaction is screened in real-time
+    
+    ```
+    Transaction Initiated
+    ↓
+    Compliance Engine Activated
+    ↓
+    Screening Checks:
+    ✓ Sanctions lists (OFAC, UN, EU)
+    ✓ PEP databases
+    ✓ Adverse media
+    ✓ Custom watchlists
+    ✓ Geographic risk
+    ↓
+    Risk Score Calculated
+    ```
+    
+    **Processing Time**: <100ms per transaction
+  </Step>
+  
+  <Step title="2. Risk Assessment">
+    AI analyzes transaction risk factors
+    
+    **Risk Factors Analyzed:**
+    - Sender/receiver identity and history
+    - Transaction amount and frequency
+    - Geographic locations involved
+    - Payment rail and method
+    - Historical behavior patterns
+    - Industry risk profile
+    
+    **Risk Score**: 0-100 (Low to High)
+  </Step>
+  
+  <Step title="3. Automated Decision">
+    System takes action based on risk score
+    
+    ```
+    Risk Score 0-30 (Low):
+    → Auto-approve transaction
+    → Continue processing
+    
+    Risk Score 31-70 (Medium):
+    → Flag for review
+    → Notify compliance team
+    → Hold transaction pending review
+    
+    Risk Score 71-100 (High):
+    → Block transaction
+    → Immediate escalation
+    → Generate alert
+    → Require manual approval
+    ```
+  </Step>
+  
+  <Step title="4. Compliance Review">
+    Flagged transactions reviewed by compliance team
+    
+    - Access complete transaction context
+    - Review screening results and evidence
+    - Add notes and documentation
+    - Approve, reject, or escalate
+    - Generate reports if needed
+  </Step>
+  
+  <Step title="5. Continuous Monitoring">
+    Ongoing monitoring and reporting
+    
+    - Daily transaction monitoring
+    - Periodic account reviews
+    - Automated report generation
+    - Regulatory filing preparation
+    - Audit trail maintenance
+  </Step>
+</Steps>
+
+---
+
+## Screening Capabilities
+
+### Sanctions Lists
+
+**Global Coverage:**
+- **OFAC** (US Office of Foreign Assets Control)
+- **UN Security Council** Consolidated List
+- **EU Sanctions** List
+- **UK HM Treasury** Sanctions
+- **DFAT** (Australia)
+- **200+ Additional Lists** from jurisdictions worldwide
+
+**Update Frequency**: Real-time updates as lists change
+
+### PEP Databases
+
+**Politically Exposed Persons Screening:**
+- Current and former government officials
+- Senior executives of state-owned enterprises
+- Political party officials
+- Immediate family members
+- Close associates
+
+**Coverage**: 240+ countries and territories
+
+### Adverse Media Screening
+
+**Negative News Monitoring:**
+- Financial crime allegations
+- Fraud and corruption
+- Money laundering
+- Terrorist financing
+- Regulatory violations
+- Reputational risks
+
+**Sources**: 100,000+ global news sources in 50+ languages
+
+### Custom Watchlists
+
+**Internal Risk Management:**
+- Blocked customers
+- High-risk merchants
+- Suspicious entities
+- Internal investigations
+- Compliance holds
+
+---
+
+## Transaction Monitoring Rules
+
+### Pre-Configured Rules
+
+**Out-of-the-box monitoring scenarios:**
+
+1. **High-Value Transactions**
+   - Alert on transactions exceeding thresholds
+   - Configurable by currency and time period
+   - Automatic escalation for very large amounts
+
+2. **Rapid Movement of Funds**
+   - Detect quick in-and-out patterns
+   - Flag potential pass-through accounts
+   - Monitor velocity across accounts
+
+3. **Structuring Detection**
+   - Identify transactions just below reporting thresholds
+   - Pattern recognition for smurfing
+   - Multiple small transactions from same source
+
+4. **Geographic Risk**
+   - Flag transactions to/from high-risk jurisdictions
+   - Monitor cross-border patterns
+   - Detect unusual geographic activity
+
+5. **Unusual Activity**
+   - Deviation from normal behavior
+   - Sudden changes in transaction patterns
+   - Dormant account reactivation
+
+6. **Round Amount Transactions**
+   - Flag suspiciously round amounts
+   - Detect potential money laundering indicators
+   - Pattern analysis across accounts
+
+### Custom Rule Builder
+
+**Create Your Own Rules:**
+
+```json
+{
+  "ruleName": "Large Crypto Conversion",
+  "conditions": [
+    {
+      "field": "amount",
+      "operator": "greater_than",
+      "value": 50000
+    },
+    {
+      "field": "type",
+      "operator": "equals",
+      "value": "CRYPTO_TO_FIAT"
+    },
+    {
+      "field": "accountAge",
+      "operator": "less_than",
+      "value": 30
+    }
+  ],
+  "action": "FLAG_FOR_REVIEW",
+  "severity": "HIGH",
+  "assignTo": "senior-compliance-team"
+}
+```
+
+**Rule Components:**
+- **Conditions**: Define what triggers the rule
+- **Actions**: Specify what happens when triggered
+- **Severity**: Set alert priority level
+- **Assignment**: Route to appropriate team
+- **Notifications**: Configure alert recipients
+
+---
+
+## Risk Scoring
+
+### Multi-Factor Risk Assessment
+
+Each transaction receives a comprehensive risk score:
+
+```
+Risk Score Calculation:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Identity Risk: 25%
+  - KYC/KYB status
+  - PEP/Sanctions screening
+  - Adverse media findings
+
+Transaction Risk: 25%
+  - Amount and frequency
+  - Geographic factors
+  - Payment rail used
+
+Behavioral Risk: 25%
+  - Historical patterns
+  - Deviation from norm
+  - Peer comparison
+
+Contextual Risk: 25%
+  - Industry risk
+  - Relationship risk
+  - External intelligence
+
+Final Score: 0-100
+```
+
+### Risk Categories
+
+| Score Range | Risk Level | Action |
+|-------------|------------|--------|
+| 0-30 | **Low** | Auto-approve |
+| 31-50 | **Medium-Low** | Enhanced monitoring |
+| 51-70 | **Medium** | Manual review required |
+| 71-85 | **High** | Senior approval required |
+| 86-100 | **Critical** | Block + escalate |
+
+### Dynamic Risk Adjustment
+
+Risk scores adapt based on:
+- **Account History**: Lower risk for established accounts
+- **Successful Reviews**: Reduce false positives over time
+- **Industry Benchmarks**: Compare against sector norms
+- **Geographic Trends**: Adjust for regional risk changes
+- **Regulatory Updates**: Incorporate new compliance requirements
+
+---
+
+## Compliance Dashboard
+
+### Real-Time Monitoring
+
+**Live Compliance Overview:**
+- Active alerts and pending reviews
+- Transaction volume and risk distribution
+- Screening hit rates
+- Team workload and response times
+- Regulatory deadline tracking
+
+### Alert Management
+
+**Efficient Case Handling:**
+- Prioritized alert queue
+- One-click case assignment
+- Bulk actions for similar cases
+- Collaborative investigation tools
+- Evidence collection and documentation
+
+### Reporting & Analytics
+
+**Comprehensive Insights:**
+- Compliance metrics and KPIs
+- False positive rates
+- Team performance analytics
+- Trend analysis and forecasting
+- Regulatory reporting status
+
+---
+
+## Regulatory Reporting
+
+### Automated Report Generation
+
+**Suspicious Activity Reports (SAR/STR)**
+- Auto-populate from flagged transactions
+- Include all supporting evidence
+- Narrative generation assistance
+- Regulatory format compliance
+- Direct filing capability
+
+**Currency Transaction Reports (CTR)**
+- Automatic threshold monitoring
+- Batch report generation
+- Aggregation of related transactions
+- Exemption management
+- Electronic filing
+
+**Travel Rule Compliance**
+- FATF Travel Rule adherence
+- Originator/beneficiary information
+- Cross-border data exchange
+- VASP communication
+- Audit trail maintenance
+
+### Audit Reports
+
+**Comprehensive Documentation:**
+- Transaction audit trails
+- Screening results history
+- Decision documentation
+- Policy compliance evidence
+- Regulator-ready formats
+
+---
+
+## Use Cases
+
+### 🏦 Financial Institutions
+
+**Challenge**: Complex regulatory requirements across jurisdictions
+
+**Solution**: Automated multi-jurisdiction compliance
+- Simultaneous screening against global lists
+- Jurisdiction-specific rule sets
+- Automated regulatory reporting
+- Audit-ready documentation
+
+**Results:**
+- 90% reduction in manual screening time
+- 99.9% screening accuracy
+- Zero regulatory violations
+- Faster transaction processing
+
+### 🎮 Gaming & iGaming Platforms
+
+**Challenge**: High transaction volumes with AML risk
+
+**Solution**: Real-time monitoring at scale
+- Automated player screening
+- Behavioral pattern detection
+- Rapid deposit/withdrawal monitoring
+- Bonus abuse detection
+
+**Results:**
+- Process 100K+ transactions daily
+- Detect suspicious patterns in real-time
+- Reduce false positives by 70%
+- Maintain gaming license compliance
+
+### 💱 Crypto Exchanges
+
+**Challenge**: VASP compliance and Travel Rule
+
+**Solution**: Crypto-specific compliance tools
+- Blockchain address screening
+- Travel Rule data exchange
+- Crypto-to-fiat monitoring
+- DeFi interaction tracking
+
+**Results:**
+- Full VASP compliance
+- Travel Rule adherence
+- Reduced regulatory risk
+- Improved customer trust
+
+### 💼 Payment Service Providers
+
+**Challenge**: Multi-rail compliance complexity
+
+**Solution**: Unified compliance across rails
+- Single compliance layer for all rails
+- Consistent risk assessment
+- Centralized reporting
+- Cross-rail pattern detection
+
+**Results:**
+- Simplified compliance operations
+- Reduced compliance costs by 60%
+- Faster market expansion
+- Enhanced risk management
+
+---
+
+## Integration
+
+### API Endpoints (Coming Soon)
+
+```bash
+# Screen a transaction before processing
+POST /v1/compliance/screen
+{
+  "transactionId": "txn-123",
+  "sender": {
+    "name": "John Doe",
+    "country": "US",
+    "accountId": "acc-456"
+  },
+  "receiver": {
+    "name": "Jane Smith",
+    "country": "GB",
+    "accountId": "acc-789"
+  },
+  "amount": 10000,
+  "currency": "USD"
+}
+
+# Response
+{
+  "riskScore": 25,
+  "riskLevel": "LOW",
+  "decision": "APPROVED",
+  "screeningResults": {
+    "sanctions": "CLEAR",
+    "pep": "CLEAR",
+    "adverseMedia": "CLEAR"
+  },
+  "processingTime": "87ms"
+}
+
+# Get compliance alerts
+GET /v1/compliance/alerts?status=PENDING
+
+# Review and resolve alert
+POST /v1/compliance/alerts/{alertId}/resolve
+{
+  "decision": "APPROVED",
+  "notes": "Verified legitimate business transaction",
+  "reviewedBy": "compliance-officer-id"
+}
+
+# Generate compliance report
+POST /v1/compliance/reports
+{
+  "type": "SAR",
+  "transactionIds": ["txn-123", "txn-456"],
+  "narrative": "Suspicious pattern detected..."
+}
+
+# Get audit trail
+GET /v1/compliance/audit-trail/{transactionId}
+```
+
+### Webhook Events
+
+Real-time compliance notifications:
+- `compliance.alert_created` - New alert generated
+- `compliance.high_risk_detected` - Critical risk identified
+- `compliance.review_required` - Manual review needed
+- `compliance.decision_made` - Alert resolved
+- `compliance.report_generated` - Compliance report ready
+- `compliance.threshold_exceeded` - Monitoring threshold breached
+
+---
+
+## Compliance Workflows
+
+### Automated Workflows
+
+**Pre-Configured Processes:**
+
+1. **Low-Risk Auto-Approval**
+   ```
+   Transaction → Screen → Low Risk → Auto-Approve → Process
+   ```
+
+2. **Medium-Risk Review**
+   ```
+   Transaction → Screen → Medium Risk → Queue for Review
+   → Compliance Officer Review → Decision → Process/Block
+   ```
+
+3. **High-Risk Escalation**
+   ```
+   Transaction → Screen → High Risk → Block → Alert Senior Team
+   → Investigation → MLRO Review → Decision → SAR if needed
+   ```
+
+### Custom Workflows
+
+**Build Your Own:**
+- Define approval hierarchies
+- Set escalation triggers
+- Configure notification rules
+- Specify documentation requirements
+- Integrate with external systems
+
+---
+
+## Pricing
+
+### Compliance Engine Fees
+
+| Feature | Cost |
+|---------|------|
+| **Transaction Screening** | €0.05 per transaction |
+| **Enhanced Due Diligence** | €10 per case |
+| **SAR/STR Generation** | €25 per report |
+| **Audit Report** | €50 per report |
+| **API Access** | Included |
+
+### Volume Discounts
+
+| Monthly Transaction Volume | Discount |
+|---------------------------|----------|
+| 0 - 10,000 | Standard rates |
+| 10,000 - 100,000 | 20% discount |
+| 100,000 - 1M | 35% discount |
+| 1M+ | Custom pricing |
+
+<Tip>
+  **Bundled Pricing**: Compliance Engine is included free for customers processing €10M+ monthly volume through Venly Finance.
+</Tip>
+
+---
+
+## Regulatory Coverage
+
+### Supported Jurisdictions
+
+✅ **European Union**: MLD5, MLD6, MiCA  
+✅ **United States**: BSA/AML, FinCEN, OFAC  
+✅ **United Kingdom**: MLR 2017, FCA requirements  
+✅ **Singapore**: MAS AML/CFT requirements  
+✅ **Hong Kong**: AMLO, HKMA guidelines  
+✅ **Australia**: AML/CTF Act  
+✅ **Canada**: FINTRAC requirements  
+✅ **Switzerland**: FINMA AML regulations  
+
+### Compliance Standards
+
+✅ **FATF Recommendations**: Full compliance  
+✅ **Travel Rule**: FATF Travel Rule adherence  
+✅ **GDPR**: Data protection compliance  
+✅ **ISO 27001**: Information security  
+✅ **SOC 2 Type II**: Security controls  
+
+---
+
+## Security & Privacy
+
+### Data Protection
+
+- **Encryption**: End-to-end encryption for all compliance data
+- **Access Controls**: Role-based access with audit logging
+- **Data Retention**: Configurable retention policies
+- **Right to Erasure**: GDPR-compliant data deletion
+- **Data Localization**: Regional data storage options
+
+### Audit & Compliance
+
+- **Immutable Logs**: Tamper-proof audit trails
+- **Compliance Certifications**: SOC 2, ISO 27001
+- **Regular Audits**: Third-party security audits
+- **Penetration Testing**: Quarterly security testing
+- **Incident Response**: 24/7 security monitoring
+
+---
+
+## Roadmap
+
+### Q4 2026 - Initial Launch
+
+- Real-time sanctions screening
+- Basic transaction monitoring
+- Manual alert review
+- Standard reporting
+- API access
+
+### Q1 2027 - Enhanced Features
+
+- AI-powered risk scoring
+- Custom rule builder
+- Automated workflows
+- SAR/STR generation
+- Advanced analytics
+
+### Q2 2027 - Advanced Features
+
+- Behavioral analytics
+- Network analysis
+- Predictive risk modeling
+- Blockchain analytics
+- Regulator portal integration
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+To access Compliance Engine, you'll need:
+
+✅ **Active Venly Finance Account**: Verified company account  
+✅ **Compliance Officer**: Designated compliance personnel  
+✅ **AML Program**: Documented AML/CFT program  
+✅ **Risk Assessment**: Completed business risk assessment  
+✅ **Training**: Compliance team training completed  
+
+### Early Access Program
+
+<Card title="Join the Waitlist" icon="bell">
+  Register your interest for early access to Compliance Engine
+  
+  **Benefits:**
+  - Priority onboarding when available
+  - Free compliance consultation
+  - Discounted pricing for first 6 months
+  - Beta testing opportunity
+  - Dedicated compliance support
+  
+  **Contact**: compliance@venly.io
+</Card>
+
+---
+
+## Comparison: Compliance Engine vs Manual Processes
+
+| Feature | Manual Compliance | Third-Party Tools | Venly Compliance Engine |
+|---------|------------------|-------------------|-------------------------|
+| **Screening Speed** | Hours | Minutes | <100ms |
+| **Coverage** | Limited | Good | Comprehensive |
+| **False Positives** | High (30-40%) | Medium (15-20%) | Low (5-10%) |
+| **Integration** | Manual | API | Native |
+| **Cost per Transaction** | €0.50-€2.00 | €0.10-€0.30 | €0.05 |
+| **Reporting** | Manual | Semi-automated | Fully automated |
+| **Updates** | Manual | Periodic | Real-time |
+| **Multi-Rail Support** | No | Limited | Yes |
+
+---
+
+## Frequently Asked Questions
+
+<AccordionGroup>
+  <Accordion title="How fast is the screening process?">
+    Screening is performed in real-time with an average processing time of <100ms per transaction. This includes sanctions, PEP, and adverse media screening.
+  </Accordion>
+  
+  <Accordion title="What happens if a transaction is flagged?">
+    Flagged transactions are held pending review. Your compliance team is notified immediately and can review the case in the dashboard. You can approve, reject, or escalate based on your assessment.
+  </Accordion>
+  
+  <Accordion title="Can I customize the screening rules?">
+    Yes, you can configure risk thresholds, create custom rules, and define workflows that match your risk appetite and compliance requirements.
+  </Accordion>
+  
+  <Accordion title="How are false positives handled?">
+    Our AI learns from your decisions to reduce false positives over time. You can also whitelist known good entities and fine-tune rules to match your business.
+  </Accordion>
+  
+  <Accordion title="Is the system compliant with GDPR?">
+    Yes, Compliance Engine is fully GDPR compliant with data encryption, access controls, retention policies, and right to erasure capabilities.
+  </Accordion>
+  
+  <Accordion title="Can I generate regulatory reports?">
+    Yes, the system can generate SARs/STRs, CTRs, audit reports, and other regulatory filings. Reports are pre-populated with transaction data and evidence.
+  </Accordion>
+  
+  <Accordion title="What sanctions lists are covered?">
+    We screen against 200+ global sanctions lists including OFAC, UN, EU, UK HM Treasury, and jurisdiction-specific lists. Lists are updated in real-time.
+  </Accordion>
+  
+  <Accordion title="Do I still need a compliance officer?">
+    Yes, while Compliance Engine automates screening and monitoring, you still need qualified compliance personnel to review alerts, make decisions, and maintain your AML program.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Join Waitlist" icon="bell" href="mailto:compliance@venly.io">
+    Register for early access
+  </Card>
+  <Card title="Compliance Consultation" icon="comments" href="mailto:compliance@venly.io">
+    Schedule a consultation
+  </Card>
+  <Card title="Documentation" icon="book" href="/guides/payments/security">
+    Review security practices
+  </Card>
+  <Card title="Contact Sales" icon="envelope" href="mailto:sales@venly.io">
+    Discuss your needs
+  </Card>
+</CardGroup>
+
+---
+
+## Support
+
+Questions about Compliance Engine?
+
+- **Email**: compliance@venly.io
+- **Sales**: sales@venly.io
+- **Documentation**: [docs.venly.io](https://docs.venly.io)
+- **Compliance Hotline**: Available 24/7 for urgent matters
