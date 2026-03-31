@@ -7,7 +7,7 @@
     "light": "#f0a060",
     "dark": "#c56820"
   },
-  "favicon": "/favicon.png",
+  "favicon": "/logo/favicon_logo",
   "navigation": {
     "tabs": [
       {
@@ -210,8 +210,8 @@
     }
   },
   "logo": {
-    "light": "/favicon.png",
-    "dark": "/favicon.png",
+    "light": "/logo/light",
+    "dark": "/logo/dark",
     "href": "https://venlyfinance.com"
   },
   "font": {
