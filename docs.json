@@ -136,10 +136,10 @@
         ]
       },
       {
-        "tab": "Products (Coming Soon)",
+        "tab": "Upcoming Services",
         "groups": [
           {
-            "group": "COMING SOON"
+            "group": "UNDER DEVELOPMENT"
           },
           {
             "group": "Card Issuance",
