@@ -139,7 +139,8 @@
         "tab": "Upcoming Services",
         "groups": [
           {
-            "group": "UNDER DEVELOPMENT"
+            "group": "UNDER DEVELOPMENT",
+            "pages": []
           },
           {
             "group": "Card Issuance",
@@ -171,7 +172,8 @@
         "tab": "Finance API (Under Development)",
         "groups": [
           {
-            "group": "API UNDER DEVELOPMENT"
+            "group": "API UNDER DEVELOPMENT",
+            "pages": []
           },
           {
             "group": "Parties",
@@ -277,12 +279,10 @@
   },
   "font": {
     "headings": {
-      "family": "Inter",
-      "weight": 600
+      "family": "Inter"
     },
     "body": {
-      "family": "Inter",
-      "weight": 400
+      "family": "Inter"
     }
   },
   "modeToggle": {
